@@ -108,6 +108,7 @@ public class TitleButtonClick : MonoBehaviour
         Settings.inSetting = !(Settings.inSetting);
     }
     //感度ステージ変更ボタン
+    /*@@
     public void GainSensP1()
     {
         P1SensChange = 1;
@@ -148,7 +149,7 @@ public class TitleButtonClick : MonoBehaviour
         P4SensChange = -1;
         SoundEffect.BunTrigger = 1;
     }
-
+    */
 
     //設定画面のボタン
     public void GainBGMVol()

@@ -15,6 +15,8 @@ public class GameStart : MonoBehaviour
     const int Stage2 = 2;
     const int Stage3 = 3;
     const int Stage4 = 4;
+    public const int MaxStage = 4;     // 総ステージ数
+    public const int MaxPlayer = 4;    // 総プレイヤー数
 
     int UIMode;
     const int KeyboardMode = 5;

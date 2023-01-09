@@ -35,19 +35,19 @@ public class ButtonInGame : MonoBehaviour
         for (int i = 0; i < GameStart.PlayerNumber; i++)
         {
             /*コントローラーのXボタン*/
-            if (controller.playerKey[i].back) //押されたとき
+            if (controller.playerKey.back) //押されたとき
             {
 
                 if (Paused == 1)
                 {
                     XButtonAnim.enabled = true;
                     XButtonAnim.SetTrigger("On");
-                    controller.playerKey[0].back = false;
+                    controller.playerKey.back = false;
                 }
             }
 
 
-            if (controller.playerKey[i].backHold) //押し続けたとき
+            if (controller.playerKey.backHold) //押し続けたとき
             {
 
                 //ゲームスタートのボタンのみ長押しで動作
@@ -58,20 +58,20 @@ public class ButtonInGame : MonoBehaviour
                     {
                         Paused = 0;
                         SoundEffect.PironTrigger = 1;
-                        controller.playerKey[i].backHold = false;
+                        controller.playerKey.backHold = false;
                         BackToTitle();
                     }
                     else if (Goal.Goaled)
                     {
                         SetHighScore.ToSetHighscore();
-                        controller.playerKey[i].backHold = false;
+                        controller.playerKey.backHold = false;
                         BackToTitle();
                     }
                 }
 
 
             }
-            if (controller.playerKey[i].nextHold == false) //離されたとき
+            if (controller.playerKey.nextHold == false) //離されたとき
             {
                 XButtonAnim.SetTrigger("Off");
                 XButtonAnim.enabled = false;
@@ -81,7 +81,7 @@ public class ButtonInGame : MonoBehaviour
 
          
             /*一台目のコントローラーのStartボタン*/
-            if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Escape) || controller.playerKey[i].start)
+            if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Escape) || controller.playerKey.start)
             {
                 if (GameSetting.StartTime < 0 && Paused == 0)
                 {
@@ -101,7 +101,7 @@ public class ButtonInGame : MonoBehaviour
                     Settings.SettingPanelActive = false;
                     Settings.inSetting = false;
                 }
-                controller.playerKey[i].start = false;
+                controller.playerKey.start = false;
             }
             /*/一台目のコントローラーのStartボタン*/
 

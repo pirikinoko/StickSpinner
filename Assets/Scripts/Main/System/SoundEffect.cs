@@ -10,6 +10,8 @@ public class SoundEffect : MonoBehaviour
     public static float SEStage =  10;
     public Text SEText;
     AudioSource audioSource;
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -26,7 +28,6 @@ public class SoundEffect : MonoBehaviour
             SEStage = 0;
         }
         SetSEVol();
-
 
         if (BonTrigger == 1)
         {

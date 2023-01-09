@@ -431,16 +431,16 @@ MonoBehaviour:
   KeyRight: 108
   RotSpeed: 160
   CoolTime_: 0.2
-  Face: 0
+  RotSpeed_: 160
+  RotStage_: 10
   SensText: {fileID: 1944422108}
-  spriteRenderer: {fileID: 739862456}
-  spriteRenderer2: {fileID: 0}
-  Face1: {fileID: 21300000, guid: cf40f015270e7804d919b14829a9ac04, type: 3}
-  Face2: {fileID: 21300000, guid: 63182246b8b655b4c824500efecaa0d6, type: 3}
-  Face3: {fileID: 21300000, guid: 0a95564255baae74ba245022d097e73c, type: 3}
-  Face4: {fileID: 21300000, guid: cdcd91e0bc773d941bbac600ce24bb2a, type: 3}
-  Face5: {fileID: 21300000, guid: 82cc88148aca1584c9c687429b95e793, type: 3}
-  Face6: {fileID: 21300000, guid: 23d8ef8a42e68ea4ab0c1b8e48837fc8, type: 3}
+  aryFace:
+  - {fileID: 21300000, guid: cf40f015270e7804d919b14829a9ac04, type: 3}
+  - {fileID: 21300000, guid: 63182246b8b655b4c824500efecaa0d6, type: 3}
+  - {fileID: 21300000, guid: 0a95564255baae74ba245022d097e73c, type: 3}
+  - {fileID: 21300000, guid: cdcd91e0bc773d941bbac600ce24bb2a, type: 3}
+  - {fileID: 21300000, guid: 82cc88148aca1584c9c687429b95e793, type: 3}
+  - {fileID: 21300000, guid: 23d8ef8a42e68ea4ab0c1b8e48837fc8, type: 3}
 --- !u!61 &47402824
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -574,9 +574,9 @@ GameObject:
   - component: {fileID: 52820251}
   - component: {fileID: 52820256}
   - component: {fileID: 52820252}
-  - component: {fileID: 52820255}
   - component: {fileID: 52820253}
   - component: {fileID: 52820254}
+  - component: {fileID: 52820255}
   m_Layer: 0
   m_Name: Player3
   m_TagString: Player
@@ -673,8 +673,8 @@ HingeJoint2D:
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_AutoConfigureConnectedAnchor: 1
-  m_Anchor: {x: -0.0006130777, y: 0.005565654}
-  m_ConnectedAnchor: {x: 0.1389119, y: 0.0015298461}
+  m_Anchor: {x: 0, y: 0}
+  m_ConnectedAnchor: {x: 0.12499753, y: -0.0000000054638156}
   m_UseMotor: 0
   m_Motor:
     m_MotorSpeed: 0
@@ -1858,16 +1858,16 @@ MonoBehaviour:
   KeyRight: 104
   RotSpeed: 160
   CoolTime_: 0.2
-  Face: 0
+  RotSpeed_: 160
+  RotStage_: 10
   SensText: {fileID: 577844150}
-  spriteRenderer: {fileID: 52820256}
-  spriteRenderer2: {fileID: 0}
-  Face1: {fileID: 21300000, guid: ebd0e4b91dea03d4c9142810c9459569, type: 3}
-  Face2: {fileID: 21300000, guid: 0599556f54f12064ba45880102e23e60, type: 3}
-  Face3: {fileID: 21300000, guid: 10d0289d9d0c5aa4d91b8e3384b84570, type: 3}
-  Face4: {fileID: 21300000, guid: feebf0adb00fabd4591beaffc97a41f8, type: 3}
-  Face5: {fileID: 21300000, guid: d48e67f1423c2434e87d7bb302fe05e9, type: 3}
-  Face6: {fileID: 21300000, guid: 0378a494527095b45898ab787641cd58, type: 3}
+  aryFace:
+  - {fileID: 21300000, guid: ebd0e4b91dea03d4c9142810c9459569, type: 3}
+  - {fileID: 21300000, guid: 0599556f54f12064ba45880102e23e60, type: 3}
+  - {fileID: 21300000, guid: 10d0289d9d0c5aa4d91b8e3384b84570, type: 3}
+  - {fileID: 21300000, guid: feebf0adb00fabd4591beaffc97a41f8, type: 3}
+  - {fileID: 21300000, guid: d48e67f1423c2434e87d7bb302fe05e9, type: 3}
+  - {fileID: 21300000, guid: 0378a494527095b45898ab787641cd58, type: 3}
 --- !u!61 &352942866
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -3819,9 +3819,9 @@ GameObject:
   - component: {fileID: 739862451}
   - component: {fileID: 739862456}
   - component: {fileID: 739862452}
-  - component: {fileID: 739862455}
   - component: {fileID: 739862453}
   - component: {fileID: 739862454}
+  - component: {fileID: 739862455}
   m_Layer: 0
   m_Name: Player4
   m_TagString: Player
@@ -3918,8 +3918,8 @@ HingeJoint2D:
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_AutoConfigureConnectedAnchor: 1
-  m_Anchor: {x: -0.0006130777, y: 0.005565654}
-  m_ConnectedAnchor: {x: 0.1389119, y: 0.0015298461}
+  m_Anchor: {x: 0, y: 0}
+  m_ConnectedAnchor: {x: 0.12499753, y: -0.0000000054638156}
   m_UseMotor: 0
   m_Motor:
     m_MotorSpeed: 0
@@ -6898,9 +6898,9 @@ GameObject:
   - component: {fileID: 1129717412}
   - component: {fileID: 1129717417}
   - component: {fileID: 1129717413}
-  - component: {fileID: 1129717416}
   - component: {fileID: 1129717414}
   - component: {fileID: 1129717415}
+  - component: {fileID: 1129717416}
   m_Layer: 0
   m_Name: Player1
   m_TagString: Player
@@ -6997,8 +6997,8 @@ HingeJoint2D:
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_AutoConfigureConnectedAnchor: 1
-  m_Anchor: {x: -0.0006130777, y: 0.005565654}
-  m_ConnectedAnchor: {x: 0.1389119, y: 0.0015298461}
+  m_Anchor: {x: 0, y: 0}
+  m_ConnectedAnchor: {x: 0.12499753, y: -0.0000000054638156}
   m_UseMotor: 0
   m_Motor:
     m_MotorSpeed: 0
@@ -8951,16 +8951,16 @@ MonoBehaviour:
   KeyRight: 115
   RotSpeed: 160
   CoolTime_: 0.2
-  Face: 0
+  RotSpeed_: 160
+  RotStage_: 10
   SensText: {fileID: 874383000}
-  spriteRenderer: {fileID: 1873912173}
-  spriteRenderer2: {fileID: 0}
-  Face1: {fileID: 21300000, guid: fb784904002fd6347915b64514b62e07, type: 3}
-  Face2: {fileID: 21300000, guid: 4328a5ba43ab0234a913d0ada18e6e4e, type: 3}
-  Face3: {fileID: 21300000, guid: fa26d3d88353ea849858772f69f1153f, type: 3}
-  Face4: {fileID: 21300000, guid: 44121a874a4876d47a022d23f6cad98d, type: 3}
-  Face5: {fileID: 21300000, guid: 8f078bb5a88aa6a4e9a70ceeee8eed3a, type: 3}
-  Face6: {fileID: 21300000, guid: 1fd399c49e46ec24ab2408eef6a0c6ed, type: 3}
+  aryFace:
+  - {fileID: 21300000, guid: fb784904002fd6347915b64514b62e07, type: 3}
+  - {fileID: 21300000, guid: 4328a5ba43ab0234a913d0ada18e6e4e, type: 3}
+  - {fileID: 21300000, guid: fa26d3d88353ea849858772f69f1153f, type: 3}
+  - {fileID: 21300000, guid: 44121a874a4876d47a022d23f6cad98d, type: 3}
+  - {fileID: 21300000, guid: 8f078bb5a88aa6a4e9a70ceeee8eed3a, type: 3}
+  - {fileID: 21300000, guid: 1fd399c49e46ec24ab2408eef6a0c6ed, type: 3}
 --- !u!61 &1336592391
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -11831,16 +11831,16 @@ MonoBehaviour:
   KeyRight: 275
   RotSpeed: 160
   CoolTime_: 0.2
-  Face: 0
+  RotSpeed_: 160
+  RotStage_: 10
   SensText: {fileID: 744374108}
-  spriteRenderer: {fileID: 1129717417}
-  spriteRenderer2: {fileID: 0}
-  Face1: {fileID: 21300000, guid: 4e907479fb615cb4b80a1b53f543affb, type: 3}
-  Face2: {fileID: 21300000, guid: c2100c2769f23244db43af8ead489867, type: 3}
-  Face3: {fileID: 21300000, guid: 577b8275aaf1255429b53cc4bb012297, type: 3}
-  Face4: {fileID: 21300000, guid: 519236c70dbfb854f8999c6d264b64b2, type: 3}
-  Face5: {fileID: 21300000, guid: 449ce9f99291361468df569804979870, type: 3}
-  Face6: {fileID: 21300000, guid: 40095febba9e1504197d3244c650f3cd, type: 3}
+  aryFace:
+  - {fileID: 21300000, guid: 4e907479fb615cb4b80a1b53f543affb, type: 3}
+  - {fileID: 21300000, guid: c2100c2769f23244db43af8ead489867, type: 3}
+  - {fileID: 21300000, guid: 577b8275aaf1255429b53cc4bb012297, type: 3}
+  - {fileID: 21300000, guid: 519236c70dbfb854f8999c6d264b64b2, type: 3}
+  - {fileID: 21300000, guid: 449ce9f99291361468df569804979870, type: 3}
+  - {fileID: 21300000, guid: 40095febba9e1504197d3244c650f3cd, type: 3}
 --- !u!233 &1868333661
 HingeJoint2D:
   m_ObjectHideFlags: 0
@@ -11948,9 +11948,9 @@ GameObject:
   - component: {fileID: 1873912168}
   - component: {fileID: 1873912173}
   - component: {fileID: 1873912169}
-  - component: {fileID: 1873912172}
   - component: {fileID: 1873912170}
   - component: {fileID: 1873912171}
+  - component: {fileID: 1873912172}
   m_Layer: 0
   m_Name: Player2
   m_TagString: Player
@@ -12047,8 +12047,8 @@ HingeJoint2D:
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_AutoConfigureConnectedAnchor: 1
-  m_Anchor: {x: -0.0006130777, y: 0.005565654}
-  m_ConnectedAnchor: {x: 0.1389119, y: 0.0015298461}
+  m_Anchor: {x: 0, y: 0}
+  m_ConnectedAnchor: {x: 0.12499753, y: -0.0000000054638156}
   m_UseMotor: 0
   m_Motor:
     m_MotorSpeed: 0

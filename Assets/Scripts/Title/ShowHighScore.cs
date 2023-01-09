@@ -11,8 +11,8 @@ public class ShowHighScore : MonoBehaviour
     public static float[,] topScore = new float[4, 5];
     string[] unit = { "•b", "•b", "•b", "P" };
 
-
-    void Start()
+    // FrontCanvas ‚ğ–³Œø‚É‚µ‚½Œã‚¾‚Æ GameObject.Find ‚ÅŒ©‚Â‚¯‚ç‚ê‚È‚¢‚Ì‚Å Awake ‚Åˆ—‚·‚é
+    void Awake()
     {
         int num = 0;
         for (int i = 0; i < 4; i++)
@@ -21,19 +21,16 @@ public class ShowHighScore : MonoBehaviour
             {
                 num++;
                 ranking[i, j] = GameObject.Find("HighScore" + num.ToString()).GetComponent<Text>();
-
             }
         }
-
     }
-    // Update is called once per frame
+
     void Update()
     {
         for (int i = 0; i < 4; i++)
         {
             for (int j = 0; j < 5; j++)
             {
-
                 ranking[i, j].text = (j + 1).ToString() + "ˆÊ: " + topName[i, j] + " " + topScore[i, j].ToString() + unit[i];
                 if (topScore[i, j] == 0)
                 {
@@ -42,6 +39,5 @@ public class ShowHighScore : MonoBehaviour
             }
         }
     }
-
 }
 

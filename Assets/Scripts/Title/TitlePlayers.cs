@@ -17,6 +17,8 @@ public class TitlePlayers : MonoBehaviour
     private byte[] count = new byte[4];
     public Rigidbody2D[] stickrb;
     bool p2UIActive, p3UIActive, p4UIActive;
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -27,10 +29,12 @@ public class TitlePlayers : MonoBehaviour
 
         for (int i = 0; i < 4; i++) //初期化処理
         {
-            players[i] = GameObject.Find("Player" + (i + 1).ToString());
-            sticks[i] = GameObject.Find("Stick" + (i + 1).ToString());
+            players[i].gameObject.SetActive(true);
+            sticks[i].gameObject.SetActive(true);
         }
+        
     }
+
     void Update()
     {
         PNtext.text = (GameStart.PlayerNumber + "人");
@@ -83,8 +87,8 @@ public class TitlePlayers : MonoBehaviour
                 }     
             }
 
-            //プレイヤー人数の反映
-            for (int i = 4; i > GameStart.PlayerNumber; i--)
+            //プレイヤー人数の反映    @@ 4 から始めると　配列外になるので 3からにした(3～0の四回ループ)
+            for (int i = 3; i >= GameStart.PlayerNumber; i--)
             {
                 if (count[i] == 1)
                 {
@@ -101,22 +105,26 @@ public class TitlePlayers : MonoBehaviour
         {
             for (int i = 0; i < 4; i++)
             {
-                    nameTags[i].gameObject.SetActive(false);
-                    UIkey[i].gameObject.SetActive(false);
-                    players[i].gameObject.transform.position = new Vector2(-100 + i * 2, 0);
-                    sticks[i].gameObject.transform.position = new Vector2(-100 + i * 2, 0);
-                    count[i] = 0;
+                stickrb[i].velocity = new Vector2(0f, 0f);
+                nameTags[i].gameObject.SetActive(false);
+                UIkey[i].gameObject.SetActive(false);
+                players[i].gameObject.transform.position = new Vector2(-100 + i * 2, 0);
+                sticks[i].gameObject.transform.position = new Vector2(-100 + i * 2, 0);
+                count[i] = 0;
             }
         }
     }
     void NameTagPos()
     {
         //ネームタグの位置
-        for (int i = 0; i < GameStart.PlayerNumber; i++)
+
+        // nameTagPos が null になっている
+
+       /*for (int i = 0; i < GameStart.PlayerNumber; i++)
         {
             nameTagPos[i] = players[i].transform.position;
             nameTagPos[i].y += 0.5f;
             nameTags[i].transform.position = nameTagPos[i];
-        }
+        }*/
     }
 }

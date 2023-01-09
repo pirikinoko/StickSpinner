@@ -44,14 +44,14 @@ public class Settings : MonoBehaviour
                 if (inSetting)
                 {
                     /*設定項目の選択*/
-                    if (controller.playerKey[i].Y == 0) { InputCrossY = false; }                
-                    if (controller.playerKey[i].Y >= 0.1f && InputCrossY == false) { Selected++; InputCrossY = true; SoundEffect.BunTrigger = 1; }
-                    if (controller.playerKey[i].Y <= -0.1f && InputCrossY == false) { Selected--; InputCrossY = true; SoundEffect.BunTrigger = 1; }
+                    if (controller.playerKey.Y == 0) { InputCrossY = false; }                
+                    if (controller.playerKey.Y >= 0.1f && InputCrossY == false) { Selected++; InputCrossY = true; SoundEffect.BunTrigger = 1; }
+                    if (controller.playerKey.Y <= -0.1f && InputCrossY == false) { Selected--; InputCrossY = true; SoundEffect.BunTrigger = 1; }
                     /*/設定項目の選択*/
 
                     /*音量変更*/
-                    if (controller.playerKey[i].X == 0) { InputCrossX = false; }
-                    if (controller.playerKey[i].X >= 0.1f && InputCrossX == false && inSetting)
+                    if (controller.playerKey.X == 0) { InputCrossX = false; }
+                    if (controller.playerKey.X >= 0.1f && InputCrossX == false && inSetting)
                     {
                         if (Selected == 1)
                         {
@@ -65,7 +65,7 @@ public class Settings : MonoBehaviour
                         InputCrossX = true;
                         SoundEffect.BunTrigger = 1;
                     }
-                    if (controller.playerKey[i].X <= -0.1f && InputCrossX == false && inSetting)
+                    if (controller.playerKey.X <= -0.1f && InputCrossX == false && inSetting)
                     {
                         if (Selected == 1)
                         {
@@ -79,17 +79,11 @@ public class Settings : MonoBehaviour
                         SoundEffect.BunTrigger = 1;
                     }
                     /*/音量変更*/
-
-
                 }
-
             }               
             Selected = Mathf.Clamp(Selected, min, max);
             TLFramePos.y = itemPos[Selected - 1].y;
             TLFrameTransform.position = TLFramePos;
-
-
-         
         }  
     }
 }

@@ -28,7 +28,7 @@ public class CameraControl : MonoBehaviour
             Xdistance[i] = 0;   
             Ydistance[i] = 0;   
         }
-        for (int i = 4; i > GameStart.PlayerNumber; i--)
+        for (int i = 3; i >=GameStart.PlayerNumber; i--)
         {
             playerActive[i] = false;
         }
