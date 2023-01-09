@@ -8,22 +8,15 @@ using UnityEngine.Video;
 
 public class GameStart : MonoBehaviour
 {
-    const int Title = 0;
-    const int SelectStage = 1;
-    const int SelectPNumber = 2;
-    const int Stage1 = 1;
-    const int Stage2 = 2;
-    const int Stage3 = 3;
-    const int Stage4 = 4;
     public const int MaxStage = 4;     // 総ステージ数
     public const int MaxPlayer = 4;    // 総プレイヤー数
 
     int UIMode;
     const int KeyboardMode = 5;
     const int ControllerMode = 6;
-    public GameObject StartPanel, FrontCanvas, Stage1Scores, Stage2Scores, Stage3Scores, Stage4Scores, KeyboardMouseUI1, KeyboardMouseUI2, ControllerUI1, ControllerUI2, ControllerUI3, ControllerUI4;
+    public GameObject MainTitle, StartPanel, ChangePlayerNumber, FrontCanvas, Stage1Scores, Stage2Scores, Stage3Scores, Stage4Scores, KeyboardMouseUI1, KeyboardMouseUI2, ControllerUI1, ControllerUI2, ControllerUI3, ControllerUI4, ControllerUI5;
     Button StartButton;
-    public static bool InSelectPN = false;
+    public static bool inDemoPlay = false;
     //以下画像差し替え用
     public SpriteRenderer StageTitle, StageDifficulity, StageDescription;
     public Sprite Stage1Title, Stage1Difficulity, Stage1Description;
@@ -38,32 +31,19 @@ public class GameStart : MonoBehaviour
     public static int Stage = 1;
     void Start()
     {
-        InSelectPN = false;
-        Stage = Stage1;
+        inDemoPlay = false;
+        Stage = 1;
         PlayerNumber = 1;
-        phase = Title;
+        phase = 0;
         FrontCanvas.gameObject.SetActive(false);
         StartPanel.gameObject.SetActive(false);
-        //コントローラーの名前を取得
-        var controllerNames = Input.GetJoystickNames();
-        //コントローラーが接続されている場合はコントローラー用のUIを表示
-        if (controllerNames[0] == "")
-        {
-            UIMode = KeyboardMode;
-        }
-        else
-        {
-            UIMode = ControllerMode;
-        }
 
     }
     void Update()
     {
-        //キーボードマウス用UIとコントローラー用UIの切り替え
         SwichUI();
         SwichStageMaterial();
         PhaseControll();
-
     }
 
     void SwichStageMaterial()
@@ -74,10 +54,8 @@ public class GameStart : MonoBehaviour
                 StageTitle.sprite = Stage1Title;
                 StageDifficulity.sprite = Stage1Difficulity;
                 StageDescription.sprite = Stage1Description;
+                DisableScores();
                 Stage1Scores.gameObject.SetActive(true);
-                Stage2Scores.gameObject.SetActive(false);
-                Stage3Scores.gameObject.SetActive(false);
-                Stage4Scores.gameObject.SetActive(false);
                 StageVideo.clip = Stage1Video;
                 break;
 
@@ -85,10 +63,8 @@ public class GameStart : MonoBehaviour
                 StageTitle.sprite = Stage2Title;
                 StageDifficulity.sprite = Stage2Difficulity;
                 StageDescription.sprite = Stage2Description;
+                DisableScores();
                 Stage2Scores.gameObject.SetActive(true);
-                Stage1Scores.gameObject.SetActive(false);
-                Stage3Scores.gameObject.SetActive(false);
-                Stage4Scores.gameObject.SetActive(false);
                 StageVideo.clip = Stage2Video;
                 break;
 
@@ -96,10 +72,8 @@ public class GameStart : MonoBehaviour
                 StageTitle.sprite = Stage3Title;
                 StageDifficulity.sprite = Stage3Difficulity;
                 StageDescription.sprite = Stage3Description;
+                DisableScores();
                 Stage3Scores.gameObject.SetActive(true);
-                Stage1Scores.gameObject.SetActive(false);
-                Stage2Scores.gameObject.SetActive(false);
-                Stage4Scores.gameObject.SetActive(false);
                 StageVideo.clip = Stage3Video;
                 break;
 
@@ -107,41 +81,60 @@ public class GameStart : MonoBehaviour
                 StageTitle.sprite = Stage4Title;
                 StageDifficulity.sprite = Stage4Difficulity;
                 StageDescription.sprite = Stage4Description;
+                DisableScores();
                 Stage4Scores.gameObject.SetActive(true);
-                Stage1Scores.gameObject.SetActive(false);
-                Stage2Scores.gameObject.SetActive(false);
-                Stage3Scores.gameObject.SetActive(false);
                 StageVideo.clip = Stage4Video;
                 break;
         }
+    }
+    void DisableScores()
+    {
+        Stage1Scores.gameObject.SetActive(false);
+        Stage2Scores.gameObject.SetActive(false);
+        Stage3Scores.gameObject.SetActive(false);
+        Stage4Scores.gameObject.SetActive(false);
     }
     void PhaseControll()
     {
         switch (phase)
         {
             case 0:
-                FrontCanvas.gameObject.SetActive(false);
-                StartPanel.gameObject.SetActive(false);
-                InSelectPN = false;
+                DisablePanel();
+                MainTitle.gameObject.SetActive(true);
                 break;
             case 1:
+                DisablePanel();
                 FrontCanvas.gameObject.SetActive(true);
-                StartPanel.gameObject.SetActive(false);
-                InSelectPN = false;
                 break;
             case 2:
-                StartPanel.gameObject.SetActive(true);
-                FrontCanvas.gameObject.SetActive(false);
-                InSelectPN = true;
+                DisablePanel();
+                ChangePlayerNumber.gameObject.SetActive(true);
                 break;
             case 3:
+                DisablePanel();
+                StartPanel.gameObject.SetActive(true);
+                inDemoPlay = true;
+                break;
+            case 4:
                 phase = 0;
                 SceneManager.LoadScene("Stage" + GameStart.Stage.ToString());
-                InSelectPN = false;
                 break;
+
         }
+        // 最大値を超えたら最大値を渡す
+        phase = System.Math.Min(phase, 4);
+        // 最小値を下回ったら最小値を渡す
+        phase = System.Math.Max(phase, 0);
     }
 
+    void DisablePanel()
+    {
+        FrontCanvas.gameObject.SetActive(false);
+        StartPanel.gameObject.SetActive(false);
+        MainTitle.gameObject.SetActive(false);
+        ChangePlayerNumber.gameObject.SetActive(false);
+        inDemoPlay = false;
+    }
 
     void SwichUI()
     {
@@ -154,15 +147,15 @@ public class GameStart : MonoBehaviour
         {
             UIMode = KeyboardMode;
         }
-
+        Debug.Log("Controller.usingController" + Controller.usingController + "UIMODE" + UIMode);
         //キーボード,マウスのとき
         if (UIMode == KeyboardMode)
         {
-            if (phase == SelectStage)
+            if (phase == 0)
             {
                 KeyboardMouseUI1.gameObject.SetActive(true);
             }
-            else if (phase == SelectPNumber)
+            else if (phase == 1)
             {
                 KeyboardMouseUI2.gameObject.SetActive(true);
             }
@@ -171,31 +164,44 @@ public class GameStart : MonoBehaviour
             ControllerUI2.gameObject.SetActive(false);
             ControllerUI3.gameObject.SetActive(false);
             ControllerUI4.gameObject.SetActive(false);
+            ControllerUI5.gameObject.SetActive(false);
         }
         //コントローラーのとき
         else if (UIMode == ControllerMode)
         {
-
-            if (phase == Title)
+            ControllerUI5.gameObject.SetActive(true);
+            if (phase == 0)
             {
-                ControllerUI3.gameObject.SetActive(true);
-                ControllerUI4.gameObject.SetActive(true);
-            }
-            if (phase == SelectStage)
-            {
+                DisableControllerUI();
                 ControllerUI1.gameObject.SetActive(true);
-                ControllerUI3.gameObject.SetActive(false);
-                ControllerUI4.gameObject.SetActive(true);
             }
-            if (phase == SelectPNumber)
+            if (phase == 1)
             {
+                DisableControllerUI();
                 ControllerUI2.gameObject.SetActive(true);
-                ControllerUI3.gameObject.SetActive(false);
+            }
+            if (phase == 2)
+            {
+                DisableControllerUI();
+                ControllerUI3.gameObject.SetActive(true);
+            }
+            if (phase == 3)
+            {
+                DisableControllerUI();
                 ControllerUI4.gameObject.SetActive(true);
             }
 
             KeyboardMouseUI1.gameObject.SetActive(false);
             KeyboardMouseUI2.gameObject.SetActive(false);
         }
+    }
+
+    void DisableControllerUI()
+    {
+        ControllerUI1.gameObject.SetActive(false);
+        ControllerUI2.gameObject.SetActive(false);
+        ControllerUI3.gameObject.SetActive(false);
+        ControllerUI4.gameObject.SetActive(false);
+        ControllerUI5.gameObject.SetActive(false);
     }
 }

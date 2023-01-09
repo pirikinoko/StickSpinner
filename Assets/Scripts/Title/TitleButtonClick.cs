@@ -13,41 +13,18 @@ public class TitleButtonClick : MonoBehaviour
     const int Stage3 = 3;
     const int Stage4 = 4;   
     public GameObject StartPanel, FrontCanvas;
-    public static int P1SensChange, P2SensChange, P3SensChange, P4SensChange;
+    public static int[] sensChange = new int[4];
 
-    //ステージ選択画面に移行
-    public void GoStageSelect()
+
+    public void NextPhase()
     {
         SoundEffect.PironTrigger = 1;
-        GameStart.phase = SelectStage;
-        if (GameStart.Stage != Stage4)
-        {
-            GameStart.PlayerNumber = 1;
-        }
+        GameStart.phase++;
     }
-    //タイトル画面に戻る
-    public void BackToTitle()
+    public void PrevPhase()
     {
         SoundEffect.PironTrigger = 1;
-        GameStart.phase = Title;
-    }
-    //スタートパネルを開く
-    public void OpenStartPanel()
-    {
-        if (GameStart.Stage == Stage4)
-        {
-            GameStart.PlayerNumber = 2;
-        }
-        SoundEffect.PironTrigger = 1;
-        GameStart.phase = SelectPNumber;
-        StartPanel.gameObject.SetActive(true);
-        FrontCanvas.gameObject.SetActive(false);
-        GameStart.InSelectPN = true;
-    }
-    public void BackToStageSelect()
-    {
-        GameStart.InSelectPN = false;
-        GameStart.phase = SelectStage;
+        GameStart.phase--;
     }
     public void NextStage()
     {
@@ -55,6 +32,7 @@ public class TitleButtonClick : MonoBehaviour
         {
             GameStart.Stage++;
         }
+        SoundEffect.BunTrigger = 1;
     }
     public void PrevStage()
     {
@@ -62,6 +40,7 @@ public class TitleButtonClick : MonoBehaviour
         {
             GameStart.Stage--;
         }
+        SoundEffect.BunTrigger = 1;
     }
 
     public void PlusButton()
@@ -95,7 +74,7 @@ public class TitleButtonClick : MonoBehaviour
     public void StartGame()
     {
         // Stage1 ～ 3 は Int型なので、↓でいいと思う
-        GameStart.InSelectPN = false;
+        GameStart.inDemoPlay = false;
         SoundEffect.PironTrigger = 1;
         SceneManager.LoadScene("Stage" + GameStart.Stage.ToString());
     }
@@ -108,48 +87,48 @@ public class TitleButtonClick : MonoBehaviour
         Settings.inSetting = !(Settings.inSetting);
     }
     //感度ステージ変更ボタン
-    /*@@
+
     public void GainSensP1()
     {
-        P1SensChange = 1;
+        sensChange[0] = 1;
         SoundEffect.BunTrigger = 1;
     }
     public void GainSensP2()
     {
-        P2SensChange = 1;
+        sensChange[1] = 1;
         SoundEffect.BunTrigger = 1;
     }
     public void GainSensP3()
     {
-        P3SensChange = 1;
+        sensChange[2] = 1;
         SoundEffect.BunTrigger = 1;
     }
     public void GainSensP4()
     {
-        P4SensChange = 1;
+        sensChange[3] = 1;
         SoundEffect.BunTrigger = 1;
     }
     public void LoseSensP1()
     {
-        P1SensChange = -1;
+        sensChange[0] = -1;
         SoundEffect.BunTrigger = 1;
     }
     public void LoseSensP2()
     {
-        P2SensChange = -1;
+        sensChange[1] = -1;
         SoundEffect.BunTrigger = 1;
     }
     public void LoseSensP3()
     {
-        P3SensChange = -1;
+        sensChange[2] = -1;
         SoundEffect.BunTrigger = 1;
     }
     public void LoseSensP4()
     {
-        P4SensChange = -1;
+        sensChange[3] = -1;
         SoundEffect.BunTrigger = 1;
     }
-    */
+
 
     //設定画面のボタン
     public void GainBGMVol()

@@ -15,10 +15,11 @@ public class TitleButton : MonoBehaviour
     //const int stage1 = 1;
     //const int stage2 = 2;
     //const int stage3 = 3;
-    const int stage4 = 4;
+    const int stage4 = 4, firstStage = 1, lastStage = 4;
     const float holdGoal = 0.85f;
     float holdTime = 0;
-
+    int minPlayer = 1;
+    int maxPlayer = 4;
     // ボタンの長押し時間
     [SerializeField]
     private Animator YButtonAnim;
@@ -37,8 +38,12 @@ public class TitleButton : MonoBehaviour
             case 1:
                 SelectStage();
                 break;
-            // プレイヤー数増減 & ボタン押しっぱなしでゲーム開始
+            // プレイヤー数増減 
             case 2:
+                ChangePlayerNumber();
+                break;
+            // ボタン押しっぱなしでゲーム開始
+            case 3:
                 HoldButtonGoToGame();
                 break;
         }
@@ -53,7 +58,6 @@ public class TitleButton : MonoBehaviour
         {
             SoundEffect.PironTrigger = 1;
             GameStart.phase = 1;
-            if (GameStart.Stage == stage4){ GameStart.PlayerNumber = 2;}    // これなんだろう? stage4 は強制的に２人プレイという意味?
         }
 	}
 
@@ -67,7 +71,6 @@ public class TitleButton : MonoBehaviour
         {
             SoundEffect.PironTrigger = 1;
             GameStart.phase = 2;
-            if (GameStart.Stage == stage4){ GameStart.PlayerNumber = 2;}
         }
         // 戻る
         else if(Input.GetButtonDown("XBack_1"))
@@ -80,22 +83,58 @@ public class TitleButton : MonoBehaviour
         if (Input.GetButtonDown("Plus_1"))
         {
             GameStart.Stage++;
-            if(GameStart.Stage > GameStart.MaxStage){ GameStart.Stage = GameStart.MaxStage - 1;}
         }
         else if (Input.GetButtonDown("Minus_1"))
         {
             GameStart.Stage--;
-            if(GameStart.Stage < 0){ GameStart.Stage = 0;}
         }
-	}
+        // 最大値を超えたら最大値を渡す
+        GameStart.Stage = System.Math.Min(GameStart.Stage, lastStage);
+        // 最小値を下回ったら最小値を渡す
+        if (GameStart.Stage == 4) { minPlayer = 2; }
+        GameStart.Stage = System.Math.Max(GameStart.Stage, firstStage);
+    }
 
     //
-    // プレイヤー数増減 & ボタン押しっぱなしでゲーム開始
+    // プレイヤー数増減 
+    //
+    void ChangePlayerNumber()
+    {
+        // 次へ
+        if (Input.GetButtonDown("Next_1"))
+        {
+            SoundEffect.PironTrigger = 1;
+            GameStart.phase = 3;
+        }
+        // 戻る
+        else if (Input.GetButtonDown("XBack_1"))
+        {
+            // キャンセル音を鳴らす
+            GameStart.phase = 0;
+        }
+
+        // LR でプレイヤー数選択
+        if (Input.GetButtonDown("Plus_1"))
+        {
+            GameStart.PlayerNumber++;
+        }
+        else if (Input.GetButtonDown("Minus_1"))
+        {
+            GameStart.PlayerNumber--;
+        }
+        // 最大値を超えたら最大値を渡す
+        GameStart.PlayerNumber = System.Math.Min(GameStart.PlayerNumber, maxPlayer);
+        // 最小値を下回ったら最小値を渡す
+        if (GameStart.Stage == 4) { minPlayer = 2; } else { minPlayer = 1; }
+        GameStart.PlayerNumber = System.Math.Max(GameStart.PlayerNumber, minPlayer);
+    }
+    //
+    // ボタン押しっぱなしでゲーム開始
     //
     void HoldButtonGoToGame()
     {
         // ボタンを押した瞬間
-        if(Input.GetButtonDown("Next_1"))
+        if (Input.GetButtonDown("Next_1"))
         {
             YButtonAnim.enabled = true;
             YButtonAnim.SetTrigger("On");
@@ -106,7 +145,7 @@ public class TitleButton : MonoBehaviour
             holdTime += Time.deltaTime;
             if (holdTime > holdGoal)
             {
-                GameStart.InSelectPN = false;
+                GameStart.inDemoPlay = false;
                 SoundEffect.PironTrigger = 1;
                 SceneManager.LoadScene("Stage" + GameStart.Stage.ToString());
             }
@@ -117,25 +156,15 @@ public class TitleButton : MonoBehaviour
             YButtonAnim.SetTrigger("Off");
             YButtonAnim.enabled = false;
             holdTime = 0;
-		}
+        }
         // 戻る
-        else if(Input.GetButtonDown("XBack_1"))
+        else if (Input.GetButtonDown("XBack_1"))
         {
             // キャンセル音を鳴らす
             GameStart.phase = 1;
-		}
+        }
 
-        // LR でプレイヤー数選択
-        if (Input.GetButtonDown("Plus_1"))
-        {
-            GameStart.PlayerNumber++;
-            if(GameStart.PlayerNumber > GameStart.MaxPlayer){ GameStart.PlayerNumber = GameStart.MaxPlayer - 1;}
-        }
-        else if (Input.GetButtonDown("Minus_1"))
-        {
-            GameStart.PlayerNumber--;
-            if(GameStart.PlayerNumber < 1){ GameStart.PlayerNumber = 1;}
-        }
+      
     }
 }
 

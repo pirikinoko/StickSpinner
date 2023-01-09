@@ -11,7 +11,7 @@ public class ButtonClick : MonoBehaviour
     {
         SoundEffect.PironTrigger = 1;
         GameStart.phase = 0;
-        GameStart.InSelectPN = false;
+        GameStart.inDemoPlay = false;
         GameSetting.Playable = false;
         GameStart.PlayerNumber = 1;
         Settings.SettingPanelActive = false;

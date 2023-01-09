@@ -26,8 +26,8 @@ public class Controller : MonoBehaviour
     float CoolTime = 0.2f;                              // ジャンプのクールタイム
     bool inputCrossX;                                   // 十字ボタンの入力があるときはtrue
     // プレイヤーごとの回転速度
-    //public static float P1RotSpeed = 160f, P2RotSpeed = 160f, P3RotSpeed = 160f, P4RotSpeed = 160f, P1RotStage = 10, P2RotStage = 10, P3RotStage = 10, P4RotStage = 10; 
-
+    public static float[] rotSpeed = new float[4]; 
+    public static float[] rotStage = { 10, 10, 10, 10 };
     [SerializeField]
     float RotSpeed_ = 160f, RotStage_ = 10;
 
@@ -92,8 +92,8 @@ public class Controller : MonoBehaviour
         parentSprite =  transform.parent.gameObject.GetComponent<SpriteRenderer>();
 
         //@@ これなんだろう
-        RotStage = RotStage_;
-        RotSpeed = RotSpeed_;
+        RotStage = rotStage[id - 1];
+        RotSpeed = rotSpeed[id - 1];
 
         StickRot     = 0f;
         CoolTime     = 0.0f;
@@ -127,7 +127,7 @@ public class Controller : MonoBehaviour
         onFloor   = onSurface | onPlayer | onStick | body.onSurface | body.onPlayer | body.onStick;// 何かに接触している時は true
         onPinball = onPinball | body.onPinball; ;
         Acceleration();
-        if (GameSetting.Playable && ButtonInGame.Paused != 1 || GameStart.InSelectPN) //プレイヤー数選択画面でも操作可能
+        if (GameSetting.Playable && ButtonInGame.Paused != 1 || GameStart.inDemoPlay) //プレイヤー数選択画面でも操作可能
         {
             Jump();
         }
@@ -135,6 +135,7 @@ public class Controller : MonoBehaviour
         ChangeSensitivity();
         getControllerType();
         InputControllerButton();
+        CheckControllerState();
 
     }
 
@@ -225,7 +226,7 @@ public class Controller : MonoBehaviour
     // 移動
     void Move()
     {
-        if (GameSetting.Playable && ButtonInGame.Paused != 1 || GameStart.InSelectPN) //プレイヤー数選択画面でも操作可能
+        if (GameSetting.Playable && ButtonInGame.Paused != 1 || GameStart.inDemoPlay) //プレイヤー数選択画面でも操作可能
         {
             if (Input.GetKey(KeyRight) || playerKey.horizontal >=  0.1f) { StickRot -= RotSpeed * Time.deltaTime; }
             if (Input.GetKey(KeyLeft)  || playerKey.horizontal <= -0.1f) { StickRot += RotSpeed * Time.deltaTime; }
@@ -237,7 +238,7 @@ public class Controller : MonoBehaviour
     // 感度調整
     void ChangeSensitivity()
     {
-        if (GameStart.InSelectPN) //プレイヤー数選択画面でのみ操作可能
+        if (GameStart.inDemoPlay) //プレイヤー数選択画面でのみ操作可能
         {
             if (playerKey.X == 0) { inputCrossX = false; }
             //十字ボタン(横)を一回倒すごとに感度ステージを一段階変更
@@ -245,12 +246,17 @@ public class Controller : MonoBehaviour
             if (playerKey.X <= -0.1f && inputCrossX == false) { RotStage -= 1; inputCrossX = true; }
 
             RotSpeed = 120 + RotStage * 4;  // 120 + 4 * 10(RotStage初期値) = 160をベースに感度ステージごとに4変更
-            SensText.text = RotStage.ToString();
-
-            RotStage += TitleButtonClick.P1SensChange;
-            TitleButtonClick.P1SensChange = 0;
-            RotStage = RotStage_;
-            RotSpeed = RotSpeed_;
+            SensText.text = rotStage[id - 1].ToString();
+            for (int i = 0; i < GameStart.PlayerNumber; i++)
+            {
+                if (id == i + 1)
+                {
+                    RotStage += TitleButtonClick.sensChange[i];
+                    TitleButtonClick.sensChange[i] = 0;
+                    rotStage[i] = RotStage;
+                    rotSpeed[i] = RotSpeed;
+                }
+            }
 
             //上限下限の設定
             if (RotStage > 20)
@@ -350,8 +356,8 @@ public class Controller : MonoBehaviour
         bool Bbutton = false;
         for (int i = 0; i < connected; i++)
         {
-//@@            Bbutton = playerKey[i].jump;
-//@@            anyButtonInput = playerKey[i].start || playerKey[i].next || playerKey[i].back || playerKey[i].plus || playerKey[i].minus || playerKey[i].X != 0 || playerKey[i].Y != 0 || playerKey[i].horizontal != 0;
+            Bbutton = playerKey.jump;
+            anyButtonInput = playerKey.start || playerKey.next || playerKey.back || playerKey.plus || playerKey.minus || playerKey.X != 0 || playerKey.Y != 0 || playerKey.horizontal != 0;
             keyORMouseInput = Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.Space) || Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1);
         }
         if (anyButtonInput)
