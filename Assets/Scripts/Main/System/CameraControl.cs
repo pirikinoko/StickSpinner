@@ -5,35 +5,44 @@ using UnityEngine;
 
 public class CameraControl : MonoBehaviour
 {
-    [SerializeField] private Camera camera_;        // 対象のｶﾒﾗ
-    public GameObject[] players;
-    bool[] playerActive;
-    public Vector2[] playerTransform;
-    public float[] distance;
-    public float[] Xdistance;
-    public float[] Ydistance;
-    int[] memo1, memo2;
-    public float maxDistansX, maxDistansY, maxDistans;
-    public float CameraSize;
-    int StartTrigger = 0, CameraTarget;
+    [SerializeField] Camera camera_;
+
+    // プレイヤー
+    GameObject[] players{ get; set;} = new GameObject[GameStart.MaxPlayer];
+
+    // 配列はメモリを確保のこと
+    bool[]    playerActive    = new bool[GameStart.MaxPlayer];
+    Vector2[] playerTransform = new Vector2[GameStart.MaxPlayer];
+    float[] distance  = new float[GameStart.MaxPlayer];
+    float[] Xdistance = new float[GameStart.MaxPlayer];
+    float[] Ydistance = new float[GameStart.MaxPlayer];
+    int[] memo1 = new int[GameStart.MaxPlayer];
+    int[] memo2 = new int[GameStart.MaxPlayer];
+    float maxDistansX, maxDistansY, maxDistans;
+    float CameraSize;
+    int StartTrigger = 0;//, CameraTarget;
     Vector2 DefaultCamaeraPos;
 
     void Start()
     {
-        for(int i = 0; i < GameStart.PlayerNumber; i++)
+        // 参加プレイヤー
+        int i = 0;
+        for(; i < GameStart.PlayerNumber; i++)
         {
-            players[i] = GameObject.Find("Player" + (i + 1).ToString());
+            players[  i] = GameObject.Find("Player" + (i + 1).ToString());
+            distance[ i] = 0;
+            Xdistance[i] = 0;
+            Ydistance[i] = 0;
             playerActive[i] = true;
-            distance[i] = 0;
-            Xdistance[i] = 0;   
-            Ydistance[i] = 0;   
         }
-        for (int i = 3; i >=GameStart.PlayerNumber; i--)
+        // 不参加プレイヤー
+        for(; i < GameStart.MaxPlayer; i++)
         {
             playerActive[i] = false;
-        }
+		}
+
         StartTrigger = 0;   
-        CameraTarget = GameStart.PlayerNumber;
+        //CameraTarget = GameStart.PlayerNumber;
     }
 
     void Update()
@@ -41,7 +50,7 @@ public class CameraControl : MonoBehaviour
         GoaledPlayersPos();
         PlayerPos();
         GoaledPlayersPos();
-        //1人プレイの時は大きめの画面で
+        // 1人プレイの時は大きめの画面で
         if (GameStart.PlayerNumber != 1)
         {
             camera_.orthographicSize = CameraSize;
@@ -61,19 +70,18 @@ public class CameraControl : MonoBehaviour
     }
 
 
-
     public void CameraPosition()
     {
-        Transform CameraPosGoalTransform = this.transform;
-        Vector3 cameraPosGoal = CameraPosGoalTransform.position;
-        Transform CameraTransform = this.transform;
-        Vector3 cameraPos = CameraTransform.position;
+        Transform CameraPosGoalTransform = transform;
+        Vector3   cameraPosGoal          = CameraPosGoalTransform.position;
+        Transform CameraTransform        = transform;
+        Vector3   cameraPos              = CameraTransform.position;
         int num = 0;
         for (int i = 0; (i + 1) < GameStart.PlayerNumber; i++)
         {
             for (int j = 0; (j + 1 + i) < GameStart.PlayerNumber; j++)
             {
-                distance[num] = (float)Math.Sqrt(Math.Pow(playerTransform[i].x - playerTransform[j + 1].x, 2) + Math.Pow(playerTransform[i].y - playerTransform[j + 1].y, 2));
+                distance[num]  = (float)Math.Sqrt(Math.Pow(playerTransform[i].x - playerTransform[j + 1].x, 2) + Math.Pow(playerTransform[i].y - playerTransform[j + 1].y, 2));
                 Xdistance[num] = (float)Math.Sqrt(Math.Pow(playerTransform[i].x - playerTransform[j + 1].x, 2));
                 Ydistance[num] = (float)Math.Sqrt(Math.Pow(playerTransform[i].y - playerTransform[j + 1].y, 2));             
                 memo1[num] = i;
@@ -145,6 +153,7 @@ public class CameraControl : MonoBehaviour
         }
         this.transform.position = cameraPos;
     }
+
     //ゴールしたプレイヤーをカメラの対象から外す
     void GoaledPlayersPos()
     {
@@ -168,6 +177,7 @@ public class CameraControl : MonoBehaviour
             }
         }
     }
+
     void PlayerPos()
     {
         for (int i = 0; i < GameStart.PlayerNumber; i++)
@@ -175,5 +185,4 @@ public class CameraControl : MonoBehaviour
             playerTransform[i] = players[i].transform.position;
         }
     }
-   
 }
