@@ -32,6 +32,8 @@ public class GameSetting : MonoBehaviour
     int UIMode;
     const int KeyboardMode = 5;
     const int ControllerMode = 6;
+
+
     // Start is called before the first frame update
     void Start()
     {

@@ -10,7 +10,7 @@ public class Controller : MonoBehaviour
     [SerializeField]
     int id;                                             // プレイヤー番号(1～4)
 
-    /* 処理関連*/
+    // 処理関連
     [SerializeField]
     KeyCode KeyLeft, KeyRight;                          // 左右キー(キーボード使用時)
     [SerializeField]
@@ -21,19 +21,21 @@ public class Controller : MonoBehaviour
     float RotStage = 10;                                // 棒の回転速度0-20段階
     float StickRot = 0f;                                // 棒の角度
     float jumpforce = 8.3f;                             // ジャンプ力
-    bool onFloor;                                       // ジャンプ可能な状態
-    bool onSurface, onPlayer, onStick, onPinball;       // 接触している時は true
+    bool  onFloor;                                      // ジャンプ可能な状態
+    bool  onSurface, onPlayer, onStick, onPinball;      // 接触している時は true
     float CoolTime = 0.2f;                              // ジャンプのクールタイム
-    bool inputCrossX;                                   // 十字ボタンの入力があるときはtrue
+    bool  inputCrossX;                                  // 十字ボタンの入力があるときはtrue
+
     // プレイヤーごとの回転速度
     public static float[] rotSpeed = new float[4]; 
     public static float[] rotStage = { 10, 10, 10, 10 };
+
     [SerializeField]
     float RotSpeed_ = 160f, RotStage_ = 10;
 
     int Face {get; set;}                                // 顔設定用乱数を入れておく1～100
 
-    /*　ゲームオブジェクトなど  */
+    // ゲームオブジェクトなど
     [SerializeField]
     Text SensText;
 
@@ -142,13 +144,13 @@ public class Controller : MonoBehaviour
     // 移動は FixedUpdate で行う※Inputの入力が入りにくくなる
     void FixedUpdate()
     {
-        //プレイヤー速度取得
-        StickPos = this.transform.position;
+        // プレイヤー速度取得
+        StickPos    = transform.position;
         Playerspeed = ((transform.parent.gameObject.transform.position - latestPos) / Time.deltaTime);
         if (ButtonInGame.Paused == 1 && SavePausedPos == 0)
         {
-            PausedStickPos = this.transform.position;
-            PausedPlayerPos = transform.parent.gameObject.transform.position;
+            PausedStickPos    = transform.position;
+            PausedPlayerPos   = transform.parent.gameObject.transform.position;
             PausedPlayerspeed = Playerspeed;
             SavePausedPos = 1;
         }
@@ -156,7 +158,7 @@ public class Controller : MonoBehaviour
         {
             Stickrbody2D.velocity = new Vector2(0, 0);
             transform.parent.gameObject.transform.position = PausedPlayerPos;
-            this.transform.position = PausedStickPos;
+            transform.position = PausedStickPos;
             Stickrbody2D.MoveRotation(StickRot);
         }
         if (ButtonInGame.Paused == 0 && SavePausedPos == 1)
@@ -167,8 +169,8 @@ public class Controller : MonoBehaviour
         latestPos = transform.parent.gameObject.transform.position;
 
         Stickrbody2D.MoveRotation(StickRot);            // 角度反映 これはポーズ時も行う
-
     }
+
     //角度をベクトルに変換
     public static Vector2 AngleToVector2(float angle)
     {
@@ -189,8 +191,10 @@ public class Controller : MonoBehaviour
         // キー(あらかじめ左右のどちらかが押されていて、もう一方のキーが押された瞬間を調べる)
         bool key1 = Input.GetKeyDown(KeyRight) && Input.GetKey(    KeyLeft);
         bool key2 = Input.GetKey(    KeyRight) && Input.GetKeyDown(KeyLeft);
+
         // キー(左右キーどちらも押した瞬間かを調べる)
         bool key3 = Input.GetKeyDown(KeyRight) && Input.GetKeyDown(KeyLeft);
+
         //上の三つだとちゃんと床などに設置してからキーを押さないとジャンプできない(棒が少し地面でバウンドしてる時にバウンドのたびにタイミングよく押さないとジャンプできない)ので反応が悪くなるためこれを使うしかない
         bool key4 = Input.GetKey(KeyRight) && Input.GetKey(KeyLeft);
         
@@ -199,7 +203,7 @@ public class Controller : MonoBehaviour
             // ジャンプの方向を求める
 
             float rotZ = transform.eulerAngles.z;
-            if (rotZ < 0) { rotZ += 360; }// 0 度未満なら正の値にする
+            if (rotZ <   0) { rotZ += 360; }// 0 度未満なら正の値にする
             if (rotZ > 180) { rotZ -= 180; }//上に向いているほうの棒の角度のみ取得
 
 
@@ -269,7 +273,8 @@ public class Controller : MonoBehaviour
             }
         }
     }
-    /* コリジョン */
+
+    // コリジョン
     private void OnCollisionEnter2D(Collision2D other)
     {
         if (other.gameObject.CompareTag("Surface")) { onSurface = true; }
@@ -292,7 +297,8 @@ public class Controller : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Pinball")) { onPinball = false; }
     }
-    //Stage3のピンボールゾーンのオブジェクトに触れると加速
+
+    // Stage3のピンボールゾーンのオブジェクトに触れると加速
     public void Acceleration()
     {
         if (onPinball && GameSetting.Playable && ButtonInGame.Paused != 1)
@@ -348,7 +354,6 @@ public class Controller : MonoBehaviour
 
     }
 
-
     void CheckControllerState()
     {
         bool anyButtonInput = false;
@@ -370,8 +375,6 @@ public class Controller : MonoBehaviour
         }
     }
 
-
-    //@@
     // 押した瞬間
     public bool GetNextButtonDown()
     {

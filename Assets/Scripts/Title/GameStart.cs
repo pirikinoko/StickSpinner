@@ -6,29 +6,34 @@ using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.Video;
 
+
 public class GameStart : MonoBehaviour
 {
-    public const int MaxStage = 4;     // 総ステージ数
-    public const int MaxPlayer = 4;    // 総プレイヤー数
-
-    int UIMode;
+    public const int MaxStage  = 4;     // 総ステージ数
+    public const int MaxPlayer = 4;     // 総プレイヤー数
     const int KeyboardMode = 5;
     const int ControllerMode = 6;
+
+    int UIMode;
+
     public GameObject MainTitle, StartPanel, ChangePlayerNumber, FrontCanvas, Stage1Scores, Stage2Scores, Stage3Scores, Stage4Scores, KeyboardMouseUI1, KeyboardMouseUI2, ControllerUI1, ControllerUI2, ControllerUI3, ControllerUI4, ControllerUI5;
     Button StartButton;
     public static bool inDemoPlay = false;
+
     //以下画像差し替え用
     public SpriteRenderer StageTitle, StageDifficulity, StageDescription;
     public Sprite Stage1Title, Stage1Difficulity, Stage1Description;
     public Sprite Stage2Title, Stage2Difficulity, Stage2Description;
     public Sprite Stage3Title, Stage3Difficulity, Stage3Description;
     public Sprite Stage4Title, Stage4Difficulity, Stage4Description;
+
     //動画
     public VideoPlayer StageVideo;
     public VideoClip Stage1Video, Stage2Video, Stage3Video, Stage4Video;
     public static int phase = 0;
     public static int PlayerNumber = 1;
     public static int Stage = 1;
+
     void Start()
     {
         inDemoPlay = false;

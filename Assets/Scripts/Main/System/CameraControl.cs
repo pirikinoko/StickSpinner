@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class CameraControl : MonoBehaviour
 {
+
     [SerializeField] Camera camera_;
 
     // プレイヤー
@@ -20,8 +21,8 @@ public class CameraControl : MonoBehaviour
     int[] memo2 = new int[GameStart.MaxPlayer];
     float maxDistansX, maxDistansY, maxDistans;
     float CameraSize;
-    int StartTrigger = 0;//, CameraTarget;
-    Vector2 DefaultCamaeraPos;
+    int   StartTrigger = 0;//, CameraTarget;
+    //Vector2 DefaultCamaeraPos;
 
     void Start()
     {
@@ -57,10 +58,11 @@ public class CameraControl : MonoBehaviour
         }
         else
         {
-            this.transform.position = new Vector3(playerTransform[0].x, playerTransform[0].y, -10);
+            transform.position = new Vector3(playerTransform[0].x, playerTransform[0].y, -10);
             camera_.orthographicSize = 3.0f;
         }
     }
+
     void FixedUpdate()
     {
         if (GameStart.PlayerNumber != 1)
@@ -151,7 +153,7 @@ public class CameraControl : MonoBehaviour
             cameraPos = cameraPosGoal;
             StartTrigger = 1;
         }
-        this.transform.position = cameraPos;
+        transform.position = cameraPos;
     }
 
     //ゴールしたプレイヤーをカメラの対象から外す
