@@ -6,13 +6,13 @@ using UnityEngine.UI;
 
 public class Goal : MonoBehaviour
 {
-    public static string[] goaledPlayer;
-    public GameObject[] players;
-    public GameObject[] sticks;
-    public GameObject[] nameTags;
-    public Text[] resultText;
+    public static string[] goaledPlayer{ get; set;} = new string[GameStart.MaxPlayer];
+    GameObject[] players  = new GameObject[GameStart.MaxPlayer];
+    GameObject[] sticks   = new GameObject[GameStart.MaxPlayer];
+    GameObject[] nameTags = new GameObject[GameStart.MaxPlayer];
+    Text[] resultText     = new Text[GameStart.MaxPlayer];
     public static byte Goals = 0;
-    public static float[] clearTime;
+    public static float[] clearTime = new float[GameStart.MaxPlayer];
     public static bool Goaled;
     [SerializeField]
     GameObject ResultPanel;
@@ -21,12 +21,12 @@ public class Goal : MonoBehaviour
 
     void Start()
     {
-        for (int i = 0; i < 4; i++) //‰Šú‰»ˆ—
+        for (int i = 0; i < GameStart.MaxPlayer; i++) //‰Šú‰»ˆ—
         {        
-            nameTags[i] = GameObject.Find("P" + (i + 1).ToString() + "Text");
-            players[i] = GameObject.Find("Player" + (i + 1).ToString());
-            sticks[i] = GameObject.Find("Stick" + (i + 1).ToString());
-            clearTime[i] = 0;
+            nameTags[  i] = GameObject.Find("P" +      (i + 1).ToString() + "Text");
+            players[   i] = GameObject.Find("Player" + (i + 1).ToString());
+            sticks[    i] = GameObject.Find("Stick"  + (i + 1).ToString());
+            clearTime[ i] = 0;
             resultText[i] = null;
             goaledPlayer[i] = null;
         }
@@ -34,7 +34,6 @@ public class Goal : MonoBehaviour
         ResultPanel = GameObject.Find("ResultPanel");
         ResultPanelFront = GameObject.Find("ResultPanelFront");
         InputField = GameObject.Find("InputField");
-        Goals = 0;
         ResultPanel.gameObject.SetActive(false);
         ResultPanelFront.gameObject.SetActive(false);
         InputField.gameObject.SetActive(false);

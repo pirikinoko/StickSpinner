@@ -8,26 +8,26 @@ using UnityEngine.SceneManagement;
 public class GameSetting : MonoBehaviour
 {
     public GameObject Player1, Player2, Player3, Player4, Stick1, Stick2, Stick3, Stick4, p1Name, p2Name, p3Name, p4Name, CountDownGO, P1CountGO, P2CountGO, P3CountGO, P4CountGO, ControllerUI1, ControllerUI2, ControllerUI3;
-    public GameObject[] players = new GameObject[4];
-    public GameObject[] sticks = new GameObject[4];
-    public GameObject[] nameTags = new GameObject[4];
-    public GameObject[] countTextGO = new GameObject[4];
-    private Text[] nameTagText;
-    private Vector2[] nameTagPos;
+    GameObject[] players     = new GameObject[GameStart.MaxPlayer];
+    GameObject[] sticks      = new GameObject[GameStart.MaxPlayer];
+    GameObject[] nameTags    = new GameObject[GameStart.MaxPlayer];
+    GameObject[] countTextGO = new GameObject[GameStart.MaxPlayer];
+    Text[]    nameTagText    = new Text[   GameStart.MaxPlayer];
+    Vector2[] nameTagPos     = new Vector2[GameStart.MaxPlayer];
 
-    private Vector2[,] startPos = new Vector2[4, 4];
+    Vector2[,] startPos = new Vector2[GameStart.MaxPlayer, GameStart.MaxPlayer];
     public static bool Playable = false;
-    public Text[] timer = new Text[4];
+    public Text[] timer = new Text[GameStart.MaxPlayer];
     public Text CountDown, playTime;
     float elapsedTime;
     public static float PlayTime;
     public static float StartTime = 3f;
     float SoundTime = 1f;
-    bool StartFlag;
+    bool  StartFlag;
     //リスポーンタイマー
-    float[] respownTimer = new float[4];
+    float[] respownTimer = new float[GameStart.MaxPlayer];
 
-    public static bool[] deathTimer = new bool[4];
+    public static bool[] deathTimer = new bool[GameStart.MaxPlayer];
     //UI切り替え用
     int UIMode;
     const int KeyboardMode = 5;
@@ -44,7 +44,7 @@ public class GameSetting : MonoBehaviour
         startPos[1, 0] = new Vector2(-5.5f, -4); startPos[1, 1] = new Vector2(-5.5f, -4); startPos[1, 2] = new Vector2(-6.5f, -4); startPos[1, 3] = new Vector2(-7.5f, -4);
         startPos[2, 0] = new Vector2(-3f, -2); startPos[2, 1] = new Vector2(-2f, -2); startPos[2, 2] = new Vector2(-1f, -2); startPos[2, 3] = new Vector2(0, 2);
         startPos[3, 0] = new Vector2(-8f, -2); startPos[3, 1] = new Vector2(-7.84f, -2); startPos[3, 2] = new Vector2(-4.01f, -2); startPos[3, 3] = new Vector2(-3.84f, -2);
-        for (int i = 0; i < 4; i++) //初期化処理
+        for (int i = 0; i < GameStart.MaxPlayer; i++) //初期化処理
         {
             deathTimer[i] = false;
             respownTimer[i] = 3.0f;
@@ -86,25 +86,26 @@ public class GameSetting : MonoBehaviour
         SoundEffect.BunTrigger = 1;
 
         //プレイヤー人数の反映
-        for (int i = 0; i < GameStart.PlayerNumber; i++)
         {
-            nameTags[i].gameObject.SetActive(true);
-            players[i].gameObject.SetActive(true);
-            sticks[i].gameObject.SetActive(true);
-            //初期位置
-            players[i].gameObject.transform.position = startPos[GameStart.Stage - 1, i];
-            sticks[i].gameObject.transform.position = startPos[GameStart.Stage - 1, i];
+            int i = 0;
+            for ( ; i < GameStart.PlayerNumber; i++)
+            {
+                nameTags[i].gameObject.SetActive(true);
+                players[i].gameObject.SetActive(true);
+                sticks[i].gameObject.SetActive(true);
+                //初期位置
+                players[i].gameObject.transform.position = startPos[GameStart.Stage - 1, i];
+                sticks[i].gameObject.transform.position = startPos[GameStart.Stage - 1, i];
+            }
+
+            // プレイヤー人数の反映
+            for ( ; i < GameStart.MaxPlayer; i++)
+            {
+                nameTags[i].gameObject.SetActive(false);
+                players[i].gameObject.SetActive(false);
+                sticks[i].gameObject.SetActive(false);
+            }
         }
-
-        //プレイヤー人数の反映(減)
-        for (int i = 4; i > GameStart.PlayerNumber; i--)
-        {
-            nameTags[i].gameObject.SetActive(false);
-            players[i].gameObject.SetActive(false);
-            sticks[i].gameObject.SetActive(false);
-        }
-
-
     }
 
 

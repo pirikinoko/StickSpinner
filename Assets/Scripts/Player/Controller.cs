@@ -381,6 +381,10 @@ public class Controller : MonoBehaviour
     {
         return Input.GetButtonDown("XBack_" + id.ToString());
 	}
+    public bool GetStartButtonDown()
+    {
+        return Input.GetButtonDown("XStart_" + id.ToString());
+	}
 
     public bool GetNextButtonHold()
     {
@@ -389,6 +393,10 @@ public class Controller : MonoBehaviour
     public bool GetBackButtonHold()
     {
         return Input.GetButton("XBack_" + id.ToString());
+	}
+    public bool GetStartButtonHold()
+    {
+        return Input.GetButton("XStart_" + id.ToString());
 	}
 
     public bool GetNextButtonUp()
@@ -399,4 +407,9 @@ public class Controller : MonoBehaviour
     {
         return Input.GetButtonUp("XBack_" + id.ToString());
 	}
+    public bool GetStartButtonUp()
+    {
+        return Input.GetButtonUp("XStart_" + id.ToString());
+	}
 }
+
