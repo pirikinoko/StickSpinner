@@ -121,6 +121,8 @@ public class GameSetting : MonoBehaviour
     void Update()
     {
         SwichUI();
+        StartTimer();   
+        RespownTimer();
     }
     void RespownTimer()
     {
