@@ -12,10 +12,10 @@ public class GameSetting : MonoBehaviour
     Text CountDown, playTime;
 
 
-    public GameObject Player1, Player2, Player3, Player4, Stick1, Stick2, Stick3, Stick4, p1Name, p2Name, p3Name, p4Name, CountDownGO, P1CountGO, P2CountGO, P3CountGO, P4CountGO, ControllerUI1, ControllerUI2, ControllerUI3;
-    GameObject[] players     = new GameObject[GameStart.MaxPlayer];
-    GameObject[] sticks      = new GameObject[GameStart.MaxPlayer];
-    GameObject[] nameTags    = new GameObject[GameStart.MaxPlayer];
+    public GameObject CountDownGO, ControllerUI1, ControllerUI2, ControllerUI3;
+    GameObject[] players = new GameObject[GameStart.MaxPlayer];
+    GameObject[] sticks = new GameObject[GameStart.MaxPlayer];
+    GameObject[] nameTags = new GameObject[GameStart.MaxPlayer];
     GameObject[] countTextGO = new GameObject[GameStart.MaxPlayer];
     Text[]    nameTagText    = new Text[   GameStart.MaxPlayer];
     Vector2[] nameTagPos     = new Vector2[GameStart.MaxPlayer];
@@ -43,10 +43,6 @@ public class GameSetting : MonoBehaviour
     void Start()
     {
         //”z—ñ‚É‘ã“ü
-        players = new GameObject[] { Player1, Player1, Player1, Player4 };
-        sticks = new GameObject[] { Stick1, Stick2, Stick3, Stick4 };
-        nameTags = new GameObject[] { p1Name, p2Name, p3Name, p4Name };
-        countTextGO = new GameObject[] { P1CountGO, P2CountGO, P3CountGO, P4CountGO };
         startPos[0, 0] = new Vector2(-8f, -4); startPos[0, 1] = new Vector2(-7f, -4); startPos[0, 2] = new Vector2(-6f, -4); startPos[0, 3] = new Vector2(-5f, -4);
         startPos[1, 0] = new Vector2(-5.5f, -4); startPos[1, 1] = new Vector2(-5.5f, -4); startPos[1, 2] = new Vector2(-6.5f, -4); startPos[1, 3] = new Vector2(-7.5f, -4);
         startPos[2, 0] = new Vector2(-3f, -2); startPos[2, 1] = new Vector2(-2f, -2); startPos[2, 2] = new Vector2(-1f, -2); startPos[2, 3] = new Vector2(0, 2);
@@ -113,6 +109,9 @@ public class GameSetting : MonoBehaviour
                 sticks[i].gameObject.SetActive(false);
             }
         }
+
+        //
+        GameStart.inDemoPlay = false;
     }
 
 

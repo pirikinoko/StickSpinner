@@ -10,7 +10,7 @@ public class Goal : MonoBehaviour
     GameObject[] players  = new GameObject[GameStart.MaxPlayer];
     GameObject[] sticks   = new GameObject[GameStart.MaxPlayer];
     GameObject[] nameTags = new GameObject[GameStart.MaxPlayer];
-    Text[] resultText     = new Text[GameStart.MaxPlayer];
+    public Text[] resultText     = new Text[GameStart.MaxPlayer];
     public static byte Goals = 0;
     public static float[] clearTime = new float[GameStart.MaxPlayer];
     public static bool Goaled;
@@ -27,7 +27,7 @@ public class Goal : MonoBehaviour
             players[   i] = GameObject.Find("Player" + (i + 1).ToString());
             sticks[    i] = GameObject.Find("Stick"  + (i + 1).ToString());
             clearTime[ i] = 0;
-            resultText[i] = null;
+            resultText[i].text = null;
             goaledPlayer[i] = null;
         }
     
@@ -65,10 +65,10 @@ public class Goal : MonoBehaviour
         {
             // ゴールしたプレイヤーを表示する
             clearTime[Goals] = GameSetting.PlayTime;
-            goaledPlayer[Goals] = gameObject.name;
+            goaledPlayer[Goals] = other.gameObject.name;
             SoundEffect.PironTrigger = 1;
             Goals++;
-            int num = int.Parse(other.gameObject.name.Substring(6, 7)) - 1;
+            int num = int.Parse(other.gameObject.name.Substring(6)) - 1;
             players[num].gameObject.SetActive(false);
             sticks[num].gameObject.SetActive(false);
             nameTags[num].gameObject.SetActive(false);

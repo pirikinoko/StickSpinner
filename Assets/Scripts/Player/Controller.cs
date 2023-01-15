@@ -103,6 +103,7 @@ public class Controller : MonoBehaviour
         Stickrbody2D = GetComponent<Rigidbody2D>();
         body         = transform.parent.gameObject.GetComponent<Body>();// 親から Body を取得する
         
+
         // 顔をランダムで設定する
         Face = Random.Range(1, 100);
         for(int i = 0; i < aryFaceRatio.Length; i++)
@@ -169,12 +170,6 @@ public class Controller : MonoBehaviour
         Stickrbody2D.MoveRotation(StickRot);            // 角度反映 これはポーズ時も行う
     }
 
-    //角度をベクトルに変換
-    public static Vector2 AngleToVector2(float angle)
-    {
-        var radian = angle * (Mathf.PI / 180);
-        return new Vector2(Mathf.Cos(radian), Mathf.Sin(radian)).normalized;
-    }
 
     // ジャンプ
     void Jump()
@@ -234,7 +229,6 @@ public class Controller : MonoBehaviour
             if (Input.GetKey(KeyRight) || horizotalValue >=  0.1f) { StickRot -= RotSpeed * Time.deltaTime; }
             if (Input.GetKey(KeyLeft)  || horizotalValue <= -0.1f) { StickRot += RotSpeed * Time.deltaTime; }
             //StickRot %= 360f;                               // 360 で割った時のあまりを求める
-            Stickrbody2D.MoveRotation(StickRot);            // 角度反映 これはポーズ時も行う
         }
     }
 
@@ -257,7 +251,7 @@ public class Controller : MonoBehaviour
                     RotStage += TitleButtonClick.sensChange[i];
                     TitleButtonClick.sensChange[i] = 0;
                     rotStage[i] = RotStage;
-                    //@@rotSpeed[i] = RotSpeed;
+                    //@@rotSpeed[i] = RotSpeed; 
                 }
             }
 

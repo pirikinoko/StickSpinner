@@ -4648,8 +4648,6 @@ MonoBehaviour:
   KeyRight: 104
   RotSpeed: 160
   CoolTime_: 0.2
-  RotSpeed_: 160
-  RotStage_: 10
   SensText: {fileID: 0}
   aryFace:
   - {fileID: 21300000, guid: ebd0e4b91dea03d4c9142810c9459569, type: 3}
@@ -5250,8 +5248,6 @@ MonoBehaviour:
   KeyRight: 275
   RotSpeed: 160
   CoolTime_: 0.2
-  RotSpeed_: 160
-  RotStage_: 10
   SensText: {fileID: 0}
   aryFace:
   - {fileID: 21300000, guid: 4e907479fb615cb4b80a1b53f543affb, type: 3}
@@ -6834,6 +6830,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9478aa4b3066bd948ab1bb444b4d6c27, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  resultText:
+  - {fileID: 754314439}
+  - {fileID: 570234925}
+  - {fileID: 487182248}
+  - {fileID: 171921724}
   ResultPanel: {fileID: 0}
 --- !u!61 &1533904279
 BoxCollider2D:
@@ -7966,8 +7967,6 @@ MonoBehaviour:
   KeyRight: 115
   RotSpeed: 160
   CoolTime_: 0.2
-  RotSpeed_: 160
-  RotStage_: 10
   SensText: {fileID: 0}
   aryFace:
   - {fileID: 21300000, guid: fb784904002fd6347915b64514b62e07, type: 3}
@@ -42161,23 +42160,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CountDown: {fileID: 13818948}
   playTime: {fileID: 265219735}
-  Player1: {fileID: 0}
-  Player2: {fileID: 0}
-  Player3: {fileID: 0}
-  Player4: {fileID: 0}
-  Stick1: {fileID: 0}
-  Stick2: {fileID: 0}
-  Stick3: {fileID: 0}
-  Stick4: {fileID: 0}
-  p1Name: {fileID: 0}
-  p2Name: {fileID: 0}
-  p3Name: {fileID: 0}
-  p4Name: {fileID: 0}
   CountDownGO: {fileID: 13818946}
-  P1CountGO: {fileID: 0}
-  P2CountGO: {fileID: 0}
-  P3CountGO: {fileID: 0}
-  P4CountGO: {fileID: 0}
   ControllerUI1: {fileID: 1877817693}
   ControllerUI2: {fileID: 958743300}
   ControllerUI3: {fileID: 781403825}
@@ -43124,8 +43107,6 @@ MonoBehaviour:
   KeyRight: 108
   RotSpeed: 160
   CoolTime_: 0.2
-  RotSpeed_: 160
-  RotStage_: 10
   SensText: {fileID: 0}
   aryFace:
   - {fileID: 21300000, guid: cf40f015270e7804d919b14829a9ac04, type: 3}

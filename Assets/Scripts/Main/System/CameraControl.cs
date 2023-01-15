@@ -14,11 +14,11 @@ public class CameraControl : MonoBehaviour
     // ”z—ñ‚Íƒƒ‚ƒŠ‚ğŠm•Û‚Ì‚±‚Æ
     bool[]    playerActive    = new bool[GameStart.MaxPlayer];
     Vector2[] playerTransform = new Vector2[GameStart.MaxPlayer];
-    float[] distance  = new float[GameStart.MaxPlayer];
-    float[] Xdistance = new float[GameStart.MaxPlayer];
-    float[] Ydistance = new float[GameStart.MaxPlayer];
-    int[] memo1 = new int[GameStart.MaxPlayer];
-    int[] memo2 = new int[GameStart.MaxPlayer];
+    float[] distance  = new float[6];
+    float[] Xdistance = new float[6];
+    float[] Ydistance = new float[6];
+    int[] memo1 = new int[6];
+    int[] memo2 = new int[6];
     float maxDistansX, maxDistansY, maxDistans;
     float CameraSize;
     int   StartTrigger = 0;//, CameraTarget;
@@ -163,7 +163,7 @@ public class CameraControl : MonoBehaviour
         {
             if (Goal.goaledPlayer[i] != null)
             {
-                int num = int.Parse(Goal.goaledPlayer[i].Substring(6, 7)) - 1; // Player‚Ì”Ô†‚ğæ“¾
+                int num = int.Parse(Goal.goaledPlayer[i].Substring(6)) - 1; // Player‚Ì”Ô†‚ğæ“¾
                 playerActive[num] = false;
                 if(playerActive[i] == false)
                 {
