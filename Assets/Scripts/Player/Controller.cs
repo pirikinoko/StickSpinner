@@ -363,8 +363,8 @@ public class Controller : MonoBehaviour
         {
             Bbutton = playerKey.jump;
             anyButtonInput = playerKey.start || playerKey.next || playerKey.back || playerKey.plus || playerKey.minus || playerKey.X != 0 || playerKey.Y != 0 || playerKey.horizontal != 0;
-            keyORMouseInput = Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.Space) || Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1);
         }
+        keyORMouseInput = Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.Space) || Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1);
         if (anyButtonInput)
         {
             usingController = true;
