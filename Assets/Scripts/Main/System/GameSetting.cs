@@ -7,6 +7,11 @@ using UnityEngine.SceneManagement;
 
 public class GameSetting : MonoBehaviour
 {
+
+    [SerializeField]
+    Text CountDown, playTime;
+
+
     public GameObject Player1, Player2, Player3, Player4, Stick1, Stick2, Stick3, Stick4, p1Name, p2Name, p3Name, p4Name, CountDownGO, P1CountGO, P2CountGO, P3CountGO, P4CountGO, ControllerUI1, ControllerUI2, ControllerUI3;
     GameObject[] players     = new GameObject[GameStart.MaxPlayer];
     GameObject[] sticks      = new GameObject[GameStart.MaxPlayer];
@@ -18,7 +23,7 @@ public class GameSetting : MonoBehaviour
     Vector2[,] startPos = new Vector2[GameStart.MaxPlayer, GameStart.MaxPlayer];
     public static bool Playable = false;
     public Text[] timer = new Text[GameStart.MaxPlayer];
-    public Text CountDown, playTime;
+    //public Text CountDown, playTime;
     float elapsedTime;
     public static float PlayTime;
     public static float StartTime = 3f;

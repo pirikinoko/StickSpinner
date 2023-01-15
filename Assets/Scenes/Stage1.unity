@@ -42159,6 +42159,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b18f162abd19084d8968f7b641e49f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  CountDown: {fileID: 13818948}
+  playTime: {fileID: 265219735}
   Player1: {fileID: 0}
   Player2: {fileID: 0}
   Player3: {fileID: 0}
@@ -42184,8 +42186,6 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  CountDown: {fileID: 13818948}
-  playTime: {fileID: 0}
 --- !u!4 &1987354135
 Transform:
   m_ObjectHideFlags: 0

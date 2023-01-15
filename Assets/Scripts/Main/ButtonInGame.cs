@@ -19,10 +19,8 @@ public class ButtonInGame : MonoBehaviour
     private Animator XButtonAnim;
 
 
-
     float holdTime = 0;
     float holdGoal = 0.9f;
-    //Controller controller;
 
 
     void Start()
@@ -108,7 +106,6 @@ public class ButtonInGame : MonoBehaviour
         }
     }
 
-
     public void BackToTitle()
     {
         SoundEffect.PironTrigger = 1;
@@ -119,10 +116,4 @@ public class ButtonInGame : MonoBehaviour
         Settings.SettingPanelActive = false;
         SceneManager.LoadScene("Title");
     }
-
 }
-
-
-    
-
-

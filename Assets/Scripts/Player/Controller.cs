@@ -9,8 +9,6 @@ public class Controller : MonoBehaviour
 {
     [SerializeField]
     int id;                                             // プレイヤー番号(1～4)
-
-    // 処理関連
     [SerializeField]
     KeyCode KeyLeft, KeyRight;                          // 左右キー(キーボード使用時)
     [SerializeField]
@@ -27,11 +25,11 @@ public class Controller : MonoBehaviour
     bool  inputCrossX;                                  // 十字ボタンの入力があるときはtrue
 
     // プレイヤーごとの回転速度
-    public static float[] rotSpeed = new float[4]; 
+    ///public static float[] rotSpeed = {160,160,160,160 };
     public static float[] rotStage = { 10, 10, 10, 10 };
 
-    [SerializeField]
-    float RotSpeed_ = 160f, RotStage_ = 10;
+    //[SerializeField]
+    //float RotSpeed_ = 160f, RotStage_ = 10;
 
     int Face {get; set;}                                // 顔設定用乱数を入れておく1～100
 
@@ -95,7 +93,7 @@ public class Controller : MonoBehaviour
 
         //@@ これなんだろう
         RotStage = rotStage[id - 1];
-        RotSpeed = rotSpeed[id - 1];
+        //RotSpeed = rotSpeed[id - 1];
 
         StickRot     = 0f;
         CoolTime     = 0.0f;
@@ -198,7 +196,7 @@ public class Controller : MonoBehaviour
         //上の三つだとちゃんと床などに設置してからキーを押さないとジャンプできない(棒が少し地面でバウンドしてる時にバウンドのたびにタイミングよく押さないとジャンプできない)ので反応が悪くなるためこれを使うしかない
         bool key4 = Input.GetKey(KeyRight) && Input.GetKey(KeyLeft);
         
-        if (onFloor && (key1 || key2 || key3 || key4 || playerKey.jump))
+        if (onFloor && (key1 || key2 || key3 || key4 || GetJumpButtonDown()))
         {
             // ジャンプの方向を求める
 
@@ -232,11 +230,12 @@ public class Controller : MonoBehaviour
     {
         if (GameSetting.Playable && ButtonInGame.Paused != 1 || GameStart.inDemoPlay) //プレイヤー数選択画面でも操作可能
         {
-            if (Input.GetKey(KeyRight) || playerKey.horizontal >=  0.1f) { StickRot -= RotSpeed * Time.deltaTime; }
-            if (Input.GetKey(KeyLeft)  || playerKey.horizontal <= -0.1f) { StickRot += RotSpeed * Time.deltaTime; }
-            StickRot %= 360f;                               // 360 で割った時のあまりを求める
+            float horizotalValue = Input.GetAxis("Horizontal");
+            if (Input.GetKey(KeyRight) || horizotalValue >=  0.1f) { StickRot -= RotSpeed * Time.deltaTime; }
+            if (Input.GetKey(KeyLeft)  || horizotalValue <= -0.1f) { StickRot += RotSpeed * Time.deltaTime; }
+            //StickRot %= 360f;                               // 360 で割った時のあまりを求める
+            Stickrbody2D.MoveRotation(StickRot);            // 角度反映 これはポーズ時も行う
         }
-
     }
 
     // 感度調整
@@ -258,7 +257,7 @@ public class Controller : MonoBehaviour
                     RotStage += TitleButtonClick.sensChange[i];
                     TitleButtonClick.sensChange[i] = 0;
                     rotStage[i] = RotStage;
-                    rotSpeed[i] = RotSpeed;
+                    //@@rotSpeed[i] = RotSpeed;
                 }
             }
 
@@ -388,6 +387,10 @@ public class Controller : MonoBehaviour
     {
         return Input.GetButtonDown("XStart_" + id.ToString());
 	}
+    public bool GetJumpButtonDown()
+    {
+        return Input.GetButtonDown("Jump_" + id.ToString());
+	}
 
     public bool GetNextButtonHold()
     {
@@ -401,6 +404,10 @@ public class Controller : MonoBehaviour
     {
         return Input.GetButton("XStart_" + id.ToString());
 	}
+    public bool GetJumpButtonHold()
+    {
+        return Input.GetButton("Jump_" + id.ToString());
+	}
 
     public bool GetNextButtonUp()
     {
@@ -413,6 +420,10 @@ public class Controller : MonoBehaviour
     public bool GetStartButtonUp()
     {
         return Input.GetButtonUp("XStart_" + id.ToString());
+	}
+    public bool GetJumpButtonUp()
+    {
+        return Input.GetButtonUp("Jump_" + id.ToString());
 	}
 }
 
