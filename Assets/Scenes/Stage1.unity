@@ -5086,8 +5086,8 @@ GameObject:
   - component: {fileID: 1306800598}
   - component: {fileID: 1306800597}
   - component: {fileID: 1306800596}
-  - component: {fileID: 1306800595}
   - component: {fileID: 1306800599}
+  - component: {fileID: 1306800595}
   m_Layer: 0
   m_Name: Stick1
   m_TagString: Stick
