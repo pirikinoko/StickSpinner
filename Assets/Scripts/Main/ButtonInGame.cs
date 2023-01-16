@@ -64,8 +64,9 @@ public class ButtonInGame : MonoBehaviour
                         SoundEffect.PironTrigger = 1;
                         BackToTitle();
                     }
-                    else if (Goal.Goaled)
+                    else if (Goal.Goaled || BattleMode.Finished)
                     {
+                        SoundEffect.PironTrigger = 1;
                         SetHighScore.ToSetHighscore();
                         BackToTitle();
                     }

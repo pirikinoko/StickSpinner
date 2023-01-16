@@ -15,15 +15,16 @@ public class Controller : MonoBehaviour
     float RotSpeed = 160f;                              // 棒の回転速度
 
     [SerializeField]
-    float CoolTime_ = 0.2f;                             // ジャンプのクールタイム
+    float CoolTime_ = 0.3f;                             // ジャンプのクールタイム
     float RotStage = 10;                                // 棒の回転速度0-20段階
     float StickRot = 0f;                                // 棒の角度
     float jumpforce = 8.3f;                             // ジャンプ力
     bool  onFloor;                                      // ジャンプ可能な状態
     bool  onSurface, onPlayer, onStick, onPinball;      // 接触している時は true
-    float CoolTime = 0.2f;                              // ジャンプのクールタイム
+    float CoolTime = 0.3f;                              // ジャンプのクールタイム
     bool  inputCrossX;                                  // 十字ボタンの入力があるときはtrue
-
+    float delay = 0.15f;
+    bool delayFlag = false;
     // プレイヤーごとの回転速度
     ///public static float[] rotSpeed = {160,160,160,160 }; // これは感度調整用なのか?
     public static float[] rotStage = { 10, 10, 10, 10 };
@@ -136,6 +137,7 @@ public class Controller : MonoBehaviour
         ChangeSensitivity();
         getControllerType();
         InputControllerButton();
+        ExitDelay();
         //CheckControllerState();   このやり方はやめる
 
 
@@ -272,13 +274,18 @@ public class Controller : MonoBehaviour
     }
 
     // コリジョン
+    // コリジョン
     private void OnCollisionEnter2D(Collision2D other)
     {
-        if (other.gameObject.CompareTag("Surface")) { onSurface = true; }
+        //@@ if (other.gameObject.CompareTag("Surface")) { SoundEffect.BonTrigger = 1;/*効果音*/}
+        if (onPinball && other.gameObject.CompareTag("Surface")) { Stickrbody2D.velocity = -Playerspeed * 2; } //ピンボールゾーンでの床との接触時反発
+    }
+    private void OnCollisionStay2D(Collision2D other)
+    {
+
+        if (other.gameObject.CompareTag("Surface")) { onSurface = true; delay = 0.1f; delayFlag = false; }
         if (other.gameObject.CompareTag("Player"))  { onPlayer = true; }
         if (other.gameObject.CompareTag("Stick"))   { onStick = true; }
-       //@@ if (other.gameObject.CompareTag("Surface")) { SoundEffect.BonTrigger = 1;/*効果音*/}
-        if (onPinball && other.gameObject.CompareTag("Surface")) { Stickrbody2D.velocity = -Playerspeed * 2; } //ピンボールゾーンでの床との接触時反発
     }
     private void OnTriggerStay2D(Collider2D collision)
     {
@@ -286,15 +293,30 @@ public class Controller : MonoBehaviour
     }
     private void OnCollisionExit2D(Collision2D other)
     {
-        if (other.gameObject.CompareTag("Surface")) { onSurface = false; }
-        if (other.gameObject.CompareTag("Player")) { onPlayer = false; }
-        if (other.gameObject.CompareTag("Stick")) { onStick = false; }
+        
+
+            if (other.gameObject.CompareTag("Surface")) { delay = 0.1f;  delayFlag = true; }
+            if (other.gameObject.CompareTag("Player")) { onPlayer = false; }
+            if (other.gameObject.CompareTag("Stick")) { onStick = false; }
+           
     }
     void OnTriggerExit2D(Collider2D collision)
     {
         if (collision.gameObject.CompareTag("Pinball")) { onPinball = false; }
     }
-
+    void ExitDelay()
+    {
+        if (delayFlag)
+        {
+            delay -= Time.deltaTime;
+            if(delay < 0)
+            {
+                onSurface = false;
+                delay = 0.1f;
+                delayFlag = false;
+            }
+        }
+    }
     // Stage3のピンボールゾーンのオブジェクトに触れると加速
     public void Acceleration()
     {

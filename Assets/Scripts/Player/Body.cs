@@ -18,7 +18,7 @@ using UnityEngine.UI;
         public bool  onPinball { set; get; }
 
         // コリジョン
-        private void OnCollisionEnter2D(Collision2D other)
+        private void OnCollisionStay2D(Collision2D other)
         {
             if(other.gameObject.CompareTag("Surface")){ onSurface = true;}
             if(other.gameObject.CompareTag("Player")){  onPlayer  = true;}
