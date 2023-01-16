@@ -138,9 +138,11 @@ public class Controller : MonoBehaviour
         InputControllerButton();
         //CheckControllerState();   このやり方はやめる
 
-
-        Text txt = GameObject.Find("P1Text").GetComponent<Text>();
-        txt.text = "surface:" + onSurface;
+        var a = GameObject.Find("P1Text");
+        if(a != null)
+        {
+            a.GetComponent<Text>().text = "surface:" + onSurface;
+        }
     }
 
     // 移動は FixedUpdate で行う※Inputの入力が入りにくくなる
