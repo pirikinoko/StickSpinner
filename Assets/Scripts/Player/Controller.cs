@@ -15,13 +15,13 @@ public class Controller : MonoBehaviour
     float RotSpeed = 160f;                              // 棒の回転速度
 
     [SerializeField]
-    float CoolTime_ = 0.3f;                             // ジャンプのクールタイム
+    float CoolTime_ = 0.2f;                             // ジャンプのクールタイム
     float RotStage = 10;                                // 棒の回転速度0-20段階
     float StickRot = 0f;                                // 棒の角度
     float jumpforce = 8.3f;                             // ジャンプ力
     bool  onFloor;                                      // ジャンプ可能な状態
     bool  onSurface, onPlayer, onStick, onPinball;      // 接触している時は true
-    float CoolTime = 0.3f;                              // ジャンプのクールタイム
+    float CoolTime = 0.2f;                              // ジャンプのクールタイム
     bool  inputCrossX;                                  // 十字ボタンの入力があるときはtrue
     float delay = 0.15f;
     bool delayFlag = false;
