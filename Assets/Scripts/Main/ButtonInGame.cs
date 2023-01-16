@@ -38,15 +38,12 @@ public class ButtonInGame : MonoBehaviour
         MainControll();
     }
 
-
-
     void MainControll()
     {
         for (int i = 0; i < GameStart.PlayerNumber; i++)
         {
             // コントローラーのXボタン
-            //if (controller.playerKey.back) //押されたとき
-            if(playersController[i].GetBackButtonDown())
+            if(playersController[i].GetBackButtonDown())    // 押された瞬間
             {
                 if (Paused == 1)
                 {
@@ -54,7 +51,7 @@ public class ButtonInGame : MonoBehaviour
                     XButtonAnim.SetTrigger("On");
                 }
             }
-            if (playersController[i].GetBackButtonHold()) //押し続けたとき
+            if (playersController[i].GetBackButtonHold())   // 押し続けたとき
             {
 
                 //ゲームスタートのボタンのみ長押しで動作
@@ -74,7 +71,7 @@ public class ButtonInGame : MonoBehaviour
                     }
                 }
             }
-            if (playersController[i].GetBackButtonUp()) //離されたとき
+            if (playersController[i].GetBackButtonUp()) // 離されたとき
             {
                 XButtonAnim.SetTrigger("Off");
                 XButtonAnim.enabled = false;
@@ -109,11 +106,12 @@ public class ButtonInGame : MonoBehaviour
     public void BackToTitle()
     {
         SoundEffect.PironTrigger = 1;
-        GameStart.phase = 0;
-        GameStart.inDemoPlay = false;
-        GameSetting.Playable = false;
-        GameStart.PlayerNumber = 1;
+        GameStart.phase          = 0;
+        GameStart.inDemoPlay     = false;
+        GameSetting.Playable     = false;
+        GameStart.PlayerNumber   = 1;
         Settings.SettingPanelActive = false;
         SceneManager.LoadScene("Title");
     }
 }
+

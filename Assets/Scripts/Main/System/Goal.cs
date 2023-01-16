@@ -4,13 +4,14 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
+
 public class Goal : MonoBehaviour
 {
     public static string[] goaledPlayer{ get; set;} = new string[GameStart.MaxPlayer];
     GameObject[] players  = new GameObject[GameStart.MaxPlayer];
     GameObject[] sticks   = new GameObject[GameStart.MaxPlayer];
     GameObject[] nameTags = new GameObject[GameStart.MaxPlayer];
-    public Text[] resultText     = new Text[GameStart.MaxPlayer];
+    public Text[] resultText = new Text[GameStart.MaxPlayer];
     public static byte Goals = 0;
     public static float[] clearTime = new float[GameStart.MaxPlayer];
     public static bool Goaled;
@@ -74,5 +75,6 @@ public class Goal : MonoBehaviour
             nameTags[num].gameObject.SetActive(false);
         }
     }
-
 }
+
+

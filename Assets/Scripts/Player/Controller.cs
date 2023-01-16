@@ -25,7 +25,7 @@ public class Controller : MonoBehaviour
     bool  inputCrossX;                                  // 十字ボタンの入力があるときはtrue
 
     // プレイヤーごとの回転速度
-    ///public static float[] rotSpeed = {160,160,160,160 };
+    ///public static float[] rotSpeed = {160,160,160,160 }; // これは感度調整用なのか?
     public static float[] rotStage = { 10, 10, 10, 10 };
 
     //[SerializeField]
@@ -62,7 +62,7 @@ public class Controller : MonoBehaviour
     public static bool usingController = true;
 
     // より構造的にするならばクラスを作って一括管理する
-    public class _Key
+    /*public class _Key
     {
         public string Controller;
         public bool   start, startHold;       // 同じような項目は横並びに並べる
@@ -74,9 +74,9 @@ public class Controller : MonoBehaviour
         public float  horizontal;
         public float  X;                     // crossXReception だと長いのでこれくらいでいいと思う
         public float  Y;
-    }
+    }*/
 
-    public _Key playerKey { get; set; } = new _Key();
+    //public _Key playerKey { get; set; } = new _Key();
 
     readonly int[] aryFaceRatio = { 25, 50, 70, 88, 94, 100};   // 顔の変化用
 
@@ -136,8 +136,11 @@ public class Controller : MonoBehaviour
         ChangeSensitivity();
         getControllerType();
         InputControllerButton();
-        CheckControllerState();
+        //CheckControllerState();   このやり方はやめる
 
+
+        Text txt = GameObject.Find("P1Text").GetComponent<Text>();
+        txt.text = "surface:" + onSurface;
     }
 
     // 移動は FixedUpdate で行う※Inputの入力が入りにくくなる
@@ -216,7 +219,7 @@ public class Controller : MonoBehaviour
 
             // クールタイム(この時間は入力を受け付けない)
             CoolTime = CoolTime_;
-            playerKey.jump = false;
+            //playerKey.jump = false;
         }
     }
 
@@ -232,15 +235,17 @@ public class Controller : MonoBehaviour
         }
     }
 
-    // 感度調整
+    // 感度調整 @@一旦保留
     void ChangeSensitivity()
     {
         if (GameStart.inDemoPlay) //プレイヤー数選択画面でのみ操作可能
         {
-            if (playerKey.X == 0) { inputCrossX = false; }
+            float horizotalValue = Input.GetAxis("Horizontal");
+
+            if (horizotalValue == 0) { inputCrossX = false; }
             //十字ボタン(横)を一回倒すごとに感度ステージを一段階変更
-            if (playerKey.X >=  0.1f && inputCrossX == false) { RotStage += 1; inputCrossX = true; }
-            if (playerKey.X <= -0.1f && inputCrossX == false) { RotStage -= 1; inputCrossX = true; }
+            if (horizotalValue >=  0.1f && inputCrossX == false) { RotStage += 1; inputCrossX = true; }
+            if (horizotalValue <= -0.1f && inputCrossX == false) { RotStage -= 1; inputCrossX = true; }
 
             RotSpeed = 120 + RotStage * 4;  // 120 + 4 * 10(RotStage初期値) = 160をベースに感度ステージごとに4変更
             SensText.text = rotStage[id - 1].ToString();
@@ -251,10 +256,9 @@ public class Controller : MonoBehaviour
                     RotStage += TitleButtonClick.sensChange[i];
                     TitleButtonClick.sensChange[i] = 0;
                     rotStage[i] = RotStage;
-                    //@@rotSpeed[i] = RotSpeed; 
+                    //@@rotSpeed[i] = RotSpeed; // ここで調整しているのかな?
                 }
             }
-
             //上限下限の設定
             if (RotStage > 20)
             {
@@ -273,7 +277,7 @@ public class Controller : MonoBehaviour
         if (other.gameObject.CompareTag("Surface")) { onSurface = true; }
         if (other.gameObject.CompareTag("Player"))  { onPlayer = true; }
         if (other.gameObject.CompareTag("Stick"))   { onStick = true; }
-        if (other.gameObject.CompareTag("Surface")) { SoundEffect.BonTrigger = 1;/*効果音*/}
+       //@@ if (other.gameObject.CompareTag("Surface")) { SoundEffect.BonTrigger = 1;/*効果音*/}
         if (onPinball && other.gameObject.CompareTag("Surface")) { Stickrbody2D.velocity = -Playerspeed * 2; } //ピンボールゾーンでの床との接触時反発
     }
     private void OnTriggerStay2D(Collider2D collision)
@@ -347,7 +351,7 @@ public class Controller : MonoBehaviour
 
     }
 
-    void CheckControllerState()
+    /*void CheckControllerState()
     {
         bool anyButtonInput = false;
         bool keyORMouseInput = false;
@@ -366,7 +370,7 @@ public class Controller : MonoBehaviour
         {
             usingController = false;
         }
-    }
+    }*/
 
     // 押した瞬間
     public bool GetNextButtonDown()
