@@ -152,7 +152,6 @@ public class GameStart : MonoBehaviour
         {
             UIMode = KeyboardMode;
         }
-        Debug.Log("Controller.usingController" + Controller.usingController + "UIMODE" + UIMode);
         //キーボード,マウスのとき
         if (UIMode == KeyboardMode)
         {

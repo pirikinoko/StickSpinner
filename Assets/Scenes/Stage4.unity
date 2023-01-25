@@ -492,22 +492,19 @@ MonoBehaviour:
   Player2: {fileID: 0}
   Player3: {fileID: 0}
   Player4: {fileID: 0}
-  P1Text: {fileID: 0}
-  P2Text: {fileID: 0}
-  P3Text: {fileID: 0}
-  P4Text: {fileID: 0}
-  P1: {fileID: 79556233}
-  P2: {fileID: 1415403470}
-  P3: {fileID: 1262555447}
-  P4: {fileID: 746735828}
-  S1: {fileID: 1306800598}
-  S2: {fileID: 1833356772}
-  S3: {fileID: 1248165031}
-  S4: {fileID: 2111979742}
-  Stick1rbody2D: {fileID: 1306800597}
-  Stick2rbody2D: {fileID: 1833356771}
-  Stick3rbody2D: {fileID: 1248165030}
-  Stick4rbody2D: {fileID: 2111979741}
+  P1Name: {fileID: 0}
+  P2Name: {fileID: 0}
+  P3Name: {fileID: 0}
+  P4Name: {fileID: 0}
+  stickrb1: {fileID: 0}
+  stickrb2: {fileID: 0}
+  stickrb3: {fileID: 0}
+  stickrb4: {fileID: 0}
+  stickrb:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!60 &66033019
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -740,22 +737,19 @@ MonoBehaviour:
   Player2: {fileID: 0}
   Player3: {fileID: 0}
   Player4: {fileID: 0}
-  P1Text: {fileID: 0}
-  P2Text: {fileID: 0}
-  P3Text: {fileID: 0}
-  P4Text: {fileID: 0}
-  P1: {fileID: 79556233}
-  P2: {fileID: 1415403470}
-  P3: {fileID: 1262555447}
-  P4: {fileID: 746735828}
-  S1: {fileID: 1306800598}
-  S2: {fileID: 1833356772}
-  S3: {fileID: 1248165031}
-  S4: {fileID: 2111979742}
-  Stick1rbody2D: {fileID: 1306800597}
-  Stick2rbody2D: {fileID: 1833356771}
-  Stick3rbody2D: {fileID: 1248165030}
-  Stick4rbody2D: {fileID: 2111979741}
+  P1Name: {fileID: 0}
+  P2Name: {fileID: 0}
+  P3Name: {fileID: 0}
+  P4Name: {fileID: 0}
+  stickrb1: {fileID: 0}
+  stickrb2: {fileID: 0}
+  stickrb3: {fileID: 0}
+  stickrb4: {fileID: 0}
+  stickrb:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!60 &79438794
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -1078,22 +1072,19 @@ MonoBehaviour:
   Player2: {fileID: 0}
   Player3: {fileID: 0}
   Player4: {fileID: 0}
-  P1Text: {fileID: 0}
-  P2Text: {fileID: 0}
-  P3Text: {fileID: 0}
-  P4Text: {fileID: 0}
-  P1: {fileID: 79556233}
-  P2: {fileID: 1415403470}
-  P3: {fileID: 1262555447}
-  P4: {fileID: 746735828}
-  S1: {fileID: 1306800598}
-  S2: {fileID: 1833356772}
-  S3: {fileID: 1248165031}
-  S4: {fileID: 2111979742}
-  Stick1rbody2D: {fileID: 1306800597}
-  Stick2rbody2D: {fileID: 1833356771}
-  Stick3rbody2D: {fileID: 1248165030}
-  Stick4rbody2D: {fileID: 2111979741}
+  P1Name: {fileID: 0}
+  P2Name: {fileID: 0}
+  P3Name: {fileID: 0}
+  P4Name: {fileID: 0}
+  stickrb1: {fileID: 0}
+  stickrb2: {fileID: 0}
+  stickrb3: {fileID: 0}
+  stickrb4: {fileID: 0}
+  stickrb:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!60 &90727516
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -1182,85 +1173,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!1 &105462853
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 105462854}
-  - component: {fileID: 105462856}
-  - component: {fileID: 105462855}
-  m_Layer: 5
-  m_Name: FourthText
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!224 &105462854
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 105462853}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 2130626152}
-  m_RootOrder: 8
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 716, y: 255}
-  m_SizeDelta: {x: 397.77, y: 64.15}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &105462855
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 105462853}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 50
-    m_FontStyle: 0
-    m_BestFit: 0
-    m_MinSize: 5
-    m_MaxSize: 50
-    m_Alignment: 4
-    m_AlignByGeometry: 0
-    m_RichText: 1
-    m_HorizontalOverflow: 0
-    m_VerticalOverflow: 0
-    m_LineSpacing: 1
-  m_Text: 
---- !u!222 &105462856
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 105462853}
-  m_CullTransparentMesh: 1
 --- !u!1 &113675343
 GameObject:
   m_ObjectHideFlags: 0
@@ -1310,22 +1222,19 @@ MonoBehaviour:
   Player2: {fileID: 0}
   Player3: {fileID: 0}
   Player4: {fileID: 0}
-  P1Text: {fileID: 0}
-  P2Text: {fileID: 0}
-  P3Text: {fileID: 0}
-  P4Text: {fileID: 0}
-  P1: {fileID: 79556233}
-  P2: {fileID: 1415403470}
-  P3: {fileID: 1262555447}
-  P4: {fileID: 746735828}
-  S1: {fileID: 1306800598}
-  S2: {fileID: 1833356772}
-  S3: {fileID: 1248165031}
-  S4: {fileID: 2111979742}
-  Stick1rbody2D: {fileID: 1306800597}
-  Stick2rbody2D: {fileID: 1833356771}
-  Stick3rbody2D: {fileID: 1248165030}
-  Stick4rbody2D: {fileID: 2111979741}
+  P1Name: {fileID: 0}
+  P2Name: {fileID: 0}
+  P3Name: {fileID: 0}
+  P4Name: {fileID: 0}
+  stickrb1: {fileID: 0}
+  stickrb2: {fileID: 0}
+  stickrb3: {fileID: 0}
+  stickrb4: {fileID: 0}
+  stickrb:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!60 &113675346
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -2152,22 +2061,19 @@ MonoBehaviour:
   Player2: {fileID: 0}
   Player3: {fileID: 0}
   Player4: {fileID: 0}
-  P1Text: {fileID: 0}
-  P2Text: {fileID: 0}
-  P3Text: {fileID: 0}
-  P4Text: {fileID: 0}
-  P1: {fileID: 79556233}
-  P2: {fileID: 1415403470}
-  P3: {fileID: 1262555447}
-  P4: {fileID: 746735828}
-  S1: {fileID: 1306800598}
-  S2: {fileID: 1833356772}
-  S3: {fileID: 1248165031}
-  S4: {fileID: 2111979742}
-  Stick1rbody2D: {fileID: 1306800597}
-  Stick2rbody2D: {fileID: 1833356771}
-  Stick3rbody2D: {fileID: 1248165030}
-  Stick4rbody2D: {fileID: 2111979741}
+  P1Name: {fileID: 0}
+  P2Name: {fileID: 0}
+  P3Name: {fileID: 0}
+  P4Name: {fileID: 0}
+  stickrb1: {fileID: 0}
+  stickrb2: {fileID: 0}
+  stickrb3: {fileID: 0}
+  stickrb4: {fileID: 0}
+  stickrb:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!60 &195888229
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -2469,22 +2375,19 @@ MonoBehaviour:
   Player2: {fileID: 0}
   Player3: {fileID: 0}
   Player4: {fileID: 0}
-  P1Text: {fileID: 0}
-  P2Text: {fileID: 0}
-  P3Text: {fileID: 0}
-  P4Text: {fileID: 0}
-  P1: {fileID: 79556233}
-  P2: {fileID: 1415403470}
-  P3: {fileID: 1262555447}
-  P4: {fileID: 746735828}
-  S1: {fileID: 1306800598}
-  S2: {fileID: 1833356772}
-  S3: {fileID: 1248165031}
-  S4: {fileID: 2111979742}
-  Stick1rbody2D: {fileID: 1306800597}
-  Stick2rbody2D: {fileID: 1833356771}
-  Stick3rbody2D: {fileID: 1248165030}
-  Stick4rbody2D: {fileID: 2111979741}
+  P1Name: {fileID: 0}
+  P2Name: {fileID: 0}
+  P3Name: {fileID: 0}
+  P4Name: {fileID: 0}
+  stickrb1: {fileID: 0}
+  stickrb2: {fileID: 0}
+  stickrb3: {fileID: 0}
+  stickrb4: {fileID: 0}
+  stickrb:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!60 &211599305
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -3077,22 +2980,19 @@ MonoBehaviour:
   Player2: {fileID: 0}
   Player3: {fileID: 0}
   Player4: {fileID: 0}
-  P1Text: {fileID: 0}
-  P2Text: {fileID: 0}
-  P3Text: {fileID: 0}
-  P4Text: {fileID: 0}
-  P1: {fileID: 79556233}
-  P2: {fileID: 1415403470}
-  P3: {fileID: 1262555447}
-  P4: {fileID: 746735828}
-  S1: {fileID: 1306800598}
-  S2: {fileID: 1833356772}
-  S3: {fileID: 1248165031}
-  S4: {fileID: 2111979742}
-  Stick1rbody2D: {fileID: 1306800597}
-  Stick2rbody2D: {fileID: 1833356771}
-  Stick3rbody2D: {fileID: 1248165030}
-  Stick4rbody2D: {fileID: 2111979741}
+  P1Name: {fileID: 0}
+  P2Name: {fileID: 0}
+  P3Name: {fileID: 0}
+  P4Name: {fileID: 0}
+  stickrb1: {fileID: 0}
+  stickrb2: {fileID: 0}
+  stickrb3: {fileID: 0}
+  stickrb4: {fileID: 0}
+  stickrb:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!60 &267416653
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -3322,22 +3222,19 @@ MonoBehaviour:
   Player2: {fileID: 0}
   Player3: {fileID: 0}
   Player4: {fileID: 0}
-  P1Text: {fileID: 0}
-  P2Text: {fileID: 0}
-  P3Text: {fileID: 0}
-  P4Text: {fileID: 0}
-  P1: {fileID: 79556233}
-  P2: {fileID: 1415403470}
-  P3: {fileID: 1262555447}
-  P4: {fileID: 746735828}
-  S1: {fileID: 1306800598}
-  S2: {fileID: 1833356772}
-  S3: {fileID: 1248165031}
-  S4: {fileID: 2111979742}
-  Stick1rbody2D: {fileID: 1306800597}
-  Stick2rbody2D: {fileID: 1833356771}
-  Stick3rbody2D: {fileID: 1248165030}
-  Stick4rbody2D: {fileID: 2111979741}
+  P1Name: {fileID: 0}
+  P2Name: {fileID: 0}
+  P3Name: {fileID: 0}
+  P4Name: {fileID: 0}
+  stickrb1: {fileID: 0}
+  stickrb2: {fileID: 0}
+  stickrb3: {fileID: 0}
+  stickrb4: {fileID: 0}
+  stickrb:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!60 &300688876
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -4189,22 +4086,19 @@ MonoBehaviour:
   Player2: {fileID: 0}
   Player3: {fileID: 0}
   Player4: {fileID: 0}
-  P1Text: {fileID: 0}
-  P2Text: {fileID: 0}
-  P3Text: {fileID: 0}
-  P4Text: {fileID: 0}
-  P1: {fileID: 79556233}
-  P2: {fileID: 1415403470}
-  P3: {fileID: 1262555447}
-  P4: {fileID: 746735828}
-  S1: {fileID: 1306800598}
-  S2: {fileID: 1833356772}
-  S3: {fileID: 1248165031}
-  S4: {fileID: 2111979742}
-  Stick1rbody2D: {fileID: 1306800597}
-  Stick2rbody2D: {fileID: 1833356771}
-  Stick3rbody2D: {fileID: 1248165030}
-  Stick4rbody2D: {fileID: 2111979741}
+  P1Name: {fileID: 0}
+  P2Name: {fileID: 0}
+  P3Name: {fileID: 0}
+  P4Name: {fileID: 0}
+  stickrb1: {fileID: 0}
+  stickrb2: {fileID: 0}
+  stickrb3: {fileID: 0}
+  stickrb4: {fileID: 0}
+  stickrb:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!60 &370587143
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -4424,22 +4318,19 @@ MonoBehaviour:
   Player2: {fileID: 0}
   Player3: {fileID: 0}
   Player4: {fileID: 0}
-  P1Text: {fileID: 0}
-  P2Text: {fileID: 0}
-  P3Text: {fileID: 0}
-  P4Text: {fileID: 0}
-  P1: {fileID: 79556233}
-  P2: {fileID: 1415403470}
-  P3: {fileID: 1262555447}
-  P4: {fileID: 746735828}
-  S1: {fileID: 1306800598}
-  S2: {fileID: 1833356772}
-  S3: {fileID: 1248165031}
-  S4: {fileID: 2111979742}
-  Stick1rbody2D: {fileID: 1306800597}
-  Stick2rbody2D: {fileID: 1833356771}
-  Stick3rbody2D: {fileID: 1248165030}
-  Stick4rbody2D: {fileID: 2111979741}
+  P1Name: {fileID: 0}
+  P2Name: {fileID: 0}
+  P3Name: {fileID: 0}
+  P4Name: {fileID: 0}
+  stickrb1: {fileID: 0}
+  stickrb2: {fileID: 0}
+  stickrb3: {fileID: 0}
+  stickrb4: {fileID: 0}
+  stickrb:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!60 &450446013
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -4659,22 +4550,19 @@ MonoBehaviour:
   Player2: {fileID: 0}
   Player3: {fileID: 0}
   Player4: {fileID: 0}
-  P1Text: {fileID: 0}
-  P2Text: {fileID: 0}
-  P3Text: {fileID: 0}
-  P4Text: {fileID: 0}
-  P1: {fileID: 79556233}
-  P2: {fileID: 1415403470}
-  P3: {fileID: 1262555447}
-  P4: {fileID: 746735828}
-  S1: {fileID: 1306800598}
-  S2: {fileID: 1833356772}
-  S3: {fileID: 1248165031}
-  S4: {fileID: 2111979742}
-  Stick1rbody2D: {fileID: 1306800597}
-  Stick2rbody2D: {fileID: 1833356771}
-  Stick3rbody2D: {fileID: 1248165030}
-  Stick4rbody2D: {fileID: 2111979741}
+  P1Name: {fileID: 0}
+  P2Name: {fileID: 0}
+  P3Name: {fileID: 0}
+  P4Name: {fileID: 0}
+  stickrb1: {fileID: 0}
+  stickrb2: {fileID: 0}
+  stickrb3: {fileID: 0}
+  stickrb4: {fileID: 0}
+  stickrb:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!60 &460806188
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -4882,36 +4770,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   camera_: {fileID: 519420031}
-  Player1: {fileID: 0}
-  Player2: {fileID: 0}
-  Player3: {fileID: 0}
-  Player4: {fileID: 0}
-  P1Transform: {x: 0, y: 0, z: 0}
-  P2Transform: {x: 0, y: 0, z: 0}
-  P3Transform: {x: 0, y: 0, z: 0}
-  P4Transform: {x: 0, y: 0, z: 0}
-  Distans1: 0
-  Distans2: 0
-  Distans3: 0
-  Distans4: 0
-  Distans5: 0
-  Distans6: 0
-  XDistans1: 0
-  XDistans2: 0
-  XDistans3: 0
-  XDistans4: 0
-  XDistans5: 0
-  XDistans6: 0
-  YDistans1: 0
-  YDistans2: 0
-  YDistans3: 0
-  YDistans4: 0
-  YDistans5: 0
-  YDistans6: 0
-  MaxDistansX: 0
-  MaxDistansY: 0
-  MaxDistans: 0
-  CameraSize: 0
 --- !u!20 &519420031
 Camera:
   m_ObjectHideFlags: 0
@@ -4999,7 +4857,7 @@ Transform:
   m_Children:
   - {fileID: 996024025}
   m_Father: {fileID: 2130626152}
-  m_RootOrder: 11
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &526183974
 SpriteRenderer:
@@ -5781,22 +5639,19 @@ MonoBehaviour:
   Player2: {fileID: 0}
   Player3: {fileID: 0}
   Player4: {fileID: 0}
-  P1Text: {fileID: 0}
-  P2Text: {fileID: 0}
-  P3Text: {fileID: 0}
-  P4Text: {fileID: 0}
-  P1: {fileID: 79556233}
-  P2: {fileID: 1415403470}
-  P3: {fileID: 1262555447}
-  P4: {fileID: 746735828}
-  S1: {fileID: 1306800598}
-  S2: {fileID: 1833356772}
-  S3: {fileID: 1248165031}
-  S4: {fileID: 2111979742}
-  Stick1rbody2D: {fileID: 1306800597}
-  Stick2rbody2D: {fileID: 1833356771}
-  Stick3rbody2D: {fileID: 1248165030}
-  Stick4rbody2D: {fileID: 2111979741}
+  P1Name: {fileID: 0}
+  P2Name: {fileID: 0}
+  P3Name: {fileID: 0}
+  P4Name: {fileID: 0}
+  stickrb1: {fileID: 0}
+  stickrb2: {fileID: 0}
+  stickrb3: {fileID: 0}
+  stickrb4: {fileID: 0}
+  stickrb:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!60 &638036501
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -6080,22 +5935,19 @@ MonoBehaviour:
   Player2: {fileID: 0}
   Player3: {fileID: 0}
   Player4: {fileID: 0}
-  P1Text: {fileID: 0}
-  P2Text: {fileID: 0}
-  P3Text: {fileID: 0}
-  P4Text: {fileID: 0}
-  P1: {fileID: 79556233}
-  P2: {fileID: 1415403470}
-  P3: {fileID: 1262555447}
-  P4: {fileID: 746735828}
-  S1: {fileID: 1306800598}
-  S2: {fileID: 1833356772}
-  S3: {fileID: 1248165031}
-  S4: {fileID: 2111979742}
-  Stick1rbody2D: {fileID: 1306800597}
-  Stick2rbody2D: {fileID: 1833356771}
-  Stick3rbody2D: {fileID: 1248165030}
-  Stick4rbody2D: {fileID: 2111979741}
+  P1Name: {fileID: 0}
+  P2Name: {fileID: 0}
+  P3Name: {fileID: 0}
+  P4Name: {fileID: 0}
+  stickrb1: {fileID: 0}
+  stickrb2: {fileID: 0}
+  stickrb3: {fileID: 0}
+  stickrb4: {fileID: 0}
+  stickrb:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!60 &652198725
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -7102,7 +6954,7 @@ Transform:
   m_LocalScale: {x: 19.806767, y: 19.806767, z: 19.806767}
   m_Children: []
   m_Father: {fileID: 2130626152}
-  m_RootOrder: 13
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &762883993
 SpriteRenderer:
@@ -7368,22 +7220,19 @@ MonoBehaviour:
   Player2: {fileID: 0}
   Player3: {fileID: 0}
   Player4: {fileID: 0}
-  P1Text: {fileID: 0}
-  P2Text: {fileID: 0}
-  P3Text: {fileID: 0}
-  P4Text: {fileID: 0}
-  P1: {fileID: 79556233}
-  P2: {fileID: 1415403470}
-  P3: {fileID: 1262555447}
-  P4: {fileID: 746735828}
-  S1: {fileID: 1306800598}
-  S2: {fileID: 1833356772}
-  S3: {fileID: 1248165031}
-  S4: {fileID: 2111979742}
-  Stick1rbody2D: {fileID: 1306800597}
-  Stick2rbody2D: {fileID: 1833356771}
-  Stick3rbody2D: {fileID: 1248165030}
-  Stick4rbody2D: {fileID: 2111979741}
+  P1Name: {fileID: 0}
+  P2Name: {fileID: 0}
+  P3Name: {fileID: 0}
+  P4Name: {fileID: 0}
+  stickrb1: {fileID: 0}
+  stickrb2: {fileID: 0}
+  stickrb3: {fileID: 0}
+  stickrb4: {fileID: 0}
+  stickrb:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!60 &817832257
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -7845,22 +7694,19 @@ MonoBehaviour:
   Player2: {fileID: 0}
   Player3: {fileID: 0}
   Player4: {fileID: 0}
-  P1Text: {fileID: 0}
-  P2Text: {fileID: 0}
-  P3Text: {fileID: 0}
-  P4Text: {fileID: 0}
-  P1: {fileID: 79556233}
-  P2: {fileID: 1415403470}
-  P3: {fileID: 1262555447}
-  P4: {fileID: 746735828}
-  S1: {fileID: 1306800598}
-  S2: {fileID: 1833356772}
-  S3: {fileID: 1248165031}
-  S4: {fileID: 2111979742}
-  Stick1rbody2D: {fileID: 1306800597}
-  Stick2rbody2D: {fileID: 1833356771}
-  Stick3rbody2D: {fileID: 1248165030}
-  Stick4rbody2D: {fileID: 2111979741}
+  P1Name: {fileID: 0}
+  P2Name: {fileID: 0}
+  P3Name: {fileID: 0}
+  P4Name: {fileID: 0}
+  stickrb1: {fileID: 0}
+  stickrb2: {fileID: 0}
+  stickrb3: {fileID: 0}
+  stickrb4: {fileID: 0}
+  stickrb:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!60 &945920532
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -8235,7 +8081,7 @@ Transform:
   m_Children:
   - {fileID: 212461140}
   m_Father: {fileID: 2130626152}
-  m_RootOrder: 12
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &980656043
 SpriteRenderer:
@@ -8370,164 +8216,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!1 &1004544513
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1004544514}
-  - component: {fileID: 1004544516}
-  - component: {fileID: 1004544515}
-  m_Layer: 5
-  m_Name: SecondText
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!224 &1004544514
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1004544513}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 2130626152}
-  m_RootOrder: 6
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 717.00006, y: 385.44992}
-  m_SizeDelta: {x: 397.77, y: 64.15}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1004544515
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1004544513}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 50
-    m_FontStyle: 0
-    m_BestFit: 0
-    m_MinSize: 5
-    m_MaxSize: 50
-    m_Alignment: 4
-    m_AlignByGeometry: 0
-    m_RichText: 1
-    m_HorizontalOverflow: 0
-    m_VerticalOverflow: 0
-    m_LineSpacing: 1
-  m_Text: 
---- !u!222 &1004544516
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1004544513}
-  m_CullTransparentMesh: 1
---- !u!1 &1049126807
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1049126808}
-  - component: {fileID: 1049126810}
-  - component: {fileID: 1049126809}
-  m_Layer: 5
-  m_Name: ThirdText
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!224 &1049126808
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1049126807}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 2130626152}
-  m_RootOrder: 7
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 716.00006, y: 319.6}
-  m_SizeDelta: {x: 397.77, y: 64.15}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1049126809
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1049126807}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 50
-    m_FontStyle: 0
-    m_BestFit: 0
-    m_MinSize: 5
-    m_MaxSize: 50
-    m_Alignment: 4
-    m_AlignByGeometry: 0
-    m_RichText: 1
-    m_HorizontalOverflow: 0
-    m_VerticalOverflow: 0
-    m_LineSpacing: 1
-  m_Text: 
---- !u!222 &1049126810
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1049126807}
-  m_CullTransparentMesh: 1
 --- !u!1 &1056490059
 GameObject:
   m_ObjectHideFlags: 0
@@ -8702,22 +8390,19 @@ MonoBehaviour:
   Player2: {fileID: 0}
   Player3: {fileID: 0}
   Player4: {fileID: 0}
-  P1Text: {fileID: 0}
-  P2Text: {fileID: 0}
-  P3Text: {fileID: 0}
-  P4Text: {fileID: 0}
-  P1: {fileID: 79556233}
-  P2: {fileID: 1415403470}
-  P3: {fileID: 1262555447}
-  P4: {fileID: 746735828}
-  S1: {fileID: 1306800598}
-  S2: {fileID: 1833356772}
-  S3: {fileID: 1248165031}
-  S4: {fileID: 2111979742}
-  Stick1rbody2D: {fileID: 1306800597}
-  Stick2rbody2D: {fileID: 1833356771}
-  Stick3rbody2D: {fileID: 1248165030}
-  Stick4rbody2D: {fileID: 2111979741}
+  P1Name: {fileID: 0}
+  P2Name: {fileID: 0}
+  P3Name: {fileID: 0}
+  P4Name: {fileID: 0}
+  stickrb1: {fileID: 0}
+  stickrb2: {fileID: 0}
+  stickrb3: {fileID: 0}
+  stickrb4: {fileID: 0}
+  stickrb:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!60 &1067632862
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -9521,22 +9206,19 @@ MonoBehaviour:
   Player2: {fileID: 0}
   Player3: {fileID: 0}
   Player4: {fileID: 0}
-  P1Text: {fileID: 0}
-  P2Text: {fileID: 0}
-  P3Text: {fileID: 0}
-  P4Text: {fileID: 0}
-  P1: {fileID: 79556233}
-  P2: {fileID: 1415403470}
-  P3: {fileID: 1262555447}
-  P4: {fileID: 746735828}
-  S1: {fileID: 1306800598}
-  S2: {fileID: 1833356772}
-  S3: {fileID: 1248165031}
-  S4: {fileID: 2111979742}
-  Stick1rbody2D: {fileID: 1306800597}
-  Stick2rbody2D: {fileID: 1833356771}
-  Stick3rbody2D: {fileID: 1248165030}
-  Stick4rbody2D: {fileID: 2111979741}
+  P1Name: {fileID: 0}
+  P2Name: {fileID: 0}
+  P3Name: {fileID: 0}
+  P4Name: {fileID: 0}
+  stickrb1: {fileID: 0}
+  stickrb2: {fileID: 0}
+  stickrb3: {fileID: 0}
+  stickrb4: {fileID: 0}
+  stickrb:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!60 &1156817304
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -9674,22 +9356,19 @@ MonoBehaviour:
   Player2: {fileID: 0}
   Player3: {fileID: 0}
   Player4: {fileID: 0}
-  P1Text: {fileID: 0}
-  P2Text: {fileID: 0}
-  P3Text: {fileID: 0}
-  P4Text: {fileID: 0}
-  P1: {fileID: 79556233}
-  P2: {fileID: 1415403470}
-  P3: {fileID: 1262555447}
-  P4: {fileID: 746735828}
-  S1: {fileID: 1306800598}
-  S2: {fileID: 1833356772}
-  S3: {fileID: 1248165031}
-  S4: {fileID: 2111979742}
-  Stick1rbody2D: {fileID: 1306800597}
-  Stick2rbody2D: {fileID: 1833356771}
-  Stick3rbody2D: {fileID: 1248165030}
-  Stick4rbody2D: {fileID: 2111979741}
+  P1Name: {fileID: 0}
+  P2Name: {fileID: 0}
+  P3Name: {fileID: 0}
+  P4Name: {fileID: 0}
+  stickrb1: {fileID: 0}
+  stickrb2: {fileID: 0}
+  stickrb3: {fileID: 0}
+  stickrb4: {fileID: 0}
+  stickrb:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!60 &1158109216
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -10284,16 +9963,13 @@ MonoBehaviour:
   RotSpeed: 160
   CoolTime_: 0.2
   SensText: {fileID: 0}
-  Arrowbody2D: {fileID: 1700998382}
-  spriteRenderer: {fileID: 1262555447}
-  spriteRenderer2: {fileID: 996024026}
-  Face1: {fileID: 21300000, guid: ebd0e4b91dea03d4c9142810c9459569, type: 3}
-  Face2: {fileID: 21300000, guid: 0599556f54f12064ba45880102e23e60, type: 3}
-  Face3: {fileID: 21300000, guid: 10d0289d9d0c5aa4d91b8e3384b84570, type: 3}
-  Face4: {fileID: 21300000, guid: feebf0adb00fabd4591beaffc97a41f8, type: 3}
-  Face5: {fileID: 21300000, guid: d48e67f1423c2434e87d7bb302fe05e9, type: 3}
-  Face6: {fileID: 21300000, guid: 0378a494527095b45898ab787641cd58, type: 3}
-  Face: 0
+  aryFace:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!61 &1248165028
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -10661,22 +10337,19 @@ MonoBehaviour:
   Player2: {fileID: 0}
   Player3: {fileID: 0}
   Player4: {fileID: 0}
-  P1Text: {fileID: 0}
-  P2Text: {fileID: 0}
-  P3Text: {fileID: 0}
-  P4Text: {fileID: 0}
-  P1: {fileID: 79556233}
-  P2: {fileID: 1415403470}
-  P3: {fileID: 1262555447}
-  P4: {fileID: 746735828}
-  S1: {fileID: 1306800598}
-  S2: {fileID: 1833356772}
-  S3: {fileID: 1248165031}
-  S4: {fileID: 2111979742}
-  Stick1rbody2D: {fileID: 1306800597}
-  Stick2rbody2D: {fileID: 1833356771}
-  Stick3rbody2D: {fileID: 1248165030}
-  Stick4rbody2D: {fileID: 2111979741}
+  P1Name: {fileID: 0}
+  P2Name: {fileID: 0}
+  P3Name: {fileID: 0}
+  P4Name: {fileID: 0}
+  stickrb1: {fileID: 0}
+  stickrb2: {fileID: 0}
+  stickrb3: {fileID: 0}
+  stickrb4: {fileID: 0}
+  stickrb:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!60 &1297002284
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -10941,16 +10614,13 @@ MonoBehaviour:
   RotSpeed: 160
   CoolTime_: 0.2
   SensText: {fileID: 0}
-  Arrowbody2D: {fileID: 1975533303}
-  spriteRenderer: {fileID: 79556233}
-  spriteRenderer2: {fileID: 800857241}
-  Face1: {fileID: 21300000, guid: 4e907479fb615cb4b80a1b53f543affb, type: 3}
-  Face2: {fileID: 21300000, guid: c2100c2769f23244db43af8ead489867, type: 3}
-  Face3: {fileID: 21300000, guid: 577b8275aaf1255429b53cc4bb012297, type: 3}
-  Face4: {fileID: 21300000, guid: 519236c70dbfb854f8999c6d264b64b2, type: 3}
-  Face5: {fileID: 21300000, guid: 449ce9f99291361468df569804979870, type: 3}
-  Face6: {fileID: 21300000, guid: 40095febba9e1504197d3244c650f3cd, type: 3}
-  Face: 0
+  aryFace:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!114 &1306800600
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11094,22 +10764,19 @@ MonoBehaviour:
   Player2: {fileID: 0}
   Player3: {fileID: 0}
   Player4: {fileID: 0}
-  P1Text: {fileID: 0}
-  P2Text: {fileID: 0}
-  P3Text: {fileID: 0}
-  P4Text: {fileID: 0}
-  P1: {fileID: 79556233}
-  P2: {fileID: 1415403470}
-  P3: {fileID: 1262555447}
-  P4: {fileID: 746735828}
-  S1: {fileID: 1306800598}
-  S2: {fileID: 1833356772}
-  S3: {fileID: 1248165031}
-  S4: {fileID: 2111979742}
-  Stick1rbody2D: {fileID: 1306800597}
-  Stick2rbody2D: {fileID: 1833356771}
-  Stick3rbody2D: {fileID: 1248165030}
-  Stick4rbody2D: {fileID: 2111979741}
+  P1Name: {fileID: 0}
+  P2Name: {fileID: 0}
+  P3Name: {fileID: 0}
+  P4Name: {fileID: 0}
+  stickrb1: {fileID: 0}
+  stickrb2: {fileID: 0}
+  stickrb3: {fileID: 0}
+  stickrb4: {fileID: 0}
+  stickrb:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!60 &1354677568
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -11372,22 +11039,19 @@ MonoBehaviour:
   Player2: {fileID: 0}
   Player3: {fileID: 0}
   Player4: {fileID: 0}
-  P1Text: {fileID: 0}
-  P2Text: {fileID: 0}
-  P3Text: {fileID: 0}
-  P4Text: {fileID: 0}
-  P1: {fileID: 79556233}
-  P2: {fileID: 1415403470}
-  P3: {fileID: 1262555447}
-  P4: {fileID: 746735828}
-  S1: {fileID: 1306800598}
-  S2: {fileID: 1833356772}
-  S3: {fileID: 1248165031}
-  S4: {fileID: 2111979742}
-  Stick1rbody2D: {fileID: 1306800597}
-  Stick2rbody2D: {fileID: 1833356771}
-  Stick3rbody2D: {fileID: 1248165030}
-  Stick4rbody2D: {fileID: 2111979741}
+  P1Name: {fileID: 0}
+  P2Name: {fileID: 0}
+  P3Name: {fileID: 0}
+  P4Name: {fileID: 0}
+  stickrb1: {fileID: 0}
+  stickrb2: {fileID: 0}
+  stickrb3: {fileID: 0}
+  stickrb4: {fileID: 0}
+  stickrb:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!60 &1365659801
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -12119,85 +11783,6 @@ Transform:
   m_Father: {fileID: 1839687821}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1541738368
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1541738369}
-  - component: {fileID: 1541738371}
-  - component: {fileID: 1541738370}
-  m_Layer: 5
-  m_Name: FirstText
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!224 &1541738369
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1541738368}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 2130626152}
-  m_RootOrder: 5
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 717.00006, y: 449.6}
-  m_SizeDelta: {x: 397.77, y: 64.15}
-  m_Pivot: {x: 0.5, y: 0.5000008}
---- !u!114 &1541738370
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1541738368}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 50
-    m_FontStyle: 0
-    m_BestFit: 0
-    m_MinSize: 5
-    m_MaxSize: 50
-    m_Alignment: 0
-    m_AlignByGeometry: 0
-    m_RichText: 1
-    m_HorizontalOverflow: 0
-    m_VerticalOverflow: 0
-    m_LineSpacing: 1
-  m_Text: 
---- !u!222 &1541738371
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1541738368}
-  m_CullTransparentMesh: 1
 --- !u!1 &1544143980
 GameObject:
   m_ObjectHideFlags: 0
@@ -12451,22 +12036,19 @@ MonoBehaviour:
   Player2: {fileID: 0}
   Player3: {fileID: 0}
   Player4: {fileID: 0}
-  P1Text: {fileID: 0}
-  P2Text: {fileID: 0}
-  P3Text: {fileID: 0}
-  P4Text: {fileID: 0}
-  P1: {fileID: 79556233}
-  P2: {fileID: 1415403470}
-  P3: {fileID: 1262555447}
-  P4: {fileID: 746735828}
-  S1: {fileID: 1306800598}
-  S2: {fileID: 1833356772}
-  S3: {fileID: 1248165031}
-  S4: {fileID: 2111979742}
-  Stick1rbody2D: {fileID: 1306800597}
-  Stick2rbody2D: {fileID: 1833356771}
-  Stick3rbody2D: {fileID: 1248165030}
-  Stick4rbody2D: {fileID: 2111979741}
+  P1Name: {fileID: 0}
+  P2Name: {fileID: 0}
+  P3Name: {fileID: 0}
+  P4Name: {fileID: 0}
+  stickrb1: {fileID: 0}
+  stickrb2: {fileID: 0}
+  stickrb3: {fileID: 0}
+  stickrb4: {fileID: 0}
+  stickrb:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!60 &1570718375
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -12604,22 +12186,19 @@ MonoBehaviour:
   Player2: {fileID: 0}
   Player3: {fileID: 0}
   Player4: {fileID: 0}
-  P1Text: {fileID: 0}
-  P2Text: {fileID: 0}
-  P3Text: {fileID: 0}
-  P4Text: {fileID: 0}
-  P1: {fileID: 79556233}
-  P2: {fileID: 1415403470}
-  P3: {fileID: 1262555447}
-  P4: {fileID: 746735828}
-  S1: {fileID: 1306800598}
-  S2: {fileID: 1833356772}
-  S3: {fileID: 1248165031}
-  S4: {fileID: 2111979742}
-  Stick1rbody2D: {fileID: 1306800597}
-  Stick2rbody2D: {fileID: 1833356771}
-  Stick3rbody2D: {fileID: 1248165030}
-  Stick4rbody2D: {fileID: 2111979741}
+  P1Name: {fileID: 0}
+  P2Name: {fileID: 0}
+  P3Name: {fileID: 0}
+  P4Name: {fileID: 0}
+  stickrb1: {fileID: 0}
+  stickrb2: {fileID: 0}
+  stickrb3: {fileID: 0}
+  stickrb4: {fileID: 0}
+  stickrb:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!60 &1571422774
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -13029,22 +12608,19 @@ MonoBehaviour:
   Player2: {fileID: 0}
   Player3: {fileID: 0}
   Player4: {fileID: 0}
-  P1Text: {fileID: 0}
-  P2Text: {fileID: 0}
-  P3Text: {fileID: 0}
-  P4Text: {fileID: 0}
-  P1: {fileID: 79556233}
-  P2: {fileID: 1415403470}
-  P3: {fileID: 1262555447}
-  P4: {fileID: 746735828}
-  S1: {fileID: 1306800598}
-  S2: {fileID: 1833356772}
-  S3: {fileID: 1248165031}
-  S4: {fileID: 2111979742}
-  Stick1rbody2D: {fileID: 1306800597}
-  Stick2rbody2D: {fileID: 1833356771}
-  Stick3rbody2D: {fileID: 1248165030}
-  Stick4rbody2D: {fileID: 2111979741}
+  P1Name: {fileID: 0}
+  P2Name: {fileID: 0}
+  P3Name: {fileID: 0}
+  P4Name: {fileID: 0}
+  stickrb1: {fileID: 0}
+  stickrb2: {fileID: 0}
+  stickrb3: {fileID: 0}
+  stickrb4: {fileID: 0}
+  stickrb:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!60 &1598705285
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -13182,22 +12758,19 @@ MonoBehaviour:
   Player2: {fileID: 0}
   Player3: {fileID: 0}
   Player4: {fileID: 0}
-  P1Text: {fileID: 0}
-  P2Text: {fileID: 0}
-  P3Text: {fileID: 0}
-  P4Text: {fileID: 0}
-  P1: {fileID: 79556233}
-  P2: {fileID: 1415403470}
-  P3: {fileID: 1262555447}
-  P4: {fileID: 746735828}
-  S1: {fileID: 1306800598}
-  S2: {fileID: 1833356772}
-  S3: {fileID: 1248165031}
-  S4: {fileID: 2111979742}
-  Stick1rbody2D: {fileID: 1306800597}
-  Stick2rbody2D: {fileID: 1833356771}
-  Stick3rbody2D: {fileID: 1248165030}
-  Stick4rbody2D: {fileID: 2111979741}
+  P1Name: {fileID: 0}
+  P2Name: {fileID: 0}
+  P3Name: {fileID: 0}
+  P4Name: {fileID: 0}
+  stickrb1: {fileID: 0}
+  stickrb2: {fileID: 0}
+  stickrb3: {fileID: 0}
+  stickrb4: {fileID: 0}
+  stickrb:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!60 &1635943048
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -13335,22 +12908,19 @@ MonoBehaviour:
   Player2: {fileID: 0}
   Player3: {fileID: 0}
   Player4: {fileID: 0}
-  P1Text: {fileID: 0}
-  P2Text: {fileID: 0}
-  P3Text: {fileID: 0}
-  P4Text: {fileID: 0}
-  P1: {fileID: 79556233}
-  P2: {fileID: 1415403470}
-  P3: {fileID: 1262555447}
-  P4: {fileID: 746735828}
-  S1: {fileID: 1306800598}
-  S2: {fileID: 1833356772}
-  S3: {fileID: 1248165031}
-  S4: {fileID: 2111979742}
-  Stick1rbody2D: {fileID: 1306800597}
-  Stick2rbody2D: {fileID: 1833356771}
-  Stick3rbody2D: {fileID: 1248165030}
-  Stick4rbody2D: {fileID: 2111979741}
+  P1Name: {fileID: 0}
+  P2Name: {fileID: 0}
+  P3Name: {fileID: 0}
+  P4Name: {fileID: 0}
+  stickrb1: {fileID: 0}
+  stickrb2: {fileID: 0}
+  stickrb3: {fileID: 0}
+  stickrb4: {fileID: 0}
+  stickrb:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!60 &1673180971
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -13525,22 +13095,19 @@ MonoBehaviour:
   Player2: {fileID: 0}
   Player3: {fileID: 0}
   Player4: {fileID: 0}
-  P1Text: {fileID: 0}
-  P2Text: {fileID: 0}
-  P3Text: {fileID: 0}
-  P4Text: {fileID: 0}
-  P1: {fileID: 79556233}
-  P2: {fileID: 1415403470}
-  P3: {fileID: 1262555447}
-  P4: {fileID: 746735828}
-  S1: {fileID: 1306800598}
-  S2: {fileID: 1833356772}
-  S3: {fileID: 1248165031}
-  S4: {fileID: 2111979742}
-  Stick1rbody2D: {fileID: 1306800597}
-  Stick2rbody2D: {fileID: 1833356771}
-  Stick3rbody2D: {fileID: 1248165030}
-  Stick4rbody2D: {fileID: 2111979741}
+  P1Name: {fileID: 0}
+  P2Name: {fileID: 0}
+  P3Name: {fileID: 0}
+  P4Name: {fileID: 0}
+  stickrb1: {fileID: 0}
+  stickrb2: {fileID: 0}
+  stickrb3: {fileID: 0}
+  stickrb4: {fileID: 0}
+  stickrb:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!60 &1689008954
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -14075,22 +13642,19 @@ MonoBehaviour:
   Player2: {fileID: 0}
   Player3: {fileID: 0}
   Player4: {fileID: 0}
-  P1Text: {fileID: 0}
-  P2Text: {fileID: 0}
-  P3Text: {fileID: 0}
-  P4Text: {fileID: 0}
-  P1: {fileID: 79556233}
-  P2: {fileID: 1415403470}
-  P3: {fileID: 1262555447}
-  P4: {fileID: 746735828}
-  S1: {fileID: 1306800598}
-  S2: {fileID: 1833356772}
-  S3: {fileID: 1248165031}
-  S4: {fileID: 2111979742}
-  Stick1rbody2D: {fileID: 1306800597}
-  Stick2rbody2D: {fileID: 1833356771}
-  Stick3rbody2D: {fileID: 1248165030}
-  Stick4rbody2D: {fileID: 2111979741}
+  P1Name: {fileID: 0}
+  P2Name: {fileID: 0}
+  P3Name: {fileID: 0}
+  P4Name: {fileID: 0}
+  stickrb1: {fileID: 0}
+  stickrb2: {fileID: 0}
+  stickrb3: {fileID: 0}
+  stickrb4: {fileID: 0}
+  stickrb:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!60 &1734829047
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -14726,22 +14290,19 @@ MonoBehaviour:
   Player2: {fileID: 0}
   Player3: {fileID: 0}
   Player4: {fileID: 0}
-  P1Text: {fileID: 0}
-  P2Text: {fileID: 0}
-  P3Text: {fileID: 0}
-  P4Text: {fileID: 0}
-  P1: {fileID: 79556233}
-  P2: {fileID: 1415403470}
-  P3: {fileID: 1262555447}
-  P4: {fileID: 746735828}
-  S1: {fileID: 1306800598}
-  S2: {fileID: 1833356772}
-  S3: {fileID: 1248165031}
-  S4: {fileID: 2111979742}
-  Stick1rbody2D: {fileID: 1306800597}
-  Stick2rbody2D: {fileID: 1833356771}
-  Stick3rbody2D: {fileID: 1248165030}
-  Stick4rbody2D: {fileID: 2111979741}
+  P1Name: {fileID: 0}
+  P2Name: {fileID: 0}
+  P3Name: {fileID: 0}
+  P4Name: {fileID: 0}
+  stickrb1: {fileID: 0}
+  stickrb2: {fileID: 0}
+  stickrb3: {fileID: 0}
+  stickrb4: {fileID: 0}
+  stickrb:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!60 &1800199525
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -15127,16 +14688,13 @@ MonoBehaviour:
   RotSpeed: 160
   CoolTime_: 0.2
   SensText: {fileID: 0}
-  Arrowbody2D: {fileID: 1191110152}
-  spriteRenderer: {fileID: 1415403470}
-  spriteRenderer2: {fileID: 458321016}
-  Face1: {fileID: 21300000, guid: fb784904002fd6347915b64514b62e07, type: 3}
-  Face2: {fileID: 21300000, guid: 4328a5ba43ab0234a913d0ada18e6e4e, type: 3}
-  Face3: {fileID: 21300000, guid: fa26d3d88353ea849858772f69f1153f, type: 3}
-  Face4: {fileID: 21300000, guid: 44121a874a4876d47a022d23f6cad98d, type: 3}
-  Face5: {fileID: 21300000, guid: 8f078bb5a88aa6a4e9a70ceeee8eed3a, type: 3}
-  Face6: {fileID: 21300000, guid: 1fd399c49e46ec24ab2408eef6a0c6ed, type: 3}
-  Face: 0
+  aryFace:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!61 &1833356769
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -31273,32 +30831,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b18f162abd19084d8968f7b641e49f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Player1: {fileID: 0}
-  Player2: {fileID: 0}
-  Player3: {fileID: 0}
-  Player4: {fileID: 0}
-  Stick1: {fileID: 0}
-  Stick2: {fileID: 0}
-  Stick3: {fileID: 0}
-  Stick4: {fileID: 0}
-  P1text: {fileID: 0}
-  P2text: {fileID: 0}
-  P3text: {fileID: 0}
-  P4text: {fileID: 0}
+  CountDown: {fileID: 13818948}
+  playTime: {fileID: 0}
   CountDownGO: {fileID: 13818946}
-  P1CountGO: {fileID: 0}
-  P2CountGO: {fileID: 0}
-  P3CountGO: {fileID: 0}
-  P4CountGO: {fileID: 0}
   ControllerUI1: {fileID: 194503194}
   ControllerUI2: {fileID: 2142099279}
   ControllerUI3: {fileID: 1673468373}
-  Timer: {fileID: 265219735}
-  P1Count: {fileID: 918847378}
-  P2Count: {fileID: 2068050263}
-  P3Count: {fileID: 622484956}
-  P4Count: {fileID: 1087003973}
-  CountDown: {fileID: 13818948}
+  timer:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!4 &1987354135
 Transform:
   m_ObjectHideFlags: 0
@@ -31337,41 +30880,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 12c613403d957124bb205ae7aeb2ca7c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  P1Pointext: {fileID: 2007328338}
-  P2Pointext: {fileID: 1936753143}
-  P3Pointext: {fileID: 1544143982}
-  P4Pointext: {fileID: 131308916}
-  ResultFirst: {fileID: 754314439}
-  ResultSecond: {fileID: 570234925}
-  ResultThird: {fileID: 487182248}
-  ResultFourth: {fileID: 171921724}
+  pointText: []
+  resultText: []
   KillLogText: {fileID: 2142412187}
-  Player1: {fileID: 79556226}
-  Player2: {fileID: 1415403465}
-  Player3: {fileID: 1262555442}
-  Player4: {fileID: 746735823}
-  Stick1: {fileID: 1306800593}
-  Stick2: {fileID: 1833356766}
-  Stick3: {fileID: 1248165025}
-  Stick4: {fileID: 2111979736}
-  P1text: {fileID: 0}
-  P2text: {fileID: 0}
-  P3text: {fileID: 0}
-  P4text: {fileID: 0}
   ResultPanel: {fileID: 757395948}
   ResultPanelFront: {fileID: 789340824}
   InputField: {fileID: 329513727}
   KillLogBack: {fileID: 762883991}
   Plus1: {fileID: 8077654278671422863, guid: 0969f14f51899da49bdee83bf98748ec, type: 3}
   Plus5: {fileID: 3419609550473752637, guid: c14faef37ff7c344691a4cea8b397f93, type: 3}
-  P1PointGO: {fileID: 2007328336}
-  P2PointGO: {fileID: 1936753141}
-  P3PointGO: {fileID: 1544143980}
-  P4PointGO: {fileID: 131308914}
-  P1PointBox: {fileID: 2015805556}
-  P2PointBox: {fileID: 2138012533}
-  P3PointBox: {fileID: 526183972}
-  P4PointBox: {fileID: 980656041}
+  players: []
+  sticks: []
+  nameTag: []
+  pointBox: []
+  pointTextGO: []
 --- !u!114 &1987354138
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -31656,7 +31178,7 @@ Transform:
   m_Children:
   - {fileID: 800857240}
   m_Father: {fileID: 2130626152}
-  m_RootOrder: 9
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &2015805558
 SpriteRenderer:
@@ -32560,16 +32082,13 @@ MonoBehaviour:
   RotSpeed: 160
   CoolTime_: 0.2
   SensText: {fileID: 0}
-  Arrowbody2D: {fileID: 302859718}
-  spriteRenderer: {fileID: 746735828}
-  spriteRenderer2: {fileID: 212461141}
-  Face1: {fileID: 21300000, guid: cf40f015270e7804d919b14829a9ac04, type: 3}
-  Face2: {fileID: 21300000, guid: 63182246b8b655b4c824500efecaa0d6, type: 3}
-  Face3: {fileID: 21300000, guid: 0a95564255baae74ba245022d097e73c, type: 3}
-  Face4: {fileID: 21300000, guid: cdcd91e0bc773d941bbac600ce24bb2a, type: 3}
-  Face5: {fileID: 21300000, guid: 82cc88148aca1584c9c687429b95e793, type: 3}
-  Face6: {fileID: 21300000, guid: 23d8ef8a42e68ea4ab0c1b8e48837fc8, type: 3}
-  Face: 0
+  aryFace:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!61 &2111979739
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -32800,10 +32319,6 @@ RectTransform:
   - {fileID: 1818531620}
   - {fileID: 76674028}
   - {fileID: 947223697}
-  - {fileID: 1541738369}
-  - {fileID: 1004544514}
-  - {fileID: 1049126808}
-  - {fileID: 105462854}
   - {fileID: 2015805557}
   - {fileID: 2138012534}
   - {fileID: 526183973}
@@ -32848,7 +32363,7 @@ Transform:
   m_Children:
   - {fileID: 458321015}
   m_Father: {fileID: 2130626152}
-  m_RootOrder: 10
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &2138012535
 SpriteRenderer:
@@ -32967,7 +32482,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 2130626152}
-  m_RootOrder: 14
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}

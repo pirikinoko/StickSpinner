@@ -76,7 +76,7 @@ public class TitleButtonClick : MonoBehaviour
         // Stage1 ` 3 ‚Í IntŒ^‚È‚Ì‚ÅA«‚Å‚¢‚¢‚Æv‚¤
         GameStart.inDemoPlay = false;
         SoundEffect.PironTrigger = 1;
-        SceneManager.LoadScene("Stage" + GameStart.Stage.ToString());
+        SceneManager.LoadScene("Stage");
     }
     //İ’è‰æ–Ê‚ğŠJ‚­
 

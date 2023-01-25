@@ -7,19 +7,16 @@ using UnityEngine.SceneManagement;
 
 public class GameSetting : MonoBehaviour
 {
-
+    //基本
     [SerializeField]
     Text CountDown, playTime;
-
-
     public GameObject CountDownGO, ControllerUI1, ControllerUI2, ControllerUI3;
     GameObject[] players = new GameObject[GameStart.MaxPlayer];
     GameObject[] sticks = new GameObject[GameStart.MaxPlayer];
     GameObject[] nameTags = new GameObject[GameStart.MaxPlayer];
     GameObject[] countTextGO = new GameObject[GameStart.MaxPlayer];
     Text[]    nameTagText    = new Text[   GameStart.MaxPlayer];
-    Vector2[] nameTagPos     = new Vector2[GameStart.MaxPlayer];
-
+    Vector2[] nameTagPos     = new Vector2[GameStart.MaxPlayer]; 
     Vector2[,] startPos = new Vector2[GameStart.MaxPlayer, GameStart.MaxPlayer];
     public static bool Playable = false;
     public Text[] timer = new Text[GameStart.MaxPlayer];
@@ -42,6 +39,7 @@ public class GameSetting : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+       
         //配列に代入
         startPos[0, 0] = new Vector2(-8f, -4); startPos[0, 1] = new Vector2(-7f, -4); startPos[0, 2] = new Vector2(-6f, -4); startPos[0, 3] = new Vector2(-5f, -4);
         startPos[1, 0] = new Vector2(-5.5f, -4); startPos[1, 1] = new Vector2(-5.5f, -4); startPos[1, 2] = new Vector2(-6.5f, -4); startPos[1, 3] = new Vector2(-7.5f, -4);
@@ -59,16 +57,7 @@ public class GameSetting : MonoBehaviour
             countTextGO[i] = GameObject.Find("P" + (i + 1).ToString() + "CountDown");
             countTextGO[i].gameObject.SetActive(false);
         }
-
-        //デバッグ用ステージ反映
-        for (int i = 1; i < 5; i++)
-        {
-            if (SceneManager.GetActiveScene().name == "Stage" + i.ToString())
-            {
-                GameStart.Stage = i;
-            }
-        }
-
+       
         if (GameStart.Stage != 4)
         {
             PlayTime = 0;
