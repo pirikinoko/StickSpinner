@@ -4,25 +4,16 @@ using UnityEngine;
 
 public class CheckPoint : MonoBehaviour
 {
-    public static Vector2[] checkPos; 
+    public static Vector2[] respownPos = new Vector2[4];
+    GameObject[] defaultPlayerPos = new GameObject[4];
     void Start()
     {
-        if(GameStart.Stage == 4)
+        for (int i = 0; i < 4; i++)
         {
-            checkPos[0] = new Vector2(-8, -2f);
-            checkPos[1] = new Vector2(7.84f, -2f);
-            checkPos[3] = new Vector2(-4.01f, -2f);
-            checkPos[3] = new Vector2(3.84f, -2f);
+            defaultPlayerPos[i] = GameObject.Find("DefaultPlayerPos" + (i + 1).ToString());
+            respownPos[i] = defaultPlayerPos[i].gameObject.transform.position;
+            defaultPlayerPos[i].gameObject.SetActive(false);
         }
     }
-    private void OnTriggerStay2D(Collider2D other)
-    {
-        for(int i = 1; i < GameStart.PlayerNumber; i++)
-        {
-            if (other.gameObject.name == "Player" + (i + 1).ToString())
-            {
-                checkPos[i] = other.gameObject.transform.position;
-            }
-        }
-    }
+    
 }

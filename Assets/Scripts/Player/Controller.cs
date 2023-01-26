@@ -270,7 +270,6 @@ public class Controller : MonoBehaviour
     }
 
     // コリジョン
-    // コリジョン
     private void OnCollisionEnter2D(Collision2D other)
     {
         //@@ if (other.gameObject.CompareTag("Surface")) { SoundEffect.BonTrigger = 1;/*効果音*/}

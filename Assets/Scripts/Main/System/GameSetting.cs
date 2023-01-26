@@ -39,12 +39,8 @@ public class GameSetting : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-       
-        //配列に代入
-        startPos[0, 0] = new Vector2(-8f, -4); startPos[0, 1] = new Vector2(-7f, -4); startPos[0, 2] = new Vector2(-6f, -4); startPos[0, 3] = new Vector2(-5f, -4);
-        startPos[1, 0] = new Vector2(-5.5f, -4); startPos[1, 1] = new Vector2(-5.5f, -4); startPos[1, 2] = new Vector2(-6.5f, -4); startPos[1, 3] = new Vector2(-7.5f, -4);
-        startPos[2, 0] = new Vector2(-3f, -2); startPos[2, 1] = new Vector2(-2f, -2); startPos[2, 2] = new Vector2(-1f, -2); startPos[2, 3] = new Vector2(0, 2);
-        startPos[3, 0] = new Vector2(-8f, -2); startPos[3, 1] = new Vector2(-7.84f, -2); startPos[3, 2] = new Vector2(-4.01f, -2); startPos[3, 3] = new Vector2(-3.84f, -2);
+        GameStart.Stage = 4;
+        Debug.Log("PlayerNumber: " + GameStart.PlayerNumber + " Stage: " + GameStart.Stage);
         for (int i = 0; i < GameStart.MaxPlayer; i++) //初期化処理
         {
             deathTimer[i] = false;
@@ -86,8 +82,8 @@ public class GameSetting : MonoBehaviour
                 players[i].gameObject.SetActive(true);
                 sticks[i].gameObject.SetActive(true);
                 //初期位置
-                players[i].gameObject.transform.position = startPos[GameStart.Stage - 1, i];
-                sticks[i].gameObject.transform.position = startPos[GameStart.Stage - 1, i];
+                players[i].gameObject.transform.position = CheckPoint.respownPos[i];
+                sticks[i].gameObject.transform.position =  CheckPoint.respownPos[i];
             }
 
             // プレイヤー人数の反映
@@ -157,59 +153,58 @@ public class GameSetting : MonoBehaviour
     }
     void StartTimer()
     {
-        //タイム
-        if (GameStart.Stage != 4)
-        {
-            if (StartFlag)
-            {
-                StartTime -= Time.deltaTime;
-                SoundTime -= Time.deltaTime;
-                if (StartTime > 2)
-                {
-                    CountDownGO.gameObject.SetActive(true);
-                    CountDown.text = ("3");
-                }
-                else if (StartTime > 1)
-                {
-                    CountDown.text = ("2");
-                }
-                else if (StartTime > 0)
-                {
-                    CountDown.text = ("1");
-                }
-                else if (StartTime < 0 && StartTime > -0.5f)
-                {
-                    CountDown.text = ("スタート");
-                }
-                else if (StartTime < 0.9f)
-                {
-                    CountDown.text = ("");
-                    CountDownGO.gameObject.SetActive(false);
-                    StartFlag = false;
-                }
-                if (SoundTime < 0)
-                {
-                    SoundEffect.BunTrigger = 1;
-                    SoundTime = 1;
-                }
-            }
-            if (StartTime < 0 && ButtonInGame.Paused != 1)
-            {
 
-                if (GameStart.Stage == 4 && PlayTime > 0)
-                {
-                    elapsedTime -= Time.deltaTime;
-                }
-                else
-                {
-                    elapsedTime += Time.deltaTime;
-                }
-                Playable = true;
-                PlayTime = elapsedTime * 10;
-                PlayTime = Mathf.Floor(PlayTime) / 10;
-                playTime.text = ("タイム:" + PlayTime);
+        //タイム
+        if (StartFlag)
+        {
+            StartTime -= Time.deltaTime;
+            SoundTime -= Time.deltaTime;
+            if (StartTime > 2)
+            {
+                CountDownGO.gameObject.SetActive(true);
+                CountDown.text = ("3");
+            }
+            else if (StartTime > 1)
+            {
+                CountDown.text = ("2");
+            }
+            else if (StartTime > 0)
+            {
+                CountDown.text = ("1");
+            }
+            else if (StartTime < 0 && StartTime > -0.5f)
+            {
+                CountDown.text = ("スタート");
+            }
+            else if (StartTime < 0.9f)
+            {
+                CountDown.text = ("");
+                CountDownGO.gameObject.SetActive(false);
+                StartFlag = false;
+            }
+            if (SoundTime < 0)
+            {
+                SoundEffect.BunTrigger = 1;
+                SoundTime = 1;
             }
         }
+        if (StartTime < 0 && ButtonInGame.Paused != 1)
+        {
+
+            if (GameStart.Stage == 4 && PlayTime > 0)
+            {
+                elapsedTime -= Time.deltaTime;
+            }
+            else
+            {
+                elapsedTime += Time.deltaTime;
+            }
+            Playable = true;
+            PlayTime = elapsedTime * 10;
+            PlayTime = Mathf.Floor(PlayTime) / 10;
+            playTime.text = ("タイム:" + PlayTime);
+        }
+
     }
     void NameTagPos()
     {

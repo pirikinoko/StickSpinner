@@ -12,7 +12,8 @@ public class Goal : MonoBehaviour
     GameObject[] players  = new GameObject[GameStart.MaxPlayer];
     GameObject[] sticks   = new GameObject[GameStart.MaxPlayer];
     GameObject[] nameTags = new GameObject[GameStart.MaxPlayer];
-    public Text[] resultText = new Text[GameStart.MaxPlayer];
+    GameObject[] resultTextGO = new GameObject[GameStart.MaxPlayer];
+    Text[] resultText = new Text[GameStart.MaxPlayer];
     GameObject ResultPanel;
     GameObject ResultPanelFront, InputField;
     //通常ステージ
@@ -21,27 +22,29 @@ public class Goal : MonoBehaviour
     public static bool Goaled;
     //バトルモード
     public GameObject KillLogBack, Plus1, Plus5;
-    public GameObject[] pointTextGO, pointBox;
+    GameObject[] pointTextGO = new GameObject[4], pointBox = new GameObject[4];
     public static float[] points = new float[4], pointsInOrder = new float[4];
     public static float KillLogTimer;
-    float[] pointCut;
-    public static string[] plasement;
-    public Text[] pointText;
+    float[] pointCut = new float[4];
+    public static string[] plasement = new string [4];
+    Text[] pointText = new Text[4];
     public static Text killer, died;
     public Text KillLogText = null;
-    public static byte[] playParticle;
+    public static byte[] playParticle = new byte[4];
     byte count = 0;
     public static bool Finished;
-    private Vector2[] particlePos;
+    private Vector2[] particlePos = new Vector2[4];
 
 
     void Start()
     {   //基本
         for (int i = 0; i < GameStart.MaxPlayer; i++) //初期化処理
         {        
-            nameTags[  i] = GameObject.Find("P" +      (i + 1).ToString() + "Text");
-            players[   i] = GameObject.Find("Player" + (i + 1).ToString());
-            sticks[    i] = GameObject.Find("Stick"  + (i + 1).ToString());
+            nameTags[    i] = GameObject.Find("P" +      (i + 1).ToString() + "Text");
+            players[     i] = GameObject.Find("Player" + (i + 1).ToString());
+            sticks[      i] = GameObject.Find("Stick"  + (i + 1).ToString());
+            resultTextGO[i] = GameObject.Find("Result" + (i + 1).ToString());
+            resultText[  i] = resultTextGO[i].GetComponent<Text>();
         }
    
         ResultPanel = GameObject.Find("ResultPanel");
@@ -65,32 +68,38 @@ public class Goal : MonoBehaviour
 
 
         //バトルモード
-        if (GameStart.Stage == 4) 
-        {
+        if (GameStart.Stage == 4)
+        {          
             for (int i = 0; i < 4; i++)
             {
                 plasement[i] = null;
                 points[i] = 0;
                 pointsInOrder[i] = 0;
+                pointBox[i] = GameObject.Find("PointFrame" + (i + 1).ToString());
+                pointTextGO[i] = GameObject.Find("P" + (i + 1).ToString() +"Point");
+                pointText[i] = pointTextGO[i].GetComponent<Text>();
+
             }
+
             count = 0;
             KillLogTimer = 0;
             Finished = false;
+           
             //画面上部スコアプレイヤー数分表示
             for (int i = 0; i < GameStart.PlayerNumber; i++) { pointBox[i].gameObject.SetActive(true); pointTextGO[i].gameObject.SetActive(true); }
-            for (int i = 4; i > GameStart.PlayerNumber; i--) { pointBox[i].gameObject.SetActive(false); pointTextGO[i].gameObject.SetActive(false); }
+            for (int i = 3; i >= GameStart.PlayerNumber; i--) { pointBox[i].gameObject.SetActive(false); pointTextGO[i].gameObject.SetActive(false); }
         }
           
     }
 
     void Update()
     {
+
         //通常ステージ
         if (GameStart.Stage != 4)
         {
             CheckFinish();
         }
-
         //バトルモード
         if (GameStart.Stage == 4)
         {
@@ -179,8 +188,6 @@ public class Goal : MonoBehaviour
             ResultPanel.gameObject.SetActive(true);
             ResultPanelFront.gameObject.SetActive(true);
             InputField.gameObject.SetActive(true);
-
-
         }
         if (count == 0)
         {

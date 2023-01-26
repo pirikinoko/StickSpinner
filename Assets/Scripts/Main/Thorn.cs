@@ -59,26 +59,26 @@ public class Thorn : MonoBehaviour
 
     void PlayerRespown()
     {
-    /*@@
-        for (int i = 0; i < GameStart.PlayerNumber; i++)
-        {
-            if (respownTrigger[i])
+        /*@@
+            for (int i = 0; i < GameStart.PlayerNumber; i++)
             {
-                players[i].gameObject.transform.position = CheckPoint.checkPos[i];
-                nameTags[i].gameObject.SetActive(true);
-                playerrend[i].enabled = true;
-                stickrend[i].enabled = true;
-                respownTrigger[i] = false;
-            }
-            if (playerrend[i].enabled == false)
-            {
-                players[i].gameObject.transform.position = col[i];
-                stickrb[i].velocity = new Vector2(0f, 0f);
-                stickrb[i].MoveRotation(0f);
+                if (respownTrigger[i])
+                {
+                    players[i].gameObject.transform.position = CheckPoint.respownPos[i];
+                    nameTags[i].gameObject.SetActive(true);
+                    playerrend[i].enabled = true;
+                    stickrend[i].enabled = true;
+                    respownTrigger[i] = false;
+                }
+                if (playerrend[i].enabled == false)
+                {
+                    players[i].gameObject.transform.position = col[i];
+                    stickrb[i].velocity = new Vector2(0f, 0f);
+                    stickrb[i].MoveRotation(0f);
 
+                }
             }
-        }
-        */
+            */
     }
 
     private void OnTriggerEnter2D(Collider2D other)

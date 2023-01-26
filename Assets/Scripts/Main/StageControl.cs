@@ -10,7 +10,6 @@ public class StageControl : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
         for (int i = 0; i < 4; i++) //‰Šú‰»ˆ—
         {
             stageObject[i] = GameObject.Find("Stage" + (i + 1).ToString() + "Objects");
@@ -20,15 +19,11 @@ public class StageControl : MonoBehaviour
 
         if (GameStart.Stage == 4)
         {
-            GetComponent<BattleMode>().enabled = true;
-            GetComponent<GameSetting>().enabled = false;
             battleModeUI[0].gameObject.SetActive(true);
             battleModeUI[1].gameObject.SetActive(true);
         }
         else
         {
-            GetComponent<BattleMode>().enabled = false;
-            GetComponent<GameSetting>().enabled = true;
             battleModeUI[0].gameObject.SetActive(false);
             battleModeUI[1].gameObject.SetActive(false);
         }
