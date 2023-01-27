@@ -8,7 +8,7 @@ using UnityEngine.SceneManagement;
 public class Controller : MonoBehaviour
 {
     [SerializeField]
-    int id;                                             // プレイヤー番号(1～4)
+    public int id;                                      // プレイヤー番号(1～4)
     [SerializeField]
     KeyCode KeyLeft, KeyRight;                          // 左右キー(キーボード使用時)
     [SerializeField]
@@ -46,7 +46,10 @@ public class Controller : MonoBehaviour
     Rigidbody2D Stickrbody2D;             // 棒のRigidbody
                                           // 親の顔
     SpriteRenderer parentSprite;//, spriteRenderer2;
+    SpriteRenderer stickSprite;
 //    public  Sprite  Face1, Face2, Face3, Face4, Face5, Face6;
+
+    bool isRespown = false;
 
 
     private Vector3 PlayerPos, StickPos, PausedPlayerPos, PausedStickPos, latestPos; //プレイヤー,棒の位置
@@ -61,6 +64,8 @@ public class Controller : MonoBehaviour
     int connected; //接続されているコントローラーの数
     string[] keyName;
     public static bool usingController = true;
+
+    GameObject deadTimer;
 
     // より構造的にするならばクラスを作って一括管理する
     /*public class _Key
@@ -84,13 +89,18 @@ public class Controller : MonoBehaviour
 
     void Start()
     {
+
+        deadTimer = GameObject.Find("P" + id.ToString() + "CountDown");
+
         if (Controllers == "")
         {
             usingController = false;
         }
 
-        // 親のスプライトを得る
+        // 親スプライト・スティックスプライトを得る
         parentSprite =  transform.parent.gameObject.GetComponent<SpriteRenderer>();
+        stickSprite  = GetComponent<SpriteRenderer>();
+
 
         //@@ これなんだろう
         RotStage = rotStage[id - 1];
@@ -126,6 +136,8 @@ public class Controller : MonoBehaviour
     // 入力は Update で行う
     void Update()
     {
+        if(isRespown){ return;}
+
         onFloor   = onSurface | onPlayer | onStick | body.onSurface | body.onPlayer | body.onStick;// 何かに接触している時は true
         onPinball = onPinball | body.onPinball; ;
         Acceleration();
@@ -140,16 +152,18 @@ public class Controller : MonoBehaviour
         ExitDelay();
         //CheckControllerState();   このやり方はやめる
 
-        var a = GameObject.Find("P1Text");
+        /*var a = GameObject.Find("P1Text");
         if(a != null)
         {
             a.GetComponent<Text>().text = "surface:" + onSurface;
-        }
+        }*/
     }
 
     // 移動は FixedUpdate で行う※Inputの入力が入りにくくなる
     void FixedUpdate()
     {
+        if(isRespown){ return;}
+
         // プレイヤー速度取得
         StickPos    = transform.position;
         Playerspeed = ((transform.parent.gameObject.transform.position - latestPos) / Time.deltaTime);
@@ -239,6 +253,65 @@ public class Controller : MonoBehaviour
         }
     }
 
+    // 死亡
+    public void StartDead()
+    {
+        isRespown = false;
+        stickSprite.enabled = false;
+        parentSprite.enabled = false;
+        StartCoroutine(Respown_());
+	}
+
+    // リスポーン
+	IEnumerator Respown_()
+    {
+        GameObject nameTag = GameObject.Find("P" + id.ToString() + "Text");
+        nameTag.SetActive(false);
+        deadTimer.SetActive(true);
+        deadTimer.transform.position = gameObject.transform.position + new Vector3(0, 0.5f, 0);
+        Text deadText = deadTimer.GetComponent<Text>();
+        deadText.text = "3";
+		yield return new WaitForSeconds(1.0f);					// 待ち時間
+        deadText.text = "2";
+		yield return new WaitForSeconds(1.0f);					// 待ち時間
+        deadText.text = "1";
+		yield return new WaitForSeconds(1.0f);					// 待ち時間
+        deadText.text = "";
+
+        stickSprite.enabled = true;
+        parentSprite.enabled = true;
+        isRespown = true;
+    /*
+        deathTimer = true;
+
+        col[i] = this.gameObject.transform.position;
+        col[i].y += 0.5f;
+        triggerCheckPos[i] = 1;
+        playerrend[i].enabled = false;
+        stickrend[i].enabled = false;
+        nameTags[i].gameObject.SetActive(false);
+
+        for (int j = 0; j < GameStart.PlayerNumber; j++)　   //死んだプレイヤーに五秒以内に触れていたプレイヤーに5ポイント(キル)
+        {
+            if (other.gameObject.name == "Player" + (j + 1).ToString())
+            {
+                if(KillSystem.killTimer[i , j] > 0)
+                {
+                    BattleMode.points[i] += 5;
+                    KillSystem.killTimer[i, j] = 0;
+                    BattleMode.KillLogTimer = 5;
+                    BattleMode.playParticle[i]  = 2;
+                    BattleMode.died.text = other.gameObject.name;
+                    for(int k = 0; k < GameStart.PlayerNumber; k++)
+                    {
+                        BattleMode.killer.text = "Player" + (k + 1).ToString();
+                    }
+                }
+            }
+        }
+        */
+    }
+
     // 感度調整 @@一旦保留
     void ChangeSensitivity()
     {
@@ -275,7 +348,6 @@ public class Controller : MonoBehaviour
         }
     }
 
-    // コリジョン
     // コリジョン
     private void OnCollisionEnter2D(Collision2D other)
     {

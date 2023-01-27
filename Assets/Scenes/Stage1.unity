@@ -408,6 +408,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78eb5dac85518cf4484f0881b0c5ef88, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  id: 1
   DEATH: {fileID: 2042542566435881784, guid: ac84c5c0438bf9c4ba95034e550c6ddc, type: 3}
 --- !u!233 &79556232
 HingeJoint2D:
@@ -3153,6 +3154,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78eb5dac85518cf4484f0881b0c5ef88, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  id: 4
   DEATH: {fileID: 2042542566435881784, guid: ac84c5c0438bf9c4ba95034e550c6ddc, type: 3}
 --- !u!1 &754314437
 GameObject:
@@ -5073,6 +5075,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78eb5dac85518cf4484f0881b0c5ef88, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  id: 3
   DEATH: {fileID: 2042542566435881784, guid: ac84c5c0438bf9c4ba95034e550c6ddc, type: 3}
 --- !u!1 &1306800593
 GameObject:
@@ -5681,7 +5684,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1396261575}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 6.492, y: -7.003, z: 0.7038097}
+  m_LocalPosition: {x: -3.21, y: -7.003, z: 0.7038097}
   m_LocalScale: {x: 0.145, y: 0.2, z: 0.2549}
   m_Children: []
   m_Father: {fileID: 1115948964}
@@ -5699,23 +5702,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f97448797874354eb3c6ce385154ac8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Player1: {fileID: 0}
-  Player2: {fileID: 0}
-  Player3: {fileID: 0}
-  Player4: {fileID: 0}
-  P1Name: {fileID: 0}
-  P2Name: {fileID: 0}
-  P3Name: {fileID: 0}
-  P4Name: {fileID: 0}
-  stickrb1: {fileID: 0}
-  stickrb2: {fileID: 0}
-  stickrb3: {fileID: 0}
-  stickrb4: {fileID: 0}
-  stickrb:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
 --- !u!60 &1396261578
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -6121,6 +6107,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78eb5dac85518cf4484f0881b0c5ef88, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  id: 2
   DEATH: {fileID: 2042542566435881784, guid: ac84c5c0438bf9c4ba95034e550c6ddc, type: 3}
 --- !u!1 &1447143070
 GameObject:
@@ -6566,23 +6553,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f97448797874354eb3c6ce385154ac8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Player1: {fileID: 0}
-  Player2: {fileID: 0}
-  Player3: {fileID: 0}
-  Player4: {fileID: 0}
-  P1Name: {fileID: 0}
-  P2Name: {fileID: 0}
-  P3Name: {fileID: 0}
-  P4Name: {fileID: 0}
-  stickrb1: {fileID: 0}
-  stickrb2: {fileID: 0}
-  stickrb3: {fileID: 0}
-  stickrb4: {fileID: 0}
-  stickrb:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
 --- !u!1 &1520593261
 GameObject:
   m_ObjectHideFlags: 0
@@ -6812,7 +6782,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1533904274}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 7.569, y: -2.508, z: 0}
+  m_LocalPosition: {x: -5.02, y: -4.29, z: -0.1}
   m_LocalScale: {x: 0.3985163, y: 0.39851633, z: 0.39851633}
   m_Children: []
   m_Father: {fileID: 0}

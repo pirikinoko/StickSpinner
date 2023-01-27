@@ -125,18 +125,21 @@ public class GameSetting : MonoBehaviour
     void Update()
     {
         SwichUI();
-        StartTimer();   
-        RespownTimer();
+        StartTimer();
+        //RespownTimer();
     }
+
+
     void RespownTimer()
     {
         //リスポーンタイマー
-        for (int i = 0; i < GameStart.PlayerNumber; i++)
+        /*for (int i = 0; i < GameStart.PlayerNumber; i++)
         {
             if (deathTimer[i])
             {
                 countTextGO[i].gameObject.SetActive(true);
-                countTextGO[i].gameObject.transform.position = Thorn.col[i];
+                //@@これなんだろう?
+                //countTextGO[i].gameObject.transform.position = Thorn.col[i];
                 respownTimer[i] -= Time.deltaTime;
                 SoundTime -= Time.deltaTime;
                 if (respownTimer[i] > 2)
@@ -164,8 +167,10 @@ public class GameSetting : MonoBehaviour
                     SoundTime = 1;
                 }
             }
-        }
+        }*/
     }
+
+
     void StartTimer()
     {
         //タイム

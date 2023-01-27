@@ -4,10 +4,11 @@ using UnityEngine;
 using UnityEngine.UI;
 
 
-
-    
     public class Body : MonoBehaviour
     {
+        [SerializeField]
+        public int id;                                             // プレイヤー番号(1～4)
+
         public GameObject DEATH;
 
         // 内部で使うもの

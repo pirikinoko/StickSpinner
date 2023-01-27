@@ -9,10 +9,11 @@ public class Thorn : MonoBehaviour
     Vector2 CheckPos;
     public static byte[] triggerCheckPos{ get; set;} = new byte[GameStart.MaxPlayer];
     public static bool[] respownTrigger{  get; set;} = new bool[GameStart.MaxPlayer];
-    public GameObject Player1, Player2, Player3, Player4, P1Name, P2Name, P3Name, P4Name;
+//    public GameObject Player1, Player2, Player3, Player4, P1Name, P2Name, P3Name, P4Name;
 
     GameObject[] players  = new GameObject[GameStart.MaxPlayer];
     GameObject[] nameTags = new GameObject[GameStart.MaxPlayer];
+    Rigidbody2D[] stickrb = new Rigidbody2D[GameStart.MaxPlayer];
 
     /*@@ 保留  Renderer2D のことでは?
     public Renderer p1, p2 ,p3 ,p4 ,s1 ,s2, s3, s4;
@@ -20,17 +21,24 @@ public class Thorn : MonoBehaviour
     public Renderer[] stickrend  = new Renderer[GameStart.MaxPlayer];
     */
 
-    public Rigidbody2D stickrb1, stickrb2, stickrb3, stickrb4;
-    public Rigidbody2D[] stickrb = new Rigidbody2D[GameStart.MaxPlayer];
-    public static Vector2[] col  = new Vector2[GameStart.MaxPlayer];
+    //public Rigidbody2D stickrb1, stickrb2, stickrb3, stickrb4;
+    //public Rigidbody2D[] stickrb = new Rigidbody2D[GameStart.MaxPlayer];
+    //public static Vector2[] col  = new Vector2[GameStart.MaxPlayer];
 
 
     void Start()
     {
-        //配列に代入
-        players  = new GameObject[] {  Player1,  Player1,  Player1,  Player4 };
-        nameTags = new GameObject[] {  P1Name,   P2Name,   P3Name,   P4Name };
-        stickrb  = new Rigidbody2D[] { stickrb1, stickrb2, stickrb3, stickrb4 };
+        // 配列に代入
+        for(int i = 0; i < GameStart.MaxPlayer; i++)
+        {
+            players[ i] = GameObject.Find("Player" + (i + 1).ToString());
+            nameTags[i] = GameObject.Find("P" + (i + 1).ToString() + "Text");
+            stickrb[i]  = GameObject.Find("Stick"  + (i + 1).ToString()).GetComponent<Rigidbody2D>();
+		}
+
+        //players  = new GameObject[] {  Player1,  Player1,  Player1,  Player4 };
+        //nameTags = new GameObject[] {  P1Name,   P2Name,   P3Name,   P4Name };
+        //stickrb  = new Rigidbody2D[] { stickrb1, stickrb2, stickrb3, stickrb4 };
         /*@@
         playerrend[0] = p1;
         playerrend[1] = p2;
@@ -81,14 +89,30 @@ public class Thorn : MonoBehaviour
         */
     }
 
+    // コリジョン
     private void OnTriggerEnter2D(Collider2D other)
     {
-    /*@@
-        //トゲで死亡
+        // プレイヤーとの判定
         if (other.gameObject.CompareTag("Player"))
         {
             SoundEffect.DyukushiTrigger = 1;  //効果音
+
+            Body bdy = other.gameObject.GetComponent<Body>();
+            // Stick1 をとる
+            Controller cnt = other.gameObject.transform.GetChild(0).GetComponent<Controller>();
+            cnt.StartDead();
+
+            int id = bdy.id - 1;
+            //GameSetting.deathTimer[id] = true;
+            //col[id]    = gameObject.transform.position;
+            //col[id].y += 0.5f;
+            triggerCheckPos[id] = 1;
+            //playerrend[id].enabled = false;
+            //stickrend[ id].enabled = false;
+            nameTags[  id].gameObject.SetActive(false);
         }
+        /*
+
         for (int i = 1; i < GameStart.PlayerNumber; i++)
         {
             if (other.gameObject.name == "Player" + (i + 1).ToString() && playerrend[i].enabled == true)　//リスポーンまでプレイヤーが見えなくなる
