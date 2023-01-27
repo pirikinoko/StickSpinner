@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using System;
 
-public class Goal : MonoBehaviour
+public class GameMode : MonoBehaviour
 {
     //Šî–{
     public static string[] goaledPlayer{ get; set;} = new string[GameStart.MaxPlayer];

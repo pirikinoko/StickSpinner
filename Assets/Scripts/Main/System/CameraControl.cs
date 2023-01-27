@@ -161,9 +161,9 @@ public class CameraControl : MonoBehaviour
     {
         for (int i = 0; i < GameStart.PlayerNumber; i++)
         {
-            if (Goal.goaledPlayer[i] != null)
+            if (GameMode.goaledPlayer[i] != null)
             {
-                int num = int.Parse(Goal.goaledPlayer[i].Substring(6)) - 1; // Player‚Ì”Ô†‚ðŽæ“¾
+                int num = int.Parse(GameMode.goaledPlayer[i].Substring(6)) - 1; // Player‚Ì”Ô†‚ðŽæ“¾
                 playerActive[num] = false;
                 if(playerActive[i] == false)
                 {

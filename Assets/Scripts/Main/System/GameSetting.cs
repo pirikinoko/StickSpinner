@@ -64,8 +64,6 @@ public class GameSetting : MonoBehaviour
             PlayTime = 90;
             elapsedTime = 90;
         }
-        Goal.Goaled = false;
-        BattleMode.Finished = false;
         SoundTime = 1f;
         StartTime = 3f;
         Playable = false;
