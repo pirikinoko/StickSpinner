@@ -27,6 +27,7 @@ public class Trigger : MonoBehaviour
                 if (other.gameObject.name == "Player" + (i + 1).ToString())
                 {
                     CheckPoint.respownPos[i] = other.gameObject.transform.position;
+                    Debug.Log("CheckPointÇê›íË");
                 }
             }
         }

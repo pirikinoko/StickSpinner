@@ -52,7 +52,7 @@ public class Controller : MonoBehaviour
 
 
     private Vector3 PlayerPos, StickPos, PausedPlayerPos, PausedStickPos, latestPos; //プレイヤー,棒の位置
-    private Vector2 Playerspeed, PausedPlayerspeed;//プレイヤー速度,ポーズ直前のプレイヤー速度
+    private Vector2 Playerspeed, PausedPlayerspeed, deadPlayerPos;//プレイヤー速度,ポーズ直前のプレイヤー速度
     private float   SavePausedPos = 0; // ポーズ処理に使用
     private Body    body;
     /*　/ゲームオブジェクトなど  */
@@ -63,7 +63,7 @@ public class Controller : MonoBehaviour
     int connected; //接続されているコントローラーの数
     string[] keyName;
     public static bool usingController = true;
-
+    GameObject bodyObj;     
     GameObject deadTimer;
     SpriteRenderer stickSprite;                 // スティックスプライト
     GameObject nameTag;                         // 名前のゲームオブジェクト
@@ -100,7 +100,7 @@ public class Controller : MonoBehaviour
         // 親スプライト・スティックスプライトを得る
         parentSprite =  transform.parent.gameObject.GetComponent<SpriteRenderer>();
         stickSprite  = GetComponent<SpriteRenderer>();
-
+        bodyObj = transform.parent.gameObject;
         // カウントダウンタイマー
         deadTimer = GameObject.Find("P" + id.ToString() + "CountDown");
 
@@ -141,11 +141,15 @@ public class Controller : MonoBehaviour
         onFloor   = onSurface | onPlayer | onStick | body.onSurface | body.onPlayer | body.onStick;// 何かに接触している時は true
         onPinball = onPinball | body.onPinball; ;
         Acceleration();
-        if (GameSetting.Playable && ButtonInGame.Paused != 1 || GameStart.inDemoPlay) //プレイヤー数選択画面でも操作可能
+        if (isRespown)
         {
-            Jump();
+            if (GameSetting.Playable && ButtonInGame.Paused != 1 || GameStart.inDemoPlay) //プレイヤー数選択画面でも操作可能
+            {
+                Jump();
+            }
+            Move();
         }
-        Move();
+    
         ChangeSensitivity();
         getControllerType();
         InputControllerButton();
@@ -256,6 +260,13 @@ public class Controller : MonoBehaviour
     // リスポーン
 	IEnumerator Respown()
     {
+        //他のプレイヤーの邪魔にならないよう当たり判定OFF
+        this.GetComponent<BoxCollider2D>().enabled = false;
+        bodyObj.GetComponent<BoxCollider2D>().enabled = false;
+        //位置固定
+        Rigidbody2D bodyRb2D = bodyObj.GetComponent<Rigidbody2D>();
+        bodyRb2D.constraints = RigidbodyConstraints2D.FreezeAll;
+
         nameTag.SetActive(false);
         deadTimer.SetActive(true);
         deadTimer.transform.position = gameObject.transform.position + new Vector3(0, 0.5f, 0);
@@ -268,8 +279,14 @@ public class Controller : MonoBehaviour
 		yield return new WaitForSeconds(1.0f);					// 待ち時間
         deadText.text = "";
 
-        //@@ここでリスポーン後の座標を設定する
 
+        //当たり判定O
+        this.GetComponent<BoxCollider2D>().enabled = true;
+        bodyObj.GetComponent<BoxCollider2D>().enabled = true;
+        //位置固定解除
+        bodyRb2D.constraints = RigidbodyConstraints2D.None; bodyRb2D.constraints = RigidbodyConstraints2D.FreezeRotation;
+        //チェックポイントにリスポーン
+        bodyObj.transform.position = CheckPoint.respownPos[id - 1];
 
         stickSprite.enabled = true;
         parentSprite.enabled = true;
@@ -277,7 +294,7 @@ public class Controller : MonoBehaviour
     }
 
 
-    // 感度調整 @@一旦保留
+    // 感度調整 @@一旦保留また、リスポーン後のプレイヤー位置がCheckPoint.csに設定されているのでそこに移動させるのですが移動させる際にプレイヤーと棒がばらけてしまうようです...
     void ChangeSensitivity()
     {
         if (GameStart.inDemoPlay) //プレイヤー数選択画面でのみ操作可能
