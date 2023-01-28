@@ -109,9 +109,11 @@ public class GameSetting : MonoBehaviour
     {
         SwichUI();
         StartTimer();   
-        RespownTimer();
+        //RespownTimer();
     }
-    void RespownTimer()
+
+    // プレイヤーの復活カウントダウンは Controller.cs へ移動
+    /*void RespownTimer()
     {
         //リスポーンタイマー
         for (int i = 0; i < GameStart.PlayerNumber; i++)
@@ -148,7 +150,10 @@ public class GameSetting : MonoBehaviour
                 }
             }
         }
-    }
+    }*/
+
+
+
     void StartTimer()
     {
 

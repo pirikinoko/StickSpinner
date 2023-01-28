@@ -8,7 +8,7 @@ using UnityEngine.SceneManagement;
 public class Controller : MonoBehaviour
 {
     [SerializeField]
-    int id;                                             // プレイヤー番号(1～4)
+    public int id;                                      // プレイヤー番号(1～4)
     [SerializeField]
     KeyCode KeyLeft, KeyRight;                          // 左右キー(キーボード使用時)
     [SerializeField]
@@ -48,6 +48,8 @@ public class Controller : MonoBehaviour
     SpriteRenderer parentSprite;//, spriteRenderer2;
 //    public  Sprite  Face1, Face2, Face3, Face4, Face5, Face6;
 
+    bool isRespown = false;
+
 
     private Vector3 PlayerPos, StickPos, PausedPlayerPos, PausedStickPos, latestPos; //プレイヤー,棒の位置
     private Vector2 Playerspeed, PausedPlayerspeed;//プレイヤー速度,ポーズ直前のプレイヤー速度
@@ -61,6 +63,10 @@ public class Controller : MonoBehaviour
     int connected; //接続されているコントローラーの数
     string[] keyName;
     public static bool usingController = true;
+
+    GameObject deadTimer;
+    SpriteRenderer stickSprite;                 // スティックスプライト
+    GameObject nameTag;                         // 名前のゲームオブジェクト
 
     // より構造的にするならばクラスを作って一括管理する
     /*public class _Key
@@ -88,11 +94,17 @@ public class Controller : MonoBehaviour
         {
             usingController = false;
         }
+        // 名前
+        nameTag = GameObject.Find("P" + id.ToString() + "Text");
 
-        // 親のスプライトを得る
+        // 親スプライト・スティックスプライトを得る
         parentSprite =  transform.parent.gameObject.GetComponent<SpriteRenderer>();
+        stickSprite  = GetComponent<SpriteRenderer>();
 
-        //@@ これなんだろう
+        // カウントダウンタイマー
+        deadTimer = GameObject.Find("P" + id.ToString() + "CountDown");
+
+        // これなんだろう
         RotStage = rotStage[id - 1];
         //RotSpeed = rotSpeed[id - 1];
 
@@ -116,7 +128,7 @@ public class Controller : MonoBehaviour
 		}
 
         // ステージならば spriteRenderer.sprite をコピーする。これで処理がすっきりする
-/*@@        if (GameStart.Stage == 4 && GameSetting.Playable)
+/*      if (GameStart.Stage == 4 && GameSetting.Playable)
         {
             spriteRenderer2.sprite = spriteRenderer.sprite;
         }
@@ -229,9 +241,41 @@ public class Controller : MonoBehaviour
             float horizotalValue = Input.GetAxis("Horizontal");
             if (Input.GetKey(KeyRight) || horizotalValue >=  0.1f) { StickRot -= RotSpeed * Time.deltaTime; }
             if (Input.GetKey(KeyLeft)  || horizotalValue <= -0.1f) { StickRot += RotSpeed * Time.deltaTime; }
-            //StickRot %= 360f;                               // 360 で割った時のあまりを求める
         }
     }
+
+    // 死亡
+    public void StartDead()
+    {
+        isRespown = false;
+        stickSprite.enabled = false;
+        parentSprite.enabled = false;
+        StartCoroutine(Respown());
+	}
+
+    // リスポーン
+	IEnumerator Respown()
+    {
+        nameTag.SetActive(false);
+        deadTimer.SetActive(true);
+        deadTimer.transform.position = gameObject.transform.position + new Vector3(0, 0.5f, 0);
+        Text deadText = deadTimer.GetComponent<Text>();
+        deadText.text = "3";
+		yield return new WaitForSeconds(1.0f);					// 待ち時間
+        deadText.text = "2";
+		yield return new WaitForSeconds(1.0f);					// 待ち時間
+        deadText.text = "1";
+		yield return new WaitForSeconds(1.0f);					// 待ち時間
+        deadText.text = "";
+
+        //@@ここでリスポーン後の座標を設定する
+
+
+        stickSprite.enabled = true;
+        parentSprite.enabled = true;
+        isRespown = true;
+    }
+
 
     // 感度調整 @@一旦保留
     void ChangeSensitivity()
@@ -272,12 +316,11 @@ public class Controller : MonoBehaviour
     // コリジョン
     private void OnCollisionEnter2D(Collision2D other)
     {
-        //@@ if (other.gameObject.CompareTag("Surface")) { SoundEffect.BonTrigger = 1;/*効果音*/}
+        if (other.gameObject.CompareTag("Surface")) { SoundEffect.BonTrigger = 1;}
         if (onPinball && other.gameObject.CompareTag("Surface")) { Stickrbody2D.velocity = -Playerspeed * 2; } //ピンボールゾーンでの床との接触時反発
     }
     private void OnCollisionStay2D(Collision2D other)
     {
-
         if (other.gameObject.CompareTag("Surface")) { onSurface = true; delay = 0.1f; delayFlag = false; }
         if (other.gameObject.CompareTag("Player"))  { onPlayer = true; }
         if (other.gameObject.CompareTag("Stick"))   { onStick = true; }
@@ -288,12 +331,9 @@ public class Controller : MonoBehaviour
     }
     private void OnCollisionExit2D(Collision2D other)
     {
-        
-
-            if (other.gameObject.CompareTag("Surface")) { delay = 0.1f;  delayFlag = true; }
-            if (other.gameObject.CompareTag("Player")) { onPlayer = false; }
-            if (other.gameObject.CompareTag("Stick")) { onStick = false; }
-           
+        if (other.gameObject.CompareTag("Surface")) { delay = 0.1f;  delayFlag = true; }
+        if (other.gameObject.CompareTag("Player")) { onPlayer = false; }
+        if (other.gameObject.CompareTag("Stick")) { onStick = false; }
     }
     void OnTriggerExit2D(Collider2D collision)
     {
@@ -338,7 +378,6 @@ public class Controller : MonoBehaviour
         {//@@
             Controllers = CheckControllerName(joystickNames[i]);
         }
-
     }
 
     //コントローラーの名前によって種類を判別
