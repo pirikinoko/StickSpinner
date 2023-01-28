@@ -9,7 +9,7 @@ public class Trigger : MonoBehaviour
     float   pointTimer;
     //public static float[,] killTimer = new float[4, 4];
     int playerId;                   // プレイヤー番号(1～4)
-    int otherId = 0;                // 当たった相手のプレイヤー(1～4)
+    //int otherId = 0;                // 当たった相手のプレイヤー(1～4)
 
     void Start()
     {
@@ -33,7 +33,7 @@ public class Trigger : MonoBehaviour
         //
         if (gameObject.name.Contains("CheckPos"))
         {
-            CheckPoint.respownPos[playerId] = other.gameObject.transform.position;
+            GameSetting.respownPos[playerId] = other.gameObject.transform.position;
             Debug.Log("P" + playerId.ToString() + "のCheckPointを設定");
         }
 

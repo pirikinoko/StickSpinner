@@ -10,9 +10,11 @@ public class GameSetting : MonoBehaviour
     //基本
     [SerializeField]
     Text CountDown, playTime;
+    
     public GameObject CountDownGO, ControllerUI1, ControllerUI2, ControllerUI3;
-    GameObject[] players = new GameObject[GameStart.MaxPlayer];
-    GameObject[] sticks = new GameObject[GameStart.MaxPlayer];
+
+    GameObject[] players  = new GameObject[GameStart.MaxPlayer];
+    GameObject[] sticks   = new GameObject[GameStart.MaxPlayer];
     GameObject[] nameTags = new GameObject[GameStart.MaxPlayer];
     GameObject[] countTextGO = new GameObject[GameStart.MaxPlayer];
     Text[]    nameTagText    = new Text[   GameStart.MaxPlayer];
@@ -20,14 +22,14 @@ public class GameSetting : MonoBehaviour
     Vector2[,] startPos = new Vector2[GameStart.MaxPlayer, GameStart.MaxPlayer];
     public static bool Playable = false;
     public Text[] timer = new Text[GameStart.MaxPlayer];
-    //public Text CountDown, playTime;
     float elapsedTime;
     public static float PlayTime;
     public static float StartTime = 3f;
     float SoundTime = 1f;
     bool  StartFlag;
+
     //リスポーンタイマー
-    float[] respownTimer = new float[GameStart.MaxPlayer];
+    //float[] respownTimer = new float[GameStart.MaxPlayer];
 
     public static bool[] deathTimer = new bool[GameStart.MaxPlayer];
     //UI切り替え用
@@ -36,7 +38,12 @@ public class GameSetting : MonoBehaviour
     const int ControllerMode = 6;
 
 
-    // Start is called before the first frame update
+    public static Vector2[] respownPos = new Vector2[GameStart.MaxPlayer];
+    GameObject[] defaultPlayerPos = new GameObject[GameStart.MaxPlayer];
+
+
+
+
     void Start()
     {
         GameStart.Stage = 1;
@@ -44,7 +51,7 @@ public class GameSetting : MonoBehaviour
         for (int i = 0; i < GameStart.MaxPlayer; i++) //初期化処理
         {
             deathTimer[i] = false;
-            respownTimer[i] = 3.0f;
+            //respownTimer[i] = 3.0f;
             nameTags[i] = GameObject.Find("P" + (i + 1).ToString() + "Text");
             players[i] = GameObject.Find("Player" + (i + 1).ToString());
             sticks[i] = GameObject.Find("Stick" + (i + 1).ToString());
@@ -71,6 +78,14 @@ public class GameSetting : MonoBehaviour
         CountDown.text = ("3");
         SoundEffect.BunTrigger = 1;
 
+        // リスポーン位置
+        for (int i = 0; i < GameStart.MaxPlayer; i++)
+        {
+            defaultPlayerPos[i] = GameObject.Find("DefaultPlayerPos" + (i + 1).ToString());
+            respownPos[i]       = defaultPlayerPos[i].gameObject.transform.position;
+            defaultPlayerPos[i].gameObject.SetActive(false);
+        }
+
         //プレイヤー人数の反映
         {
             int i = 0;
@@ -80,10 +95,9 @@ public class GameSetting : MonoBehaviour
                 players[i].gameObject.SetActive(true);
                 sticks[i].gameObject.SetActive(true);
                 //初期位置
-                players[i].gameObject.transform.position = CheckPoint.respownPos[i];
-                sticks[i].gameObject.transform.position =  CheckPoint.respownPos[i];
+                players[i].gameObject.transform.position = respownPos[i];
+                sticks[i].gameObject.transform.position  = respownPos[i];
             }
-
             // プレイヤー人数の反映
             for ( ; i < GameStart.MaxPlayer; i++)
             {
@@ -93,70 +107,23 @@ public class GameSetting : MonoBehaviour
             }
         }
 
-        //
         GameStart.inDemoPlay = false;
     }
-
-
-
 
     void FixedUpdate()
     {
         NameTagPos();
     }
-    // Update is called once per frame
+
     void Update()
     {
         SwichUI();
         StartTimer();   
-        //RespownTimer();
     }
-
-    // プレイヤーの復活カウントダウンは Controller.cs へ移動
-    /*void RespownTimer()
-    {
-        //リスポーンタイマー
-        for (int i = 0; i < GameStart.PlayerNumber; i++)
-        {
-            if (deathTimer[i])
-            {
-                countTextGO[i].gameObject.SetActive(true);
-                countTextGO[i].gameObject.transform.position = Thorn.col[i];
-                respownTimer[i] -= Time.deltaTime;
-                SoundTime -= Time.deltaTime;
-                if (respownTimer[i] > 2)
-                {
-                    timer[i].text = ("3");
-                }
-                else if (respownTimer[i] > 1)
-                {
-                    timer[i].text = ("2");
-                }
-                else if (respownTimer[i] > 0)
-                {
-                    timer[i].text = ("1");
-                }
-                else if (respownTimer[i] < 0f)
-                {
-                    timer[i].text = ("");
-                    deathTimer[i] = false;
-                    respownTimer[i] = 3.0f;
-                    Thorn.respownTrigger[i] = true;
-                }
-                if (SoundTime < 0)
-                {
-                    SoundEffect.BunTrigger = 1;
-                    SoundTime = 1;
-                }
-            }
-        }
-    }*/
-
 
 
     void StartTimer()
     {
-
         //タイム
         if (StartFlag)
         {
@@ -207,8 +174,8 @@ public class GameSetting : MonoBehaviour
             PlayTime = Mathf.Floor(PlayTime) / 10;
             playTime.text = ("タイム:" + PlayTime);
         }
-
     }
+
     void NameTagPos()
     {
         //ネームタグの位置
@@ -219,6 +186,7 @@ public class GameSetting : MonoBehaviour
             nameTags[i].transform.position = nameTagPos[i];
         }
     }
+
     void SwichUI()
     {
         //キーボードマウス用UIとコントローラー用UIの切り替え
@@ -230,7 +198,6 @@ public class GameSetting : MonoBehaviour
         {
             UIMode = KeyboardMode;
         }
-
         if (UIMode == KeyboardMode)
         {
             ControllerUI1.gameObject.SetActive(false);

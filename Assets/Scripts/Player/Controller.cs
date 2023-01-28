@@ -265,7 +265,7 @@ public class Controller : MonoBehaviour
         //位置固定解除
         bodyRb2D.constraints = RigidbodyConstraints2D.None; bodyRb2D.constraints = RigidbodyConstraints2D.FreezeRotation;
         //チェックポイントにリスポーン
-        bodyObj.transform.position = CheckPoint.respownPos[id - 1];
+        bodyObj.transform.position = GameSetting.respownPos[id - 1];
 
         stickSprite.enabled = true;
         parentSprite.enabled = true;
