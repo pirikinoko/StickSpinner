@@ -5344,7 +5344,6 @@ GameObject:
   - component: {fileID: 217808858}
   - component: {fileID: 217808861}
   - component: {fileID: 217808859}
-  - component: {fileID: 217808860}
   m_Layer: 0
   m_Name: CheckPos.3
   m_TagString: Untagged
@@ -5392,18 +5391,6 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 41.145622, y: 7.2786226}
   m_EdgeRadius: 0
---- !u!114 &217808860
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 217808857}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ddaa81bcb4d6ee84bb5583d36b43e75e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!212 &217808861
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -6162,7 +6149,6 @@ GameObject:
   - component: {fileID: 243037544}
   - component: {fileID: 243037547}
   - component: {fileID: 243037545}
-  - component: {fileID: 243037546}
   m_Layer: 0
   m_Name: CheckPos.2
   m_TagString: Untagged
@@ -6210,18 +6196,6 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 10.24577, y: 7.844284}
   m_EdgeRadius: 0
---- !u!114 &243037546
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 243037543}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ddaa81bcb4d6ee84bb5583d36b43e75e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!212 &243037547
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -24286,7 +24260,6 @@ GameObject:
   - component: {fileID: 1208039204}
   - component: {fileID: 1208039207}
   - component: {fileID: 1208039205}
-  - component: {fileID: 1208039206}
   m_Layer: 0
   m_Name: CheckPos.4
   m_TagString: Untagged
@@ -24334,18 +24307,6 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 9.003759, y: 7.8442783}
   m_EdgeRadius: 0
---- !u!114 &1208039206
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1208039203}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ddaa81bcb4d6ee84bb5583d36b43e75e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!212 &1208039207
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -30803,7 +30764,7 @@ MonoBehaviour:
   Bun: {fileID: 8300000, guid: d2045237b14f2ea4081ccfa442b5e1d3, type: 3}
   Cha: {fileID: 8300000, guid: b3a481c4cafeded49921806debc5681d, type: 3}
   Powan: {fileID: 8300000, guid: c64a96ec2db90b3489125aa81ffeedb9, type: 3}
-  Kin: {fileID: 0}
+  Kin: {fileID: 8300000, guid: 7c0b0e9a3b8450a44899e417488b0cba, type: 3}
   Kirarin: {fileID: 0}
   SEText: {fileID: 1317461744}
 --- !u!4 &1520593264
@@ -37209,7 +37170,6 @@ GameObject:
   - component: {fileID: 1798557837}
   - component: {fileID: 1798557836}
   - component: {fileID: 1798557838}
-  - component: {fileID: 1798557835}
   m_Layer: 0
   m_Name: CheckPos.1
   m_TagString: Untagged
@@ -37217,18 +37177,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1798557835
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1798557834}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ddaa81bcb4d6ee84bb5583d36b43e75e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!212 &1798557836
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -74063,7 +74011,6 @@ GameObject:
   - component: {fileID: 1941977993}
   - component: {fileID: 1941977996}
   - component: {fileID: 1941977994}
-  - component: {fileID: 1941977995}
   m_Layer: 0
   m_Name: CheckPos.1
   m_TagString: Untagged
@@ -74111,18 +74058,6 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 56.871597, y: 23.310488}
   m_EdgeRadius: 0
---- !u!114 &1941977995
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1941977992}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ddaa81bcb4d6ee84bb5583d36b43e75e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!212 &1941977996
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -75931,7 +75866,6 @@ GameObject:
   - component: {fileID: 2028463372}
   - component: {fileID: 2028463375}
   - component: {fileID: 2028463373}
-  - component: {fileID: 2028463374}
   m_Layer: 0
   m_Name: PointArea
   m_TagString: Untagged
@@ -75974,18 +75908,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 7
---- !u!114 &2028463374
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2028463371}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ddaa81bcb4d6ee84bb5583d36b43e75e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!61 &2028463375
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -76987,7 +76909,6 @@ GameObject:
   - component: {fileID: 2085349617}
   - component: {fileID: 2085349620}
   - component: {fileID: 2085349618}
-  - component: {fileID: 2085349619}
   m_Layer: 0
   m_Name: CheckPos.1
   m_TagString: Untagged
@@ -77035,18 +76956,6 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 19.704199, y: 22.076904}
   m_EdgeRadius: 0
---- !u!114 &2085349619
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2085349616}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ddaa81bcb4d6ee84bb5583d36b43e75e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!212 &2085349620
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -77782,7 +77691,6 @@ GameObject:
   - component: {fileID: 2099150046}
   - component: {fileID: 2099150049}
   - component: {fileID: 2099150047}
-  - component: {fileID: 2099150048}
   m_Layer: 0
   m_Name: CheckPos.2
   m_TagString: Untagged
@@ -77830,18 +77738,6 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 19.704199, y: 23.618889}
   m_EdgeRadius: 0
---- !u!114 &2099150048
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2099150045}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ddaa81bcb4d6ee84bb5583d36b43e75e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!212 &2099150049
 SpriteRenderer:
   m_ObjectHideFlags: 0

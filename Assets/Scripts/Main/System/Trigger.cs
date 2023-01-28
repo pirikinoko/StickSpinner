@@ -37,18 +37,27 @@ public class Trigger : MonoBehaviour
             Debug.Log("P" + playerId.ToString() + "‚ÌCheckPoint‚ðÝ’è");
         }
 
-        if (gameObject.name.Contains("Point"))
+        if (this.gameObject.name.Contains("Player"))
         {
-            if (GameSetting.PlayTime > 0 && ButtonInGame.Paused != 1)
+            if (other.gameObject.name.Contains("Point"))
             {
-                 pointTimer += Time.deltaTime;
-                 if (pointTimer > 2)
-                 {
-                    SoundEffect.KinTrigger = 1;
-                    GameMode.points[playerId] += 1;
-                    GameMode.playParticle[playerId] = 1;
-                    pointTimer = 0;
+
+                {
+                    if (GameSetting.PlayTime > 0 && ButtonInGame.Paused != 1)
+                    {
+                        pointTimer += Time.deltaTime;
+                        if (pointTimer > 2)
+                        {
+                            SoundEffect.KinTrigger = 1;
+                            GameMode.points[playerId] += 1;
+                            GameMode.playParticle[playerId] = 1;
+                            pointTimer = 0;
+                        }
+                    }
+
+
                 }
+
             }
         }
     }

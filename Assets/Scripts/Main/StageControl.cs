@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class StageControl : MonoBehaviour
 {
-
     GameObject[] stageObject = new GameObject[4];
     [SerializeField] GameObject[] battleModeUI = new GameObject[2];
     // Start is called before the first frame update
