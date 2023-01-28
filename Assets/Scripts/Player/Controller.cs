@@ -13,9 +13,9 @@ public class Controller : MonoBehaviour
     KeyCode KeyLeft, KeyRight;                          // 左右キー(キーボード使用時)
     [SerializeField]
     float RotSpeed = 160f;                              // 棒の回転速度
-
     [SerializeField]
     float CoolTime_ = 0.2f;                             // ジャンプのクールタイム
+
     float RotStage = 10;                                // 棒の回転速度0-20段階
     float StickRot = 0f;                                // 棒の角度
     float jumpforce = 8.3f;                             // ジャンプ力
@@ -32,21 +32,19 @@ public class Controller : MonoBehaviour
     //[SerializeField]
     //float RotSpeed_ = 160f, RotStage_ = 10;
 
-    int Face {get; set;}                                // 顔設定用乱数を入れておく1～100
-
-    // ゲームオブジェクトなど
     [SerializeField]
     Text SensText;
 
     [SerializeField]
-    Sprite[] aryFace = new Sprite[6];
+    Sprite[] aryFace = new Sprite[6];                   
 
+
+     int Face {get; set;}                                // 顔設定用乱数を入れておく1～100
 
     string padHorizontalName, padJumpName, padChangeSensName, XpadJumpName; // ゲームパット名
     Rigidbody2D Stickrbody2D;             // 棒のRigidbody
                                           // 親の顔
     SpriteRenderer parentSprite;//, spriteRenderer2;
-//    public  Sprite  Face1, Face2, Face3, Face4, Face5, Face6;
 
     bool isRespown = false;
 
@@ -67,23 +65,6 @@ public class Controller : MonoBehaviour
     GameObject deadTimer;
     SpriteRenderer stickSprite;                 // スティックスプライト
     GameObject nameTag;                         // 名前のゲームオブジェクト
-
-    // より構造的にするならばクラスを作って一括管理する
-    /*public class _Key
-    {
-        public string Controller;
-        public bool   start, startHold;       // 同じような項目は横並びに並べる
-        public bool   next, nextHold;
-        public bool   back, backHold;
-        public bool   plus, plusHold;
-        public bool   minus, minusHold;
-        public bool   jump, jumpHold;         // ジャンプも Hold　があったほうがいい
-        public float  horizontal;
-        public float  X;                     // crossXReception だと長いのでこれくらいでいいと思う
-        public float  Y;
-    }*/
-
-    //public _Key playerKey { get; set; } = new _Key();
 
     readonly int[] aryFaceRatio = { 25, 50, 70, 88, 94, 100};   // 顔の変化用
 
@@ -108,6 +89,7 @@ public class Controller : MonoBehaviour
         RotStage = rotStage[id - 1];
         //RotSpeed = rotSpeed[id - 1];
 
+        isRespown    = false;
         StickRot     = 0f;
         CoolTime     = 0.0f;
         onSurface    = false;
@@ -141,7 +123,7 @@ public class Controller : MonoBehaviour
         onFloor   = onSurface | onPlayer | onStick | body.onSurface | body.onPlayer | body.onStick;// 何かに接触している時は true
         onPinball = onPinball | body.onPinball; ;
         Acceleration();
-        if (isRespown)
+        if (!isRespown)
         {
             if (GameSetting.Playable && ButtonInGame.Paused != 1 || GameStart.inDemoPlay) //プレイヤー数選択画面でも操作可能
             {
@@ -154,7 +136,6 @@ public class Controller : MonoBehaviour
         getControllerType();
         InputControllerButton();
         ExitDelay();
-        //CheckControllerState();   このやり方はやめる
     }
 
     // 移動は FixedUpdate で行う※Inputの入力が入りにくくなる
@@ -216,7 +197,6 @@ public class Controller : MonoBehaviour
             if (rotZ <   0) { rotZ += 360; }// 0 度未満なら正の値にする
             if (rotZ > 180) { rotZ -= 180; }//上に向いているほうの棒の角度のみ取得
 
-
             float jumpDirection;                        // 棒の回転値に合わせて飛ぶ方向を求める
             if (rotZ < 180) { jumpDirection = 6; }
             else { jumpDirection = 18; }
@@ -233,7 +213,6 @@ public class Controller : MonoBehaviour
 
             // クールタイム(この時間は入力を受け付けない)
             CoolTime = CoolTime_;
-            //playerKey.jump = false;
         }
     }
 
@@ -294,7 +273,7 @@ public class Controller : MonoBehaviour
     }
 
 
-    // 感度調整 @@一旦保留また、リスポーン後のプレイヤー位置がCheckPoint.csに設定されているのでそこに移動させるのですが移動させる際にプレイヤーと棒がばらけてしまうようです...
+    // 感度調整 @@一旦保留
     void ChangeSensitivity()
     {
         if (GameStart.inDemoPlay) //プレイヤー数選択画面でのみ操作可能
@@ -307,7 +286,7 @@ public class Controller : MonoBehaviour
             if (horizotalValue <= -0.1f && inputCrossX == false) { RotStage -= 1; inputCrossX = true; }
 
             RotSpeed = 120 + RotStage * 4;  // 120 + 4 * 10(RotStage初期値) = 160をベースに感度ステージごとに4変更
-            SensText.text = rotStage[id - 1].ToString();
+            //@@SensText.text = rotStage[id - 1].ToString();
             for (int i = 0; i < GameStart.PlayerNumber; i++)
             {
                 if (id == i + 1)
@@ -369,6 +348,7 @@ public class Controller : MonoBehaviour
             }
         }
     }
+
     // Stage3のピンボールゾーンのオブジェクトに触れると加速
     public void Acceleration()
     {
@@ -392,7 +372,7 @@ public class Controller : MonoBehaviour
         string[] joystickNames = Input.GetJoystickNames();
         connected = joystickNames.Length;       //コントローラーの接続台数を反映
         for (int i = 0; i < joystickNames.Length; i++)
-        {//@@
+        {
             Controllers = CheckControllerName(joystickNames[i]);
         }
     }

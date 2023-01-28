@@ -31,7 +31,7 @@ public class GameStart : MonoBehaviour
     public VideoPlayer StageVideo;
     public VideoClip Stage1Video, Stage2Video, Stage3Video, Stage4Video;
     public static int phase = 0;
-    public static int PlayerNumber = 1;
+    public static int PlayerNumber{get; set;} = 1;     // 参加プレイヤー数
     public static int Stage = 1;
 
     void Start()
