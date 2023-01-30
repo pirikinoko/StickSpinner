@@ -14,8 +14,8 @@ public class GameMode : MonoBehaviour
     GameObject[] nameTags = new GameObject[GameStart.MaxPlayer];
     GameObject[] resultTextGO = new GameObject[GameStart.MaxPlayer];
     Text[] resultText = new Text[GameStart.MaxPlayer];
-    GameObject ResultPanel;
-    GameObject ResultPanelFront, InputField;
+    [SerializeField] GameObject ResultPanel, ResultPanelFront;
+    GameObject InputField;
     //通常ステージ
     public static byte Goals = 0;
     public static float[] clearTime = new float[GameStart.MaxPlayer];

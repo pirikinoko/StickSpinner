@@ -10,12 +10,8 @@ public class GameSetting : MonoBehaviour
     //基本
     [SerializeField]
     Text CountDown, playTime;
-    //ステージ切り替え用
-    GameObject[] stageObject = new GameObject[4];
-    [SerializeField] GameObject[] battleModeUI = new GameObject[2];
-
-    public GameObject CountDownGO, ControllerUI1, ControllerUI2, ControllerUI3;
-
+    [SerializeField]
+    GameObject frontCanvas, canvas;
     GameObject[] players  = new GameObject[GameStart.MaxPlayer];
     GameObject[] sticks   = new GameObject[GameStart.MaxPlayer];
     GameObject[] nameTags = new GameObject[GameStart.MaxPlayer];
@@ -31,8 +27,13 @@ public class GameSetting : MonoBehaviour
     float SoundTime = 1f;
     bool  StartFlag;
 
-    //リスポーンタイマー
-    //float[] respownTimer = new float[GameStart.MaxPlayer];
+    //ステージ切り替え用
+    [SerializeField] GameObject[] stageObject = new GameObject[4];
+    [SerializeField] GameObject[] battleModeUI = new GameObject[2];
+    //背景色
+    GameObject grid;
+    [SerializeField] Material gray, white;
+    public GameObject CountDownGO, ControllerUI1, ControllerUI2, ControllerUI3;
 
     public static bool[] deathTimer = new bool[GameStart.MaxPlayer];
     //UI切り替え用
@@ -49,6 +50,8 @@ public class GameSetting : MonoBehaviour
 
     void Start()
     {
+        canvas.gameObject.SetActive(true);
+        frontCanvas.gameObject.SetActive(true);
         Debug.Log("PlayerNumber: " + GameStart.PlayerNumber + " Stage: " + GameStart.Stage);
         for (int i = 0; i < GameStart.MaxPlayer; i++) //初期化処理
         {
@@ -61,8 +64,7 @@ public class GameSetting : MonoBehaviour
             nameTagText[i].text = "Player" + (i + 1).ToString();
             countTextGO[i] = GameObject.Find("P" + (i + 1).ToString() + "CountDown");
             countTextGO[i].gameObject.SetActive(false);
-            //ステージオブジェクト取得
-            stageObject[i] = GameObject.Find("Stage" + (i + 1).ToString() + "Objects");
+            //ステージオブジェクトONOFF
             if (GameStart.Stage == (i + 1)) { stageObject[i].gameObject.SetActive(true); }
             else { stageObject[i].gameObject.SetActive(false); }
         }
@@ -73,6 +75,7 @@ public class GameSetting : MonoBehaviour
             elapsedTime = 0;
             battleModeUI[0].gameObject.SetActive(false);
             battleModeUI[1].gameObject.SetActive(false);
+            //grid.GetComponent<TilemapRenderer>().material = gray; 
         }
         else if (GameStart.Stage == 4)
         {
@@ -80,6 +83,7 @@ public class GameSetting : MonoBehaviour
             elapsedTime = 90; battleModeUI[0].gameObject.SetActive(true);
             battleModeUI[0].gameObject.SetActive(true);
             battleModeUI[1].gameObject.SetActive(true);
+            //grid.GetComponent<TilemapRenderer>().material = white;
         }
         SoundTime = 1f;
         StartTime = 3f;
