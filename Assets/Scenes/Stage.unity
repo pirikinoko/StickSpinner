@@ -8199,7 +8199,7 @@ GameObject:
   m_Component:
   - component: {fileID: 358236712}
   m_Layer: 5
-  m_Name: BattleMode
+  m_Name: BattleModeUI1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -19784,7 +19784,7 @@ GameObject:
   m_Component:
   - component: {fileID: 919886039}
   m_Layer: 5
-  m_Name: BattleMode
+  m_Name: BattleModeUI2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -74877,6 +74877,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CountDown: {fileID: 13818948}
   playTime: {fileID: 265219735}
+  battleModeUI:
+  - {fileID: 358236711}
+  - {fileID: 919886038}
   CountDownGO: {fileID: 13818946}
   ControllerUI1: {fileID: 1877817693}
   ControllerUI2: {fileID: 958743300}
@@ -74928,9 +74931,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ff16ee9de605fb48a6a3fe52d6569d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  battleModeUI:
-  - {fileID: 358236711}
-  - {fileID: 919886038}
 --- !u!114 &1987354138
 MonoBehaviour:
   m_ObjectHideFlags: 0

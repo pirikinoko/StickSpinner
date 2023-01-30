@@ -10,7 +10,10 @@ public class GameSetting : MonoBehaviour
     //基本
     [SerializeField]
     Text CountDown, playTime;
-    
+    //ステージ切り替え用
+    GameObject[] stageObject = new GameObject[4];
+    [SerializeField] GameObject[] battleModeUI = new GameObject[2];
+
     public GameObject CountDownGO, ControllerUI1, ControllerUI2, ControllerUI3;
 
     GameObject[] players  = new GameObject[GameStart.MaxPlayer];
@@ -58,17 +61,25 @@ public class GameSetting : MonoBehaviour
             nameTagText[i].text = "Player" + (i + 1).ToString();
             countTextGO[i] = GameObject.Find("P" + (i + 1).ToString() + "CountDown");
             countTextGO[i].gameObject.SetActive(false);
+            //ステージオブジェクト取得
+            stageObject[i] = GameObject.Find("Stage" + (i + 1).ToString() + "Objects");
+            if (GameStart.Stage == (i + 1)) { stageObject[i].gameObject.SetActive(true); }
+            else { stageObject[i].gameObject.SetActive(false); }
         }
        
         if (GameStart.Stage != 4)
         {
             PlayTime = 0;
             elapsedTime = 0;
+            battleModeUI[0].gameObject.SetActive(false);
+            battleModeUI[1].gameObject.SetActive(false);
         }
         else if (GameStart.Stage == 4)
         {
             PlayTime = 90;
-            elapsedTime = 90;
+            elapsedTime = 90; battleModeUI[0].gameObject.SetActive(true);
+            battleModeUI[0].gameObject.SetActive(true);
+            battleModeUI[1].gameObject.SetActive(true);
         }
         SoundTime = 1f;
         StartTime = 3f;
@@ -82,6 +93,7 @@ public class GameSetting : MonoBehaviour
         {
             defaultPlayerPos[i] = GameObject.Find("DefaultPlayerPos" + (i + 1).ToString());
             respownPos[i]       = defaultPlayerPos[i].gameObject.transform.position;
+            Debug.Log("dada");
             defaultPlayerPos[i].gameObject.SetActive(false);
         }
 
