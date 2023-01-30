@@ -9,10 +9,13 @@ public class Trigger : MonoBehaviour
     float   pointTimer;
     //public static float[,] killTimer = new float[4, 4];
     int playerId;                   // プレイヤー番号(1～4)
-    //int otherId = 0;                // 当たった相手のプレイヤー(1～4)
+                                    //int otherId = 0;                // 当たった相手のプレイヤー(1～4)
 
+    GameMode gamemode;
     void Start()
     {
+        gamemode = GameObject.Find("Scripts").GetComponent<GameMode>();
+
         // ボディかスティックより ID を得る
         Controller cnt = GetComponent<Controller>();
         if (cnt)
@@ -31,9 +34,9 @@ public class Trigger : MonoBehaviour
     private void OnTriggerStay2D(Collider2D other)
     {
         //
-        if (gameObject.name.Contains("CheckPos"))
+        if (other.gameObject.name.Contains("CheckPos"))
         {
-            GameSetting.respownPos[playerId] = other.gameObject.transform.position;
+            GameSetting.respownPos[playerId - 1] = other.gameObject.transform.position;
             Debug.Log("P" + playerId.ToString() + "のCheckPointを設定");
         }
 
@@ -62,6 +65,21 @@ public class Trigger : MonoBehaviour
         }
     }
 
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (GameStart.Stage != 4)　　//対戦モードを除き
+        {
+            //自身がプレイヤーなら
+            if (this.gameObject.CompareTag("Player"))
+            {
+                if(other.gameObject.name  == "GoalFlag")
+                {
+                    gamemode.GoalProcess(playerId);
+                }
+              
+            }
+        }
+    }
     /*
     private void OnCollisionStay2D(Collision2D other)
     {

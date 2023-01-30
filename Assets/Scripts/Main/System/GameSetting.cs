@@ -46,7 +46,6 @@ public class GameSetting : MonoBehaviour
 
     void Start()
     {
-        GameStart.Stage = 1;
         Debug.Log("PlayerNumber: " + GameStart.PlayerNumber + " Stage: " + GameStart.Stage);
         for (int i = 0; i < GameStart.MaxPlayer; i++) //‰Šú‰»ˆ—
         {

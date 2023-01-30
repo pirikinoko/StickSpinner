@@ -46,7 +46,7 @@ public class Controller : MonoBehaviour
                                           // 親の顔
     SpriteRenderer parentSprite;//, spriteRenderer2;
 
-    bool isRespown = false;
+    bool isRespown = true;
 
 
     private Vector3 PlayerPos, StickPos, PausedPlayerPos, PausedStickPos, latestPos; //プレイヤー,棒の位置
@@ -89,7 +89,7 @@ public class Controller : MonoBehaviour
         RotStage = rotStage[id - 1];
         //RotSpeed = rotSpeed[id - 1];
 
-        isRespown    = false;
+        isRespown    = true;
         StickRot     = 0f;
         CoolTime     = 0.0f;
         onSurface    = false;
@@ -123,7 +123,7 @@ public class Controller : MonoBehaviour
         onFloor   = onSurface | onPlayer | onStick | body.onSurface | body.onPlayer | body.onStick;// 何かに接触している時は true
         onPinball = onPinball | body.onPinball; ;
         Acceleration();
-        if (!isRespown)
+        if (isRespown)
         {
             if (GameSetting.Playable && ButtonInGame.Paused != 1 || GameStart.inDemoPlay) //プレイヤー数選択画面でも操作可能
             {

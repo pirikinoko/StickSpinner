@@ -129,24 +129,16 @@ public class GameMode : MonoBehaviour
             }
         }
     }
-    void OnTriggerEnter2D(Collider2D other)
+    public void GoalProcess(int playerid)
     {
-        if (GameStart.Stage != 4)
-        {
-            //接触したオブジェクトのタグが"Player"のとき
-            if (other.CompareTag("Player"))
-            {
-                // ゴールしたプレイヤーを表示する
-                clearTime[Goals] = GameSetting.PlayTime;
-                goaledPlayer[Goals] = other.gameObject.name;
-                SoundEffect.PironTrigger = 1;
-                Goals++;
-                int num = int.Parse(other.gameObject.name.Substring(6)) - 1;
-                players[num].gameObject.SetActive(false);
-                sticks[num].gameObject.SetActive(false);
-                nameTags[num].gameObject.SetActive(false);
-            }
-        }         
+        // ゴールしたプレイヤーを表示する
+        clearTime[Goals] = GameSetting.PlayTime;
+        goaledPlayer[Goals] = "Player" + playerid.ToString();
+        SoundEffect.PironTrigger = 1;
+        Goals++;
+        players[playerid - 1].gameObject.SetActive(false);
+        sticks[playerid - 1].gameObject.SetActive(false);
+        nameTags[playerid - 1].gameObject.SetActive(false);
     }
 
     //バトルモード
