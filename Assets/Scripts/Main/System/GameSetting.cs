@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 
 public class GameSetting : MonoBehaviour
 {
-    //Šî–{
+    //åŸºæœ¬
     [SerializeField]
     Text CountDown, playTime;
     [SerializeField]
@@ -27,16 +27,16 @@ public class GameSetting : MonoBehaviour
     float SoundTime = 1f;
     bool  StartFlag;
 
-    //ƒXƒe[ƒWØ‚è‘Ö‚¦—p
+    //ã‚¹ãƒ†ãƒ¼ã‚¸åˆ‡ã‚Šæ›¿ãˆç”¨
     [SerializeField] GameObject[] stageObject = new GameObject[4];
     [SerializeField] GameObject[] battleModeUI = new GameObject[2];
-    //”wŒiF
+    //èƒŒæ™¯è‰²
     GameObject grid;
     [SerializeField] Material gray, white;
     public GameObject CountDownGO, ControllerUI1, ControllerUI2, ControllerUI3;
 
     public static bool[] deathTimer = new bool[GameStart.MaxPlayer];
-    //UIØ‚è‘Ö‚¦—p
+    //UIåˆ‡ã‚Šæ›¿ãˆç”¨
     int UIMode;
     const int KeyboardMode = 5;
     const int ControllerMode = 6;
@@ -53,7 +53,7 @@ public class GameSetting : MonoBehaviour
         canvas.gameObject.SetActive(true);
         frontCanvas.gameObject.SetActive(true);
         Debug.Log("PlayerNumber: " + GameStart.PlayerNumber + " Stage: " + GameStart.Stage);
-        for (int i = 0; i < GameStart.MaxPlayer; i++) //‰Šú‰»ˆ—
+        for (int i = 0; i < GameStart.MaxPlayer; i++) //åˆæœŸåŒ–å‡¦ç†
         {
             deathTimer[i] = false;
             //respownTimer[i] = 3.0f;
@@ -64,7 +64,7 @@ public class GameSetting : MonoBehaviour
             nameTagText[i].text = "Player" + (i + 1).ToString();
             countTextGO[i] = GameObject.Find("P" + (i + 1).ToString() + "CountDown");
             countTextGO[i].gameObject.SetActive(false);
-            //ƒXƒe[ƒWƒIƒuƒWƒFƒNƒgONOFF
+            //ã‚¹ãƒ†ãƒ¼ã‚¸ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆONOFF
             if (GameStart.Stage == (i + 1)) { stageObject[i].gameObject.SetActive(true); }
             else { stageObject[i].gameObject.SetActive(false); }
         }
@@ -92,7 +92,7 @@ public class GameSetting : MonoBehaviour
         CountDown.text = ("3");
         SoundEffect.BunTrigger = 1;
 
-        // ƒŠƒXƒ|[ƒ“ˆÊ’u
+        // ãƒªã‚¹ãƒãƒ¼ãƒ³ä½ç½®
         for (int i = 0; i < GameStart.MaxPlayer; i++)
         {
             defaultPlayerPos[i] = GameObject.Find("DefaultPlayerPos" + (i + 1).ToString());
@@ -101,7 +101,7 @@ public class GameSetting : MonoBehaviour
             defaultPlayerPos[i].gameObject.SetActive(false);
         }
 
-        //ƒvƒŒƒCƒ„[l”‚Ì”½‰f
+        //ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼äººæ•°ã®åæ˜ 
         {
             int i = 0;
             for ( ; i < GameStart.PlayerNumber; i++)
@@ -109,11 +109,11 @@ public class GameSetting : MonoBehaviour
                 nameTags[i].gameObject.SetActive(true);
                 players[i].gameObject.SetActive(true);
                 sticks[i].gameObject.SetActive(true);
-                //‰ŠúˆÊ’u
+                //åˆæœŸä½ç½®
                 players[i].gameObject.transform.position = respownPos[i];
                 sticks[i].gameObject.transform.position  = respownPos[i];
             }
-            // ƒvƒŒƒCƒ„[l”‚Ì”½‰f
+            // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼äººæ•°ã®åæ˜ 
             for ( ; i < GameStart.MaxPlayer; i++)
             {
                 nameTags[i].gameObject.SetActive(false);
@@ -139,7 +139,7 @@ public class GameSetting : MonoBehaviour
 
     void StartTimer()
     {
-        //ƒ^ƒCƒ€
+        //ã‚¿ã‚¤ãƒ 
         if (StartFlag)
         {
             StartTime -= Time.deltaTime;
@@ -159,7 +159,7 @@ public class GameSetting : MonoBehaviour
             }
             else if (StartTime < 0 && StartTime > -0.5f)
             {
-                CountDown.text = ("ƒXƒ^[ƒg");
+                CountDown.text = ("ã‚¹ã‚¿ãƒ¼ãƒˆ");
             }
             else if (StartTime < 0.9f)
             {
@@ -187,13 +187,13 @@ public class GameSetting : MonoBehaviour
             Playable = true;
             PlayTime = elapsedTime * 10;
             PlayTime = Mathf.Floor(PlayTime) / 10;
-            playTime.text = ("ƒ^ƒCƒ€:" + PlayTime);
+            playTime.text = ("ã‚¿ã‚¤ãƒ :" + PlayTime);
         }
     }
 
     void NameTagPos()
     {
-        //ƒl[ƒ€ƒ^ƒO‚ÌˆÊ’u
+        //ãƒãƒ¼ãƒ ã‚¿ã‚°ã®ä½ç½®
         for (int i = 0; i < GameStart.PlayerNumber; i++)
         {
             nameTagPos[i] = players[i].transform.position;
@@ -204,7 +204,7 @@ public class GameSetting : MonoBehaviour
 
     void SwichUI()
     {
-        //ƒL[ƒ{[ƒhƒ}ƒEƒX—pUI‚ÆƒRƒ“ƒgƒ[ƒ‰[—pUI‚ÌØ‚è‘Ö‚¦
+        //ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ãƒã‚¦ã‚¹ç”¨UIã¨ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãƒ¼ç”¨UIã®åˆ‡ã‚Šæ›¿ãˆ
         if (Controller.usingController)
         {
             UIMode = ControllerMode;

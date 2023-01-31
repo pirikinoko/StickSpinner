@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -30,7 +30,7 @@ public class Settings : MonoBehaviour
     }
   
    
-    //@@��U�ۗ�
+    //@@一旦保留
     void SettingControl()
     {
         if (inSetting)
@@ -43,13 +43,13 @@ public class Settings : MonoBehaviour
             {
                 if (inSetting)
                 {
-                    /*�ݒ荀�ڂ̑I��*/
+                    /*設定項目の選択*/
                     //@@if (controller.playerKey.Y == 0) { InputCrossY = false; }                
                     //@@if (controller.playerKey.Y >= 0.1f && InputCrossY == false) { Selected++; InputCrossY = true; SoundEffect.BunTrigger = 1; }
                     //@@if (controller.playerKey.Y <= -0.1f && InputCrossY == false) { Selected--; InputCrossY = true; SoundEffect.BunTrigger = 1; }
-                    /*/�ݒ荀�ڂ̑I��*/
+                    /*/設定項目の選択*/
 
-                    /*���ʕύX*/
+                    /*音量変更*/
                     //@@if (controller.playerKey.X == 0) { InputCrossX = false; }
                     /*@@if (controller.playerKey.X >= 0.1f && InputCrossX == false && inSetting)
                     {
@@ -78,7 +78,7 @@ public class Settings : MonoBehaviour
                         InputCrossX = true;
                         SoundEffect.BunTrigger = 1;
                     }*/
-                    /*/���ʕύX*/
+                    /*/音量変更*/
                 }
             }               
             Selected = Mathf.Clamp(Selected, min, max);

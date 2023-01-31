@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -13,9 +13,9 @@ public class SelfDestroy : MonoBehaviour
 
     void Update()
     {
-        if (particle.isStopped) //ƒp[ƒeƒBƒNƒ‹‚ªI—¹‚µ‚½‚©”»•Ê
+        if (particle.isStopped) //ãƒ‘ãƒ¼ãƒ†ã‚£ã‚¯ãƒ«ãŒçµ‚äº†ã—ãŸã‹åˆ¤åˆ¥
         {
-            Destroy(this.gameObject);//ƒp[ƒeƒBƒNƒ‹—pƒQ[ƒ€ƒIƒuƒWƒFƒNƒg‚ğíœ
+            Destroy(this.gameObject);//ãƒ‘ãƒ¼ãƒ†ã‚£ã‚¯ãƒ«ç”¨ã‚²ãƒ¼ãƒ ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å‰Šé™¤
         }
     }
 }

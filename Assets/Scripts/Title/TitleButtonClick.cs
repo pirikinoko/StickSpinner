@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -55,12 +55,12 @@ public class TitleButtonClick : MonoBehaviour
     {
         bool bProcessed = false;
 
-        //ƒXƒe[ƒW4
+        //ã‚¹ãƒ†ãƒ¼ã‚¸4
         if (GameStart.Stage == Stage4 && GameStart.PlayerNumber > 2)
         {
             bProcessed = true;
         }
-        //ƒXƒe[ƒW4ˆÈŠO
+        //ã‚¹ãƒ†ãƒ¼ã‚¸4ä»¥å¤–
         else if (GameStart.Stage != Stage4 && GameStart.PlayerNumber > 1)
         {
             bProcessed = true;
@@ -73,20 +73,20 @@ public class TitleButtonClick : MonoBehaviour
     }
     public void StartGame()
     {
-        // Stage1 ` 3 ‚Í IntŒ^‚È‚Ì‚ÅA«‚Å‚¢‚¢‚Æv‚¤
+        // Stage1 ï½ 3 ã¯ Intå‹ãªã®ã§ã€â†“ã§ã„ã„ã¨æ€ã†
         GameStart.inDemoPlay = false;
         SoundEffect.PironTrigger = 1;
         SceneManager.LoadScene("Stage");
     }
-    //İ’è‰æ–Ê‚ğŠJ‚­
+    //è¨­å®šç”»é¢ã‚’é–‹ã
 
     public void OpenSetting()
     {
-        //İ’è‰æ–Ê‚Ì•\¦
+        //è¨­å®šç”»é¢ã®è¡¨ç¤º
         Settings.SettingPanelActive = !(Settings.SettingPanelActive);
         Settings.inSetting = !(Settings.inSetting);
     }
-    //Š´“xƒXƒe[ƒW•ÏXƒ{ƒ^ƒ“
+    //æ„Ÿåº¦ã‚¹ãƒ†ãƒ¼ã‚¸å¤‰æ›´ãƒœã‚¿ãƒ³
 
     public void GainSensP1()
     {
@@ -130,7 +130,7 @@ public class TitleButtonClick : MonoBehaviour
     }
 
 
-    //İ’è‰æ–Ê‚Ìƒ{ƒ^ƒ“
+    //è¨­å®šç”»é¢ã®ãƒœã‚¿ãƒ³
     public void GainBGMVol()
     {
         BGM.BGMStage++;

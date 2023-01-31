@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
@@ -6,7 +6,7 @@ using System;
 public class SetHighScore : MonoBehaviour
 {
 
-    //ƒ‰ƒ“ƒLƒ“ƒO‚Ì‚TˆÊˆÈ“à‚Å‚ ‚ê‚ÎƒXƒRƒA‚ğ“o˜^&•À‚Ñ‘Ö‚¦
+    //ãƒ©ãƒ³ã‚­ãƒ³ã‚°ã®ï¼•ä½ä»¥å†…ã§ã‚ã‚Œã°ã‚¹ã‚³ã‚¢ã‚’ç™»éŒ²&ä¸¦ã³æ›¿ãˆ
     public static void ToSetHighscore()
     {
         int i = GameStart.Stage - 1;

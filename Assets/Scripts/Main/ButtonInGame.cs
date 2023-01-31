@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,7 +11,7 @@ public class ButtonInGame : MonoBehaviour
     public GameObject PausePanel, pauseButton, TLFrame;
     public static int Paused = 0;
 
-    // ƒvƒŒƒCƒ„[
+    // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼
     Controller[] playersController{ get; set;} = new Controller[GameStart.MaxPlayer];
 
     //animation
@@ -25,7 +25,7 @@ public class ButtonInGame : MonoBehaviour
 
     void Start()
     {
-        // Q‰ÁƒvƒŒƒCƒ„[
+        // å‚åŠ ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼
         for(int i = 0; i < GameStart.PlayerNumber; i++)
         {
             playersController[i] = GameObject.Find("Stick" + (i + 1).ToString()).GetComponent<Controller>();
@@ -42,8 +42,8 @@ public class ButtonInGame : MonoBehaviour
     {
         for (int i = 0; i < GameStart.PlayerNumber; i++)
         {
-            // ƒRƒ“ƒgƒ[ƒ‰[‚ÌXƒ{ƒ^ƒ“
-            if(playersController[i].GetBackButtonDown())    // ‰Ÿ‚³‚ê‚½uŠÔ
+            // ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãƒ¼ã®Xãƒœã‚¿ãƒ³
+            if(playersController[i].GetBackButtonDown())    // æŠ¼ã•ã‚ŒãŸç¬é–“
             {
                 if (Paused == 1)
                 {
@@ -51,10 +51,10 @@ public class ButtonInGame : MonoBehaviour
                     XButtonAnim.SetTrigger("On");
                 }
             }
-            if (playersController[i].GetBackButtonHold())   // ‰Ÿ‚µ‘±‚¯‚½‚Æ‚«
+            if (playersController[i].GetBackButtonHold())   // æŠ¼ã—ç¶šã‘ãŸã¨ã
             {
 
-                //ƒQ[ƒ€ƒXƒ^[ƒg‚Ìƒ{ƒ^ƒ“‚Ì‚İ’·‰Ÿ‚µ‚Å“®ì
+                //ã‚²ãƒ¼ãƒ ã‚¹ã‚¿ãƒ¼ãƒˆã®ãƒœã‚¿ãƒ³ã®ã¿é•·æŠ¼ã—ã§å‹•ä½œ
                 holdTime += Time.deltaTime;
                 if (holdTime > holdGoal)
                 {
@@ -72,7 +72,7 @@ public class ButtonInGame : MonoBehaviour
                     }
                 }
             }
-            if (playersController[i].GetBackButtonUp()) // —£‚³‚ê‚½‚Æ‚«
+            if (playersController[i].GetBackButtonUp()) // é›¢ã•ã‚ŒãŸã¨ã
             {
                 XButtonAnim.SetTrigger("Off");
                 XButtonAnim.enabled = false;
@@ -80,7 +80,7 @@ public class ButtonInGame : MonoBehaviour
             }
         }
 
-        // ˆê‘ä–Ú‚ÌƒRƒ“ƒgƒ[ƒ‰[‚ÌStartƒ{ƒ^ƒ“                                                       «‚±‚±‚ª0‚È‚ç1P
+        // ä¸€å°ç›®ã®ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãƒ¼ã®Startãƒœã‚¿ãƒ³                                                       â†“ã“ã“ãŒ0ãªã‚‰1P
         if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Escape) || playersController[0].GetStartButtonDown())
         {
             if (GameSetting.StartTime < 0 && Paused == 0)

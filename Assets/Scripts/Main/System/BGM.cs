@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -19,7 +19,7 @@ public class BGM : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //ãŒÀ‰ºŒÀ‚ÌÝ’è
+        //ä¸Šé™ä¸‹é™ã®è¨­å®š
         if (BGMStage > 20)
         {
             BGMStage = 20;

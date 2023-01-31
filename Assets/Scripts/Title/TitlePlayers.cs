@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -28,7 +28,7 @@ public class TitlePlayers : MonoBehaviour
         count[2] = 0;
         count[3] = 0;
 
-        for (int i = 0; i < 4; i++) //‰Šú‰»ˆ—
+        for (int i = 0; i < 4; i++) //åˆæœŸåŒ–å‡¦ç†
         {
             players[i].gameObject.SetActive(true);
             sticks[i].gameObject.SetActive(true);
@@ -38,7 +38,7 @@ public class TitlePlayers : MonoBehaviour
 
     void Update()
     {
-        PNtext.text = (GameStart.PlayerNumber + "l");
+        PNtext.text = (GameStart.PlayerNumber + "äºº");
         PlayerActive();
         ShowUI();
     }
@@ -48,7 +48,7 @@ public class TitlePlayers : MonoBehaviour
     }
     void ShowUI()
     {
-        //ƒvƒŒƒCƒ„[”‚É‚æ‚Á‚ÄUI‚Ì•\¦”•ÏX
+        //ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æ•°ã«ã‚ˆã£ã¦UIã®è¡¨ç¤ºæ•°å¤‰æ›´
 
         for (int i = 1; i < GameStart.PlayerNumber; i++)
         {
@@ -68,7 +68,7 @@ public class TitlePlayers : MonoBehaviour
     {
         if (GameStart.inDemoPlay)
         {
-            //ƒvƒŒƒCƒ„[l”‚Ì”½‰f
+            //ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼äººæ•°ã®åæ˜ 
             for(int i = 0; i < GameStart.PlayerNumber; i++)
             {
                 if(count[i] == 0)
@@ -83,7 +83,7 @@ public class TitlePlayers : MonoBehaviour
                 }     
             }
 
-            //ƒvƒŒƒCƒ„[l”‚Ì”½‰f    @@ 4 ‚©‚çn‚ß‚é‚Æ@”z—ñŠO‚É‚È‚é‚Ì‚Å 3‚©‚ç‚É‚µ‚½(3`0‚Ìl‰ñƒ‹[ƒv)
+            //ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼äººæ•°ã®åæ˜     @@ 4 ã‹ã‚‰å§‹ã‚ã‚‹ã¨ã€€é…åˆ—å¤–ã«ãªã‚‹ã®ã§ 3ã‹ã‚‰ã«ã—ãŸ(3ï½0ã®å››å›ãƒ«ãƒ¼ãƒ—)
             for (int i = 3; i >= GameStart.PlayerNumber; i--)
             {
                 if (count[i] == 1)
@@ -113,9 +113,9 @@ public class TitlePlayers : MonoBehaviour
     }
     void NameTagPos()
     {
-        //ƒl[ƒ€ƒ^ƒO‚ÌˆÊ’u
+        //ãƒãƒ¼ãƒ ã‚¿ã‚°ã®ä½ç½®
 
-        // nameTagPos ‚ª null ‚É‚È‚Á‚Ä‚¢‚é
+        // nameTagPos ãŒ null ã«ãªã£ã¦ã„ã‚‹
 
        /*for (int i = 0; i < GameStart.PlayerNumber; i++)
         {

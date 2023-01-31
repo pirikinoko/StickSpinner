@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -7,7 +7,7 @@ using System;
 
 public class GameMode : MonoBehaviour
 {
-    //Šî–{
+    //åŸºæœ¬
     public static string[] goaledPlayer{ get; set;} = new string[GameStart.MaxPlayer];
     GameObject[] players  = new GameObject[GameStart.MaxPlayer];
     GameObject[] sticks   = new GameObject[GameStart.MaxPlayer];
@@ -16,11 +16,11 @@ public class GameMode : MonoBehaviour
     Text[] resultText = new Text[GameStart.MaxPlayer];
     [SerializeField] GameObject ResultPanel, ResultPanelFront;
     GameObject InputField;
-    //’ÊíƒXƒe[ƒW
+    //é€šå¸¸ã‚¹ãƒ†ãƒ¼ã‚¸
     public static byte Goals = 0;
     public static float[] clearTime = new float[GameStart.MaxPlayer];
     public static bool Goaled;
-    //ƒoƒgƒ‹ƒ‚[ƒh
+    //ãƒãƒˆãƒ«ãƒ¢ãƒ¼ãƒ‰
     public GameObject KillLogBack, Plus1, Plus5;
     GameObject[] pointTextGO = new GameObject[4], pointBox = new GameObject[4];
     public static float[] points = new float[4], pointsInOrder = new float[4];
@@ -31,14 +31,14 @@ public class GameMode : MonoBehaviour
     public static Text killer, died;
     public Text KillLogText = null;
     public static byte[] playParticle = new byte[4];
-    byte count = 0;
     public static bool Finished;
+    byte count = 0;
     private Vector2[] particlePos = new Vector2[4];
 
 
     void Start()
-    {   //Šî–{
-        for (int i = 0; i < GameStart.MaxPlayer; i++) //‰Šú‰»ˆ—
+    {   //åŸºæœ¬
+        for (int i = 0; i < GameStart.MaxPlayer; i++) //åˆæœŸåŒ–å‡¦ç†
         {        
             nameTags[    i] = GameObject.Find("P" +      (i + 1).ToString() + "Text");
             players[     i] = GameObject.Find("Player" + (i + 1).ToString());
@@ -54,10 +54,10 @@ public class GameMode : MonoBehaviour
         ResultPanelFront.gameObject.SetActive(false);
         InputField.gameObject.SetActive(false);
 
-        //’ÊíƒXƒe[ƒW
+        // é€šå¸¸ã‚¹ãƒ†ãƒ¼ã‚¸
         if(GameStart.Stage != 4)
         {
-            for (int i = 0; i < GameStart.MaxPlayer; i++) //‰Šú‰»ˆ—
+            for (int i = 0; i < GameStart.MaxPlayer; i++) //åˆæœŸåŒ–å‡¦ç†
             {
                 clearTime[i] = 0;
                 goaledPlayer[i] = null;
@@ -66,8 +66,7 @@ public class GameMode : MonoBehaviour
             Goals = 0;
         }
 
-
-        //ƒoƒgƒ‹ƒ‚[ƒh
+        //ãƒãƒˆãƒ«ãƒ¢ãƒ¼ãƒ‰
         if (GameStart.Stage == 4)
         {          
             for (int i = 0; i < 4; i++)
@@ -78,14 +77,12 @@ public class GameMode : MonoBehaviour
                 pointBox[i] = GameObject.Find("PointFrame" + (i + 1).ToString());
                 pointTextGO[i] = GameObject.Find("P" + (i + 1).ToString() +"Point");
                 pointText[i] = pointTextGO[i].GetComponent<Text>();
-
             }
-
             count = 0;
             KillLogTimer = 0;
             Finished = false;
            
-            //‰æ–Êã•”ƒXƒRƒAƒvƒŒƒCƒ„[”•ª•\¦
+            // ç”»é¢ä¸Šéƒ¨ã‚¹ã‚³ã‚¢ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æ•°åˆ†è¡¨ç¤º
             for (int i = 0; i < GameStart.PlayerNumber; i++) { pointBox[i].gameObject.SetActive(true); pointTextGO[i].gameObject.SetActive(true); }
             for (int i = 3; i >= GameStart.PlayerNumber; i--) { pointBox[i].gameObject.SetActive(false); pointTextGO[i].gameObject.SetActive(false); }
         }
@@ -94,13 +91,12 @@ public class GameMode : MonoBehaviour
 
     void Update()
     {
-
-        //’ÊíƒXƒe[ƒW
+        // é€šå¸¸ã‚¹ãƒ†ãƒ¼ã‚¸
         if (GameStart.Stage != 4)
         {
             CheckFinish();
         }
-        //ƒoƒgƒ‹ƒ‚[ƒh
+        // ãƒãƒˆãƒ«ãƒ¢ãƒ¼ãƒ‰
         if (GameStart.Stage == 4)
         {
             KillLog();
@@ -109,10 +105,9 @@ public class GameMode : MonoBehaviour
             PlayParticle();
             ShowResult();
         }
-
     }
 
-    //’ÊíƒXƒe[ƒW
+    //é€šå¸¸ã‚¹ãƒ†ãƒ¼ã‚¸
     void CheckFinish()
     {
         if (Goals == GameStart.PlayerNumber)
@@ -122,16 +117,17 @@ public class GameMode : MonoBehaviour
             ResultPanel.gameObject.SetActive(true);
             ResultPanelFront.gameObject.SetActive(true);
             InputField.gameObject.SetActive(true);
-            // Q‰ÁƒvƒŒƒCƒ„[”•ªƒ^ƒCƒ€•\¦
+            // å‚åŠ ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æ•°åˆ†ã‚¿ã‚¤ãƒ è¡¨ç¤º
             for (int i = 0; i < GameStart.PlayerNumber; i++)
             {
-                resultText[i].text = (i + 1).ToString() + "ˆÊ: " + goaledPlayer[i] + " ƒ^ƒCƒ€:" + clearTime[i] + "•b";
+                resultText[i].text = (i + 1).ToString() + "ä½: " + goaledPlayer[i] + " ã‚¿ã‚¤ãƒ :" + clearTime[i] + "ç§’";
             }
         }
     }
+
     public void GoalProcess(int playerid)
     {
-        // ƒS[ƒ‹‚µ‚½ƒvƒŒƒCƒ„[‚ğ•\¦‚·‚é
+        // ã‚´ãƒ¼ãƒ«ã—ãŸãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚’è¡¨ç¤ºã™ã‚‹
         clearTime[Goals] = GameSetting.PlayTime;
         goaledPlayer[Goals] = "Player" + playerid.ToString();
         SoundEffect.PironTrigger = 1;
@@ -141,10 +137,10 @@ public class GameMode : MonoBehaviour
         nameTags[playerid - 1].gameObject.SetActive(false);
     }
 
-    //ƒoƒgƒ‹ƒ‚[ƒh
+    //ãƒãƒˆãƒ«ãƒ¢ãƒ¼ãƒ‰
     void KillLog()
     {
-        KillLogText.text = killer + "@¨@" + died;
+        KillLogText.text = killer + "ã€€â†’ã€€" + died;
         if (KillLogTimer > 0)
         {
             KillLogBack.gameObject.SetActive(true);
@@ -156,7 +152,8 @@ public class GameMode : MonoBehaviour
             KillLogText.text = null;
         }
     }
-    void PointDisplay() //ƒ|ƒCƒ“ƒg¬”“_ˆÈ‰ºØ‚èÌ‚Ä••\¦
+
+    void PointDisplay() //ãƒã‚¤ãƒ³ãƒˆå°æ•°ç‚¹ä»¥ä¸‹åˆ‡ã‚Šæ¨ã¦ï¼†è¡¨ç¤º
     {
         for (int i = 0; i < GameStart.PlayerNumber; i++)
         {
@@ -164,9 +161,9 @@ public class GameMode : MonoBehaviour
             pointText[i].text = pointCut[i].ToString();
         }
     }
+
     void checkResult()
     {
-
         if (GameSetting.PlayTime <= 0)
         {
             Finished = true;
@@ -183,10 +180,10 @@ public class GameMode : MonoBehaviour
         }
         if (count == 0)
         {
-            //ƒ|ƒCƒ“ƒg•À‚Ñ‘Ö‚¦
+            //ãƒã‚¤ãƒ³ãƒˆä¸¦ã³æ›¿ãˆ
             pointsInOrder = points;
             Array.Sort(pointsInOrder);
-            //‡ˆÊŒv‘ª
+            //é †ä½è¨ˆæ¸¬
             for (int i = 0; i < GameStart.PlayerNumber; i++)
             {
                 for (int j = 0; j < GameStart.PlayerNumber; j++)
@@ -204,30 +201,30 @@ public class GameMode : MonoBehaviour
 
     void PlayParticle()
     {
-        //ƒp[ƒeƒBƒNƒ‹Ä¶
+        //ãƒ‘ãƒ¼ãƒ†ã‚£ã‚¯ãƒ«å†ç”Ÿ
         for (int i = 0; i < GameStart.PlayerNumber; i++)
         {
             particlePos[i] = nameTags[i].gameObject.transform.position;
             particlePos[i].y += 0.3f;
             if (playParticle[i] == 1)
             {
-                Instantiate(Plus1, particlePos[i], Quaternion.identity); //ƒp[ƒeƒBƒNƒ‹—pƒQ[ƒ€ƒIƒuƒWƒFƒNƒg¶¬
+                Instantiate(Plus1, particlePos[i], Quaternion.identity); //ãƒ‘ãƒ¼ãƒ†ã‚£ã‚¯ãƒ«ç”¨ã‚²ãƒ¼ãƒ ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆç”Ÿæˆ
                 playParticle[i] = 0;
             }
             if (playParticle[i] == 2)
             {
                 SoundEffect.KirarinTrigger = 1;
-                Instantiate(Plus5, particlePos[i], Quaternion.identity); //ƒp[ƒeƒBƒNƒ‹—pƒQ[ƒ€ƒIƒuƒWƒFƒNƒg¶¬
+                Instantiate(Plus5, particlePos[i], Quaternion.identity); //ãƒ‘ãƒ¼ãƒ†ã‚£ã‚¯ãƒ«ç”¨ã‚²ãƒ¼ãƒ ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆç”Ÿæˆ
                 playParticle[i] = 0;
             }
         }
     }
     void ShowResult()
     {
-        //ƒŠƒUƒ‹ƒg•\¦
+        //ãƒªã‚¶ãƒ«ãƒˆè¡¨ç¤º
         for (int i = 0; i < GameStart.PlayerNumber; i++)
         {
-            resultText[i].text = "1ˆÊ: " + plasement[i] + " " + points[0] + "ƒ|ƒCƒ“ƒg";
+            resultText[i].text = "1ä½: " + plasement[i] + " " + points[0] + "ãƒã‚¤ãƒ³ãƒˆ";
         }
     }
 }

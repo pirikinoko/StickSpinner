@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -6,12 +6,12 @@ using UnityEngine.UI;
 public class ShowHighScore : MonoBehaviour
 {
 
-    public Text[,] ranking = new Text[4, 5]; //@4‚ÍƒXƒe[ƒWA5‚Í5ˆÊ‚Ü‚Å‚ÌˆÓ–¡
+    public Text[,] ranking = new Text[4, 5]; //ã€€4ã¯ã‚¹ãƒ†ãƒ¼ã‚¸ã€5ã¯5ä½ã¾ã§ã®æ„å‘³
     public static string[,] topName = new string[4, 5];
     public static float[,] topScore = new float[4, 5];
-    string[] unit = { "•b", "•b", "•b", "P" };
+    string[] unit = { "ç§’", "ç§’", "ç§’", "P" };
 
-    // FrontCanvas ‚ğ–³Œø‚É‚µ‚½Œã‚¾‚Æ GameObject.Find ‚ÅŒ©‚Â‚¯‚ç‚ê‚È‚¢‚Ì‚Å Awake ‚Åˆ—‚·‚é
+    // FrontCanvas ã‚’ç„¡åŠ¹ã«ã—ãŸå¾Œã ã¨ GameObject.Find ã§è¦‹ã¤ã‘ã‚‰ã‚Œãªã„ã®ã§ Awake ã§å‡¦ç†ã™ã‚‹
     void Awake()
     {
         int num = 0;
@@ -31,7 +31,7 @@ public class ShowHighScore : MonoBehaviour
         {
             for (int j = 0; j < 5; j++)
             {
-                ranking[i, j].text = (j + 1).ToString() + "ˆÊ: " + topName[i, j] + " " + topScore[i, j].ToString() + unit[i];
+                ranking[i, j].text = (j + 1).ToString() + "ä½: " + topName[i, j] + " " + topScore[i, j].ToString() + unit[i];
                 if (topScore[i, j] == 0)
                 {
                     ranking[i, j].text = "";

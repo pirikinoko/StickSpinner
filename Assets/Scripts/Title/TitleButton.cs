@@ -1,4 +1,4 @@
-
+ï»¿
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -20,29 +20,29 @@ public class TitleButton : MonoBehaviour
     float holdTime = 0;
     int minPlayer = 1;
     int maxPlayer = 4;
-    // ƒ{ƒ^ƒ“‚Ì’·‰Ÿ‚µŠÔ
+    // ãƒœã‚¿ãƒ³ã®é•·æŠ¼ã—æ™‚é–“
     [SerializeField]
     private Animator YButtonAnim;
 
 
     void Update()
     {
-        // ƒ^ƒCƒgƒ‹‰æ–Ê‚ÍO‚Â‚É•ª‚¯‚Äˆ—‚·‚é
+        // ã‚¿ã‚¤ãƒˆãƒ«ç”»é¢ã¯ä¸‰ã¤ã«åˆ†ã‘ã¦å‡¦ç†ã™ã‚‹
         switch (GameStart.phase)
         {
-            // ƒ^ƒCƒgƒ‹
+            // ã‚¿ã‚¤ãƒˆãƒ«
             case 0:
                 Title();
                 break;
-            // ƒXƒe[ƒW‘I‘ğ
+            // ã‚¹ãƒ†ãƒ¼ã‚¸é¸æŠ
             case 1:
                 SelectStage();
                 break;
-            // ƒvƒŒƒCƒ„[”‘Œ¸ 
+            // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æ•°å¢—æ¸› 
             case 2:
                 ChangePlayerNumber();
                 break;
-            // ƒ{ƒ^ƒ“‰Ÿ‚µ‚Á‚Ï‚È‚µ‚ÅƒQ[ƒ€ŠJn
+            // ãƒœã‚¿ãƒ³æŠ¼ã—ã£ã±ãªã—ã§ã‚²ãƒ¼ãƒ é–‹å§‹
             case 3:
                 HoldButtonGoToGame();
                 break;
@@ -50,7 +50,7 @@ public class TitleButton : MonoBehaviour
     }
 
     //
-    // ƒ^ƒCƒgƒ‹
+    // ã‚¿ã‚¤ãƒˆãƒ«
     //
     void Title()
     {
@@ -62,24 +62,24 @@ public class TitleButton : MonoBehaviour
 	}
 
     //
-    // ƒXƒe[ƒW‘I‘ğ
+    // ã‚¹ãƒ†ãƒ¼ã‚¸é¸æŠ
     //
     void SelectStage()
     {
-        // Ÿ‚Ö
+        // æ¬¡ã¸
         if(Input.GetButtonDown("Next_1"))
         {
             SoundEffect.PironTrigger = 1;
             GameStart.phase = 2;
         }
-        // –ß‚é
+        // æˆ»ã‚‹
         else if(Input.GetButtonDown("XBack_1"))
         {
-            // ƒLƒƒƒ“ƒZƒ‹‰¹‚ğ–Â‚ç‚·
+            // ã‚­ãƒ£ãƒ³ã‚»ãƒ«éŸ³ã‚’é³´ã‚‰ã™
             GameStart.phase = 0;
 		}
 
-        // LR ‚ÅƒXƒe[ƒW‘I‘ğ
+        // LR ã§ã‚¹ãƒ†ãƒ¼ã‚¸é¸æŠ
         if (Input.GetButtonDown("Plus_1"))
         {
             GameStart.Stage++;
@@ -88,32 +88,32 @@ public class TitleButton : MonoBehaviour
         {
             GameStart.Stage--;
         }
-        // Å‘å’l‚ğ’´‚¦‚½‚çÅ‘å’l‚ğ“n‚·
+        // æœ€å¤§å€¤ã‚’è¶…ãˆãŸã‚‰æœ€å¤§å€¤ã‚’æ¸¡ã™
         GameStart.Stage = System.Math.Min(GameStart.Stage, lastStage);
-        // Å¬’l‚ğ‰º‰ñ‚Á‚½‚çÅ¬’l‚ğ“n‚·
+        // æœ€å°å€¤ã‚’ä¸‹å›ã£ãŸã‚‰æœ€å°å€¤ã‚’æ¸¡ã™
         if (GameStart.Stage == 4) { minPlayer = 2; }
         GameStart.Stage = System.Math.Max(GameStart.Stage, firstStage);
     }
 
     //
-    // ƒvƒŒƒCƒ„[”‘Œ¸ 
+    // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æ•°å¢—æ¸› 
     //
     void ChangePlayerNumber()
     {
-        // Ÿ‚Ö
+        // æ¬¡ã¸
         if (Input.GetButtonDown("Next_1"))
         {
             SoundEffect.PironTrigger = 1;
             GameStart.phase = 3;
         }
-        // –ß‚é
+        // æˆ»ã‚‹
         else if (Input.GetButtonDown("XBack_1"))
         {
-            // ƒLƒƒƒ“ƒZƒ‹‰¹‚ğ–Â‚ç‚·
+            // ã‚­ãƒ£ãƒ³ã‚»ãƒ«éŸ³ã‚’é³´ã‚‰ã™
             GameStart.phase = 0;
         }
 
-        // LR ‚ÅƒvƒŒƒCƒ„[”‘I‘ğ
+        // LR ã§ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æ•°é¸æŠ
         if (Input.GetButtonDown("Plus_1"))
         {
             GameStart.PlayerNumber++;
@@ -122,24 +122,24 @@ public class TitleButton : MonoBehaviour
         {
             GameStart.PlayerNumber--;
         }
-        // Å‘å’l‚ğ’´‚¦‚½‚çÅ‘å’l‚ğ“n‚·
+        // æœ€å¤§å€¤ã‚’è¶…ãˆãŸã‚‰æœ€å¤§å€¤ã‚’æ¸¡ã™
         GameStart.PlayerNumber = System.Math.Min(GameStart.PlayerNumber, maxPlayer);
-        // Å¬’l‚ğ‰º‰ñ‚Á‚½‚çÅ¬’l‚ğ“n‚·
+        // æœ€å°å€¤ã‚’ä¸‹å›ã£ãŸã‚‰æœ€å°å€¤ã‚’æ¸¡ã™
         if (GameStart.Stage == 4) { minPlayer = 2; } else { minPlayer = 1; }
         GameStart.PlayerNumber = System.Math.Max(GameStart.PlayerNumber, minPlayer);
     }
     //
-    // ƒ{ƒ^ƒ“‰Ÿ‚µ‚Á‚Ï‚È‚µ‚ÅƒQ[ƒ€ŠJn
+    // ãƒœã‚¿ãƒ³æŠ¼ã—ã£ã±ãªã—ã§ã‚²ãƒ¼ãƒ é–‹å§‹
     //
     void HoldButtonGoToGame()
     {
-        // ƒ{ƒ^ƒ“‚ğ‰Ÿ‚µ‚½uŠÔ
+        // ãƒœã‚¿ãƒ³ã‚’æŠ¼ã—ãŸç¬é–“
         if (Input.GetButtonDown("Next_1"))
         {
             YButtonAnim.enabled = true;
             YButtonAnim.SetTrigger("On");
         }
-        // ƒ{ƒ^ƒ“‚ğ‰Ÿ‚µ‘±‚¯‚½‚Æ‚« -> ƒ[ƒ^[‚ªã‚ª‚è‘±‚¯‚ÄƒXƒe[ƒWŠJn
+        // ãƒœã‚¿ãƒ³ã‚’æŠ¼ã—ç¶šã‘ãŸã¨ã -> ãƒ¡ãƒ¼ã‚¿ãƒ¼ãŒä¸ŠãŒã‚Šç¶šã‘ã¦ã‚¹ãƒ†ãƒ¼ã‚¸é–‹å§‹
         else if (Input.GetButton("Next_1"))
         {
             holdTime += Time.deltaTime;
@@ -150,17 +150,17 @@ public class TitleButton : MonoBehaviour
                 SceneManager.LoadScene("Stage" + GameStart.Stage.ToString());
             }
         }
-        // ƒ{ƒ^ƒ“‚ğ•ú‚µ‚½
+        // ãƒœã‚¿ãƒ³ã‚’æ”¾ã—ãŸæ™‚
         else if (Input.GetButtonUp("Next_1"))
         {
             YButtonAnim.SetTrigger("Off");
             YButtonAnim.enabled = false;
             holdTime = 0;
         }
-        // –ß‚é
+        // æˆ»ã‚‹
         else if (Input.GetButtonDown("XBack_1"))
         {
-            // ƒLƒƒƒ“ƒZƒ‹‰¹‚ğ–Â‚ç‚·
+            // ã‚­ãƒ£ãƒ³ã‚»ãƒ«éŸ³ã‚’é³´ã‚‰ã™
             GameStart.phase = 1;
         }
 

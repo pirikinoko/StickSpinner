@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -40,7 +40,7 @@ public class ButtonClick : MonoBehaviour
         Settings.SettingPanelActive = false;
         Settings.inSetting = false;
     }
-    //�ݒ��ʂ̃{�^��
+    //設定画面のボタン
     public void GainBGMVol()
     {
         BGM.BGMStage++;

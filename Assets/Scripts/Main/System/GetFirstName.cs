@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,7 +9,7 @@ public class GetFirstName : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        inputField.text = null; //‰Šú‰»
+        inputField.text = null; //åˆæœŸåŒ–
     }
     public void GetText()
     {

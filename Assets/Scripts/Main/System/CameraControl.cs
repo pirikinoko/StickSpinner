@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,10 +8,10 @@ public class CameraControl : MonoBehaviour
 
     [SerializeField] Camera camera_;
 
-    // ƒvƒŒƒCƒ„[
+    // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼
     GameObject[] players{ get; set;} = new GameObject[GameStart.MaxPlayer];
 
-    // ”z—ñ‚Íƒƒ‚ƒŠ‚ğŠm•Û‚Ì‚±‚Æ
+    // é…åˆ—ã¯ãƒ¡ãƒ¢ãƒªã‚’ç¢ºä¿ã®ã“ã¨
     bool[]    playerActive    = new bool[GameStart.MaxPlayer];
     Vector2[] playerTransform = new Vector2[GameStart.MaxPlayer];
     float[] distance  = new float[6];
@@ -26,7 +26,7 @@ public class CameraControl : MonoBehaviour
 
     void Start()
     {
-        // Q‰ÁƒvƒŒƒCƒ„[
+        // å‚åŠ ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼
         int i = 0;
         for(; i < GameStart.PlayerNumber; i++)
         {
@@ -36,7 +36,7 @@ public class CameraControl : MonoBehaviour
             Ydistance[i] = 0;
             playerActive[i] = true;
         }
-        // •sQ‰ÁƒvƒŒƒCƒ„[
+        // ä¸å‚åŠ ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼
         for(; i < GameStart.MaxPlayer; i++)
         {
             playerActive[i] = false;
@@ -51,7 +51,7 @@ public class CameraControl : MonoBehaviour
         GoaledPlayersPos();
         PlayerPos();
         GoaledPlayersPos();
-        // 1lƒvƒŒƒC‚Ì‚Í‘å‚«‚ß‚Ì‰æ–Ê‚Å
+        // 1äººãƒ—ãƒ¬ã‚¤ã®æ™‚ã¯å¤§ãã‚ã®ç”»é¢ã§
         if (GameStart.PlayerNumber != 1)
         {
             camera_.orthographicSize = CameraSize;
@@ -95,11 +95,11 @@ public class CameraControl : MonoBehaviour
         maxDistansX = Mathf.Max(Xdistance);
         maxDistansY = Mathf.Max(Ydistance);
         CameraSize = maxDistans / 1.3f;
-        // Å‘å’l‚ğ’´‚¦‚½‚çÅ‘å’l‚ğ“n‚·
+        // æœ€å¤§å€¤ã‚’è¶…ãˆãŸã‚‰æœ€å¤§å€¤ã‚’æ¸¡ã™
         CameraSize = System.Math.Min(CameraSize, 5.5f);
-        // Å¬’l‚ğ‰º‰ñ‚Á‚½‚çÅ¬’l‚ğ“n‚·
+        // æœ€å°å€¤ã‚’ä¸‹å›ã£ãŸã‚‰æœ€å°å€¤ã‚’æ¸¡ã™
         CameraSize = System.Math.Max(CameraSize, 3.5f);
-        //X,Y²‚Ì‹——£‚ÌÅ‘å’l‚ğ’²‚×‚é
+        //X,Yè»¸ã®è·é›¢ã®æœ€å¤§å€¤ã‚’èª¿ã¹ã‚‹
         for (int i = 0; i < distance.Length; i++)
         {
             int num1 = memo1[i];
@@ -114,13 +114,13 @@ public class CameraControl : MonoBehaviour
             }
         }
        
-        //ƒJƒƒ‰ˆÊ’uˆÚ“®
-        if(cameraPos.x < cameraPosGoal.x)//ƒJƒƒ‰‚ğ‚ä‚Á‚­‚è–Ú“I’n‚É‹ß‚Ã‚¯‚é
+        //ã‚«ãƒ¡ãƒ©ä½ç½®ç§»å‹•
+        if(cameraPos.x < cameraPosGoal.x)//ã‚«ãƒ¡ãƒ©ã‚’ã‚†ã£ãã‚Šç›®çš„åœ°ã«è¿‘ã¥ã‘ã‚‹
         {
             cameraPos.x += 0.015f;
             if(cameraPosGoal.x - cameraPos.x > 1)
             {
-                cameraPos.x += 0.1f; //–Ú“I’n‚©‚ç‘å‚«‚­—£‚ê‚Ä‚¢‚éê‡‚ÍƒJƒƒ‰‚ğ‘¬‚­“®‚©‚·
+                cameraPos.x += 0.1f; //ç›®çš„åœ°ã‹ã‚‰å¤§ããé›¢ã‚Œã¦ã„ã‚‹å ´åˆã¯ã‚«ãƒ¡ãƒ©ã‚’é€Ÿãå‹•ã‹ã™
             }
         }
         if (cameraPos.x > cameraPosGoal.x)
@@ -156,14 +156,14 @@ public class CameraControl : MonoBehaviour
         transform.position = cameraPos;
     }
 
-    //ƒS[ƒ‹‚µ‚½ƒvƒŒƒCƒ„[‚ğƒJƒƒ‰‚Ì‘ÎÛ‚©‚çŠO‚·
+    //ã‚´ãƒ¼ãƒ«ã—ãŸãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚’ã‚«ãƒ¡ãƒ©ã®å¯¾è±¡ã‹ã‚‰å¤–ã™
     void GoaledPlayersPos()
     {
         for (int i = 0; i < GameStart.PlayerNumber; i++)
         {
             if (GameMode.goaledPlayer[i] != null)
             {
-                int num = int.Parse(GameMode.goaledPlayer[i].Substring(6)) - 1; // Player‚Ì”Ô†‚ğæ“¾
+                int num = int.Parse(GameMode.goaledPlayer[i].Substring(6)) - 1; // Playerã®ç•ªå·ã‚’å–å¾—
                 playerActive[num] = false;
                 if(playerActive[i] == false)
                 {

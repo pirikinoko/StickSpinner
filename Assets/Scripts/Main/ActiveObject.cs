@@ -1,13 +1,13 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class ActiveObject : MonoBehaviour
 {
-    //Šî–{
+    //åŸºæœ¬
     float floreSpeed = 1.3f, circleSpeed = 1.0f;
     Rigidbody2D rbody2D;
-    //Circle—p
+    //Circleç”¨
     Vector2 StartPos;
     public float RightLimit = 1.0f, LeftLimit = 1.0f;
     float ReverseCoolDown = 1.0f;
@@ -17,7 +17,7 @@ public class ActiveObject : MonoBehaviour
         rbody2D = GetComponent<Rigidbody2D>();
         StartPos = this.gameObject.transform.position;
 
-        if (this.gameObject.CompareTag("Reverse"))    //”½“]ƒ^ƒO‚Åis•ûŒü”½“]
+        if (this.gameObject.CompareTag("Reverse"))    //åè»¢ã‚¿ã‚°ã§é€²è¡Œæ–¹å‘åè»¢
         {
             circleSpeed *= -1;
         }
@@ -34,7 +34,7 @@ public class ActiveObject : MonoBehaviour
             MoveFlore();
         }      
     }
-    //‚Ü‚½‚Í°A•ÇA‘¼‚ÌCircle‚É“–‚½‚Á‚½‚ç”½“]
+    //ã¾ãŸã¯åºŠã€å£ã€ä»–ã®Circleã«å½“ãŸã£ãŸã‚‰åè»¢
     private void OnCollisionEnter2D(Collision2D other)
     {
         if (other.gameObject.CompareTag("Wall") || other.gameObject.CompareTag("Surface"))
@@ -69,7 +69,7 @@ public class ActiveObject : MonoBehaviour
                 ReverseCoolDown = 1.0f;
             }
         }
-        //‰ŠúˆÊ’u‚æ‚èxŽ²‚É1“®‚¢‚½‚ç”½“]
+        //åˆæœŸä½ç½®ã‚ˆã‚Šxè»¸ã«1å‹•ã„ãŸã‚‰åè»¢
         if (this.gameObject.transform.position.x > StartPos.x + RightLimit && reverse || this.gameObject.transform.position.x < StartPos.x - LeftLimit && reverse)
         {
             circleSpeed *= -1;

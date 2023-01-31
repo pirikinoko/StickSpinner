@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -18,7 +18,7 @@ public class SoundEffect : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
     }
     void Update()
-    {   //‰¹—ÊƒXƒe[ƒWãŒÀ‰ºŒÀ‚ÌÝ’è
+    {   //éŸ³é‡ã‚¹ãƒ†ãƒ¼ã‚¸ä¸Šé™ä¸‹é™ã®è¨­å®š
         if (SEStage > 20)
         {
             SEStage = 20;

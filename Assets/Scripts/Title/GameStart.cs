@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,8 +9,8 @@ using UnityEngine.Video;
 
 public class GameStart : MonoBehaviour
 {
-    public const int MaxStage  = 4;     // ‘ƒXƒe[ƒW”
-    public const int MaxPlayer = 4;     // ‘ƒvƒŒƒCƒ„[”
+    public const int MaxStage  = 4;     // ç·ã‚¹ãƒ†ãƒ¼ã‚¸æ•°
+    public const int MaxPlayer = 4;     // ç·ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æ•°
     const int KeyboardMode = 5;
     const int ControllerMode = 6;
 
@@ -20,18 +20,18 @@ public class GameStart : MonoBehaviour
     Button StartButton;
     public static bool inDemoPlay = false;
 
-    //ˆÈ‰º‰æ‘œ·‚µ‘Ö‚¦—p
+    //ä»¥ä¸‹ç”»åƒå·®ã—æ›¿ãˆç”¨
     public SpriteRenderer StageTitle, StageDifficulity, StageDescription;
     public Sprite Stage1Title, Stage1Difficulity, Stage1Description;
     public Sprite Stage2Title, Stage2Difficulity, Stage2Description;
     public Sprite Stage3Title, Stage3Difficulity, Stage3Description;
     public Sprite Stage4Title, Stage4Difficulity, Stage4Description;
 
-    //“®‰æ
+    //å‹•ç”»
     public VideoPlayer StageVideo;
     public VideoClip Stage1Video, Stage2Video, Stage3Video, Stage4Video;
     public static int phase = 0;
-    public static int PlayerNumber{get; set;} = 1;     // Q‰ÁƒvƒŒƒCƒ„[”
+    public static int PlayerNumber{get; set;} = 1;     // å‚åŠ ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æ•°
     public static int Stage = 1;
 
     void Start()
@@ -126,9 +126,9 @@ public class GameStart : MonoBehaviour
                 break;
 
         }
-        // Å‘å’l‚ğ’´‚¦‚½‚çÅ‘å’l‚ğ“n‚·
+        // æœ€å¤§å€¤ã‚’è¶…ãˆãŸã‚‰æœ€å¤§å€¤ã‚’æ¸¡ã™
         phase = System.Math.Min(phase, 4);
-        // Å¬’l‚ğ‰º‰ñ‚Á‚½‚çÅ¬’l‚ğ“n‚·
+        // æœ€å°å€¤ã‚’ä¸‹å›ã£ãŸã‚‰æœ€å°å€¤ã‚’æ¸¡ã™
         phase = System.Math.Max(phase, 0);
     }
 
@@ -143,7 +143,7 @@ public class GameStart : MonoBehaviour
 
     void SwichUI()
     {
-        //ƒL[ƒ{[ƒhƒ}ƒEƒX—pUI‚ÆƒRƒ“ƒgƒ[ƒ‰[—pUI‚ÌØ‚è‘Ö‚¦
+        //ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ãƒã‚¦ã‚¹ç”¨UIã¨ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãƒ¼ç”¨UIã®åˆ‡ã‚Šæ›¿ãˆ
         if (Controller.usingController)
         {
             UIMode = ControllerMode;
@@ -152,7 +152,7 @@ public class GameStart : MonoBehaviour
         {
             UIMode = KeyboardMode;
         }
-        //ƒL[ƒ{[ƒh,ƒ}ƒEƒX‚Ì‚Æ‚«
+        //ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰,ãƒã‚¦ã‚¹ã®ã¨ã
         if (UIMode == KeyboardMode)
         {
             if (phase == 0)
@@ -170,7 +170,7 @@ public class GameStart : MonoBehaviour
             ControllerUI4.gameObject.SetActive(false);
             ControllerUI5.gameObject.SetActive(false);
         }
-        //ƒRƒ“ƒgƒ[ƒ‰[‚Ì‚Æ‚«
+        //ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãƒ¼ã®ã¨ã
         else if (UIMode == ControllerMode)
         {
             ControllerUI5.gameObject.SetActive(true);

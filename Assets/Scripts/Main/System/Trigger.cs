@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,15 +8,15 @@ public class Trigger : MonoBehaviour
 
     float   pointTimer;
     //public static float[,] killTimer = new float[4, 4];
-    int playerId;                   // ƒvƒŒƒCƒ„[”Ô†(1`4)
-                                    //int otherId = 0;                // “–‚½‚Á‚½‘Šè‚ÌƒvƒŒƒCƒ„[(1`4)
+    int playerId;                   // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ç•ªå·(1ï½4)
+                                    //int otherId = 0;                // å½“ãŸã£ãŸç›¸æ‰‹ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼(1ï½4)
 
     GameMode gamemode;
     void Start()
     {
         gamemode = GameObject.Find("Scripts").GetComponent<GameMode>();
 
-        // ƒ{ƒfƒB‚©ƒXƒeƒBƒbƒN‚æ‚è ID ‚ğ“¾‚é
+        // ãƒœãƒ‡ã‚£ã‹ã‚¹ãƒ†ã‚£ãƒƒã‚¯ã‚ˆã‚Š ID ã‚’å¾—ã‚‹
         Controller cnt = GetComponent<Controller>();
         if (cnt)
 		{   // Controller.cs
@@ -37,7 +37,7 @@ public class Trigger : MonoBehaviour
         if (other.gameObject.name.Contains("CheckPos"))
         {
             GameSetting.respownPos[playerId - 1] = other.gameObject.transform.position;
-            Debug.Log("P" + playerId.ToString() + "‚ÌCheckPoint‚ğİ’è");
+            Debug.Log("P" + playerId.ToString() + "ã®CheckPointã‚’è¨­å®š");
         }
 
         if (this.gameObject.name.Contains("Player"))
@@ -57,19 +57,16 @@ public class Trigger : MonoBehaviour
                             pointTimer = 0;
                         }
                     }
-
-
                 }
-
             }
         }
     }
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (GameStart.Stage != 4)@@//‘Îíƒ‚[ƒh‚ğœ‚«
+        if (GameStart.Stage != 4)ã€€ã€€//å¯¾æˆ¦ãƒ¢ãƒ¼ãƒ‰ã‚’é™¤ã
         {
-            //©g‚ªƒvƒŒƒCƒ„[‚È‚ç
+            //è‡ªèº«ãŒãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãªã‚‰
             if (this.gameObject.CompareTag("Player"))
             {
                 if(other.gameObject.name  == "GoalFlag")
@@ -85,7 +82,7 @@ public class Trigger : MonoBehaviour
     {
         if(GameStart.Stage == 4)
         {
-            //“G‚ÉG‚ê‚Ä‚©‚çŒÜ•bŠÔƒLƒ‹”»’è
+            //æ•µã«è§¦ã‚Œã¦ã‹ã‚‰äº”ç§’é–“ã‚­ãƒ«åˆ¤å®š
             for (int i = 0; i < GameStart.PlayerNumber; i++)
             {
                 if (this.gameObject.name == "Player" + (i + 1).ToString() || this.gameObject.name == "Stick" + (i + 1).ToString())
@@ -104,7 +101,7 @@ public class Trigger : MonoBehaviour
 
     void KillTimer()
     {
-        //“G‚ÉG‚ê‚Ä‚©‚çŒÜ•bŠÔƒLƒ‹”»’è
+        //æ•µã«è§¦ã‚Œã¦ã‹ã‚‰äº”ç§’é–“ã‚­ãƒ«åˆ¤å®š
         for (int i = 0; i < GameStart.PlayerNumber; i++)
         {
             for (int j = 0; i < GameStart.PlayerNumber; i++)
