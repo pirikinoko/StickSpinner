@@ -8523,7 +8523,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f347e718066e9a43a85c3ad767e65b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetStage: 4
+  targetStage: 1
   playerNumber: 1
 --- !u!4 &384620469
 Transform:
@@ -24390,6 +24390,7 @@ GameObject:
   - component: {fileID: 1189882810}
   - component: {fileID: 1189882812}
   - component: {fileID: 1189882811}
+  - component: {fileID: 1189882813}
   m_Layer: 5
   m_Name: P2CountDown
   m_TagString: Untagged
@@ -24458,6 +24459,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1189882809}
   m_CullTransparentMesh: 1
+--- !u!114 &1189882813
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1189882809}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e19747de3f5aca642ab2be37e372fb86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_EffectColor: {r: 0, g: 0, b: 0, a: 0.5}
+  m_EffectDistance: {x: 3, y: -3}
+  m_UseGraphicAlpha: 1
 --- !u!1 &1197163784
 GameObject:
   m_ObjectHideFlags: 0
@@ -27486,6 +27502,7 @@ GameObject:
   - component: {fileID: 1320975485}
   - component: {fileID: 1320975487}
   - component: {fileID: 1320975486}
+  - component: {fileID: 1320975488}
   m_Layer: 5
   m_Name: P3CountDown
   m_TagString: Untagged
@@ -27554,6 +27571,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1320975484}
   m_CullTransparentMesh: 1
+--- !u!114 &1320975488
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1320975484}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e19747de3f5aca642ab2be37e372fb86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_EffectColor: {r: 0, g: 0, b: 0, a: 0.5}
+  m_EffectDistance: {x: 3, y: -3}
+  m_UseGraphicAlpha: 1
 --- !u!1 &1324401110
 GameObject:
   m_ObjectHideFlags: 0
@@ -29971,6 +30003,7 @@ GameObject:
   - component: {fileID: 1459380728}
   - component: {fileID: 1459380730}
   - component: {fileID: 1459380729}
+  - component: {fileID: 1459380731}
   m_Layer: 5
   m_Name: P4CountDown
   m_TagString: Untagged
@@ -30039,6 +30072,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1459380727}
   m_CullTransparentMesh: 1
+--- !u!114 &1459380731
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1459380727}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e19747de3f5aca642ab2be37e372fb86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_EffectColor: {r: 0, g: 0, b: 0, a: 0.5}
+  m_EffectDistance: {x: 3, y: -3}
+  m_UseGraphicAlpha: 1
 --- !u!1 &1460923354
 GameObject:
   m_ObjectHideFlags: 0
@@ -39474,7 +39522,7 @@ TilemapRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 002862ab226e30d46900ab46ffc9ff7d, type: 2}
+  - {fileID: 10308, guid: 0000000000000000f000000000000000, type: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -72843,7 +72891,7 @@ Tilemap:
     m_Data: {r: 1, g: 1, b: 1, a: 1}
   m_TileObjectToInstantiateArray: []
   m_AnimationFrameRate: 1
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.5283019, g: 0.5283019, b: 0.5283019, a: 1}
   m_Origin: {x: -41, y: -27, z: 0}
   m_Size: {x: 74, y: 45, z: 1}
   m_TileAnchor: {x: 0.5, y: 0.5, z: 0}
@@ -75169,11 +75217,6 @@ MonoBehaviour:
   playTime: {fileID: 265219735}
   frontCanvas: {fileID: 2069971404}
   canvas: {fileID: 2130626148}
-  timer:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
   stageObject:
   - {fileID: 1124153028}
   - {fileID: 675521183}
@@ -75182,8 +75225,7 @@ MonoBehaviour:
   battleModeUI:
   - {fileID: 358236711}
   - {fileID: 919886038}
-  gray: {fileID: 2100000, guid: 002862ab226e30d46900ab46ffc9ff7d, type: 2}
-  white: {fileID: 2100000, guid: 9b8ea3abe31be99489c8cdf340176a89, type: 2}
+  tilemap: {fileID: 1869123678}
   CountDownGO: {fileID: 13818946}
   ControllerUI1: {fileID: 1877817693}
   ControllerUI2: {fileID: 958743300}

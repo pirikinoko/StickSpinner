@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,26 +12,20 @@ public class Controller : MonoBehaviour
     public int id;                                      // プレイヤー番号(1～4)
     [SerializeField]
     KeyCode KeyLeft, KeyRight;                          // 左右キー(キーボード使用時)
+    float rotSpeed = 160f;                              // 棒の回転速度
     [SerializeField]
-    float RotSpeed = 160f;                              // 棒の回転速度
-    [SerializeField]
-    float CoolTime_ = 0.2f;                             // ジャンプのクールタイム
+    float CoolTime_ = 0.2f;                             // ジャンプのクールタイム初期化用
+    float coolTime = 0.2f;                              // ジャンプのクールタイム
 
     float RotStage = 10;                                // 棒の回転速度0-20段階
-    float StickRot = 0f;                                // 棒の角度
-    float jumpforce = 8.3f;                             // ジャンプ力
-    bool  onFloor;                                      // ジャンプ可能な状態
-    bool  onSurface, onPlayer, onStick, onPinball;      // 接触している時は true
-    float CoolTime = 0.2f;                              // ジャンプのクールタイム
+    float stickRot = 0f;                                // 棒の角度
+    float jumpforce = 8.3f;                             // Y軸ジャンプ力
+    bool  onFloor, onSurface, onPlayer, onStick, onPinball;   // 接触している時は true
+   
     bool  inputCrossX;                                  // 十字ボタンの入力があるときはtrue
     float delay = 0.15f;
     bool delayFlag = false;
-    // プレイヤーごとの回転速度
-    ///public static float[] rotSpeed = {160,160,160,160 }; // これは感度調整用なのか?
-    public static float[] rotStage = { 10, 10, 10, 10 };
-
-    //[SerializeField]
-    //float RotSpeed_ = 160f, RotStage_ = 10;
+    public static float[] rotStage = { 10, 10, 10, 10 };　//感度を保存しておく
 
     [SerializeField]
     Text SensText;
@@ -39,24 +34,24 @@ public class Controller : MonoBehaviour
     Sprite[] aryFace = new Sprite[6];                   
 
 
-     int Face {get; set;}                                // 顔設定用乱数を入れておく1～100
+     int face {get; set;}                                // 顔設定用乱数を入れておく1～100
 
     string padHorizontalName, padJumpName, padChangeSensName, XpadJumpName; // ゲームパット名
-    Rigidbody2D Stickrbody2D;             // 棒のRigidbody
-                                          // 親の顔
-    SpriteRenderer parentSprite;//, spriteRenderer2;
 
-    bool isRespown = true;
+    Rigidbody2D stickRb;           // 棒のRigidbody  
+    SpriteRenderer parentSprite; // 親の顔
+
+    bool isRespowing = false;
 
 
-    private Vector3 PlayerPos, StickPos, PausedPlayerPos, PausedStickPos, latestPos; //プレイヤー,棒の位置
-    private Vector2 Playerspeed, PausedPlayerspeed, deadPlayerPos;//プレイヤー速度,ポーズ直前のプレイヤー速度
-    private float   SavePausedPos = 0; // ポーズ処理に使用
+    private Vector3 playerPos, pausedPos, latestPos; //プレイヤー,棒の位置
+    private Vector2 Playerspeed, speedWhenPaused, deadPlayerPos;//プレイヤー速度,ポーズ直前のプレイヤー速度
+    private float   saveCount = 0; // ポーズ処理に使用
     private Body    body;
     /*　/ゲームオブジェクトなど  */
 
     /* ボタン関連 */
-    public static string Controllers { get; set; }
+    public static string controller { get; set; }
 
     int connected; //接続されているコントローラーの数
     string[] keyName;
@@ -71,7 +66,7 @@ public class Controller : MonoBehaviour
 
     void Start()
     {
-        if (Controllers == "")
+        if (controller == "")
         {
             usingController = false;
         }
@@ -85,36 +80,36 @@ public class Controller : MonoBehaviour
         // カウントダウンタイマー
         deadTimer = GameObject.Find("P" + id.ToString() + "CountDown");
 
-        // これなんだろう
+        //
         RotStage = rotStage[id - 1];
         //RotSpeed = rotSpeed[id - 1];
 
-        isRespown    = true;
-        StickRot     = 0f;
-        CoolTime     = 0.0f;
+        isRespowing    = false;
+        stickRot     = 0f;
+        coolTime     = 0.0f;
         onSurface    = false;
         onPlayer     = false;
         onStick      = false;
-        Stickrbody2D = GetComponent<Rigidbody2D>();
+        stickRb = GetComponent<Rigidbody2D>();
         body         = transform.parent.gameObject.GetComponent<Body>();// 親から Body を取得する
         
 
         // 顔をランダムで設定する
-        Face = Random.Range(1, 100);
+        face = UnityEngine.Random.Range(1, 100);
         for(int i = 0; i < aryFaceRatio.Length; i++)
         {
-            if(Face <= aryFaceRatio[i])
+            if(face <= aryFaceRatio[i])
             {
                 parentSprite.sprite = aryFace[i];
             }
 		}
 
-        // ステージならば spriteRenderer.sprite をコピーする。これで処理がすっきりする
-/*      if (GameStart.Stage == 4 && GameSetting.Playable)
+        // ステージならば spriteRenderer.sprite をコピーする。
+        if (GameStart.Stage == 4 && GameSetting.Playable)
         {
-            spriteRenderer2.sprite = spriteRenderer.sprite;
+            GameObject.Find("P" + (id + 1).ToString() + "Face").GetComponent<SpriteRenderer>().sprite = parentSprite.sprite;
         }
-*/
+
     }
 
     // 入力は Update で行う
@@ -123,7 +118,7 @@ public class Controller : MonoBehaviour
         onFloor   = onSurface | onPlayer | onStick | body.onSurface | body.onPlayer | body.onStick;// 何かに接触している時は true
         onPinball = onPinball | body.onPinball; ;
         Acceleration();
-        if (isRespown)
+        if (!(isRespowing))
         {
             if (GameSetting.Playable && ButtonInGame.Paused != 1 || GameStart.inDemoPlay) //プレイヤー数選択画面でも操作可能
             {
@@ -142,30 +137,27 @@ public class Controller : MonoBehaviour
     void FixedUpdate()
     {
         // プレイヤー速度取得
-        StickPos    = transform.position;
         Playerspeed = ((transform.parent.gameObject.transform.position - latestPos) / Time.deltaTime);
-        if (ButtonInGame.Paused == 1 && SavePausedPos == 0)
+        if (ButtonInGame.Paused == 1 && saveCount == 0)
         {
-            PausedStickPos    = transform.position;
-            PausedPlayerPos   = transform.parent.gameObject.transform.position;
-            PausedPlayerspeed = Playerspeed;
-            SavePausedPos = 1;
+            pausedPos   = transform.parent.gameObject.transform.position;
+            speedWhenPaused = Playerspeed;
+            saveCount = 1;
         }
         if (ButtonInGame.Paused == 1)
         {
-            Stickrbody2D.velocity = new Vector2(0, 0);
-            transform.parent.gameObject.transform.position = PausedPlayerPos;
-            transform.position = PausedStickPos;
-            Stickrbody2D.MoveRotation(StickRot);
+            stickRb.velocity = new Vector2(0, 0);
+            transform.parent.gameObject.transform.position = pausedPos;
+            stickRb.MoveRotation(stickRot);
         }
-        if (ButtonInGame.Paused == 0 && SavePausedPos == 1)
+        if (ButtonInGame.Paused == 0 && saveCount == 1)
         {
-            Stickrbody2D.velocity = new Vector2(PausedPlayerspeed.x * 2.1f, PausedPlayerspeed.y * 2.1f);
-            SavePausedPos = 0;
+            stickRb.velocity = new Vector2(speedWhenPaused.x * 2.1f, speedWhenPaused.y * 2.1f);
+            saveCount = 0;
         }
         latestPos = transform.parent.gameObject.transform.position;
 
-        Stickrbody2D.MoveRotation(StickRot);            // 角度反映 これはポーズ時も行う
+        stickRb.MoveRotation(stickRot);            // 角度反映 これはポーズ時も行う
     }
 
 
@@ -173,10 +165,10 @@ public class Controller : MonoBehaviour
     void Jump()
     {
         // クールタイム
-        if (CoolTime > 0)
+        if (coolTime > 0)
         {
-            CoolTime -= Time.deltaTime;
-            return;
+            coolTime -= Time.deltaTime;
+            return;   //処理中断
         }
 
         // キー(あらかじめ左右のどちらかが押されていて、もう一方のキーが押された瞬間を調べる)
@@ -185,14 +177,10 @@ public class Controller : MonoBehaviour
 
         // キー(左右キーどちらも押した瞬間かを調べる)
         bool key3 = Input.GetKeyDown(KeyRight) && Input.GetKeyDown(KeyLeft);
-
-        //上の三つだとちゃんと床などに設置してからキーを押さないとジャンプできない(棒が少し地面でバウンドしてる時にバウンドのたびにタイミングよく押さないとジャンプできない)ので反応が悪くなるためこれを使うしかない
-        bool key4 = Input.GetKey(KeyRight) && Input.GetKey(KeyLeft);
         
-        if (onFloor && (key1 || key2 || key3 || key4 || GetJumpButtonDown()))
+        if (onFloor && (key1 || key2 || key3 || GetJumpButtonDown()))
         {
             // ジャンプの方向を求める
-
             float rotZ = transform.eulerAngles.z;
             if (rotZ <   0) { rotZ += 360; }// 0 度未満なら正の値にする
             if (rotZ > 180) { rotZ -= 180; }//上に向いているほうの棒の角度のみ取得
@@ -200,19 +188,18 @@ public class Controller : MonoBehaviour
             float jumpDirection;                        // 棒の回転値に合わせて飛ぶ方向を求める
             if (rotZ < 180) { jumpDirection = 6; }
             else { jumpDirection = 18; }
-
-            // ジャンプさせる
             jumpDirection = (jumpDirection - rotZ / 15) * 1.15f;
+
             //棒が真横を向いているときはジャンプできない
             if (!(rotZ > 179) && !(rotZ < 1))
             {
-                Stickrbody2D.velocity = new Vector2(jumpDirection, jumpforce);
+                stickRb.velocity = new Vector2(jumpDirection, jumpforce);
                 //効果音鳴らす
                 SoundEffect.PowanTrigger = 1;
             }
 
             // クールタイム(この時間は入力を受け付けない)
-            CoolTime = CoolTime_;
+            coolTime = CoolTime_;
         }
     }
 
@@ -222,15 +209,15 @@ public class Controller : MonoBehaviour
         if (GameSetting.Playable && ButtonInGame.Paused != 1 || GameStart.inDemoPlay) //プレイヤー数選択画面でも操作可能
         {
             float horizotalValue = Input.GetAxis("Horizontal");
-            if (Input.GetKey(KeyRight) || horizotalValue >=  0.1f) { StickRot -= RotSpeed * Time.deltaTime; }
-            if (Input.GetKey(KeyLeft)  || horizotalValue <= -0.1f) { StickRot += RotSpeed * Time.deltaTime; }
+            if (Input.GetKey(KeyRight) || horizotalValue >=  0.1f) { stickRot -= rotSpeed * Time.deltaTime; }
+            if (Input.GetKey(KeyLeft)  || horizotalValue <= -0.1f) { stickRot += rotSpeed * Time.deltaTime; }
         }
     }
 
     // 死亡
     public void StartDead()
     {
-        isRespown = false;
+        isRespowing = true;
         stickSprite.enabled = false;
         parentSprite.enabled = false;
         StartCoroutine(Respown());
@@ -269,7 +256,7 @@ public class Controller : MonoBehaviour
 
         stickSprite.enabled = true;
         parentSprite.enabled = true;
-        isRespown = true;
+        isRespowing = false;
     }
 
 
@@ -285,27 +272,21 @@ public class Controller : MonoBehaviour
             if (horizotalValue >=  0.1f && inputCrossX == false) { RotStage += 1; inputCrossX = true; }
             if (horizotalValue <= -0.1f && inputCrossX == false) { RotStage -= 1; inputCrossX = true; }
 
-            RotSpeed = 120 + RotStage * 4;  // 120 + 4 * 10(RotStage初期値) = 160をベースに感度ステージごとに4変更
+           
             //@@SensText.text = rotStage[id - 1].ToString();
             for (int i = 0; i < GameStart.PlayerNumber; i++)
             {
                 if (id == i + 1)
                 {
-                    RotStage += TitleButtonClick.sensChange[i];
+                    rotStage[i] += TitleButtonClick.sensChange[i];
+                    //上限下限の設定
+                    rotStage[i] = System.Math.Min(rotStage[i], 20);
+                    rotStage[i] = System.Math.Max(rotStage[i], 0);
+                    rotSpeed = 120 + rotStage[i] * 4;  //感度反映
                     TitleButtonClick.sensChange[i] = 0;
-                    rotStage[i] = RotStage;
-                    //@@rotSpeed[i] = RotSpeed; // ここで調整しているのかな?
                 }
             }
-            //上限下限の設定
-            if (RotStage > 20)
-            {
-                RotStage = 20;
-            }
-            if (RotStage < 1)
-            {
-                RotStage = 1;
-            }
+
         }
     }
 
@@ -313,7 +294,7 @@ public class Controller : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D other)
     {
         if (other.gameObject.CompareTag("Surface")) { SoundEffect.BonTrigger = 1;}
-        if (onPinball && other.gameObject.CompareTag("Surface")) { Stickrbody2D.velocity = -Playerspeed * 2; } //ピンボールゾーンでの床との接触時反発
+        if (onPinball && other.gameObject.CompareTag("Surface")) { stickRb.velocity = -Playerspeed * 2; } //ピンボールゾーンでの床との接触時反発
     }
     private void OnCollisionStay2D(Collision2D other)
     {
@@ -335,7 +316,7 @@ public class Controller : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Pinball")) { onPinball = false; }
     }
-    void ExitDelay()
+    void ExitDelay()    //床との設置判定に余裕を
     {
         if (delayFlag)
         {
@@ -356,13 +337,13 @@ public class Controller : MonoBehaviour
         {
             var material = GetComponent<Rigidbody2D>().sharedMaterial;
             material.friction = 0f;
-            Stickrbody2D.gravityScale = 1;
+            stickRb.gravityScale = 1;
         }
         else if (onPinball == false)
         {
             var material = GetComponent<Rigidbody2D>().sharedMaterial;
             material.friction = 2f;
-            Stickrbody2D.gravityScale = 1;
+            stickRb.gravityScale = 1;
         }
     }
 
@@ -373,7 +354,7 @@ public class Controller : MonoBehaviour
         connected = joystickNames.Length;       //コントローラーの接続台数を反映
         for (int i = 0; i < joystickNames.Length; i++)
         {
-            Controllers = CheckControllerName(joystickNames[i]);
+            controller = CheckControllerName(joystickNames[i]);
         }
     }
 
@@ -428,53 +409,213 @@ public class Controller : MonoBehaviour
     // 押した瞬間
     public bool GetNextButtonDown()
     {
-        return Input.GetButtonDown("Next_" + id.ToString());
-	}
+        string inputName = null;
+        if(controller == "XBOX" || controller == "OTHER")
+        {
+            inputName = "Next_";
+        }
+        if (controller == "PS")
+        {
+            inputName = "Next_";
+        }
+        if (controller == "Logicool")
+        {
+            inputName = "Next_";
+        }
+        return Input.GetButtonDown(inputName + id.ToString());
+    }
     public bool GetBackButtonDown()
     {
-        return Input.GetButtonDown("XBack_" + id.ToString());
+        string inputName = null;
+        if (controller == "XBOX" || controller == "OTHER")
+        {
+            inputName = "XBack_";
+        }
+        if (controller == "PS")
+        {
+            inputName = "Logi/PSBack_";
+        }
+        if (controller == "Logicool")
+        {
+            inputName = "Logi/PSBack_";
+        }
+        return Input.GetButtonDown(inputName + id.ToString());  
 	}
     public bool GetStartButtonDown()
     {
-        return Input.GetButtonDown("XStart_" + id.ToString());
+        string inputName = null;
+        if (controller == "XBOX" || controller == "OTHER")
+        {
+            inputName = "XStart_";
+        }
+        if (controller == "PS")
+        {
+            inputName = "Logi/PSStart_";
+        }
+        if (controller == "Logicool")
+        {
+            inputName = "Logi/PSStart_";
+        }
+        return Input.GetButtonDown(inputName + id.ToString());
 	}
     public bool GetJumpButtonDown()
     {
-        return Input.GetButtonDown("Jump_" + id.ToString());
-	}
+        string inputName = null;
+        if (controller == "XBOX" || controller == "OTHER")
+        {
+            inputName = "XJump_";
+        }
+        if (controller == "PS")
+        {
+            inputName = "Logi/PSJump_";
+        }
+        if (controller == "Logicool")
+        {
+            inputName = "Logi/PSJump_";
+        }
+        return Input.GetButtonDown(inputName + id.ToString());
+    }
 
+    //押している間
     public bool GetNextButtonHold()
     {
-        return Input.GetButton("Next_" + id.ToString());
+        string inputName = null;
+        if (controller == "XBOX" || controller == "OTHER")
+        {
+            inputName = "Next_";
+        }
+        if (controller == "PS")
+        {
+            inputName = "Next_";
+        }
+        if (controller == "Logicool")
+        {
+            inputName = "Next_";
+        }
+        return Input.GetButtonDown(inputName + id.ToString());   
 	}
     public bool GetBackButtonHold()
     {
-        return Input.GetButton("XBack_" + id.ToString());
-	}
+        string inputName = null;
+        if (controller == "XBOX" || controller == "OTHER")
+        {
+            inputName = "XBack_";
+        }
+        if (controller == "PS")
+        {
+            inputName = "Logi/PSBack_";
+        }
+        if (controller == "Logicool")
+        {
+            inputName = "Logi/PSBack_";
+        }
+        return Input.GetButtonDown(inputName + id.ToString());
+    }
+
     public bool GetStartButtonHold()
     {
-        return Input.GetButton("XStart_" + id.ToString());
+        string inputName = null;
+        if (controller == "XBOX" || controller == "OTHER")
+        {
+            inputName = "XStart_";
+        }
+        if (controller == "PS")
+        {
+            inputName = "Logi/PSStart_";
+        }
+        if (controller == "Logicool")
+        {
+            inputName = "Logi/PSStart_";
+        }
+        return Input.GetButtonDown(inputName + id.ToString());
 	}
     public bool GetJumpButtonHold()
     {
-        return Input.GetButton("Jump_" + id.ToString());
+        string inputName = null;
+        if (controller == "XBOX" || controller == "OTHER")
+        {
+            inputName = "XJump_";
+        }
+        if (controller == "PS")
+        {
+            inputName = "Logi/PSJump_";
+        }
+        if (controller == "Logicool")
+        {
+            inputName = "Logi/PSJump_";
+        }
+        return Input.GetButtonDown(inputName + id.ToString());
 	}
 
+
+    //離したとき
     public bool GetNextButtonUp()
     {
-        return Input.GetButtonUp("Next_" + id.ToString());
-	}
+        string inputName = null;
+        if (controller == "XBOX" || controller == "OTHER")
+        {
+            inputName = "Next_";
+        }
+        if (controller == "PS")
+        {
+            inputName = "Next_";
+        }
+        if (controller == "Logicool")
+        {
+            inputName = "Next_";
+        }
+        return Input.GetButtonDown(inputName + id.ToString());
+    }
     public bool GetBackButtonUp()
     {
-        return Input.GetButtonUp("XBack_" + id.ToString());
-	}
+        string inputName = null;
+        if (controller == "XBOX" || controller == "OTHER")
+        {
+            inputName = "XBack_";
+        }
+        if (controller == "PS")
+        {
+            inputName = "Logi/PSBack_";
+        }
+        if (controller == "Logicool")
+        {
+            inputName = "Logi/PSBack_";
+        }
+        return Input.GetButtonDown(inputName + id.ToString());
+    }
     public bool GetStartButtonUp()
     {
-        return Input.GetButtonUp("XStart_" + id.ToString());
-	}
+        string inputName = null;
+        if (controller == "XBOX" || controller == "OTHER")
+        {
+            inputName = "XStart_";
+        }
+        if (controller == "PS")
+        {
+            inputName = "Logi/PSStart_";
+        }
+        if (controller == "Logicool")
+        {
+            inputName = "Logi/PSStart_";
+        }
+        return Input.GetButtonDown(inputName + id.ToString());
+    }
     public bool GetJumpButtonUp()
     {
-        return Input.GetButtonUp("Jump_" + id.ToString());
+        string inputName = null;
+        if (controller == "XBOX" || controller == "OTHER")
+        {
+            inputName = "XJump_";
+        }
+        if (controller == "PS")
+        {
+            inputName = "Logi/PSJump_";
+        }
+        if (controller == "Logicool")
+        {
+            inputName = "Logi/PSJump_";
+        }
+        return Input.GetButtonDown(inputName + id.ToString());
 	}
 }
 

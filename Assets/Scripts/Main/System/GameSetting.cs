@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using UnityEngine.Tilemaps;
 
 public class GameSetting : MonoBehaviour
 {
@@ -20,7 +21,6 @@ public class GameSetting : MonoBehaviour
     Vector2[] nameTagPos     = new Vector2[GameStart.MaxPlayer]; 
     Vector2[,] startPos = new Vector2[GameStart.MaxPlayer, GameStart.MaxPlayer];
     public static bool Playable = false;
-    public Text[] timer = new Text[GameStart.MaxPlayer];
     float elapsedTime;
     public static float PlayTime;
     public static float StartTime = 3f;
@@ -31,8 +31,7 @@ public class GameSetting : MonoBehaviour
     [SerializeField] GameObject[] stageObject = new GameObject[4];
     [SerializeField] GameObject[] battleModeUI = new GameObject[2];
     //背景色
-    GameObject grid;
-    [SerializeField] Material gray, white;
+    [SerializeField] Tilemap tilemap;
     public GameObject CountDownGO, ControllerUI1, ControllerUI2, ControllerUI3;
 
     public static bool[] deathTimer = new bool[GameStart.MaxPlayer];
@@ -75,7 +74,7 @@ public class GameSetting : MonoBehaviour
             elapsedTime = 0;
             battleModeUI[0].gameObject.SetActive(false);
             battleModeUI[1].gameObject.SetActive(false);
-            //grid.GetComponent<TilemapRenderer>().material = gray; 
+            tilemap.color = new Color32(80, 80, 80, 255);
         }
         else if (GameStart.Stage == 4)
         {
@@ -83,7 +82,7 @@ public class GameSetting : MonoBehaviour
             elapsedTime = 90; battleModeUI[0].gameObject.SetActive(true);
             battleModeUI[0].gameObject.SetActive(true);
             battleModeUI[1].gameObject.SetActive(true);
-            //grid.GetComponent<TilemapRenderer>().material = white;
+            tilemap.color = new Color32(135, 135, 135, 255);
         }
         SoundTime = 1f;
         StartTime = 3f;
@@ -97,7 +96,6 @@ public class GameSetting : MonoBehaviour
         {
             defaultPlayerPos[i] = GameObject.Find("DefaultPlayerPos" + (i + 1).ToString());
             respownPos[i]       = defaultPlayerPos[i].gameObject.transform.position;
-            Debug.Log("dada");
             defaultPlayerPos[i].gameObject.SetActive(false);
         }
 
