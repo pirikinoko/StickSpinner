@@ -20,8 +20,14 @@ public class SetHighScore : MonoBehaviour
             {
                 if (GameMode.clearTime[0] < ShowHighScore.topScore[i , j])
                 {                  
+                    for(int k = 3; k > j; k--)
+                    {
+                        ShowHighScore.topScore[i, k + 1] = ShowHighScore.topScore[i, k];
+                        ShowHighScore.topName[i, k + 1] = ShowHighScore.topName[i, k];
+                    }
                     ShowHighScore.topScore[i, j] = GameMode.clearTime[0];
                     ShowHighScore.topName[i, j] = GameMode.goaledPlayer[0];
+                    return;
                 }
             }
         }
@@ -33,10 +39,16 @@ public class SetHighScore : MonoBehaviour
             }
             for (int j = 0; j < 5; j++)
             {
-                if (GameMode.pointsInOrder[0] < ShowHighScore.topScore[i , j])
+                if (GameMode.pointsInOrder[0] > ShowHighScore.topScore[i , j])
                 {
+                    for (int k = 3; k >= j; k--)
+                    {
+                        ShowHighScore.topScore[i, k + 1] = ShowHighScore.topScore[i, k];
+                        ShowHighScore.topName[i, k + 1] = ShowHighScore.topName[i, k];
+                    }
                     ShowHighScore.topScore[i, j] = GameMode.pointsInOrder[0];
                     ShowHighScore.topName[i, j] = GameMode.plasement[0];
+                    return;
                 }
             }
         }

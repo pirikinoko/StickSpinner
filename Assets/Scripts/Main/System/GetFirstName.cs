@@ -13,14 +13,15 @@ public class GetFirstName : MonoBehaviour
     }
     public void GetText()
     {
-        GameMode.goaledPlayer[0] = inputField.text;
+        if(GameStart.Stage == 4)
+        {
+            GameMode.plasement[0] = inputField.text;
+        }
+        else
+        {
+            GameMode.goaledPlayer[0] = inputField.text;
+        }
+       
         SoundEffect.PironTrigger = 1;
-        
     }
-    public void GetText2()
-    {
-        GameMode.plasement[0] = inputField.text;
-        SoundEffect.PironTrigger = 1;
-    }
-
 }

@@ -11,8 +11,6 @@ public class GameSetting : MonoBehaviour
     //基本
     [SerializeField]
     Text CountDown, playTime;
-    [SerializeField]
-    GameObject frontCanvas, canvas;
     GameObject[] players  = new GameObject[GameStart.MaxPlayer];
     GameObject[] sticks   = new GameObject[GameStart.MaxPlayer];
     GameObject[] nameTags = new GameObject[GameStart.MaxPlayer];
@@ -29,7 +27,7 @@ public class GameSetting : MonoBehaviour
 
     //ステージ切り替え用
     [SerializeField] GameObject[] stageObject = new GameObject[4];
-    [SerializeField] GameObject[] battleModeUI = new GameObject[2];
+    [SerializeField] GameObject[] battleModeUI;
     //背景色
     [SerializeField] Tilemap tilemap;
     public GameObject CountDownGO, ControllerUI1, ControllerUI2, ControllerUI3;
@@ -49,8 +47,6 @@ public class GameSetting : MonoBehaviour
 
     void Start()
     {
-        canvas.gameObject.SetActive(true);
-        frontCanvas.gameObject.SetActive(true);
         Debug.Log("PlayerNumber: " + GameStart.PlayerNumber + " Stage: " + GameStart.Stage);
         for (int i = 0; i < GameStart.MaxPlayer; i++) //初期化処理
         {
@@ -73,15 +69,13 @@ public class GameSetting : MonoBehaviour
             PlayTime = 0;
             elapsedTime = 0;
             battleModeUI[0].gameObject.SetActive(false);
-            battleModeUI[1].gameObject.SetActive(false);
             tilemap.color = new Color32(80, 80, 80, 255);
         }
         else if (GameStart.Stage == 4)
         {
-            PlayTime = 90;
-            elapsedTime = 90; battleModeUI[0].gameObject.SetActive(true);
+            PlayTime = 10;
+            elapsedTime = 10; 
             battleModeUI[0].gameObject.SetActive(true);
-            battleModeUI[1].gameObject.SetActive(true);
             tilemap.color = new Color32(135, 135, 135, 255);
         }
         SoundTime = 1f;

@@ -59,7 +59,7 @@ public class Controller : MonoBehaviour
     GameObject bodyObj;     
     GameObject deadTimer;
     SpriteRenderer stickSprite;                 // スティックスプライト
-    GameObject nameTag;                         // 名前のゲームオブジェクト
+    public GameObject nameTag;                         // 名前のゲームオブジェクト
 
     readonly int[] aryFaceRatio = { 25, 50, 70, 88, 94, 100};   // 顔の変化用
 
@@ -70,7 +70,7 @@ public class Controller : MonoBehaviour
         {
             usingController = false;
         }
-        // 名前
+       
         nameTag = GameObject.Find("P" + id.ToString() + "Text");
 
         // 親スプライト・スティックスプライトを得る
@@ -79,10 +79,8 @@ public class Controller : MonoBehaviour
         bodyObj = transform.parent.gameObject;
         // カウントダウンタイマー
         deadTimer = GameObject.Find("P" + id.ToString() + "CountDown");
-
-        //
         RotStage = rotStage[id - 1];
-        //RotSpeed = rotSpeed[id - 1];
+
 
         isRespowing    = false;
         stickRot     = 0f;
@@ -91,7 +89,7 @@ public class Controller : MonoBehaviour
         onPlayer     = false;
         onStick      = false;
         stickRb = GetComponent<Rigidbody2D>();
-        body         = transform.parent.gameObject.GetComponent<Body>();// 親から Body を取得する
+        
         
 
         // 顔をランダムで設定する
@@ -103,11 +101,10 @@ public class Controller : MonoBehaviour
                 parentSprite.sprite = aryFace[i];
             }
 		}
-
         // ステージならば spriteRenderer.sprite をコピーする。
-        if (GameStart.Stage == 4 && GameSetting.Playable)
+        if (SceneManager.GetActiveScene().name == "Stage" && GameStart.Stage == 4)
         {
-            GameObject.Find("P" + (id + 1).ToString() + "Face").GetComponent<SpriteRenderer>().sprite = parentSprite.sprite;
+            GameObject.Find("P" + id.ToString() + "Face").GetComponent<SpriteRenderer>().sprite = parentSprite.sprite;
         }
 
     }
@@ -115,8 +112,9 @@ public class Controller : MonoBehaviour
     // 入力は Update で行う
     void Update()
     {
-        onFloor   = onSurface | onPlayer | onStick | body.onSurface | body.onPlayer | body.onStick;// 何かに接触している時は true
-        onPinball = onPinball | body.onPinball; ;
+        body = bodyObj.GetComponent<Body>();// 親から Body を取得する
+        onFloor   = onSurface | onPlayer | onStick | body.onSurface | body.onPlayer | body.onStick; // 何かに接触している時は true
+        onPinball = onPinball | body.onPinball; 
         Acceleration();
         if (!(isRespowing))
         {
@@ -157,6 +155,7 @@ public class Controller : MonoBehaviour
         }
         latestPos = transform.parent.gameObject.transform.position;
 
+        stickRb = GetComponent<Rigidbody2D>();  
         stickRb.MoveRotation(stickRot);            // 角度反映 これはポーズ時も行う
     }
 
@@ -208,9 +207,9 @@ public class Controller : MonoBehaviour
     {
         if (GameSetting.Playable && ButtonInGame.Paused != 1 || GameStart.inDemoPlay) //プレイヤー数選択画面でも操作可能
         {
-            float horizotalValue = Input.GetAxis("Horizontal");
-            if (Input.GetKey(KeyRight) || horizotalValue >=  0.1f) { stickRot -= rotSpeed * Time.deltaTime; }
-            if (Input.GetKey(KeyLeft)  || horizotalValue <= -0.1f) { stickRot += rotSpeed * Time.deltaTime; }
+            //float horizotalValue = Input.GetAxis("Horizontal");
+            if (Input.GetKey(KeyRight)) { stickRot -= rotSpeed * Time.deltaTime; }
+            if (Input.GetKey(KeyLeft) ) { stickRot += rotSpeed * Time.deltaTime; }
         }
     }
 
@@ -238,11 +237,14 @@ public class Controller : MonoBehaviour
         deadTimer.transform.position = gameObject.transform.position + new Vector3(0, 0.5f, 0);
         Text deadText = deadTimer.GetComponent<Text>();
         deadText.text = "3";
+        SoundEffect.BunTrigger = 1;
 		yield return new WaitForSeconds(1.0f);					// 待ち時間
         deadText.text = "2";
-		yield return new WaitForSeconds(1.0f);					// 待ち時間
+        SoundEffect.BunTrigger = 1;
+        yield return new WaitForSeconds(1.0f);					// 待ち時間
         deadText.text = "1";
-		yield return new WaitForSeconds(1.0f);					// 待ち時間
+        SoundEffect.BunTrigger = 1;
+        yield return new WaitForSeconds(1.0f);					// 待ち時間
         deadText.text = "";
 
 

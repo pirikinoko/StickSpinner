@@ -52,8 +52,8 @@ public class Trigger : MonoBehaviour
                         if (pointTimer > 2)
                         {
                             SoundEffect.KinTrigger = 1;
-                            GameMode.points[playerId] += 1;
-                            GameMode.playParticle[playerId] = 1;
+                            GameMode.points[playerId - 1] += 1;
+                            GameMode.playParticle[playerId - 1] = 1;
                             pointTimer = 0;
                         }
                     }

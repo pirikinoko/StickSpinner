@@ -16,7 +16,7 @@ public class Body : MonoBehaviour
     GameObject DEATH;                                       // 死亡エフェクト
 
     // 内部で使うもの
-    public bool  onFloor  { set; get; }
+    public bool  onFloor  { set; get; } 
     public bool  onSurface  { set; get; }
     public bool  onPlayer   { set; get; }
     public bool  onStick   { set; get; }

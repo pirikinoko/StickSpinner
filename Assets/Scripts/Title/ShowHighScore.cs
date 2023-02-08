@@ -36,6 +36,7 @@ public class ShowHighScore : MonoBehaviour
                 {
                     ranking[i, j].text = "";
                 }
+                Debug.Log(ranking[3, j].text);
             }
         }
     }

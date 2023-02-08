@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using System.Linq;
 using System;
 
 public class GameMode : MonoBehaviour
@@ -24,8 +25,9 @@ public class GameMode : MonoBehaviour
     public GameObject KillLogBack, Plus1, Plus5;
     GameObject[] pointTextGO = new GameObject[4], pointBox = new GameObject[4];
     public static float[] points = new float[4], pointsInOrder = new float[4];
+    public static float topPoint;
+    float p1Points, p2Points, p3Points, p4Points;
     public static float KillLogTimer;
-    float[] pointCut = new float[4];
     public static string[] plasement = new string [4];
     Text[] pointText = new Text[4];
     public static Text killer, died;
@@ -43,12 +45,9 @@ public class GameMode : MonoBehaviour
             nameTags[    i] = GameObject.Find("P" +      (i + 1).ToString() + "Text");
             players[     i] = GameObject.Find("Player" + (i + 1).ToString());
             sticks[      i] = GameObject.Find("Stick"  + (i + 1).ToString());
-            resultTextGO[i] = GameObject.Find("Result" + (i + 1).ToString());
+            resultTextGO[i] = GameObject.Find("resultText" + (i + 1).ToString());
             resultText[  i] = resultTextGO[i].GetComponent<Text>();
         }
-   
-        ResultPanel = GameObject.Find("ResultPanel");
-        ResultPanelFront = GameObject.Find("ResultPanelFront");
         InputField = GameObject.Find("InputField");
         ResultPanel.gameObject.SetActive(false);
         ResultPanelFront.gameObject.SetActive(false);
@@ -101,8 +100,8 @@ public class GameMode : MonoBehaviour
         {
             KillLog();
             PointDisplay();
-            checkResult();
             PlayParticle();
+            checkResult();
             ShowResult();
         }
     }
@@ -157,8 +156,7 @@ public class GameMode : MonoBehaviour
     {
         for (int i = 0; i < GameStart.PlayerNumber; i++)
         {
-            pointCut[i] = Mathf.Floor(points[i]);
-            pointText[i].text = pointCut[i].ToString();
+            pointText[i].text = String.Format("{0:#}", points[i].ToString());
         }
     }
 
@@ -177,26 +175,40 @@ public class GameMode : MonoBehaviour
             ResultPanel.gameObject.SetActive(true);
             ResultPanelFront.gameObject.SetActive(true);
             InputField.gameObject.SetActive(true);
-        }
-        if (count == 0)
-        {
-            //ポイント並び替え
-            pointsInOrder = points;
-            Array.Sort(pointsInOrder);
-            //順位計測
-            for (int i = 0; i < GameStart.PlayerNumber; i++)
-            {
-                for (int j = 0; j < GameStart.PlayerNumber; j++)
-                {
-                    if (points[i] != 0 && pointsInOrder[j] == points[i])
-                    {
-                        plasement[j] = "Player" + (i + 1).ToString();
-                    }
-                }
 
+            if (count == 0)
+            {
+                //ポイント並び替え
+                points.CopyTo(pointsInOrder, 0);
+                Array.Sort(pointsInOrder);
+                Array.Reverse(pointsInOrder);
+                int num = 3;
+                //順位計測
+                for (int i = GameStart.PlayerNumber - 1; i >= 0; i--)
+                {
+                    
+                    if (points[i] == 0)
+                    {
+                        plasement[num] = "Player" + (i + 1).ToString();
+                        num --;
+                    }
+                    else
+                    {
+                        for (int j = 0; j < GameStart.PlayerNumber; j++)
+                        {
+                            if (pointsInOrder[j] == points[i])
+                            {
+                                plasement[j] = "Player" + (i + 1).ToString();
+                            }
+
+                        }
+                    }                   
+
+                }
+                topPoint = pointsInOrder[0];            
+                count = 1;
             }
-            count = 1;
-        }
+        }     
     }
 
     void PlayParticle()
@@ -221,10 +233,13 @@ public class GameMode : MonoBehaviour
     }
     void ShowResult()
     {
-        //リザルト表示
-        for (int i = 0; i < GameStart.PlayerNumber; i++)
+        if (Finished)
         {
-            resultText[i].text = "1位: " + plasement[i] + " " + points[0] + "ポイント";
+            //リザルト表示
+            for (int i = 0; i < GameStart.PlayerNumber; i++)
+            {
+                resultText[i].text = (i + 1) + "位: " + plasement[i] + "  " + pointsInOrder[i] + "ポイント";
+            }
         }
     }
 }

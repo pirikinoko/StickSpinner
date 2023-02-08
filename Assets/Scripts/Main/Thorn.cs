@@ -18,12 +18,12 @@ public class Thorn : MonoBehaviour
     GameObject[] players  = new GameObject[GameStart.MaxPlayer];
     GameObject[] nameTags = new GameObject[GameStart.MaxPlayer];
     Rigidbody2D[] stickrb = new Rigidbody2D[GameStart.MaxPlayer];
-
+   
 
     void Start()
     {
         // 配列に代入
-        for(int i = 0; i < GameStart.MaxPlayer; i++)
+        for (int i = 0; i < GameStart.MaxPlayer; i++)
         {
             players[ i] = GameObject.Find("Player" + (i + 1).ToString());
             nameTags[i] = GameObject.Find("P" + (i + 1).ToString() + "Text");
@@ -57,14 +57,14 @@ public class Thorn : MonoBehaviour
             Controller cnt = other.gameObject.transform.GetChild(0).GetComponent<Controller>();
             cnt.StartDead();
 
-            int id = bdy.id - 1;
+            int id = bdy.id;
             //GameSetting.deathTimer[id] = true;
             //col[id]    = gameObject.transform.position;
             //col[id].y += 0.5f;
             //triggerCheckPos[id] = 1;
             //playerrend[id].enabled = false;
             //stickrend[ id].enabled = false;
-            nameTags[  id].gameObject.SetActive(false);
+            nameTags[id - 1].gameObject.SetActive(false);
         }
     }
 }
