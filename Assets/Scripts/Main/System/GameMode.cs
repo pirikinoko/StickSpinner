@@ -30,7 +30,7 @@ public class GameMode : MonoBehaviour
     public static float KillLogTimer;
     public static string[] plasement = new string [4];
     Text[] pointText = new Text[4];
-    public static Text killer, died;
+    public static string killer, died;
     public Text KillLogText = null;
     public static byte[] playParticle = new byte[4];
     public static bool Finished;

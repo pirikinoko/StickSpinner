@@ -14,6 +14,7 @@ public class GameSetting : MonoBehaviour
     GameObject[] players  = new GameObject[GameStart.MaxPlayer];
     GameObject[] sticks   = new GameObject[GameStart.MaxPlayer];
     GameObject[] nameTags = new GameObject[GameStart.MaxPlayer];
+    GameObject[] deadTimer = new GameObject[GameStart.MaxPlayer];
     Text[]    nameTagText    = new Text[   GameStart.MaxPlayer];
     Vector2[] nameTagPos     = new Vector2[GameStart.MaxPlayer]; 
     Vector2[,] startPos = new Vector2[GameStart.MaxPlayer, GameStart.MaxPlayer];
@@ -30,8 +31,6 @@ public class GameSetting : MonoBehaviour
     //背景色
     [SerializeField] Tilemap tilemap;
     public GameObject CountDownGO, ControllerUI1, ControllerUI2, ControllerUI3;
-
-    public static bool[] deathTimer = new bool[GameStart.MaxPlayer];
     //UI切り替え用
     int UIMode;
     const int KeyboardMode = 5;
@@ -49,14 +48,15 @@ public class GameSetting : MonoBehaviour
         Debug.Log("PlayerNumber: " + GameStart.PlayerNumber + " Stage: " + GameStart.Stage);
         for (int i = 0; i < GameStart.MaxPlayer; i++) //初期化処理
         {
-            deathTimer[i] = false;
             //respownTimer[i] = 3.0f;
             nameTags[i] = GameObject.Find("P" + (i + 1).ToString() + "Text");
             players[i] = GameObject.Find("Player" + (i + 1).ToString());
             sticks[i] = GameObject.Find("Stick" + (i + 1).ToString());
             nameTagText[i] = nameTags[i].GetComponent<Text>(); ;
             nameTagText[i].text = "Player" + (i + 1).ToString();
+            deadTimer[i] = GameObject.Find("P" + (i + 1).ToString() + "CountDown");
             //ステージオブジェクトONOFF
+            deadTimer[i].SetActive(false);
             if (GameStart.Stage == (i + 1)) { stageObject[i].gameObject.SetActive(true); }
             else { stageObject[i].gameObject.SetActive(false); }
         }

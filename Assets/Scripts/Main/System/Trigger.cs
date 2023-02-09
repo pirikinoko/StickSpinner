@@ -34,7 +34,6 @@ public class Trigger : MonoBehaviour
         if (other.gameObject.name.Contains("CheckPos"))
         {
             GameSetting.respownPos[playerId - 1] = other.gameObject.transform.position;
-            Debug.Log("P" + playerId.ToString() + "のCheckPointを設定");
         }
 
         if (this.gameObject.name.Contains("Player"))
@@ -80,7 +79,10 @@ public class Trigger : MonoBehaviour
                 {
                     GameMode.points[i] += 5;
                     GameMode.playParticle[i] = 2;
+                    GameMode.killer = "Player" + (i + 1).ToString();
+                    GameMode.died = "Player" + playerId.ToString();
                     GameMode.killTimer[i, playerId - 1] = 0;
+                    GameMode.KillLogTimer = 5.0f;
                 }
             }
         }

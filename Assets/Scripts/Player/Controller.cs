@@ -16,25 +16,21 @@ public class Controller : MonoBehaviour
     [SerializeField]
     float CoolTime_ = 0.2f;                             // ジャンプのクールタイム初期化用
     float coolTime = 0.2f;                              // ジャンプのクールタイム
-
-    float RotStage = 10;                                // 棒の回転速度0-20段階
+    [SerializeField]
+    public GameObject deadTimer;
+    [SerializeField]
+    Text SensText;
+    [SerializeField]
+    Sprite[] aryFace = new Sprite[6];
+    int face { get; set; }                                // 顔設定用乱数を入れておく1～100
     float stickRot = 0f;                                // 棒の角度
     float jumpforce = 8.3f;                             // Y軸ジャンプ力
     bool  onFloor, onSurface, onPlayer, onStick, onPinball;   // 接触している時は true
-   
     bool  inputCrossX;                                  // 十字ボタンの入力があるときはtrue
     float delay = 0.15f;
     bool delayFlag = false;
     public static float[] rotStage = { 10, 10, 10, 10 };　//感度を保存しておく
-
-    [SerializeField]
-    Text SensText;
-
-    [SerializeField]
-    Sprite[] aryFace = new Sprite[6];                   
-
-
-     int face {get; set;}                                // 顔設定用乱数を入れておく1～100
+   
 
     string padHorizontalName, padJumpName, padChangeSensName, XpadJumpName; // ゲームパット名
 
@@ -57,7 +53,6 @@ public class Controller : MonoBehaviour
     string[] keyName;
     public static bool usingController = true;
     GameObject bodyObj;     
-    GameObject deadTimer;
     SpriteRenderer stickSprite;                 // スティックスプライト
     public GameObject nameTag;                         // 名前のゲームオブジェクト
 
@@ -77,11 +72,6 @@ public class Controller : MonoBehaviour
         parentSprite =  transform.parent.gameObject.GetComponent<SpriteRenderer>();
         stickSprite  = GetComponent<SpriteRenderer>();
         bodyObj = transform.parent.gameObject;
-        // カウントダウンタイマー
-        deadTimer = GameObject.Find("P" + id.ToString() + "CountDown");
-        deadTimer.SetActive(false);
-        RotStage = rotStage[id - 1];
-
 
         isRespowing    = false;
         stickRot     = 0f;
@@ -102,10 +92,14 @@ public class Controller : MonoBehaviour
                 parentSprite.sprite = aryFace[i];
             }
 		}
-        // ステージならば spriteRenderer.sprite をコピーする。
-        if (SceneManager.GetActiveScene().name == "Stage" && GameStart.Stage == 4)
-        {
-            GameObject.Find("P" + id.ToString() + "Face").GetComponent<SpriteRenderer>().sprite = parentSprite.sprite;
+        // ゲームプレイ時の処理(タイトル画面では行わない)
+        if (SceneManager.GetActiveScene().name == "Stage")
+        {     
+            if (GameStart.Stage == 4)
+            {
+                GameObject.Find("P" + id.ToString() + "Face").GetComponent<SpriteRenderer>().sprite = parentSprite.sprite;
+
+            }     
         }
 
     }
@@ -273,8 +267,8 @@ public class Controller : MonoBehaviour
 
             if (horizotalValue == 0) { inputCrossX = false; }
             //十字ボタン(横)を一回倒すごとに感度ステージを一段階変更
-            if (horizotalValue >=  0.1f && inputCrossX == false) { RotStage += 1; inputCrossX = true; }
-            if (horizotalValue <= -0.1f && inputCrossX == false) { RotStage -= 1; inputCrossX = true; }
+            if (horizotalValue >=  0.1f && inputCrossX == false) { rotStage[id - 1] += 1; inputCrossX = true; }
+            if (horizotalValue <= -0.1f && inputCrossX == false) { rotStage[id - 1] -= 1; inputCrossX = true; }
 
            
             //@@SensText.text = rotStage[id - 1].ToString();
@@ -282,15 +276,13 @@ public class Controller : MonoBehaviour
             {
                 if (id == i + 1)
                 {
-                    rotStage[i] += TitleButtonClick.sensChange[i];
                     //上限下限の設定
                     rotStage[i] = System.Math.Min(rotStage[i], 20);
-                    rotStage[i] = System.Math.Max(rotStage[i], 0);
+                    rotStage[i] = System.Math.Max(rotStage[i], 1);
                     rotSpeed = 120 + rotStage[i] * 4;  //感度反映
-                    TitleButtonClick.sensChange[i] = 0;
                 }
             }
-
+            SensText.text = rotStage[id - 1].ToString();
         }
     }
 
@@ -341,13 +333,11 @@ public class Controller : MonoBehaviour
         {
             var material = GetComponent<Rigidbody2D>().sharedMaterial;
             material.friction = 0f;
-            stickRb.gravityScale = 1;
         }
         else if (onPinball == false)
         {
             var material = GetComponent<Rigidbody2D>().sharedMaterial;
             material.friction = 2f;
-            stickRb.gravityScale = 1;
         }
     }
 
