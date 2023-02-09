@@ -7,10 +7,7 @@ public class Trigger : MonoBehaviour
 {
 
     float   pointTimer;
-    //public static float[,] killTimer = new float[4, 4];
-    int playerId;                   // プレイヤー番号(1～4)
-                                    //int otherId = 0;                // 当たった相手のプレイヤー(1～4)
-
+    int playerId;                   // プレイヤー番号(1～4)      
     GameMode gamemode;
     void Start()
     {
@@ -73,45 +70,32 @@ public class Trigger : MonoBehaviour
                 {
                     gamemode.GoalProcess(playerId);
                 }
-              
             }
         }
+        if (other.gameObject.CompareTag("thorn"))
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                if (GameMode.killTimer[i, playerId - 1] > 0)
+                {
+                    GameMode.points[i] += 5;
+                    GameMode.playParticle[i] = 2;
+                    GameMode.killTimer[i, playerId - 1] = 0;
+                }
+            }
+        }
+
     }
-    /*
+    
     private void OnCollisionStay2D(Collision2D other)
     {
         if(GameStart.Stage == 4)
         {
-            //敵に触れてから五秒間キル判定
-            for (int i = 0; i < GameStart.PlayerNumber; i++)
+            if(other.gameObject.CompareTag("Player") || other.gameObject.CompareTag("Stick"))
             {
-                if (this.gameObject.name == "Player" + (i + 1).ToString() || this.gameObject.name == "Stick" + (i + 1).ToString())
-                {
-                    for (int j = 0; i < GameStart.PlayerNumber; i++)
-                    {
-                        if (other.gameObject.name == "Player" + (j + 1).ToString() || other.gameObject.name == "Stick" + (j + 1).ToString())
-                        {
-                            killTimer[i, j] = 5.0f;
-                        }
-                    }
-                }
-            }
-        }      
-    }
-
-    void KillTimer()
-    {
-        //敵に触れてから五秒間キル判定
-        for (int i = 0; i < GameStart.PlayerNumber; i++)
-        {
-            for (int j = 0; i < GameStart.PlayerNumber; i++)
-            {
-                if (killTimer[i, j] > 0)
-                {
-                    killTimer[i, j] -= Time.deltaTime;
-                }
-            }
-
+                //敵に触れてから五秒間キル判定
+                GameMode.killTimer[playerId - 1, other.gameObject.GetComponent<Trigger>().playerId - 1] = 5.0f;
+            }       
         }
-    }*/
+    }
 }

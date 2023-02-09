@@ -79,6 +79,7 @@ public class Controller : MonoBehaviour
         bodyObj = transform.parent.gameObject;
         // カウントダウンタイマー
         deadTimer = GameObject.Find("P" + id.ToString() + "CountDown");
+        deadTimer.SetActive(false);
         RotStage = rotStage[id - 1];
 
 
@@ -256,6 +257,7 @@ public class Controller : MonoBehaviour
         //チェックポイントにリスポーン
         bodyObj.transform.position = GameSetting.respownPos[id - 1];
 
+        nameTag.SetActive(true);
         stickSprite.enabled = true;
         parentSprite.enabled = true;
         isRespowing = false;

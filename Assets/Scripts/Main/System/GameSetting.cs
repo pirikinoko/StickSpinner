@@ -14,7 +14,6 @@ public class GameSetting : MonoBehaviour
     GameObject[] players  = new GameObject[GameStart.MaxPlayer];
     GameObject[] sticks   = new GameObject[GameStart.MaxPlayer];
     GameObject[] nameTags = new GameObject[GameStart.MaxPlayer];
-    GameObject[] countTextGO = new GameObject[GameStart.MaxPlayer];
     Text[]    nameTagText    = new Text[   GameStart.MaxPlayer];
     Vector2[] nameTagPos     = new Vector2[GameStart.MaxPlayer]; 
     Vector2[,] startPos = new Vector2[GameStart.MaxPlayer, GameStart.MaxPlayer];
@@ -57,8 +56,6 @@ public class GameSetting : MonoBehaviour
             sticks[i] = GameObject.Find("Stick" + (i + 1).ToString());
             nameTagText[i] = nameTags[i].GetComponent<Text>(); ;
             nameTagText[i].text = "Player" + (i + 1).ToString();
-            countTextGO[i] = GameObject.Find("P" + (i + 1).ToString() + "CountDown");
-            countTextGO[i].gameObject.SetActive(false);
             //ステージオブジェクトONOFF
             if (GameStart.Stage == (i + 1)) { stageObject[i].gameObject.SetActive(true); }
             else { stageObject[i].gameObject.SetActive(false); }

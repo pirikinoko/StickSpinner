@@ -36,7 +36,7 @@ public class GameMode : MonoBehaviour
     public static bool Finished;
     byte count = 0;
     private Vector2[] particlePos = new Vector2[4];
-
+    public static float[,] killTimer = new float[4, 4];       // プレイヤー同士の衝突を記録(1～4 , 1～4)
 
     void Start()
     {   //基本
@@ -47,6 +47,10 @@ public class GameMode : MonoBehaviour
             sticks[      i] = GameObject.Find("Stick"  + (i + 1).ToString());
             resultTextGO[i] = GameObject.Find("resultText" + (i + 1).ToString());
             resultText[  i] = resultTextGO[i].GetComponent<Text>();
+            for(int j = 0; j < 4; j++)
+            {
+                killTimer[i, j] = 0f;
+            }
         }
         InputField = GameObject.Find("InputField");
         ResultPanel.gameObject.SetActive(false);
@@ -98,7 +102,7 @@ public class GameMode : MonoBehaviour
         // バトルモード
         if (GameStart.Stage == 4)
         {
-            KillLog();
+            KillSystem();
             PointDisplay();
             PlayParticle();
             checkResult();
@@ -137,8 +141,20 @@ public class GameMode : MonoBehaviour
     }
 
     //バトルモード
-    void KillLog()
+    void KillSystem()
     {
+        //タイマー減少
+        for (int i = 0; i < GameStart.PlayerNumber; i++)
+        {
+            for (int j = 0; i < GameStart.PlayerNumber; i++)
+            {
+                if (killTimer[i, j] >= 0)
+                {
+                    killTimer[i, j] -= Time.deltaTime;
+                }
+            }
+        }
+        //キルログ表示
         KillLogText.text = killer + "　→　" + died;
         if (KillLogTimer > 0)
         {
