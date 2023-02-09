@@ -32,7 +32,7 @@ public class BGM : MonoBehaviour
     }
     void SetBGMVol()
     {
-        BGMSource.volume = BGMStage / 80;
+        BGMSource.volume = BGMStage / 100;
         BGMText.text = BGMStage.ToString();
     }
 }

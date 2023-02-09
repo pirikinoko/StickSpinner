@@ -18,9 +18,9 @@ public class SetHighScore : MonoBehaviour
             }
             for (int j = 0; j < 5; j++)
             {
-                if (GameMode.clearTime[0] < ShowHighScore.topScore[i , j])
+                if (GameMode.clearTime[0] < ShowHighScore.topScore[i , j] || ShowHighScore.topScore[i, j] == 0)
                 {                  
-                    for(int k = 3; k > j; k--)
+                    for(int k = 3; k >= j; k--)
                     {
                         ShowHighScore.topScore[i, k + 1] = ShowHighScore.topScore[i, k];
                         ShowHighScore.topName[i, k + 1] = ShowHighScore.topName[i, k];
