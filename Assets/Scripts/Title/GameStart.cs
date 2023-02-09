@@ -14,9 +14,8 @@ public class GameStart : MonoBehaviour
     const int KeyboardMode = 5;
     const int ControllerMode = 6;
 
-    int UIMode;
-
-    public GameObject MainTitle, StartPanel, ChangePlayerNumber, FrontCanvas, Stage1Scores, Stage2Scores, Stage3Scores, Stage4Scores, KeyboardMouseUI1, KeyboardMouseUI2, ControllerUI1, ControllerUI2, ControllerUI3, ControllerUI4, ControllerUI5;
+    public GameObject MainTitle, StartPanel, ChangePlayerNumber, FrontCanvas, Stage1Scores, Stage2Scores, Stage3Scores, Stage4Scores, KeyboardMouseUI1, KeyboardMouseUI2;
+    public GameObject[] controllerUI;
     Button StartButton;
     public static bool inDemoPlay = false;
 
@@ -144,16 +143,9 @@ public class GameStart : MonoBehaviour
     void SwichUI()
     {
         //キーボードマウス用UIとコントローラー用UIの切り替え
-        if (Controller.usingController)
-        {
-            UIMode = ControllerMode;
-        }
-        else
-        {
-            UIMode = KeyboardMode;
-        }
+
         //キーボード,マウスのとき
-        if (UIMode == KeyboardMode)
+        if (!(ControllerInput.usingController))
         {
             if (phase == 0)
             {
@@ -163,49 +155,19 @@ public class GameStart : MonoBehaviour
             {
                 KeyboardMouseUI2.gameObject.SetActive(true);
             }
-
-            ControllerUI1.gameObject.SetActive(false);
-            ControllerUI2.gameObject.SetActive(false);
-            ControllerUI3.gameObject.SetActive(false);
-            ControllerUI4.gameObject.SetActive(false);
-            ControllerUI5.gameObject.SetActive(false);
+            for(int i = 0; i < 5; i++) { controllerUI[i].gameObject.SetActive(false); }
+            
         }
         //コントローラーのとき
-        else if (UIMode == ControllerMode)
+        else if (ControllerInput.usingController)
         {
-            ControllerUI5.gameObject.SetActive(true);
-            if (phase == 0)
-            {
-                DisableControllerUI();
-                ControllerUI1.gameObject.SetActive(true);
-            }
-            if (phase == 1)
-            {
-                DisableControllerUI();
-                ControllerUI2.gameObject.SetActive(true);
-            }
-            if (phase == 2)
-            {
-                DisableControllerUI();
-                ControllerUI3.gameObject.SetActive(true);
-            }
-            if (phase == 3)
-            {
-                DisableControllerUI();
-                ControllerUI4.gameObject.SetActive(true);
-            }
 
+            for (int i = 0; i < 5; i++) { controllerUI[i].gameObject.SetActive(false); }
+            controllerUI[phase].gameObject.SetActive(true);
+            controllerUI[4].gameObject.SetActive(true);
             KeyboardMouseUI1.gameObject.SetActive(false);
             KeyboardMouseUI2.gameObject.SetActive(false);
         }
     }
 
-    void DisableControllerUI()
-    {
-        ControllerUI1.gameObject.SetActive(false);
-        ControllerUI2.gameObject.SetActive(false);
-        ControllerUI3.gameObject.SetActive(false);
-        ControllerUI4.gameObject.SetActive(false);
-        ControllerUI5.gameObject.SetActive(false);
-    }
 }

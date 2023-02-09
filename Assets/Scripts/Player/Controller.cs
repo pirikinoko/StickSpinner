@@ -32,8 +32,6 @@ public class Controller : MonoBehaviour
     public static float[] rotStage = { 10, 10, 10, 10 };　//感度を保存しておく
    
 
-    string padHorizontalName, padJumpName, padChangeSensName, XpadJumpName; // ゲームパット名
-
     Rigidbody2D stickRb;           // 棒のRigidbody  
     SpriteRenderer parentSprite; // 親の顔
 
@@ -46,12 +44,7 @@ public class Controller : MonoBehaviour
     private Body    body;
     /*　/ゲームオブジェクトなど  */
 
-    /* ボタン関連 */
-    public static string controller { get; set; }
-
-    int connected; //接続されているコントローラーの数
-    string[] keyName;
-    public static bool usingController = true;
+  
     GameObject bodyObj;     
     SpriteRenderer stickSprite;                 // スティックスプライト
     public GameObject nameTag;                         // 名前のゲームオブジェクト
@@ -61,10 +54,7 @@ public class Controller : MonoBehaviour
 
     void Start()
     {
-        if (controller == "")
-        {
-            usingController = false;
-        }
+       
        
         nameTag = GameObject.Find("P" + id.ToString() + "Text");
 
@@ -121,8 +111,6 @@ public class Controller : MonoBehaviour
         }
     
         ChangeSensitivity();
-        getControllerType();
-        InputControllerButton();
         ExitDelay();
     }
 
@@ -172,7 +160,7 @@ public class Controller : MonoBehaviour
         // キー(左右キーどちらも押した瞬間かを調べる)
         bool key3 = Input.GetKeyDown(KeyRight) && Input.GetKeyDown(KeyLeft);
         
-        if (onFloor && (key1 || key2 || key3 || GetJumpButtonDown()))
+        if (onFloor && (key1 || key2 || key3 || ControllerInput.jump[id - 1]))
         {
             // ジャンプの方向を求める
             float rotZ = transform.eulerAngles.z;
@@ -202,9 +190,8 @@ public class Controller : MonoBehaviour
     {
         if (GameSetting.Playable && ButtonInGame.Paused != 1 || GameStart.inDemoPlay) //プレイヤー数選択画面でも操作可能
         {
-            //float horizotalValue = Input.GetAxis("Horizontal");
-            if (Input.GetKey(KeyRight)) { stickRot -= rotSpeed * Time.deltaTime; }
-            if (Input.GetKey(KeyLeft) ) { stickRot += rotSpeed * Time.deltaTime; }
+            if (Input.GetKey(KeyRight) || ControllerInput.Lstick[id - 1] > 0) { stickRot -= rotSpeed * Time.deltaTime; }
+            if (Input.GetKey(KeyLeft) || ControllerInput.Lstick[id - 1] < 0) { stickRot += rotSpeed * Time.deltaTime; }
         }
     }
 
@@ -263,14 +250,11 @@ public class Controller : MonoBehaviour
     {
         if (GameStart.inDemoPlay) //プレイヤー数選択画面でのみ操作可能
         {
-            float horizotalValue = Input.GetAxis("Horizontal");
-
-            if (horizotalValue == 0) { inputCrossX = false; }
+            if (ControllerInput.crossX[id - 1] == 0) { inputCrossX = false; }
             //十字ボタン(横)を一回倒すごとに感度ステージを一段階変更
-            if (horizotalValue >=  0.1f && inputCrossX == false) { rotStage[id - 1] += 1; inputCrossX = true; }
-            if (horizotalValue <= -0.1f && inputCrossX == false) { rotStage[id - 1] -= 1; inputCrossX = true; }
+            if (ControllerInput.crossX[id - 1] >=  0.1f && inputCrossX == false) { rotStage[id - 1] += 1; inputCrossX = true; SoundEffect.BunTrigger = 1; }
+            if (ControllerInput.crossX[id - 1] <= -0.1f && inputCrossX == false) { rotStage[id - 1] -= 1; inputCrossX = true; SoundEffect.BunTrigger = 1; }
 
-           
             //@@SensText.text = rotStage[id - 1].ToString();
             for (int i = 0; i < GameStart.PlayerNumber; i++)
             {
@@ -341,275 +325,6 @@ public class Controller : MonoBehaviour
         }
     }
 
-    //コントローラー1-4の種類を判別
-    private void getControllerType()
-    {
-        string[] joystickNames = Input.GetJoystickNames();
-        connected = joystickNames.Length;       //コントローラーの接続台数を反映
-        for (int i = 0; i < joystickNames.Length; i++)
-        {
-            controller = CheckControllerName(joystickNames[i]);
-        }
-    }
-
-    //コントローラーの名前によって種類を判別
-    string CheckControllerName(string ControllerName)
-    {
-        if (ControllerName.ToLower().Contains("xbox"))
-        {
-            return "XBOX";
-        }
-        else if (ControllerName.ToLower().Contains("playstation"))
-        {
-            return "PS";
-        }
-        else if (ControllerName.ToLower().Contains("f310"))
-        {
-            return "Logicool";
-        }
-        else
-        {
-            return "OTHER";
-        }
-    }
-
-    //ボタン入力受付
-    void InputControllerButton()
-    {
-
-    }
-
-    /*void CheckControllerState()
-    {
-        bool anyButtonInput = false;
-        bool keyORMouseInput = false;
-        bool Bbutton = false;
-        for (int i = 0; i < connected; i++)
-        {
-            Bbutton = playerKey.jump;
-            anyButtonInput = playerKey.start || playerKey.next || playerKey.back || playerKey.plus || playerKey.minus || playerKey.X != 0 || playerKey.Y != 0 || playerKey.horizontal != 0;
-        }
-        keyORMouseInput = Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.Space) || Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1);
-        if (anyButtonInput)
-        {
-            usingController = true;
-        }
-        if (keyORMouseInput)
-        {
-            usingController = false;
-        }
-    }*/
-
-    // 押した瞬間
-    public bool GetNextButtonDown()
-    {
-        string inputName = null;
-        if(controller == "XBOX" || controller == "OTHER")
-        {
-            inputName = "Next_";
-        }
-        if (controller == "PS")
-        {
-            inputName = "Next_";
-        }
-        if (controller == "Logicool")
-        {
-            inputName = "Next_";
-        }
-        return Input.GetButtonDown(inputName + id.ToString());
-    }
-    public bool GetBackButtonDown()
-    {
-        string inputName = null;
-        if (controller == "XBOX" || controller == "OTHER")
-        {
-            inputName = "XBack_";
-        }
-        if (controller == "PS")
-        {
-            inputName = "Logi/PSBack_";
-        }
-        if (controller == "Logicool")
-        {
-            inputName = "Logi/PSBack_";
-        }
-        return Input.GetButtonDown(inputName + id.ToString());  
-	}
-    public bool GetStartButtonDown()
-    {
-        string inputName = null;
-        if (controller == "XBOX" || controller == "OTHER")
-        {
-            inputName = "XStart_";
-        }
-        if (controller == "PS")
-        {
-            inputName = "Logi/PSStart_";
-        }
-        if (controller == "Logicool")
-        {
-            inputName = "Logi/PSStart_";
-        }
-        return Input.GetButtonDown(inputName + id.ToString());
-	}
-    public bool GetJumpButtonDown()
-    {
-        string inputName = null;
-        if (controller == "XBOX" || controller == "OTHER")
-        {
-            inputName = "XJump_";
-        }
-        if (controller == "PS")
-        {
-            inputName = "Logi/PSJump_";
-        }
-        if (controller == "Logicool")
-        {
-            inputName = "Logi/PSJump_";
-        }
-        return Input.GetButtonDown(inputName + id.ToString());
-    }
-
-    //押している間
-    public bool GetNextButtonHold()
-    {
-        string inputName = null;
-        if (controller == "XBOX" || controller == "OTHER")
-        {
-            inputName = "Next_";
-        }
-        if (controller == "PS")
-        {
-            inputName = "Next_";
-        }
-        if (controller == "Logicool")
-        {
-            inputName = "Next_";
-        }
-        return Input.GetButtonDown(inputName + id.ToString());   
-	}
-    public bool GetBackButtonHold()
-    {
-        string inputName = null;
-        if (controller == "XBOX" || controller == "OTHER")
-        {
-            inputName = "XBack_";
-        }
-        if (controller == "PS")
-        {
-            inputName = "Logi/PSBack_";
-        }
-        if (controller == "Logicool")
-        {
-            inputName = "Logi/PSBack_";
-        }
-        return Input.GetButtonDown(inputName + id.ToString());
-    }
-
-    public bool GetStartButtonHold()
-    {
-        string inputName = null;
-        if (controller == "XBOX" || controller == "OTHER")
-        {
-            inputName = "XStart_";
-        }
-        if (controller == "PS")
-        {
-            inputName = "Logi/PSStart_";
-        }
-        if (controller == "Logicool")
-        {
-            inputName = "Logi/PSStart_";
-        }
-        return Input.GetButtonDown(inputName + id.ToString());
-	}
-    public bool GetJumpButtonHold()
-    {
-        string inputName = null;
-        if (controller == "XBOX" || controller == "OTHER")
-        {
-            inputName = "XJump_";
-        }
-        if (controller == "PS")
-        {
-            inputName = "Logi/PSJump_";
-        }
-        if (controller == "Logicool")
-        {
-            inputName = "Logi/PSJump_";
-        }
-        return Input.GetButtonDown(inputName + id.ToString());
-	}
-
-
-    //離したとき
-    public bool GetNextButtonUp()
-    {
-        string inputName = null;
-        if (controller == "XBOX" || controller == "OTHER")
-        {
-            inputName = "Next_";
-        }
-        if (controller == "PS")
-        {
-            inputName = "Next_";
-        }
-        if (controller == "Logicool")
-        {
-            inputName = "Next_";
-        }
-        return Input.GetButtonDown(inputName + id.ToString());
-    }
-    public bool GetBackButtonUp()
-    {
-        string inputName = null;
-        if (controller == "XBOX" || controller == "OTHER")
-        {
-            inputName = "XBack_";
-        }
-        if (controller == "PS")
-        {
-            inputName = "Logi/PSBack_";
-        }
-        if (controller == "Logicool")
-        {
-            inputName = "Logi/PSBack_";
-        }
-        return Input.GetButtonDown(inputName + id.ToString());
-    }
-    public bool GetStartButtonUp()
-    {
-        string inputName = null;
-        if (controller == "XBOX" || controller == "OTHER")
-        {
-            inputName = "XStart_";
-        }
-        if (controller == "PS")
-        {
-            inputName = "Logi/PSStart_";
-        }
-        if (controller == "Logicool")
-        {
-            inputName = "Logi/PSStart_";
-        }
-        return Input.GetButtonDown(inputName + id.ToString());
-    }
-    public bool GetJumpButtonUp()
-    {
-        string inputName = null;
-        if (controller == "XBOX" || controller == "OTHER")
-        {
-            inputName = "XJump_";
-        }
-        if (controller == "PS")
-        {
-            inputName = "Logi/PSJump_";
-        }
-        if (controller == "Logicool")
-        {
-            inputName = "Logi/PSJump_";
-        }
-        return Input.GetButtonDown(inputName + id.ToString());
-	}
+   
 }
 

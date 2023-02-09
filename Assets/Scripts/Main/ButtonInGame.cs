@@ -43,7 +43,7 @@ public class ButtonInGame : MonoBehaviour
         for (int i = 0; i < GameStart.PlayerNumber; i++)
         {
             // コントローラーのXボタン
-            if(playersController[i].GetBackButtonDown())    // 押された瞬間
+            if(ControllerInput.back[i])    // 押された瞬間
             {
                 if (Paused == 1)
                 {
@@ -51,7 +51,7 @@ public class ButtonInGame : MonoBehaviour
                     XButtonAnim.SetTrigger("On");
                 }
             }
-            if (playersController[i].GetBackButtonHold())   // 押し続けたとき
+            if (ControllerInput.backHold[i])   // 押し続けたとき
             {
 
                 //ゲームスタートのボタンのみ長押しで動作
@@ -72,7 +72,7 @@ public class ButtonInGame : MonoBehaviour
                     }
                 }
             }
-            if (playersController[i].GetBackButtonUp()) // 離されたとき
+            if (ControllerInput.backHold[i] == false) // 離されたとき
             {
                 XButtonAnim.SetTrigger("Off");
                 XButtonAnim.enabled = false;
@@ -80,8 +80,8 @@ public class ButtonInGame : MonoBehaviour
             }
         }
 
-        // 一台目のコントローラーのStartボタン                                                       ↓ここが0なら1P
-        if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Escape) || playersController[0].GetStartButtonDown())
+        // 一台目のコントローラーのStartボタン                                                      
+        if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Escape) || ControllerInput.start[0])
         {
             if (GameSetting.StartTime < 0 && Paused == 0)
             {

@@ -73,7 +73,7 @@ public class SoundEffect : MonoBehaviour
 
     void SetSEVol()
     {
-        audioSource.volume = SEStage / 80;
+        audioSource.volume = SEStage / 100;
         SEText.text = SEStage.ToString();
     }
 

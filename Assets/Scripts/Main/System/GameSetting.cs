@@ -194,7 +194,7 @@ public class GameSetting : MonoBehaviour
     void SwichUI()
     {
         //キーボードマウス用UIとコントローラー用UIの切り替え
-        if (Controller.usingController)
+        if (ControllerInput.usingController)
         {
             UIMode = ControllerMode;
         }

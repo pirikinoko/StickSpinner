@@ -73328,6 +73328,7 @@ GameObject:
   - component: {fileID: 1987354138}
   - component: {fileID: 1987354139}
   - component: {fileID: 1987354140}
+  - component: {fileID: 1987354137}
   m_Layer: 0
   m_Name: Scripts
   m_TagString: Untagged
@@ -73391,6 +73392,18 @@ MonoBehaviour:
   pauseButton: {fileID: 519207739}
   TLFrame: {fileID: 256782803}
   XButtonAnim: {fileID: 577330114}
+--- !u!114 &1987354137
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1987354133}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b16093d9bdda29c40a08c714f743f59d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &1987354138
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -47,6 +47,7 @@ public class TitleButton : MonoBehaviour
                 HoldButtonGoToGame();
                 break;
         }
+        OpenSetting();
     }
 
     //
@@ -54,7 +55,7 @@ public class TitleButton : MonoBehaviour
     //
     void Title()
     {
-        if(Input.GetButtonDown("Next_1"))
+        if(ControllerInput.next[0])
         {
             SoundEffect.PironTrigger = 1;
             GameStart.phase = 1;
@@ -67,24 +68,24 @@ public class TitleButton : MonoBehaviour
     void SelectStage()
     {
         // 次へ
-        if(Input.GetButtonDown("Next_1"))
+        if(ControllerInput.next[0])
         {
             SoundEffect.PironTrigger = 1;
             GameStart.phase = 2;
         }
         // 戻る
-        else if(Input.GetButtonDown("XBack_1"))
+        else if(ControllerInput.back[0])
         {
             // キャンセル音を鳴らす
             GameStart.phase = 0;
 		}
 
         // LR でステージ選択
-        if (Input.GetButtonDown("Plus_1"))
+        if (ControllerInput.plus[0])
         {
             GameStart.Stage++;
         }
-        else if (Input.GetButtonDown("Minus_1"))
+        else if (ControllerInput.minus[0])
         {
             GameStart.Stage--;
         }
@@ -101,24 +102,24 @@ public class TitleButton : MonoBehaviour
     void ChangePlayerNumber()
     {
         // 次へ
-        if (Input.GetButtonDown("Next_1"))
+        if (ControllerInput.next[0])
         {
             SoundEffect.PironTrigger = 1;
             GameStart.phase = 3;
         }
         // 戻る
-        else if (Input.GetButtonDown("XBack_1"))
+        else if (ControllerInput.back[0])
         {
             // キャンセル音を鳴らす
             GameStart.phase = 0;
         }
 
         // LR でプレイヤー数選択
-        if (Input.GetButtonDown("Plus_1"))
+        if (ControllerInput.plus[0])
         {
             GameStart.PlayerNumber++;
         }
-        else if (Input.GetButtonDown("Minus_1"))
+        else if (ControllerInput.minus[0])
         {
             GameStart.PlayerNumber--;
         }
@@ -134,37 +135,46 @@ public class TitleButton : MonoBehaviour
     void HoldButtonGoToGame()
     {
         // ボタンを押した瞬間
-        if (Input.GetButtonDown("Next_1"))
+        if (ControllerInput.next[0])
         {
             YButtonAnim.enabled = true;
             YButtonAnim.SetTrigger("On");
         }
         // ボタンを押し続けたとき -> メーターが上がり続けてステージ開始
-        else if (Input.GetButton("Next_1"))
+        else if (ControllerInput.nextHold[0])
         {
             holdTime += Time.deltaTime;
             if (holdTime > holdGoal)
             {
                 GameStart.inDemoPlay = false;
                 SoundEffect.PironTrigger = 1;
-                SceneManager.LoadScene("Stage" + GameStart.Stage.ToString());
+                SceneManager.LoadScene("Stage");
             }
         }
         // ボタンを放した時
-        else if (Input.GetButtonUp("Next_1"))
+        else if (ControllerInput.nextHold[0] == false)
         {
             YButtonAnim.SetTrigger("Off");
             YButtonAnim.enabled = false;
             holdTime = 0;
         }
         // 戻る
-        else if (Input.GetButtonDown("XBack_1"))
+        if (ControllerInput.back[0])
         {
             // キャンセル音を鳴らす
             GameStart.phase = 1;
         }
 
       
+    }
+
+    void OpenSetting()
+    {
+        if (ControllerInput.start[0])
+        {
+            Settings.SettingPanelActive = !(Settings.SettingPanelActive);
+            Settings.inSetting = !(Settings.inSetting);
+        }
     }
 }
 
