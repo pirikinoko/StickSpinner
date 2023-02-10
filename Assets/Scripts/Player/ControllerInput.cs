@@ -1,11 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using System;
 public class ControllerInput : MonoBehaviour
 { 
     string[] controller = new string[4];
-    int connected;                             //接続されているコントローラーの数
+    int connected = 0;                             //接続されているコントローラーの数
+    string[] joystickNames;
     public static bool usingController = true;
     //入力 ４台まで
     public static float[] Lstick = new float [4];
@@ -25,6 +26,10 @@ public class ControllerInput : MonoBehaviour
         {
             usingController = false;
         }
+        for(int i = 0; i < 4; i++)
+        {
+            controller[i] = null;
+        }
     }
 
     void Update()
@@ -38,28 +43,52 @@ public class ControllerInput : MonoBehaviour
     private void getControllerType()
     {
         string[] joystickNames = Input.GetJoystickNames();
-        connected = joystickNames.Length;       //コントローラーの接続台数を反映
+        connected = joystickNames.Length;
+        int num = 0;
+        for (int j = 0; j < joystickNames.Length; j++)
+        {
+            if (joystickNames[j] != "")
+            {
+                joystickNames[num] = joystickNames[j];
+                joystickNames[j] = "";
+                num++;
+            }
+        }
+        for (int i = joystickNames.Length - 1; i >= 0; i --)
+        {
+            if (joystickNames[i] == "")
+            {
+                Array.Resize<string>(ref joystickNames, joystickNames.Length - 1);
+                connected--;
+            }
+
+        }
+
+
         for (int i = 0; i < joystickNames.Length; i++)
         {
-            controller[i] = CheckControllerName(joystickNames[i]);
+            controller[i] = CheckControllerName(joystickNames[i]);  
+            Debug.Log(" "+connected + "台接続 " + joystickNames[i] + " " + controller[i]);
         }
+      
+
     }
 
     //コントローラーの名前によって種類を判別
     string CheckControllerName(string ControllerName)
     {
-        if (ControllerName.ToLower().Contains("xbox"))
-        {
-            return "XBOX";
-        }
-        else if (ControllerName.ToLower().Contains("playstation"))
-        {
-            return "PS";
-        }
-        else if (ControllerName.ToLower().Contains("f310"))
+        if (ControllerName.ToLower().Contains("f310"))
         {
             return "Logicool";
         }
+        else if(ControllerName.ToLower().Contains("xbox") || ControllerName.ToLower().Contains("game"))
+        {
+            return "XBOX";
+        }
+        else if (ControllerName.ToLower().Contains("playstation") || ControllerName.ToLower().Contains("wireless"))
+        {
+            return "PS";
+        }      
         else
         {
             return "OTHER";
