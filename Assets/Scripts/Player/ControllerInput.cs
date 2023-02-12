@@ -56,6 +56,7 @@ public class ControllerInput : MonoBehaviour
             {
                 controllerNumber[num1] = i;
                 num1++;
+                Debug.Log("i = " + (i + 1));
             }
         }
         for (int j = 0; j < joystickNames.Length; j++)
@@ -133,12 +134,12 @@ public class ControllerInput : MonoBehaviour
                 Lstick[i] = Input.GetAxis("Horizontal_" + (controllerNumber[i] + 1).ToString());
                 crossX[i] = Input.GetAxis("PSCrossX_" + (controllerNumber[i] + 1).ToString());
                 crossY[i] = Input.GetAxis("PSCrossY_" + (controllerNumber[i] + 1).ToString());
-                jump[i] = Input.GetButtonDown("Logi/PSJump_" + (controllerNumber[i] + 1).ToString());
+                jump[i] = Input.GetButtonDown("PSJump_" + (controllerNumber[i] + 1).ToString());
                 next[i] = Input.GetButtonDown("Next_" + (controllerNumber[i] + 1).ToString());
-                back[i] = Input.GetButtonDown("Logi/PSBack_" + (controllerNumber[i] + 1).ToString());
+                back[i] = Input.GetButtonDown("PSBack_" + (controllerNumber[i] + 1).ToString());
                 plus[i] = Input.GetButtonDown("Plus_" + (controllerNumber[i] + 1).ToString());
                 minus[i] = Input.GetButtonDown("Minus_" + (controllerNumber[i] + 1).ToString());
-                start[i] = Input.GetButtonDown("Logi/PSStart_" + (controllerNumber[i] + 1).ToString());
+                start[i] = Input.GetButtonDown("PSStart_" + (controllerNumber[i] + 1).ToString());
                 nextHold[i] = Input.GetButton("Next_" + (controllerNumber[i] + 1).ToString());
                 backHold[i] = Input.GetButton("Logi/PSBack_" + (controllerNumber[i] + 1).ToString());
             }
