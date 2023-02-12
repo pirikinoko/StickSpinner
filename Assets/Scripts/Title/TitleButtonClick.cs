@@ -90,42 +90,42 @@ public class TitleButtonClick : MonoBehaviour
 
     public void GainSensP1()
     {
-        Controller.rotStage[0] += 1;
+        Settings.rotStage[0] += 1;
         SoundEffect.BunTrigger = 1;
     }
     public void GainSensP2()
     {
-        Controller.rotStage[1] += 1;
+        Settings.rotStage[1] += 1;
         SoundEffect.BunTrigger = 1;
     }
     public void GainSensP3()
     {
-        Controller.rotStage[2] += 1;
+        Settings.rotStage[2] += 1;
         SoundEffect.BunTrigger = 1;
     }
     public void GainSensP4()
     {
-        Controller.rotStage[3] += 1;
+        Settings.rotStage[3] += 1;
         SoundEffect.BunTrigger = 1;
     }
     public void LoseSensP1()
     {
-        Controller.rotStage[0] -= 1;
+        Settings.rotStage[0] -= 1;
         SoundEffect.BunTrigger = 1;
     }
     public void LoseSensP2()
     {
-        Controller.rotStage[1] -= 1;
+        Settings.rotStage[1] -= 1;
         SoundEffect.BunTrigger = 1;
     }
     public void LoseSensP3()
     {
-        Controller.rotStage[2] -= 1;
+        Settings.rotStage[2] -= 1;
         SoundEffect.BunTrigger = 1;
     }
     public void LoseSensP4()
     {
-        Controller.rotStage[3] -= 1;
+        Settings.rotStage[3] -= 1;
         SoundEffect.BunTrigger = 1;
     }
 

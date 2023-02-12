@@ -5824,11 +5824,11 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 256782803}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 9, y: 117, z: -9719.999}
-  m_LocalScale: {x: 50.252407, y: 7.69716, z: 50.759995}
+  m_LocalPosition: {x: 9, y: 117.00007, z: -9719.999}
+  m_LocalScale: {x: 50.25241, y: 7.69716, z: 50.759995}
   m_Children: []
-  m_Father: {fileID: 1855343364}
-  m_RootOrder: 11
+  m_Father: {fileID: 781403826}
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &256782805
 SpriteRenderer:
@@ -15959,6 +15959,7 @@ RectTransform:
   m_Children:
   - {fileID: 577330112}
   - {fileID: 1611171859}
+  - {fileID: 256782804}
   m_Father: {fileID: 1855343364}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -37238,7 +37239,6 @@ RectTransform:
   - {fileID: 1561368618}
   - {fileID: 1317461743}
   - {fileID: 559530493}
-  - {fileID: 256782804}
   m_Father: {fileID: 1500807298}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -73418,8 +73418,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SettingPanel: {fileID: 1855343363}
   TLFrame: {fileID: 256782803}
-  item1: {fileID: 131158445}
-  item2: {fileID: 1482527937}
+  item:
+  - {fileID: 1561368617}
+  - {fileID: 1317461742}
 --- !u!114 &1987354139
 MonoBehaviour:
   m_ObjectHideFlags: 0

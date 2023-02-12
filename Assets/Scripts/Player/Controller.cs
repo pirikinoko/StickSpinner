@@ -29,7 +29,7 @@ public class Controller : MonoBehaviour
     bool  inputCrossX;                                  // 十字ボタンの入力があるときはtrue
     float delay = 0.15f;
     bool delayFlag = false;
-    public static float[] rotStage = { 10, 10, 10, 10 };　//感度を保存しておく
+   
    
 
     Rigidbody2D stickRb;           // 棒のRigidbody  
@@ -188,10 +188,25 @@ public class Controller : MonoBehaviour
     // 移動
     void Move()
     {
+        rotSpeed = 120 + Settings.rotStage[id - 1] * 4;  //感度反映
         if (GameSetting.Playable && ButtonInGame.Paused != 1 || GameStart.inDemoPlay) //プレイヤー数選択画面でも操作可能
         {
             if (Input.GetKey(KeyRight) || ControllerInput.Lstick[id - 1] > 0) { stickRot -= rotSpeed * Time.deltaTime; }
             if (Input.GetKey(KeyLeft) || ControllerInput.Lstick[id - 1] < 0) { stickRot += rotSpeed * Time.deltaTime; }
+        }
+    }
+
+
+    // 感度調整
+    void ChangeSensitivity()
+    {
+        if (GameStart.inDemoPlay) //プレイヤー数選択画面でのみ操作可能
+        {
+            if (ControllerInput.crossX[id - 1] == 0) { inputCrossX = false; }
+            //十字ボタン(横)を一回倒すごとに感度ステージを一段階変更
+            if (ControllerInput.crossX[id - 1] >= 0.1f && inputCrossX == false) { Settings.rotStage[id - 1] += 1; inputCrossX = true; SoundEffect.BunTrigger = 1; }
+            if (ControllerInput.crossX[id - 1] <= -0.1f && inputCrossX == false) { Settings.rotStage[id - 1] -= 1; inputCrossX = true; SoundEffect.BunTrigger = 1; }
+            SensText.text = Settings.rotStage[id - 1].ToString();
         }
     }
 
@@ -245,30 +260,6 @@ public class Controller : MonoBehaviour
     }
 
 
-    // 感度調整 @@一旦保留
-    void ChangeSensitivity()
-    {
-        if (GameStart.inDemoPlay) //プレイヤー数選択画面でのみ操作可能
-        {
-            if (ControllerInput.crossX[id - 1] == 0) { inputCrossX = false; }
-            //十字ボタン(横)を一回倒すごとに感度ステージを一段階変更
-            if (ControllerInput.crossX[id - 1] >=  0.1f && inputCrossX == false) { rotStage[id - 1] += 1; inputCrossX = true; SoundEffect.BunTrigger = 1; }
-            if (ControllerInput.crossX[id - 1] <= -0.1f && inputCrossX == false) { rotStage[id - 1] -= 1; inputCrossX = true; SoundEffect.BunTrigger = 1; }
-
-            //@@SensText.text = rotStage[id - 1].ToString();
-            for (int i = 0; i < GameStart.PlayerNumber; i++)
-            {
-                if (id == i + 1)
-                {
-                    //上限下限の設定
-                    rotStage[i] = System.Math.Min(rotStage[i], 20);
-                    rotStage[i] = System.Math.Max(rotStage[i], 1);
-                    rotSpeed = 120 + rotStage[i] * 4;  //感度反映
-                }
-            }
-            SensText.text = rotStage[id - 1].ToString();
-        }
-    }
 
     // コリジョン
     private void OnCollisionEnter2D(Collision2D other)

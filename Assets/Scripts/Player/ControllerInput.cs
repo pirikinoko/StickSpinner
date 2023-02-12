@@ -56,7 +56,6 @@ public class ControllerInput : MonoBehaviour
             {
                 controllerNumber[num1] = i;
                 num1++;
-                Debug.Log("i = " + (i + 1));
             }
         }
         for (int j = 0; j < joystickNames.Length; j++)
@@ -86,13 +85,12 @@ public class ControllerInput : MonoBehaviour
             //Debug.Log(" "+connected + "台接続 " +(i+1)+" 台目:" +joystickNames[i] + " " + controller[i]);
         }
 
-        Debug.Log( " 1台目:" + joystickNames[0] + " " + controller[0]);
     }
 
     //コントローラーの名前によって種類を判別
     string CheckControllerName(string ControllerName)
     {
-        if (ControllerName.ToLower().Contains("f310"))
+        if (ControllerName.ToLower().Contains("f310") || ControllerName.ToLower().Contains("logicool"))
         {
             return "Logicool";
         }
@@ -157,6 +155,7 @@ public class ControllerInput : MonoBehaviour
                 start[i] = Input.GetButtonDown("Logi/PSStart_" + (controllerNumber[i] + 1).ToString());
                 nextHold[i] = Input.GetButton("Next_" + (controllerNumber[i] + 1).ToString());
                 backHold[i] = Input.GetButton("Logi/PSBack_"  + (controllerNumber[i] + 1).ToString());
+
             }
         }
     }

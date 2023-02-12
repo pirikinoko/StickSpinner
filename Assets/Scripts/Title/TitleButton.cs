@@ -48,6 +48,8 @@ public class TitleButton : MonoBehaviour
                 break;
         }
         OpenSetting();
+        YButtonAnim.enabled = true;
+        YButtonAnim.SetBool("Swich", true);
     }
 
     //
@@ -134,6 +136,7 @@ public class TitleButton : MonoBehaviour
     //
     void HoldButtonGoToGame()
     {
+
         // ボタンを押した瞬間
         if (ControllerInput.next[0])
         {
@@ -141,7 +144,7 @@ public class TitleButton : MonoBehaviour
             YButtonAnim.SetTrigger("On");
         }
         // ボタンを押し続けたとき -> メーターが上がり続けてステージ開始
-        else if (ControllerInput.nextHold[0])
+        if (ControllerInput.nextHold[0])
         {
             holdTime += Time.deltaTime;
             if (holdTime > holdGoal)
@@ -152,10 +155,10 @@ public class TitleButton : MonoBehaviour
             }
         }
         // ボタンを放した時
-        else if (ControllerInput.nextHold[0] == false)
+        if (ControllerInput.nextHold[0] == false)
         {
-            YButtonAnim.SetTrigger("Off");
             YButtonAnim.enabled = false;
+            YButtonAnim.SetTrigger("Off ");
             holdTime = 0;
         }
         // 戻る
@@ -165,7 +168,7 @@ public class TitleButton : MonoBehaviour
             GameStart.phase = 1;
         }
 
-      
+
     }
 
     void OpenSetting()
