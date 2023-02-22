@@ -2,19 +2,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 
 public class TitleButton : MonoBehaviour
 {
-
-    //const int title = 0;
-    //const int selectStage = 1;
-    //const int selectPlayerNumber = 2;
-
-    //const int stage1 = 1;
-    //const int stage2 = 2;
-    //const int stage3 = 3;
     const int stage4 = 4, firstStage = 1, lastStage = 4;
     const float holdGoal = 0.85f;
     float holdTime = 0;
@@ -23,33 +16,36 @@ public class TitleButton : MonoBehaviour
     // ボタンの長押し時間
     [SerializeField]
     private Animator YButtonAnim;
-
-
+    public GameObject YButtonGO;
     void Update()
     {
         // タイトル画面は三つに分けて処理する
         switch (GameStart.phase)
-        {
+        { 
             // タイトル
             case 0:
+                YButtonGO.SetActive(false);
                 Title();
                 break;
             // ステージ選択
             case 1:
+                YButtonGO.SetActive(false);
                 SelectStage();
                 break;
             // プレイヤー数増減 
             case 2:
+                YButtonGO.SetActive(false);
                 ChangePlayerNumber();
+                
                 break;
             // ボタン押しっぱなしでゲーム開始
             case 3:
+                if (ControllerInput.usingController) { YButtonGO.SetActive(true); }
+                else { YButtonGO.SetActive(false); }
                 HoldButtonGoToGame();
                 break;
         }
         OpenSetting();
-        YButtonAnim.enabled = true;
-        YButtonAnim.SetBool("Swich", true);
     }
 
     //
@@ -136,12 +132,12 @@ public class TitleButton : MonoBehaviour
     //
     void HoldButtonGoToGame()
     {
-
         // ボタンを押した瞬間
         if (ControllerInput.next[0])
         {
-            YButtonAnim.enabled = true;
+            YButtonAnim.enabled = true; 
             YButtonAnim.SetTrigger("On");
+            YButtonAnim.Play("YAnim", 0, 0);
         }
         // ボタンを押し続けたとき -> メーターが上がり続けてステージ開始
         if (ControllerInput.nextHold[0])
@@ -157,8 +153,7 @@ public class TitleButton : MonoBehaviour
         // ボタンを放した時
         if (ControllerInput.nextHold[0] == false)
         {
-            YButtonAnim.enabled = false;
-            YButtonAnim.SetTrigger("Off ");
+            YButtonAnim.enabled = false;         
             holdTime = 0;
         }
         // 戻る

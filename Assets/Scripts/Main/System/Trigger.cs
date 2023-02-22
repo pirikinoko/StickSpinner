@@ -45,7 +45,7 @@ public class Trigger : MonoBehaviour
                     if (GameSetting.PlayTime > 0 && ButtonInGame.Paused != 1)
                     {
                         pointTimer += Time.deltaTime;
-                        if (pointTimer > 2)
+                        if (pointTimer > 1)
                         {
                             SoundEffect.KinTrigger = 1;
                             GameMode.points[playerId - 1] += 1;

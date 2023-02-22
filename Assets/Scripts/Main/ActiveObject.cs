@@ -60,6 +60,7 @@ public class ActiveObject : MonoBehaviour
 
     void MoveCircle()
     {
+        rbody2D.velocity = new Vector2(circleSpeed, 0f);
         if (reverse == false)
         {
             ReverseCoolDown -= Time.deltaTime;

@@ -159,25 +159,29 @@ public class CameraControl : MonoBehaviour
     //ゴールしたプレイヤーをカメラの対象から外す
     void GoaledPlayersPos()
     {
-        for (int i = 0; i < GameStart.PlayerNumber; i++)
+        if (!(GameMode.Goaled))
         {
-            if (GameMode.goaledPlayer[i] != null)
+            for (int i = 0; i < GameStart.PlayerNumber; i++)
             {
-                int num = int.Parse(GameMode.goaledPlayer[i].Substring(6)) - 1; // Playerの番号を取得
-                playerActive[num] = false;
-                if(playerActive[i] == false)
+                if (GameMode.goaledPlayer[i] != null)
                 {
-                    for(int j = 0; j < GameStart.PlayerNumber; j++)
+                    int num = int.Parse(GameMode.goaledPlayer[i].Substring(6)) - 1; // Playerの番号を取得
+                    playerActive[num] = false;
+                    if (playerActive[i] == false)
                     {
-                        if (playerActive[j])
+                        for (int j = 0; j < GameStart.PlayerNumber; j++)
                         {
-                            players[i].transform.position = players[j].transform.position;
-                        }                     
+                            if (playerActive[j])
+                            {
+                                players[i].transform.position = players[j].transform.position;
+                            }
+                        }
+
                     }
-                    
                 }
             }
         }
+        
     }
 
     void PlayerPos()

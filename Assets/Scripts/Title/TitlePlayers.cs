@@ -42,10 +42,7 @@ public class TitlePlayers : MonoBehaviour
         PlayerActive();
         ShowUI();
     }
-    void FixedUpdate()
-    {
-        NameTagPos();
-    }
+
     void ShowUI()
     {
         //プレイヤー数によってUIの表示数変更
@@ -75,8 +72,8 @@ public class TitlePlayers : MonoBehaviour
                 {
                     nameTags[i].gameObject.SetActive(true);
                     UIkey[i].gameObject.SetActive(true);
-                    players[i].gameObject.transform.position = new Vector2(-2 + i * 2, 0);
-                    sticks[i].gameObject.transform.position = new Vector2(-2 + i * 2, 0);
+                    players[i].gameObject.transform.position = new Vector2(-3.5f + i * 2, 0);
+                    sticks[i].gameObject.transform.position = new Vector2(-3.5f + i * 2, 0);
                     stickrb[i].velocity = new Vector2(0f, 0f);
                     playerrb[i].velocity = new Vector2(0f, 0f);
                     count[i] = 1;
@@ -111,17 +108,5 @@ public class TitlePlayers : MonoBehaviour
             }
         }
     }
-    void NameTagPos()
-    {
-        //ネームタグの位置
 
-        // nameTagPos が null になっている
-
-       /*for (int i = 0; i < GameStart.PlayerNumber; i++)
-        {
-            nameTagPos[i] = players[i].transform.position;
-            nameTagPos[i].y += 0.5f;
-            nameTags[i].transform.position = nameTagPos[i];
-        }*/
-    }
 }

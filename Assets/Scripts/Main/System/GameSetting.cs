@@ -70,8 +70,8 @@ public class GameSetting : MonoBehaviour
         }
         else if (GameStart.Stage == 4)
         {
-            PlayTime = 10;
-            elapsedTime = 10; 
+            PlayTime = 90;
+            elapsedTime = 90; 
             battleModeUI[0].gameObject.SetActive(true);
             tilemap.color = new Color32(135, 135, 135, 255);
         }
@@ -169,7 +169,7 @@ public class GameSetting : MonoBehaviour
             {
                 elapsedTime -= Time.deltaTime;
             }
-            else
+            else if(GameStart.Stage != 4)
             {
                 elapsedTime += Time.deltaTime;
             }

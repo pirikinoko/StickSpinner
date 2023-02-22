@@ -57,7 +57,7 @@ public class Body : MonoBehaviour
         {
             //Physics Material2Dを取得
             var material = GetComponent<Rigidbody2D>().sharedMaterial;
-            material.friction = 2f;
+            material.friction = 1f;
             material.bounciness = 0;
         }
     }

@@ -25,6 +25,8 @@ public class GameStart : MonoBehaviour
     public Sprite Stage2Title, Stage2Difficulity, Stage2Description;
     public Sprite Stage3Title, Stage3Difficulity, Stage3Description;
     public Sprite Stage4Title, Stage4Difficulity, Stage4Description;
+    [SerializeField] Image StageImage;
+    [SerializeField] Sprite[] stageImages = new Sprite[4];
 
     //動画
     public VideoPlayer StageVideo;
@@ -61,6 +63,7 @@ public class GameStart : MonoBehaviour
                 DisableScores();
                 Stage1Scores.gameObject.SetActive(true);
                 StageVideo.clip = Stage1Video;
+                StageImage.sprite = stageImages[Stage - 1];
                 break;
 
             case 2:
@@ -70,6 +73,7 @@ public class GameStart : MonoBehaviour
                 DisableScores();
                 Stage2Scores.gameObject.SetActive(true);
                 StageVideo.clip = Stage2Video;
+                StageImage.sprite = stageImages[Stage - 1];
                 break;
 
             case 3:
@@ -79,6 +83,7 @@ public class GameStart : MonoBehaviour
                 DisableScores();
                 Stage3Scores.gameObject.SetActive(true);
                 StageVideo.clip = Stage3Video;
+                StageImage.sprite = stageImages[Stage - 1];
                 break;
 
             case 4:
@@ -88,6 +93,7 @@ public class GameStart : MonoBehaviour
                 DisableScores();
                 Stage4Scores.gameObject.SetActive(true);
                 StageVideo.clip = Stage4Video;
+                StageImage.sprite = stageImages[Stage - 1];
                 break;
         }
     }

@@ -56,14 +56,7 @@ public class Thorn : MonoBehaviour
             // Stick1 をとる
             Controller cnt = other.gameObject.transform.GetChild(0).GetComponent<Controller>();
             cnt.StartDead();
-
             int id = bdy.id;
-            //GameSetting.deathTimer[id] = true;
-            //col[id]    = gameObject.transform.position;
-            //col[id].y += 0.5f;
-            //triggerCheckPos[id] = 1;
-            //playerrend[id].enabled = false;
-            //stickrend[ id].enabled = false;
             nameTags[id - 1].gameObject.SetActive(false);
         }
     }

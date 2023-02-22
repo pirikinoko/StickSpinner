@@ -16,7 +16,7 @@ public class ButtonInGame : MonoBehaviour
 
     //animation
     [SerializeField]
-    private Animator XButtonAnim;
+    private Animator XButtonAnim1, XButtonAnim2;
 
 
     float holdTime = 0;
@@ -40,44 +40,48 @@ public class ButtonInGame : MonoBehaviour
 
     void MainControll()
     {
-        for (int i = 0; i < GameStart.PlayerNumber; i++)
+
+        // コントローラーのXボタン
+        if (ControllerInput.back[0])    // 押された瞬間
         {
-            // コントローラーのXボタン
-            if(ControllerInput.back[i])    // 押された瞬間
+            XButtonAnim2.enabled = true;
+            XButtonAnim2.SetTrigger("On");
+            if (Paused == 1)
+            {
+                XButtonAnim1.enabled = true;
+                XButtonAnim1.SetTrigger("On");
+            }
+        }
+        if (ControllerInput.backHold[0])   // 押し続けたとき
+        {
+
+            //ゲームスタートのボタンのみ長押しで動作
+            holdTime += Time.deltaTime;
+            if (holdTime > holdGoal)
             {
                 if (Paused == 1)
                 {
-                    XButtonAnim.enabled = true;
-                    XButtonAnim.SetTrigger("On");
+                    Paused = 0;
+                    SoundEffect.PironTrigger = 1;
+                    BackToTitle();
                 }
-            }
-            if (ControllerInput.backHold[i])   // 押し続けたとき
-            {
-
-                //ゲームスタートのボタンのみ長押しで動作
-                holdTime += Time.deltaTime;
-                if (holdTime > holdGoal)
+                else if (GameMode.Goaled || GameMode.Finished)
                 {
-                    if (Paused == 1)
-                    {
-                        Paused = 0;
-                        SoundEffect.PironTrigger = 1;
-                        BackToTitle();
-                    }
-                    else if (GameMode.Goaled || GameMode.Finished)
-                    {
-                        SoundEffect.PironTrigger = 1;
-                        SetHighScore.ToSetHighscore();
-                        BackToTitle();
-                    }
+                    SoundEffect.PironTrigger = 1;
+                    SetHighScore.ToSetHighscore();
+                    BackToTitle();
                 }
             }
-            if (ControllerInput.backHold[i] == false) // 離されたとき
-            {
-                XButtonAnim.SetTrigger("Off");
-                XButtonAnim.enabled = false;
-                holdTime = 0;
-            }
+        }
+        if (ControllerInput.backHold[0] == false) // 離されたとき
+        {
+
+            XButtonAnim1.SetTrigger("Off");
+            XButtonAnim2.SetTrigger("Off");
+            XButtonAnim1.enabled = false;
+            XButtonAnim2.enabled = false;
+
+            holdTime = 0;
         }
 
         // 一台目のコントローラーのStartボタン                                                      

@@ -77,7 +77,7 @@ public class Controller : MonoBehaviour
         face = UnityEngine.Random.Range(1, 100);
         for(int i = 0; i < aryFaceRatio.Length; i++)
         {
-            if(face <= aryFaceRatio[i])
+            if(face >= aryFaceRatio[i] && face < aryFaceRatio[i + 1])
             {
                 parentSprite.sprite = aryFace[i];
             }
