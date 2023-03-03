@@ -49,7 +49,7 @@ public class Body : MonoBehaviour
         if (onPinball)　　//ピンボールゾーンでも摩擦、跳ね返りの調節
         {
             var material = GetComponent<Rigidbody2D>().sharedMaterial;
-            material.friction = 0f;
+            material.friction = 1f;
             material.bounciness = 5;
         }
         else

@@ -70,8 +70,8 @@ public class CameraControl2 : MonoBehaviour
 
         // カメラの拡大率を距離に応じて変更
         float cameraSize = maxDistance / 1.3f;
-        cameraSize = System.Math.Min(cameraSize, 5.5f);
-        cameraSize = System.Math.Max(cameraSize, 3.5f);
+        cameraSize = System.Math.Min(cameraSize, maxCameraSize);
+        cameraSize = System.Math.Max(cameraSize, minCameraSize);
         mainCamera.orthographicSize = cameraSize;
 
         // カメラを中点に移動

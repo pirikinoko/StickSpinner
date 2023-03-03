@@ -179,6 +179,7 @@ public class Controller : MonoBehaviour
             if (!(rotZ > 179) && !(rotZ < 1))
             {
                 stickRb.velocity = new Vector2(jumpDirection, jumpforce);
+                onFloor = false; onPinball = false; onPlayer = false; onStick = false; onSurface = false; body.onSurface = false; body.onPlayer = false; body.onStick = false;
                 //効果音鳴らす
                 SoundEffect.PowanTrigger = 1;
             }
@@ -227,14 +228,15 @@ public class Controller : MonoBehaviour
     // 死亡
     public void StartDead()
     {
+        arrow.SetActive(false);
         isRespowing = true;
         stickSprite.enabled = false;
         parentSprite.enabled = false;
         StartCoroutine(Respown());
-	}
+    }
 
     // リスポーン
-	IEnumerator Respown()
+    IEnumerator Respown()
     {
         //他のプレイヤーの邪魔にならないよう当たり判定OFF
         this.GetComponent<BoxCollider2D>().enabled = false;
@@ -267,6 +269,10 @@ public class Controller : MonoBehaviour
         //チェックポイントにリスポーン
         bodyObj.transform.position = GameSetting.respownPos[id - 1];
 
+        if (GameStart.Stage == 1)
+        {
+            arrow.SetActive(true);
+        }
         nameTag.SetActive(true);
         stickSprite.enabled = true;
         parentSprite.enabled = true;
