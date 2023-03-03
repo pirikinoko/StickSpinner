@@ -11,7 +11,7 @@ public class GetFirstName : MonoBehaviour
     {
         inputField.text = null; //初期化
     }
-    public void GetText()
+    public void GetText()   //1位は名前を変更可能
     {
         if(GameStart.Stage == 4)
         {

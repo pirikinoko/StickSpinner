@@ -108,7 +108,7 @@ public class ControllerInput : MonoBehaviour
         }
     }
 
-    void InputControllerButton()
+    void InputControllerButton()　//コントローラー入力(種類別)
     {
         for (int i = 0; i < connected; i++)
         {
@@ -160,7 +160,7 @@ public class ControllerInput : MonoBehaviour
         }
     }
 
-    void CheckControllerState()
+    void CheckControllerState()　//コントローラー使用中かクリックで操作中か調べる
     {
         bool anyButtonInput = false;
         bool keyORMouseInput = false;

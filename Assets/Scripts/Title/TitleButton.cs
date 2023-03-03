@@ -166,7 +166,7 @@ public class TitleButton : MonoBehaviour
 
     }
 
-    void OpenSetting()
+    void OpenSetting()　//設定表示
     {
         if (ControllerInput.start[0])
         {

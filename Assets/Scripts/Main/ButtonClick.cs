@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class ButtonClick : MonoBehaviour
+public class ButtonClick : MonoBehaviour　//クリック用ボタン
 {
     public GameObject pauseButton;
 

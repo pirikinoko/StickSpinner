@@ -94,7 +94,7 @@ public class TitlePlayers : MonoBehaviour
             }
         }
 
-        else
+        else　　　//プレイヤー非表示
         {
             for (int i = 0; i < 4; i++)
             {

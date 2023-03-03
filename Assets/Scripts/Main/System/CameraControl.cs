@@ -95,11 +95,10 @@ public class CameraControl : MonoBehaviour
         maxDistansX = Mathf.Max(Xdistance);
         maxDistansY = Mathf.Max(Ydistance);
         CameraSize = maxDistans / 1.3f;
-        // 最大値を超えたら最大値を渡す
+        //カメラサイズ上限下限
         CameraSize = System.Math.Min(CameraSize, 5.5f);
-        // 最小値を下回ったら最小値を渡す
         CameraSize = System.Math.Max(CameraSize, 3.5f);
-        //X,Y軸の距離の最大値を調べる
+        //プレイヤー同士のX,Y軸の距離の最大値を調べる
         for (int i = 0; i < distance.Length; i++)
         {
             int num1 = memo1[i];
@@ -184,7 +183,7 @@ public class CameraControl : MonoBehaviour
         
     }
 
-    void PlayerPos()
+    void PlayerPos()　//プレイヤー位置取得
     {
         for (int i = 0; i < GameStart.PlayerNumber; i++)
         {

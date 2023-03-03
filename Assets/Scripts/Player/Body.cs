@@ -37,25 +37,23 @@ public class Body : MonoBehaviour
         if(other.gameObject.CompareTag("Stick")){   onStick   = false;}
         if(other.gameObject.CompareTag("Pinball")){ onPinball = false; }
     }
-    private void OnTriggerEnter2D(Collider2D other)
+    private void OnTriggerEnter2D(Collider2D other)　//トゲに衝突時の処理
     {
         if (other.gameObject.CompareTag("thorn"))
-        {   // パーティクル用ゲームオブジェクト生成
+        {  
             Instantiate(DEATH, this.gameObject.transform.position, Quaternion.identity);
         }
     }
     void Update()
     {
-        if (onPinball)
+        if (onPinball)　　//ピンボールゾーンでも摩擦、跳ね返りの調節
         {
-            //Physics Material2Dを取得
             var material = GetComponent<Rigidbody2D>().sharedMaterial;
             material.friction = 0f;
             material.bounciness = 5;
         }
         else
         {
-            //Physics Material2Dを取得
             var material = GetComponent<Rigidbody2D>().sharedMaterial;
             material.friction = 1f;
             material.bounciness = 0;

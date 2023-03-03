@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class TitleButtonClick : MonoBehaviour
+public class TitleButtonClick : MonoBehaviour　//クリック用ボタン
 {
     const int Title = 0;
     const int SelectStage = 1;
@@ -15,7 +15,7 @@ public class TitleButtonClick : MonoBehaviour
     public GameObject StartPanel, FrontCanvas;
     public static int[] sensChange = new int[4];
 
-
+    //次の画面
     public void NextPhase()
     {
         SoundEffect.PironTrigger = 1;
@@ -26,6 +26,8 @@ public class TitleButtonClick : MonoBehaviour
         SoundEffect.PironTrigger = 1;
         GameStart.phase--;
     }
+
+    //ステージ変更
     public void NextStage()
     {
         if (GameStart.Stage < Stage4)
@@ -34,7 +36,7 @@ public class TitleButtonClick : MonoBehaviour
         }
         SoundEffect.BunTrigger = 1;
     }
-    public void PrevStage()
+    public void PrevStage()　
     {
         if (GameStart.Stage > Stage1)
         {
@@ -43,6 +45,7 @@ public class TitleButtonClick : MonoBehaviour
         SoundEffect.BunTrigger = 1;
     }
 
+    //プレイヤー数増減
     public void PlusButton()
     {
         if (GameStart.PlayerNumber < 4)
@@ -51,7 +54,7 @@ public class TitleButtonClick : MonoBehaviour
             SoundEffect.BunTrigger = 1;
         }
     }
-    public void MinusButton()
+    public void MinusButton()　
     {
         bool bProcessed = false;
 
@@ -78,16 +81,16 @@ public class TitleButtonClick : MonoBehaviour
         SoundEffect.PironTrigger = 1;
         SceneManager.LoadScene("Stage");
     }
-    //設定画面を開く
 
-    public void OpenSetting()
+    public void OpenSetting()    //設定画面の表示
     {
-        //設定画面の表示
+    
         Settings.SettingPanelActive = !(Settings.SettingPanelActive);
         Settings.inSetting = !(Settings.inSetting);
     }
-    //感度ステージ変更ボタン
 
+
+    //感度変更ボタン
     public void GainSensP1()
     {
         Settings.rotStage[0] += 1;

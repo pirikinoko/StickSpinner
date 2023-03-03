@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ActiveObject : MonoBehaviour
+public class ActiveObject : MonoBehaviour  //動く床などのオブジェクト制御用
 {
     //基本
     float floreSpeed = 1.3f, circleSpeed = 1.0f;
@@ -58,7 +58,7 @@ public class ActiveObject : MonoBehaviour
         }
     }
 
-    void MoveCircle()
+    void MoveCircle()　
     {
         rbody2D.velocity = new Vector2(circleSpeed, 0f);
         if (reverse == false)

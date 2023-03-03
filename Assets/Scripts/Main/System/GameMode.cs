@@ -36,7 +36,7 @@ public class GameMode : MonoBehaviour
     public static bool Finished;
     byte count = 0;
     private Vector2[] particlePos = new Vector2[4];
-    public static float[,] killTimer = new float[4, 4];       // プレイヤー同士の衝突を記録(1～4 , 1～4)
+    public static float[,] killTimer = new float[4, 4];       // プレイヤー同士の衝突を記録(プレイヤー1～4とプレイヤー1～4の衝突)
 
     void Start()
     {   //基本

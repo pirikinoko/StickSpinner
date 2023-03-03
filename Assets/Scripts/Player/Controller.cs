@@ -22,18 +22,18 @@ public class Controller : MonoBehaviour
     Text SensText;
     [SerializeField]
     Sprite[] aryFace = new Sprite[6];
-    int face { get; set; }                                // 顔設定用乱数を入れておく1～100
-    float stickRot = 0f;                                // 棒の角度
-    float jumpforce = 8.3f;                             // Y軸ジャンプ力
+    int face { get; set; }                               　　 // 顔設定用乱数を入れておく1～100
+    float stickRot = 0f;                                　　　// 棒の角度
+    float jumpforce = 8.3f;                            　　　 // Y軸ジャンプ力
     bool  onFloor, onSurface, onPlayer, onStick, onPinball;   // 接触している時は true
-    bool  inputCrossX;                                  // 十字ボタンの入力があるときはtrue
+    bool  inputCrossX;                               　　　 　// 十字ボタンの入力があるときはtrue
     float delay = 0.15f;
     bool delayFlag = false;
    
    
 
     Rigidbody2D stickRb;           // 棒のRigidbody  
-    SpriteRenderer parentSprite; // 親の顔
+    SpriteRenderer parentSprite;   // プレイヤーの顔
 
     bool isRespowing = false;
 
@@ -114,7 +114,7 @@ public class Controller : MonoBehaviour
         ExitDelay();
     }
 
-    // 移動は FixedUpdate で行う※Inputの入力が入りにくくなる
+    // 移動は FixedUpdateで行う※Inputの入力が入りにくくなる
     void FixedUpdate()
     {
         // プレイヤー速度取得
@@ -203,7 +203,7 @@ public class Controller : MonoBehaviour
         if (GameStart.inDemoPlay) //プレイヤー数選択画面でのみ操作可能
         {
             if (ControllerInput.crossX[id - 1] == 0) { inputCrossX = false; }
-            //十字ボタン(横)を一回倒すごとに感度ステージを一段階変更
+            //十字ボタン(横)を一回倒すごとに感度を一段階変更
             if (ControllerInput.crossX[id - 1] >= 0.1f && inputCrossX == false) { Settings.rotStage[id - 1] += 1; inputCrossX = true; SoundEffect.BunTrigger = 1; }
             if (ControllerInput.crossX[id - 1] <= -0.1f && inputCrossX == false) { Settings.rotStage[id - 1] -= 1; inputCrossX = true; SoundEffect.BunTrigger = 1; }
             SensText.text = Settings.rotStage[id - 1].ToString();

@@ -11,7 +11,7 @@ public class ShowHighScore : MonoBehaviour
     public static float[,] topScore = new float[4, 5];
     string[] unit = { "秒", "秒", "秒", "P" };
 
-    // FrontCanvas を無効にした後だと GameObject.Find で見つけられないので Awake で処理する
+    // GameObject.Findで見つけるためにAwakeで処理
     void Awake()
     {
         int num = 0;

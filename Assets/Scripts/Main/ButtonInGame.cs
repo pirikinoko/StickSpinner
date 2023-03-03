@@ -108,7 +108,7 @@ public class ButtonInGame : MonoBehaviour
         }
     }
 
-    public void BackToTitle()
+    public void BackToTitle()　//タイトルに戻る
     {
         SoundEffect.PironTrigger = 1;
         GameStart.phase          = 0;

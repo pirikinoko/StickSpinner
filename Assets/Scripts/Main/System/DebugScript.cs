@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DebugScript : MonoBehaviour
+public class DebugScript : MonoBehaviour　//デバッグ用スクリプト
 {
     [SerializeField] int targetStage;
     [SerializeField] int playerNumber;

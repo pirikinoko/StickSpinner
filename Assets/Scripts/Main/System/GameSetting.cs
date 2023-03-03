@@ -61,14 +61,14 @@ public class GameSetting : MonoBehaviour
             else { stageObject[i].gameObject.SetActive(false); }
         }
        
-        if (GameStart.Stage != 4)
+        if (GameStart.Stage != 4)　//通常ステージ　カウントアップ
         {
             PlayTime = 0;
             elapsedTime = 0;
             battleModeUI[0].gameObject.SetActive(false);
             tilemap.color = new Color32(80, 80, 80, 255);
         }
-        else if (GameStart.Stage == 4)
+        else if (GameStart.Stage == 4)//通常ステージ　カウントダウン
         {
             PlayTime = 90;
             elapsedTime = 90; 
@@ -128,8 +128,8 @@ public class GameSetting : MonoBehaviour
 
     void StartTimer()
     {
-        //タイム
-        if (StartFlag)
+        //3・2・1カウントダウン　→　スタート
+        if (StartFlag)　　　　　
         {
             StartTime -= Time.deltaTime;
             SoundTime -= Time.deltaTime;
@@ -162,7 +162,7 @@ public class GameSetting : MonoBehaviour
                 SoundTime = 1;
             }
         }
-        if (StartTime < 0 && ButtonInGame.Paused != 1)
+        if (StartTime < 0 && ButtonInGame.Paused != 1) //ゲーム開始
         {
 
             if (GameStart.Stage == 4 && PlayTime > 0)
@@ -180,7 +180,7 @@ public class GameSetting : MonoBehaviour
         }
     }
 
-    void NameTagPos()
+    void NameTagPos()　
     {
         //ネームタグの位置
         for (int i = 0; i < GameStart.PlayerNumber; i++)

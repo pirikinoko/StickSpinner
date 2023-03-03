@@ -52,7 +52,7 @@ public class GameStart : MonoBehaviour
         PhaseControll();
     }
 
-    void SwichStageMaterial()
+    void SwichStageMaterial() //選択ステージ毎に情報切り替え
     {
         switch (Stage)
         {
@@ -104,7 +104,7 @@ public class GameStart : MonoBehaviour
         Stage3Scores.gameObject.SetActive(false);
         Stage4Scores.gameObject.SetActive(false);
     }
-    void PhaseControll()
+    void PhaseControll()　　　//タイトル画面のフェーズごとの処理
     {
         switch (phase)
         {
@@ -131,9 +131,8 @@ public class GameStart : MonoBehaviour
                 break;
 
         }
-        // 最大値を超えたら最大値を渡す
-        phase = System.Math.Min(phase, 4);
-        // 最小値を下回ったら最小値を渡す
+        //phase 0～4
+        phase = System.Math.Min(phase, 4); 
         phase = System.Math.Max(phase, 0);
     }
 
