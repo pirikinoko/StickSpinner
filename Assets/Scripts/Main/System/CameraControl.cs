@@ -112,40 +112,10 @@ public class CameraControl : MonoBehaviour
                 cameraPosGoal.y = (playerTransform[num1].y + playerTransform[num2].y) / 2;
             }
         }
-       
+
         //カメラ位置移動
-        if(cameraPos.x < cameraPosGoal.x)//カメラをゆっくり目的地に近づける
-        {
-            cameraPos.x += 0.015f;
-            if(cameraPosGoal.x - cameraPos.x > 1)
-            {
-                cameraPos.x += 0.1f; //目的地から大きく離れている場合はカメラを速く動かす
-            }
-        }
-        if (cameraPos.x > cameraPosGoal.x)
-        {
-            cameraPos.x -= 0.015f;
-            if (cameraPos.x - cameraPosGoal.x > 1)
-            {
-                cameraPos.x -= 0.1f;
-            }
-        }
-        if (cameraPos.y < cameraPosGoal.y)
-        {
-            cameraPos.y += 0.015f;
-            if (cameraPosGoal.y - cameraPos.y > 1)
-            {
-                cameraPos.y += 0.1f; 
-            }
-        }
-        if (cameraPos.y > cameraPosGoal.y)
-        {
-            cameraPos.y -= 0.015f;
-            if (cameraPos.y - cameraPosGoal.y > 1)
-            {
-                cameraPos.y -= 0.1f; 
-            }
-        }
+        cameraPos.x = Mathf.Lerp(cameraPos.x, cameraPosGoal.x, 0.05f);
+        cameraPos.y =  Mathf.Lerp(cameraPos.y, cameraPosGoal.y, 0.05f);
 
         if (StartTrigger == 0)
         {

@@ -70,8 +70,8 @@ public class GameSetting : MonoBehaviour
         }
         else if (GameStart.Stage == 4)//通常ステージ　カウントダウン
         {
-            PlayTime = 90;
-            elapsedTime = 90; 
+            PlayTime = 120;
+            elapsedTime = 120; 
             battleModeUI[0].gameObject.SetActive(true);
             tilemap.color = new Color32(135, 135, 135, 255);
         }

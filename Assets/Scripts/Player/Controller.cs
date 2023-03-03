@@ -22,6 +22,8 @@ public class Controller : MonoBehaviour
     Text SensText;
     [SerializeField]
     Sprite[] aryFace = new Sprite[6];
+    [SerializeField]
+    public GameObject arrow;
     int face { get; set; }                               　　 // 顔設定用乱数を入れておく1～100
     float stickRot = 0f;                                　　　// 棒の角度
     float jumpforce = 8.3f;                            　　　 // Y軸ジャンプ力
@@ -29,35 +31,28 @@ public class Controller : MonoBehaviour
     bool  inputCrossX;                               　　　 　// 十字ボタンの入力があるときはtrue
     float delay = 0.15f;
     bool delayFlag = false;
-   
-   
-
-    Rigidbody2D stickRb;           // 棒のRigidbody  
-    SpriteRenderer parentSprite;   // プレイヤーの顔
-
     bool isRespowing = false;
-
-
-    private Vector3 playerPos, pausedPos, latestPos; //プレイヤー,棒の位置
-    private Vector2 Playerspeed, speedWhenPaused, deadPlayerPos;//プレイヤー速度,ポーズ直前のプレイヤー速度
-    private float   saveCount = 0; // ポーズ処理に使用
+    private GameObject nameTag;        //ネームタグ
+    SpriteRenderer stickSprite;       // 棒スプライト
+    Rigidbody2D stickRb;              // 棒のRigidbody  
+    SpriteRenderer parentSprite;      // プレイヤーの顔
+    private Vector3 playerPos, pausedPos, latestPos; 　　　　　　　　 　//プレイヤー,棒の位置
+    private Vector2 Playerspeed, speedWhenPaused, deadPlayerPos;　　　　//プレイヤー速度,ポーズ直前のプレイヤー速度
+    private float   saveCount = 0; 　　　　　　　　　　　　　　　　　   // ポーズ処理に使用
     private Body    body;
-    /*　/ゲームオブジェクトなど  */
+    GameObject bodyObj;
 
-  
-    GameObject bodyObj;     
-    SpriteRenderer stickSprite;                 // スティックスプライト
-    public GameObject nameTag;                         // 名前のゲームオブジェクト
+
+
+
+
 
     readonly int[] aryFaceRatio = { 25, 50, 70, 88, 94, 100};   // 顔の変化用
 
 
     void Start()
-    {
-       
-       
+    {     
         nameTag = GameObject.Find("P" + id.ToString() + "Text");
-
         // 親スプライト・スティックスプライトを得る
         parentSprite =  transform.parent.gameObject.GetComponent<SpriteRenderer>();
         stickSprite  = GetComponent<SpriteRenderer>();
@@ -70,8 +65,15 @@ public class Controller : MonoBehaviour
         onPlayer     = false;
         onStick      = false;
         stickRb = GetComponent<Rigidbody2D>();
-        
-        
+
+        if (GameStart.Stage == 1)
+        {
+            arrow.SetActive(true);
+        }
+        else
+        {
+            arrow.SetActive(false);
+        }
 
         // 顔をランダムで設定する
         face = UnityEngine.Random.Range(1, 100);
@@ -109,7 +111,7 @@ public class Controller : MonoBehaviour
             }
             Move();
         }
-    
+        GuideArrow();
         ChangeSensitivity();
         ExitDelay();
     }
@@ -164,6 +166,7 @@ public class Controller : MonoBehaviour
         {
             // ジャンプの方向を求める
             float rotZ = transform.eulerAngles.z;
+
             if (rotZ <   0) { rotZ += 360; }// 0 度未満なら正の値にする
             if (rotZ > 180) { rotZ -= 180; }//上に向いているほうの棒の角度のみ取得
 
@@ -182,7 +185,18 @@ public class Controller : MonoBehaviour
 
             // クールタイム(この時間は入力を受け付けない)
             coolTime = CoolTime_;
+        
         }
+    }
+    //ガイド矢印
+    void GuideArrow() 
+    {
+        float rotZ = transform.eulerAngles.z;
+        if (rotZ < 0) { rotZ += 360; }// 0 度未満なら正の値にする
+        if (rotZ > 180) { rotZ -= 180; }//上に向いているほうの棒の角度のみ取得
+        
+        arrow.transform.position = this.transform.position;
+        arrow.transform.rotation = Quaternion.Euler(0, 0, rotZ);
     }
 
     // 移動
