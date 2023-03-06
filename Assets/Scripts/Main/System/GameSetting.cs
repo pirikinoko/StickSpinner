@@ -65,15 +65,22 @@ public class GameSetting : MonoBehaviour
         {
             PlayTime = 0;
             elapsedTime = 0;
-            battleModeUI[0].gameObject.SetActive(false);
+           
             tilemap.color = new Color32(80, 80, 80, 255);
+            for (int i = 0; i < battleModeUI.Length; i++)
+            {
+                battleModeUI[i].gameObject.SetActive(false);
+            }
         }
         else if (GameStart.Stage == 4)//通常ステージ　カウントダウン
         {
             PlayTime = 120;
-            elapsedTime = 120; 
-            battleModeUI[0].gameObject.SetActive(true);
+            elapsedTime = 120;         
             tilemap.color = new Color32(135, 135, 135, 255);
+            for (int i = 0; i < battleModeUI.Length; i++)
+            {
+                battleModeUI[i].gameObject.SetActive(true);
+            }
         }
         SoundTime = 1f;
         StartTime = 3f;

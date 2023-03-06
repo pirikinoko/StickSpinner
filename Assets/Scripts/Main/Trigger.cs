@@ -75,7 +75,7 @@ public class Trigger : MonoBehaviour
         {
             for (int i = 0; i < 4; i++)
             {
-                if (GameMode.killTimer[i, playerId - 1] > 0)
+                if (GameMode.killTimer[i, playerId - 1] > 0) //トゲに当たったプレイヤーに最後に5秒以内に触れていたプレイヤーにポイント付与
                 {
                     GameMode.points[i] += 5;
                     GameMode.playParticle[i] = 2;
@@ -95,8 +95,12 @@ public class Trigger : MonoBehaviour
         {
             if(other.gameObject.CompareTag("Player") || other.gameObject.CompareTag("Stick"))
             {
-                //敵に触れてから五秒間キル判定
-                GameMode.killTimer[playerId - 1, other.gameObject.GetComponent<Trigger>().playerId - 1] = 5.0f;
+                //敵に触れてから5秒間キル判定            
+                for (int i = 0; i < 4; i++)
+                {
+                    GameMode.killTimer[i, other.gameObject.GetComponent<Trigger>().playerId - 1] = 0;  //一人死亡時にキルポイントを得られるのは最後に触れていた一人のみ
+                }
+                GameMode.killTimer[playerId - 1, other.gameObject.GetComponent<Trigger>().playerId - 1] = 3.0f;
             }       
         }
     }

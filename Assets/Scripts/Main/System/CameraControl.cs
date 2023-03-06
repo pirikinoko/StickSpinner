@@ -1,163 +1,117 @@
-ï»¿using System.Collections;
-using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class CameraControl : MonoBehaviour
 {
+    public GameObject[] players;
+    Vector2[] playerPos = new Vector2[4];
+    public float minCameraSize = 3.5f;
+    public float maxCameraSize = 5.5f;
+    public float cameraMoveSpeed = 0.015f;
 
-    [SerializeField] Camera camera_;
-
-    // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼
-    GameObject[] players{ get; set;} = new GameObject[GameStart.MaxPlayer];
-
-    // é…åˆ—ã¯ãƒ¡ãƒ¢ãƒªã‚’ç¢ºä¿ã®ã“ã¨
-    bool[]    playerActive    = new bool[GameStart.MaxPlayer];
-    Vector2[] playerTransform = new Vector2[GameStart.MaxPlayer];
-    float[] distance  = new float[6];
-    float[] Xdistance = new float[6];
-    float[] Ydistance = new float[6];
-    int[] memo1 = new int[6];
-    int[] memo2 = new int[6];
-    float maxDistansX, maxDistansY, maxDistans;
-    float CameraSize;
-    int   StartTrigger = 0;//, CameraTarget;
-    //Vector2 DefaultCamaeraPos;
-
-    void Start()
+    private Camera mainCamera;
+    Vector3 cameraPos;
+    int goals = 0;
+    bool[] isGoaled = new bool[4];
+    int playerAlive;
+    private void Start()
     {
-        // å‚åŠ ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼
-        int i = 0;
-        for(; i < GameStart.PlayerNumber; i++)
+        for (int i = 0; i < 4; i++)
         {
-            players[  i] = GameObject.Find("Player" + (i + 1).ToString());
-            distance[ i] = 0;
-            Xdistance[i] = 0;
-            Ydistance[i] = 0;
-            playerActive[i] = true;
+            isGoaled[i] = false;
         }
-        // ä¸å‚åŠ ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼
-        for(; i < GameStart.MaxPlayer; i++)
-        {
-            playerActive[i] = false;
-		}
-
-        StartTrigger = 0;   
-        //CameraTarget = GameStart.PlayerNumber;
+        goals = 0;
+        mainCamera = GetComponent<Camera>();
+        cameraPos = this.transform.position;
     }
 
-    void Update()
+    private void Update()
     {
-        GoaledPlayersPos();
-        PlayerPos();
-        GoaledPlayersPos();
-        // 1äººãƒ—ãƒ¬ã‚¤ã®æ™‚ã¯å¤§ãã‚ã®ç”»é¢ã§
-        if (GameStart.PlayerNumber != 1)
+        Vector3 centerPoint = Vector3.zero;
+        playerAlive = 0;
+        for (int i = 0; i < 4; i++)
         {
-            camera_.orthographicSize = CameraSize;
-        }
-        else
-        {
-            transform.position = new Vector3(playerTransform[0].x, playerTransform[0].y, -10);
-            camera_.orthographicSize = 3.0f;
-        }
-    }
-
-    void FixedUpdate()
-    {
-        if (GameStart.PlayerNumber != 1)
-        {
-            CameraPosition();
-        }
-    }
-
-
-    public void CameraPosition()
-    {
-        Transform CameraPosGoalTransform = transform;
-        Vector3   cameraPosGoal          = CameraPosGoalTransform.position;
-        Transform CameraTransform        = transform;
-        Vector3   cameraPos              = CameraTransform.position;
-        int num = 0;
-        for (int i = 0; (i + 1) < GameStart.PlayerNumber; i++)
-        {
-            for (int j = 0; (j + 1 + i) < GameStart.PlayerNumber; j++)
+            if (players[i].activeSelf)
             {
-                distance[num]  = (float)Math.Sqrt(Math.Pow(playerTransform[i].x - playerTransform[j + 1].x, 2) + Math.Pow(playerTransform[i].y - playerTransform[j + 1].y, 2));
-                Xdistance[num] = (float)Math.Sqrt(Math.Pow(playerTransform[i].x - playerTransform[j + 1].x, 2));
-                Ydistance[num] = (float)Math.Sqrt(Math.Pow(playerTransform[i].y - playerTransform[j + 1].y, 2));             
-                memo1[num] = i;
-                memo2[num] = j + 1;
-                num++;
-            }    
-        }
-        maxDistans = Mathf.Max(distance);
-        maxDistansX = Mathf.Max(Xdistance);
-        maxDistansY = Mathf.Max(Ydistance);
-        CameraSize = maxDistans / 1.3f;
-        //ã‚«ãƒ¡ãƒ©ã‚µã‚¤ã‚ºä¸Šé™ä¸‹é™
-        CameraSize = System.Math.Min(CameraSize, 5.5f);
-        CameraSize = System.Math.Max(CameraSize, 3.5f);
-        //ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼åŒå£«ã®X,Yè»¸ã®è·é›¢ã®æœ€å¤§å€¤ã‚’èª¿ã¹ã‚‹
-        for (int i = 0; i < distance.Length; i++)
-        {
-            int num1 = memo1[i];
-            int num2 = memo2[i];
-            if (maxDistansX == Xdistance[i])
-            {
-                cameraPosGoal.x = (playerTransform[num1].x + playerTransform[num2].x) / 2;
+                playerAlive++;
             }
-            if (maxDistansY == Ydistance[i])
+        }
+        //ˆêlƒvƒŒƒC‚Ì
+        if (playerAlive == 1)
+        {
+            mainCamera.orthographicSize = 3.0f;
+            for (int i = 0; i < 4; i++)
             {
-                cameraPosGoal.y = (playerTransform[num1].y + playerTransform[num2].y) / 2;
+                if (players[i].activeSelf)
+                {
+                    centerPoint = players[i].transform.position;
+                }
             }
         }
 
-        //ã‚«ãƒ¡ãƒ©ä½ç½®ç§»å‹•
-        cameraPos.x = Mathf.Lerp(cameraPos.x, cameraPosGoal.x, 0.05f);
-        cameraPos.y =  Mathf.Lerp(cameraPos.y, cameraPosGoal.y, 0.05f);
-
-        if (StartTrigger == 0)
+        // •¡”lƒvƒŒƒC‚Ì‚ÍÅ‚à—£‚ê‚Ä‚¢‚é“ñ“_(X,Y)‚Ì’†“_‚ÉƒJƒƒ‰
+        float maxDistance = 0f;
+        float maxDistanceX = 0f;
+        float maxDistanceY = 0f;
+        for (int i = 0; i < GameStart.PlayerNumber - 1; i++)
         {
-            cameraPos = cameraPosGoal;
-            StartTrigger = 1;
+            playerPos[i] = players[i].transform.position;
+            if (isGoaled[i]) { continue; }
+            for (int j = i + 1; j < GameStart.PlayerNumber; j++)
+            {
+                playerPos[j] = players[j].transform.position;
+
+                if (isGoaled[j]) { continue; }
+                float distance = Vector3.Distance(players[i].transform.position, players[j].transform.position);
+                float distanceX = (float)Math.Sqrt(Math.Pow(playerPos[i].x - playerPos[j].x, 2));
+                float distanceY = (float)Math.Sqrt(Math.Pow(playerPos[i].y - playerPos[j].y, 2));
+                if (distance > maxDistance)
+                {
+                    maxDistance = distance;
+                }
+                if (distanceX > maxDistanceX)
+                {
+                    maxDistanceX = distanceX;
+                    centerPoint.x = (playerPos[i].x + playerPos[j].x) / 2;
+                }
+                if (distanceY > maxDistanceY)
+                {
+                    maxDistanceY = distanceY;
+                    centerPoint.y = (playerPos[i].y + playerPos[j].y) / 2;
+                }
+                else if (distanceY == 0) { centerPoint.y = (playerPos[i].y + playerPos[j].y) / 2; }
+            }
         }
+
+        // ƒJƒƒ‰‚ÌŠg‘å—¦‚ğ‹——£‚É‰‚¶‚Ä•ÏX
+        float cameraSize = maxDistance / 1.3f;
+        cameraSize = System.Math.Min(cameraSize, maxCameraSize);
+        cameraSize = System.Math.Max(cameraSize, minCameraSize);
+        mainCamera.orthographicSize = cameraSize;
+
+        // ƒJƒƒ‰‚ğ’†“_‚ÉˆÚ“®
+        cameraPos = Vector3.Lerp(transform.position, centerPoint, cameraMoveSpeed);
+        cameraPos.z = -10;
         transform.position = cameraPos;
+
+        GoaledPlayersPos();
     }
 
-    //ã‚´ãƒ¼ãƒ«ã—ãŸãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚’ã‚«ãƒ¡ãƒ©ã®å¯¾è±¡ã‹ã‚‰å¤–ã™
+    //ƒS[ƒ‹‚µ‚½ƒvƒŒƒCƒ„[‚ğƒJƒƒ‰‚Ì‘ÎÛ‚©‚çŠO‚·
     void GoaledPlayersPos()
     {
         if (!(GameMode.Goaled))
         {
-            for (int i = 0; i < GameStart.PlayerNumber; i++)
+            if (GameMode.goaledPlayer[goals] != null)
             {
-                if (GameMode.goaledPlayer[i] != null)
-                {
-                    int num = int.Parse(GameMode.goaledPlayer[i].Substring(6)) - 1; // Playerã®ç•ªå·ã‚’å–å¾—
-                    playerActive[num] = false;
-                    if (playerActive[i] == false)
-                    {
-                        for (int j = 0; j < GameStart.PlayerNumber; j++)
-                        {
-                            if (playerActive[j])
-                            {
-                                players[i].transform.position = players[j].transform.position;
-                            }
-                        }
-
-                    }
-                }
+                int playerid = int.Parse(GameMode.goaledPlayer[goals].Substring(6)); // Player‚Ì”Ô†‚ğæ“¾
+                isGoaled[playerid - 1] =  true;
+                goals++;
             }
         }
-        
+
     }
 
-    void PlayerPos()ã€€//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ä½ç½®å–å¾—
-    {
-        for (int i = 0; i < GameStart.PlayerNumber; i++)
-        {
-            playerTransform[i] = players[i].transform.position;
-        }
-    }
 }

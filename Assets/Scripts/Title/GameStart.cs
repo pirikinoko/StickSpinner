@@ -14,7 +14,7 @@ public class GameStart : MonoBehaviour
     const int KeyboardMode = 5;
     const int ControllerMode = 6;
 
-    public GameObject MainTitle, StartPanel, ChangePlayerNumber, FrontCanvas, Stage1Scores, Stage2Scores, Stage3Scores, Stage4Scores, KeyboardMouseUI1, KeyboardMouseUI2;
+    public GameObject MainTitle, StartPanel, ChangePlayerNumber, FrontCanvas, Stage1Scores, Stage2Scores, Stage3Scores, Stage4Scores, KeyboardMouseUI1, KeyboardMouseUI2, stageSelect;
     public GameObject[] controllerUI;
     Button StartButton;
     public static bool inDemoPlay = false;
@@ -114,7 +114,7 @@ public class GameStart : MonoBehaviour
                 break;
             case 1:
                 DisablePanel();
-                FrontCanvas.gameObject.SetActive(true);
+                stageSelect.gameObject.SetActive(true);
                 break;
             case 2:
                 DisablePanel();
@@ -122,6 +122,7 @@ public class GameStart : MonoBehaviour
                 break;
             case 3:
                 DisablePanel();
+                FrontCanvas.gameObject.SetActive(true);
                 StartPanel.gameObject.SetActive(true);
                 inDemoPlay = true;
                 break;
@@ -138,6 +139,7 @@ public class GameStart : MonoBehaviour
 
     void DisablePanel()
     {
+        stageSelect.gameObject.SetActive(false);
         FrontCanvas.gameObject.SetActive(false);
         StartPanel.gameObject.SetActive(false);
         MainTitle.gameObject.SetActive(false);
@@ -152,11 +154,11 @@ public class GameStart : MonoBehaviour
         //キーボード,マウスのとき
         if (!(ControllerInput.usingController))
         {
-            if (phase == 0)
+            if (phase == 1)
             {
                 KeyboardMouseUI1.gameObject.SetActive(true);
             }
-            else if (phase == 1)
+            else if (phase == 3)
             {
                 KeyboardMouseUI2.gameObject.SetActive(true);
             }

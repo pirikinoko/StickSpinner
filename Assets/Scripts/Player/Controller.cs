@@ -79,9 +79,10 @@ public class Controller : MonoBehaviour
         face = UnityEngine.Random.Range(1, 100);
         for(int i = 0; i < aryFaceRatio.Length; i++)
         {
-            if(face >= aryFaceRatio[i] && face < aryFaceRatio[i + 1])
+            if(face <= aryFaceRatio[i])
             {
                 parentSprite.sprite = aryFace[i];
+                return;
             }
 		}
         // ゲームプレイ時の処理(タイトル画面では行わない)

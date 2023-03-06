@@ -10,7 +10,7 @@ public class TitlePlayers : MonoBehaviour
     public GameObject[] nameTags = new GameObject[4];
     public GameObject[] sensText = new GameObject[4];
     public GameObject[] UIkey;
-    private Vector2[] nameTagPos;
+    private Vector2[] nameTagPos = new Vector2[4];
     bool[] uIActive = new bool[4];
     public Text PNtext;
     private Vector2 P1textPos, P2textPos, P3textPos, P4textPos;
@@ -41,6 +41,8 @@ public class TitlePlayers : MonoBehaviour
         PNtext.text = (GameStart.PlayerNumber + "人");
         PlayerActive();
         ShowUI();
+        if(GameStart.phase == 3) { NameTagPos(); }
+      
     }
 
     void ShowUI()
@@ -94,7 +96,7 @@ public class TitlePlayers : MonoBehaviour
             }
         }
 
-        else　　　//プレイヤー非表示
+        else if (!(GameStart.inDemoPlay))　　　//プレイヤー非表示
         {
             for (int i = 0; i < 4; i++)
             {
@@ -108,5 +110,14 @@ public class TitlePlayers : MonoBehaviour
             }
         }
     }
-
+    void NameTagPos()
+    {
+        //ネームタグの位置
+        for (int i = 0; i < GameStart.PlayerNumber; i++)
+        {
+            nameTagPos[i] = players[i].transform.position;
+            nameTagPos[i].y += 0.5f;
+            nameTags[i].transform.position = nameTagPos[i];
+        }
+    }
 }

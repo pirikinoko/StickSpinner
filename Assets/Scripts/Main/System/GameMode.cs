@@ -146,12 +146,13 @@ public class GameMode : MonoBehaviour
         //タイマー減少
         for (int i = 0; i < GameStart.PlayerNumber; i++)
         {
-            for (int j = 0; i < GameStart.PlayerNumber; i++)
+            for (int j = 0; j < GameStart.PlayerNumber; j++)
             {
                 if (killTimer[i, j] >= 0)
                 {
                     killTimer[i, j] -= Time.deltaTime;
                 }
+                Debug.Log(killTimer[1, 3]);
             }
         }
         //キルログ表示
