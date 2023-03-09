@@ -67,7 +67,6 @@ public class ControllerInput : MonoBehaviour
                 num2++;
             }
         }
-        //Debug.Log("1: " + joystickNames[0] + "2: " + joystickNames[1] + "3: " + joystickNames[2] + "4: " + joystickNames[3]);
         for (int i = joystickNames.Length - 1; i >= 0; i --)
         {
             if (joystickNames[i] == "")　 //配列内で空になったインデックスの分左に詰める

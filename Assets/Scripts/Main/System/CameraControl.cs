@@ -81,7 +81,7 @@ public class CameraControl : MonoBehaviour
                     maxDistanceY = distanceY;
                     centerPoint.y = (playerPos[i].y + playerPos[j].y) / 2;
                 }
-                else if (distanceY == 0) { centerPoint.y = (playerPos[i].y + playerPos[j].y) / 2; }
+                else if (distanceY == 0) { centerPoint.y = (playerPos[i].y + playerPos[j].y) / 2; } //スタート時はdistanceYが0のため
             }
         }
 
