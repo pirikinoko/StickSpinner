@@ -55,6 +55,7 @@ public class CameraControl : MonoBehaviour
         float maxDistance = 0f;
         float maxDistanceX = 0f;
         float maxDistanceY = 0f;
+        bool yIsZero = true;
         for (int i = 0; i < GameStart.PlayerNumber - 1; i++)
         {
             playerPos[i] = players[i].transform.position;
@@ -80,8 +81,10 @@ public class CameraControl : MonoBehaviour
                 {
                     maxDistanceY = distanceY;
                     centerPoint.y = (playerPos[i].y + playerPos[j].y) / 2;
+                    yIsZero = false;
                 }
-                else if (distanceY == 0) { centerPoint.y = (playerPos[i].y + playerPos[j].y) / 2; } //スタート時はdistanceYが0のため
+                else if (distanceY == 0 && yIsZero) { centerPoint.y = (playerPos[i].y + playerPos[j].y) / 2; } //スタート時はdistanceYが0のための処理
+
             }
         }
 

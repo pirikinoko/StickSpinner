@@ -11,6 +11,7 @@ public class GameSetting : MonoBehaviour
     //基本
     [SerializeField]
     Text CountDown, playTime;
+    [SerializeField] int Stage4Time;
     GameObject[] players  = new GameObject[GameStart.MaxPlayer];
     GameObject[] sticks   = new GameObject[GameStart.MaxPlayer];
     GameObject[] nameTags = new GameObject[GameStart.MaxPlayer];
@@ -35,7 +36,6 @@ public class GameSetting : MonoBehaviour
     int UIMode;
     const int KeyboardMode = 5;
     const int ControllerMode = 6;
-
 
     public static Vector2[] respownPos = new Vector2[GameStart.MaxPlayer];
     GameObject[] defaultPlayerPos = new GameObject[GameStart.MaxPlayer];
@@ -74,8 +74,8 @@ public class GameSetting : MonoBehaviour
         }
         else if (GameStart.Stage == 4)//通常ステージ　カウントダウン
         {
-            PlayTime = 120;
-            elapsedTime = 120;         
+            PlayTime = Stage4Time;
+            elapsedTime = Stage4Time;         
             tilemap.color = new Color32(135, 135, 135, 255);
             for (int i = 0; i < battleModeUI.Length; i++)
             {
