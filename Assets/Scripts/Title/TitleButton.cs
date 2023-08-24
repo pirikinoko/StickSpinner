@@ -1,11 +1,10 @@
-﻿
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-
-
+using UnityEngine.EventSystems;
 public class TitleButton : MonoBehaviour
 {
     const int stage4 = 4, firstStage = 1, lastStage = 4;
@@ -17,36 +16,180 @@ public class TitleButton : MonoBehaviour
     [SerializeField]
     private Animator YButtonAnim;
     public GameObject YButtonGO;
+    //New
+    [SerializeField] GameObject[] phase1Obj, phase2SingleObj, phase2MultiObj;
+    [SerializeField] GameObject phase1Frame, phase2SingleFrame, phase2MultiFrame;
+    bool InputCrossX, InputCrossY;
+    public int targetNum { get; set; }
+    int min = 0, max;
+    float lastLstickX, lastLstickY;
+    void Start()
+    {
+        targetNum = 0;
+    }
     void Update()
     {
-        // タイトル画面は三つに分けて処理する
-        switch (GameStart.phase)
-        { 
-            // タイトル
-            case 0:
-                YButtonGO.SetActive(false);
-                Title();
-                break;
-            // ステージ選択
-            case 1:
-                YButtonGO.SetActive(false);
-                SelectStage();
-                break;
-            // プレイヤー数増減 
-            case 2:
-                YButtonGO.SetActive(false);
-                ChangePlayerNumber();
-                
-                break;
-            // ボタン押しっぱなしでゲーム開始
-            case 3:
-                if (ControllerInput.usingController) { YButtonGO.SetActive(true); }
-                else { YButtonGO.SetActive(false); }
-                HoldButtonGoToGame();
-                break;
-        }
         OpenSetting();
+        SelectButton();
+        Selected();
+        if (ControllerInput.back[0] || Input.GetKeyDown(KeyCode.Backspace)) 
+        {
+            GameStart.phase--;         
+        }
+        lastLstickX = ControllerInput.LstickX[0];
+        lastLstickY = ControllerInput.LstickY[0];
+
     }
+
+    void SelectButton()
+    {
+        if (ControllerInput.crossX[0] == 0) { InputCrossX = false; }
+        if (ControllerInput.crossY[0] == 0) { InputCrossY = false; }
+      
+
+        /*ボタン選択（横）*/
+        if (InputCrossX == false)
+        {
+            if (ControllerInput.crossX[0] >= 0.1f) { targetNum++; InputCrossX = true; SoundEffect.soundTrigger[3] = 1; }
+            else if (ControllerInput.crossX[0] <= -0.1f) { targetNum--; InputCrossX = true; SoundEffect.soundTrigger[3] = 1; }
+        }
+        /*ボタン選択（縦）*/
+        if (InputCrossY == false)
+        {
+            if (ControllerInput.crossY[0] >= 0.1f) { targetNum+= 4;  InputCrossY = true; SoundEffect.soundTrigger[3] = 1; }
+            else if (ControllerInput.crossY[0] <= -0.1f) { targetNum-= 4;  InputCrossY = true; SoundEffect.soundTrigger[3] = 1; }       
+        }
+        /*ボタン選択（横）*/
+        //上限下限の設定
+        targetNum = Mathf.Clamp(targetNum, min, max);
+
+        /*ボタン選択（縦）*/
+        if (lastLstickX > 0.1f || lastLstickX < -0.1f || lastLstickY > 0.1f || lastLstickY < -0.1f) { return; }
+
+        /*Lスティック横*/
+        if (ControllerInput.LstickX[0] > 0.5f) { targetNum++;  SoundEffect.soundTrigger[3] = 1; }
+        else if (ControllerInput.LstickX[0] < -0.5f) { targetNum--;  SoundEffect.soundTrigger[3] = 1; }
+        /*Lスティック横*/
+
+        /*Lスティック縦*/
+        if (ControllerInput.LstickY[0] > 0.5f) { targetNum-= 4; SoundEffect.soundTrigger[3] = 1; }
+        else if (ControllerInput.LstickY[0] < -0.5f) { targetNum+= 4; SoundEffect.soundTrigger[3] = 1; }
+        /*Lスティック縦*/
+
+        /*矢印キー横*/
+        if (Input.GetKeyDown(KeyCode.RightArrow)) { targetNum++; SoundEffect.soundTrigger[3] = 1; }
+        else if (Input.GetKeyDown(KeyCode.LeftArrow)) { targetNum--; SoundEffect.soundTrigger[3] = 1; }
+        /*矢印キー横*/
+
+        /*矢印キー縦*/
+        if (Input.GetKeyDown(KeyCode.UpArrow)) { targetNum -= 4; SoundEffect.soundTrigger[3] = 1; }
+        else if (Input.GetKeyDown(KeyCode.DownArrow)) { targetNum += 4; SoundEffect.soundTrigger[3] = 1; }
+        /*矢印キー縦*/
+          //上限下限の設定
+        targetNum = Mathf.Clamp(targetNum, min, max);
+
+    }
+
+
+    void Selected()
+    {
+        switch (GameStart.phase)
+        {
+            case 0:
+                min = 0;
+                max = 1;
+                for (int i = 0; i < phase1Obj.Length; i++)
+                {
+                    Vector2 framePos = phase1Obj[targetNum].transform.position;
+                    phase1Frame.transform.position = framePos;
+                }
+                if (ControllerInput.jump[0] || Input.GetKeyDown(KeyCode.Return))
+                {
+                    ExecuteEvents.Execute(phase1Obj[targetNum], new PointerEventData(EventSystem.current), ExecuteEvents.pointerClickHandler);
+                }
+                break;
+                    
+            case 1:
+                if(GameStart.gameMode1 == "Single") 
+                {
+                    min = 0;
+                    max = 2;
+                    for (int i = 0; i < phase2SingleObj.Length; i++)
+                    {
+                        Vector2 framePos = phase2SingleObj[targetNum].transform.position;
+                        phase2SingleFrame.transform.position = framePos;
+                    }
+                    if (ControllerInput.jump[0] || Input.GetKeyDown(KeyCode.Return))
+                    {
+                        ExecuteEvents.Execute(phase2SingleObj[targetNum], new PointerEventData(EventSystem.current), ExecuteEvents.pointerClickHandler);
+                    }             
+                }
+                if (GameStart.gameMode1 == "Multi")
+                {
+                    min = 2; max = 4;
+                    GameStart.PlayerNumber = targetNum;
+                    if(ControllerInput.jump[0] || Input.GetKeyDown(KeyCode.Return))
+                    {
+                        GameStart.phase++;
+                    }
+
+                }
+                break;
+
+            case 2:
+                if (GameStart.gameMode1 == "Multi")
+                {
+                    min = 0; max = 5;
+                    for (int i = 0; i < phase2MultiObj.Length; i++)
+                    {
+                        Vector2 framePos = phase2MultiObj[targetNum].transform.position;
+                        phase2MultiFrame.transform.position = framePos;
+                    }
+                    if (ControllerInput.jump[0] || Input.GetKeyDown(KeyCode.Return))
+                    {
+                        ExecuteEvents.Execute(phase2MultiObj[targetNum], new PointerEventData(EventSystem.current), ExecuteEvents.pointerClickHandler);
+                    }
+
+                }
+                break;
+
+     
+
+        }
+
+    }
+
+
+    void OpenSetting()　//設定表示
+    {
+        if (ControllerInput.start[0])
+        {
+            Settings.SettingPanelActive = !(Settings.SettingPanelActive);
+            Settings.inSetting = !(Settings.inSetting);
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /*
+
 
     //
     // タイトル
@@ -55,7 +198,7 @@ public class TitleButton : MonoBehaviour
     {
         if(ControllerInput.next[0])
         {
-            SoundEffect.PironTrigger = 1;
+            SoundEffect.soundTrigger[2] = 1;
             GameStart.phase = 1;
         }
 	}
@@ -68,7 +211,7 @@ public class TitleButton : MonoBehaviour
         // 次へ
         if(ControllerInput.next[0])
         {
-            SoundEffect.PironTrigger = 1;
+            SoundEffect.soundTrigger[2] = 1;
             GameStart.phase = 2;
         }
         // 戻る
@@ -102,7 +245,7 @@ public class TitleButton : MonoBehaviour
         // 次へ
         if (ControllerInput.next[0])
         {
-            SoundEffect.PironTrigger = 1;
+            SoundEffect.soundTrigger[2] = 1;
             GameStart.phase = 3;
         }
         // 戻る
@@ -146,7 +289,7 @@ public class TitleButton : MonoBehaviour
             if (holdTime > holdGoal)
             {
                 GameStart.inDemoPlay = false;
-                SoundEffect.PironTrigger = 1;
+                SoundEffect.soundTrigger[2] = 1;
                 SceneManager.LoadScene("Stage");
             }
         }
@@ -165,14 +308,7 @@ public class TitleButton : MonoBehaviour
 
 
     }
+    */
 
-    void OpenSetting()　//設定表示
-    {
-        if (ControllerInput.start[0])
-        {
-            Settings.SettingPanelActive = !(Settings.SettingPanelActive);
-            Settings.inSetting = !(Settings.inSetting);
-        }
-    }
 }
 

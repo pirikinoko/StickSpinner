@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -9,7 +9,7 @@ public class ButtonClick : MonoBehaviour　//クリック用ボタン
 
     public void BackToTitle()
     {
-        SoundEffect.PironTrigger = 1;
+        SoundEffect.soundTrigger[2] = 1;
         GameStart.phase = 0;
         GameStart.inDemoPlay = false;
         GameSetting.Playable = false;
@@ -19,11 +19,11 @@ public class ButtonClick : MonoBehaviour　//クリック用ボタン
     }
     public void PauseButton()
     {
-        if (GameSetting.StartTime < 0)
+        if (GameSetting.startTime < 0)
         {
             ButtonInGame.Paused = 1;
             GameSetting.Playable = false;
-            GameSetting.StartTime = 0;
+            GameSetting.startTime = 0;
             pauseButton.gameObject.SetActive(false);
             Settings.SettingPanelActive = true;
             Settings.inSetting = true;
@@ -34,7 +34,7 @@ public class ButtonClick : MonoBehaviour　//クリック用ボタン
     public void RestartButton()
     {
         ButtonInGame.Paused = 0;
-        GameSetting.StartTime = -1;
+        GameSetting.startTime = -1;
         GameSetting.Playable = true;
         pauseButton.gameObject.SetActive(true);
         Settings.SettingPanelActive = false;
@@ -44,22 +44,22 @@ public class ButtonClick : MonoBehaviour　//クリック用ボタン
     public void GainBGMVol()
     {
         BGM.BGMStage++;
-        SoundEffect.BunTrigger = 1;
+        SoundEffect.soundTrigger[3] = 1;
     }
     public void LoseBGMVol()
     {
         BGM.BGMStage--;
-        SoundEffect.BunTrigger = 1;
+        SoundEffect.soundTrigger[3] = 1;
     }
     public void GainSEVol()
     {
         SoundEffect.SEStage++;
-        SoundEffect.BunTrigger = 1;
+        SoundEffect.soundTrigger[3] = 1;
     }
     public void LoseSEVol()
     {
         SoundEffect.SEStage--;
-        SoundEffect.BunTrigger = 1;
+        SoundEffect.soundTrigger[3] = 1;
     }
 
 }

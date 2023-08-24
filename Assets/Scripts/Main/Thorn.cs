@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -50,14 +50,18 @@ public class Thorn : MonoBehaviour
         // プレイヤーとの判定
         if (other.gameObject.CompareTag("Player"))
         {
-            SoundEffect.DyukushiTrigger = 1;  //効果音
-
             Body bdy = other.gameObject.GetComponent<Body>();
             // Stick1 をとる
             Controller cnt = other.gameObject.transform.GetChild(0).GetComponent<Controller>();
             cnt.StartDead();
             int id = bdy.id;
             nameTags[id - 1].gameObject.SetActive(false);
+            //効果音
+            SoundEffect.soundTrigger[1] = 1;
+            //エフェクト
+            Vector2 effPos = other.transform.position;
+            GameObject effectPrefab = (GameObject)Resources.Load("DeathEffect1");
+            GameObject effectObj = Instantiate(effectPrefab, effPos, Quaternion.identity);
         }
     }
 }

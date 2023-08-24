@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -40,6 +40,7 @@ public class ButtonInGame : MonoBehaviour
 
     void MainControll()
     {
+        /*
 
         // コントローラーのXボタン
         if (ControllerInput.back[0])    // 押された瞬間
@@ -62,12 +63,12 @@ public class ButtonInGame : MonoBehaviour
                 if (Paused == 1)
                 {
                     Paused = 0;
-                    SoundEffect.PironTrigger = 1;
+                    SoundEffect.soundTrigger[2] = 1;
                     BackToTitle();
                 }
                 else if (GameMode.Goaled || GameMode.Finished)
                 {
-                    SoundEffect.PironTrigger = 1;
+                    SoundEffect.soundTrigger[2] = 1;
                     SetHighScore.ToSetHighscore();
                     BackToTitle();
                 }
@@ -83,15 +84,14 @@ public class ButtonInGame : MonoBehaviour
 
             holdTime = 0;
         }
-
+        */
         // 一台目のコントローラーのStartボタン                                                      
         if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Escape) || ControllerInput.start[0])
         {
-            if (GameSetting.StartTime < 0 && Paused == 0)
+            if (GameSetting.startTime < 0 && Paused == 0)
             {
                 Paused = 1;
                 GameSetting.Playable = false;
-                GameSetting.StartTime = 0;
                 pauseButton.gameObject.SetActive(false);
                 Settings.SettingPanelActive = true;
                 Settings.inSetting = true;
@@ -99,18 +99,25 @@ public class ButtonInGame : MonoBehaviour
             else if (Paused == 1)
             {
                 Paused = 0;
-                GameSetting.StartTime = -1;
+                GameSetting.startTime = -1;
                 GameSetting.Playable = true;
                 pauseButton.gameObject.SetActive(true);
                 Settings.SettingPanelActive = false;
                 Settings.inSetting = false;
             }
         }
+        if(GameMode.Goaled || GameMode.Finished) 
+        {
+            if (ControllerInput.jump[0] || Input.GetKeyDown(KeyCode.Return)) 
+            {
+                BackToTitle();
+            }
+        }
     }
 
     public void BackToTitle()　//タイトルに戻る
     {
-        SoundEffect.PironTrigger = 1;
+        SoundEffect.soundTrigger[2] = 1;
         GameStart.phase          = 0;
         GameStart.inDemoPlay     = false;
         GameSetting.Playable     = false;

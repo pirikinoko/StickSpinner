@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,24 +10,25 @@ public class GameSetting : MonoBehaviour
 {
     //基本
     [SerializeField]
-    Text CountDown, playTime;
-    [SerializeField] int Stage4Time;
-    GameObject[] players  = new GameObject[GameStart.MaxPlayer];
-    GameObject[] sticks   = new GameObject[GameStart.MaxPlayer];
+    Text countDown, playTimeTx;
+    [SerializeField] float timeLimit;
+    [SerializeField] GameObject canvas, frontCanvas;
+    GameObject[] players = new GameObject[GameStart.MaxPlayer];
+    GameObject[] sticks = new GameObject[GameStart.MaxPlayer];
     GameObject[] nameTags = new GameObject[GameStart.MaxPlayer];
     GameObject[] deadTimer = new GameObject[GameStart.MaxPlayer];
-    Text[]    nameTagText    = new Text[   GameStart.MaxPlayer];
-    Vector2[] nameTagPos     = new Vector2[GameStart.MaxPlayer]; 
+    Text[] nameTagText = new Text[GameStart.MaxPlayer];
+    Vector2[] nameTagPos = new Vector2[GameStart.MaxPlayer];
     Vector2[,] startPos = new Vector2[GameStart.MaxPlayer, GameStart.MaxPlayer];
     public static bool Playable = false;
     float elapsedTime;
-    public static float PlayTime;
-    public static float StartTime = 3f;
+    public static float playTime;
+    public static float startTime = 6;
     float SoundTime = 1f;
-    bool  StartFlag;
+    bool StartFlag;
 
     //ステージ切り替え用
-    [SerializeField] GameObject[] stageObject = new GameObject[4];
+    [SerializeField] GameObject[] stageObjectSingle, stageObjectNomal, stageObjectArcade;
     [SerializeField] GameObject[] battleModeUI;
     //背景色
     [SerializeField] Tilemap tilemap;
@@ -45,72 +46,114 @@ public class GameSetting : MonoBehaviour
 
     void Start()
     {
+        canvas.gameObject.SetActive(true);
+        frontCanvas.gameObject.SetActive(true);
         Debug.Log("PlayerNumber: " + GameStart.PlayerNumber + " Stage: " + GameStart.Stage);
+        countDown = GameObject.Find("CountDown").GetComponent<Text>();
+        playTimeTx = GameObject.Find("TimeText").GetComponent<Text>();
         for (int i = 0; i < GameStart.MaxPlayer; i++) //初期化処理
         {
-            //respownTimer[i] = 3.0f;
             nameTags[i] = GameObject.Find("P" + (i + 1).ToString() + "Text");
             players[i] = GameObject.Find("Player" + (i + 1).ToString());
             sticks[i] = GameObject.Find("Stick" + (i + 1).ToString());
             nameTagText[i] = nameTags[i].GetComponent<Text>(); ;
             nameTagText[i].text = "Player" + (i + 1).ToString();
             deadTimer[i] = GameObject.Find("P" + (i + 1).ToString() + "CountDown");
-            //ステージオブジェクトONOFF
             deadTimer[i].SetActive(false);
-            if (GameStart.Stage == (i + 1)) { stageObject[i].gameObject.SetActive(true); }
-            else { stageObject[i].gameObject.SetActive(false); }
         }
-       
-        if (GameStart.Stage != 4)　//通常ステージ　カウントアップ
+        //ステージ切り替え
+        for (int i = 0; i < stageObjectSingle.Length; i++)
         {
-            PlayTime = 0;
+            stageObjectSingle[i].gameObject.SetActive(false);
+        }
+        for (int i = 0; i < stageObjectNomal.Length; i++)
+        {
+            stageObjectNomal[i].gameObject.SetActive(false);
+        }
+        for (int i = 0; i < stageObjectArcade.Length; i++)
+        {
+            stageObjectArcade[i].gameObject.SetActive(false);
+        }
+        if (GameStart.gameMode1 == "Single")
+        {
+            stageObjectSingle[GameStart.Stage - 1].gameObject.SetActive(true);
+            tilemap.color = new Color32(50, 50, 50, 255);
+            playTime = 0;
             elapsedTime = 0;
-           
-            tilemap.color = new Color32(80, 80, 80, 255);
+
             for (int i = 0; i < battleModeUI.Length; i++)
             {
                 battleModeUI[i].gameObject.SetActive(false);
             }
         }
-        else if (GameStart.Stage == 4)//通常ステージ　カウントダウン
+        else
         {
-            PlayTime = Stage4Time;
-            elapsedTime = Stage4Time;         
-            tilemap.color = new Color32(135, 135, 135, 255);
-            for (int i = 0; i < battleModeUI.Length; i++)
+            tilemap.color = new Color32(50, 50, 50, 255);
+            switch (GameStart.gameMode2)
             {
-                battleModeUI[i].gameObject.SetActive(true);
+                case "Nomal":
+                    stageObjectNomal[GameStart.Stage - 1].gameObject.SetActive(true);
+                    playTime = 0;
+                    elapsedTime = 0;
+                    for (int i = 0; i < battleModeUI.Length; i++)
+                    {
+                        battleModeUI[i].gameObject.SetActive(false);
+                    }
+                    break;
+
+                case "Arcade":
+                    stageObjectArcade[GameStart.Stage - 1].gameObject.SetActive(true);
+                    playTimeTx.text = timeLimit.ToString();
+                    playTime = timeLimit;
+                    elapsedTime = timeLimit;
+                    for (int i = 0; i < battleModeUI.Length; i++)
+                    {
+                        battleModeUI[i].gameObject.SetActive(true);
+                    }
+                    break;
+
             }
+
         }
+
         SoundTime = 1f;
-        StartTime = 3f;
+        startTime = 6;
         Playable = false;
         StartFlag = true;
-        CountDown.text = ("3");
-        SoundEffect.BunTrigger = 1;
+        countDown.text = ("3");
 
         // リスポーン位置
-        for (int i = 0; i < GameStart.MaxPlayer; i++)
+        if (GameStart.gameMode1 == "Multi")
         {
-            defaultPlayerPos[i] = GameObject.Find("DefaultPlayerPos" + (i + 1).ToString());
-            respownPos[i]       = defaultPlayerPos[i].gameObject.transform.position;
-            defaultPlayerPos[i].gameObject.SetActive(false);
+            for (int i = 0; i < GameStart.MaxPlayer; i++)
+            {
+                defaultPlayerPos[i] = GameObject.Find("DefaultPlayerPos" + (i + 1).ToString());
+                respownPos[i] = defaultPlayerPos[i].gameObject.transform.position;
+                defaultPlayerPos[i].gameObject.SetActive(false);
+            }
         }
+        else 
+        {
+            defaultPlayerPos[0] = GameObject.Find("DefaultPlayerPos1");
+            respownPos[0] = defaultPlayerPos[0].gameObject.transform.position;
+            defaultPlayerPos[0].gameObject.SetActive(false);
+        }
+
 
         //プレイヤー人数の反映
         {
             int i = 0;
-            for ( ; i < GameStart.PlayerNumber; i++)
+            for (; i < GameStart.PlayerNumber; i++)
             {
                 nameTags[i].gameObject.SetActive(true);
                 players[i].gameObject.SetActive(true);
                 sticks[i].gameObject.SetActive(true);
                 //初期位置
                 players[i].gameObject.transform.position = respownPos[i];
-                sticks[i].gameObject.transform.position  = respownPos[i];
+                sticks[i].gameObject.transform.position = respownPos[i];
             }
             // プレイヤー人数の反映
-            for ( ; i < GameStart.MaxPlayer; i++)
+            for (; i < GameStart.MaxPlayer; i++)
             {
                 nameTags[i].gameObject.SetActive(false);
                 players[i].gameObject.SetActive(false);
@@ -119,107 +162,135 @@ public class GameSetting : MonoBehaviour
         }
 
         GameStart.inDemoPlay = false;
+        /*
+        //アウトラインコンポーネント追加
+        GameObject[] objects = GameObject.FindObjectsOfType<GameObject>();
+
+        foreach (GameObject obj in objects)
+        {
+            if (obj.name.Contains("Wall") || obj.name.Contains("Flo") || obj.name.Contains("Thorn"))
+            {
+                obj.AddComponent<PutOutline>();
+            }
+        }
+        */
+
     }
-
-    void FixedUpdate()
-    {
-        NameTagPos();
-    }
-
-    void Update()
-    {
-        SwichUI();
-        StartTimer();   
-    }
-
-
-    void StartTimer()
-    {
-        //3・2・1カウントダウン　→　スタート
-        if (StartFlag)　　　　　
+        void FixedUpdate()
         {
-            StartTime -= Time.deltaTime;
-            SoundTime -= Time.deltaTime;
-            if (StartTime > 2)
+            NameTagPos();
+        }
+
+        void Update()
+        {
+            //SwichUI();
+            StartTimer();
+        }
+
+
+        void StartTimer()
+        {
+            //3・2・1カウントダウン　→　スタート
+            if (StartFlag)
             {
-                CountDownGO.gameObject.SetActive(true);
-                CountDown.text = ("3");
+                startTime -= Time.deltaTime;
+                SoundTime -= Time.deltaTime;
+                if (startTime > 3)
+                {
+                    countDown.text = null;
+                    return;
+                }
+                else if (startTime > 2)
+                {
+                    CountDownGO.gameObject.SetActive(true);
+                    countDown.text = ("3");
+                }
+                else if (startTime > 1)
+                {
+                    countDown.text = ("2");
+                }
+                else if (startTime > 0)
+                {
+                    countDown.text = ("1");
+                }
+                else if (startTime < 0 && startTime > -0.5f)
+                {
+                    countDown.text = ("スタート");
+                }
+                else if (startTime < 0.9f)
+                {
+                    countDown.text = ("");
+                    CountDownGO.gameObject.SetActive(false);
+                    StartFlag = false;
+                }
+                if (SoundTime < 0)
+                {
+                    SoundEffect.soundTrigger[3] = 1;
+                    SoundTime = 1;
+                }
             }
-            else if (StartTime > 1)
+            if (startTime < 0 && ButtonInGame.Paused != 1) //ゲーム開始
             {
-                CountDown.text = ("2");
-            }
-            else if (StartTime > 0)
-            {
-                CountDown.text = ("1");
-            }
-            else if (StartTime < 0 && StartTime > -0.5f)
-            {
-                CountDown.text = ("スタート");
-            }
-            else if (StartTime < 0.9f)
-            {
-                CountDown.text = ("");
-                CountDownGO.gameObject.SetActive(false);
-                StartFlag = false;
-            }
-            if (SoundTime < 0)
-            {
-                SoundEffect.BunTrigger = 1;
-                SoundTime = 1;
+
+                if (GameStart.gameMode2 == "Arcade" && playTime > 0)
+                {
+                    elapsedTime -= Time.deltaTime;
+                }
+                else if (GameStart.gameMode2 != "Arcade")
+                {
+                    elapsedTime += Time.deltaTime;
+                }
+                Playable = true;
+                if(playTime > 99) 
+                {
+                    playTime = elapsedTime;
+                    playTime = Mathf.Floor(playTime);
+                }
+                else 
+                {
+                    playTime = elapsedTime * 10;
+                    playTime = Mathf.Floor(playTime) / 10;
+                }
+               
+                playTimeTx.text = (playTime.ToString());
             }
         }
-        if (StartTime < 0 && ButtonInGame.Paused != 1) //ゲーム開始
-        {
 
-            if (GameStart.Stage == 4 && PlayTime > 0)
+        void NameTagPos()
+        {
+            //ネームタグの位置
+            for (int i = 0; i < GameStart.PlayerNumber; i++)
             {
-                elapsedTime -= Time.deltaTime;
+                nameTagPos[i] = players[i].transform.position;
+                nameTagPos[i].y += 0.5f;
+                nameTags[i].transform.position = nameTagPos[i];
             }
-            else if(GameStart.Stage != 4)
+        }
+
+        void SwichUI()
+        {
+            //キーボードマウス用UIとコントローラー用UIの切り替え
+            if (ControllerInput.usingController)
             {
-                elapsedTime += Time.deltaTime;
+                UIMode = ControllerMode;
             }
-            Playable = true;
-            PlayTime = elapsedTime * 10;
-            PlayTime = Mathf.Floor(PlayTime) / 10;
-            playTime.text = ("タイム:" + PlayTime);
+            else
+            {
+                UIMode = KeyboardMode;
+            }
+            if (UIMode == KeyboardMode)
+            {
+                ControllerUI1.gameObject.SetActive(false);
+                ControllerUI2.gameObject.SetActive(false);
+                ControllerUI3.gameObject.SetActive(false);
+            }
+            else
+            {
+                ControllerUI1.gameObject.SetActive(true);
+                ControllerUI2.gameObject.SetActive(true);
+                ControllerUI3.gameObject.SetActive(true);
+            }
         }
-    }
 
-    void NameTagPos()　
-    {
-        //ネームタグの位置
-        for (int i = 0; i < GameStart.PlayerNumber; i++)
-        {
-            nameTagPos[i] = players[i].transform.position;
-            nameTagPos[i].y += 0.5f;
-            nameTags[i].transform.position = nameTagPos[i];
-        }
-    }
-
-    void SwichUI()
-    {
-        //キーボードマウス用UIとコントローラー用UIの切り替え
-        if (ControllerInput.usingController)
-        {
-            UIMode = ControllerMode;
-        }
-        else
-        {
-            UIMode = KeyboardMode;
-        }
-        if (UIMode == KeyboardMode)
-        {
-            ControllerUI1.gameObject.SetActive(false);
-            ControllerUI2.gameObject.SetActive(false);
-            ControllerUI3.gameObject.SetActive(false);
-        }
-        else
-        {
-            ControllerUI1.gameObject.SetActive(true);
-            ControllerUI2.gameObject.SetActive(true);
-            ControllerUI3.gameObject.SetActive(true);
-        }
-    }
+    
 }

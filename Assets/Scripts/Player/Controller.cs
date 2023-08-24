@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,7 +11,7 @@ public class Controller : MonoBehaviour
     [SerializeField]
     public int id;                                      // プレイヤー番号(1～4)
     [SerializeField]
-    KeyCode KeyLeft, KeyRight;                          // 左右キー(キーボード使用時)
+    KeyCode KeyLeft, KeyRight, KeyJump;                          // 左右キー(キーボード使用時)
     float rotSpeed = 160f;                              // 棒の回転速度
     [SerializeField]
     float CoolTime_ = 0.2f;                             // ジャンプのクールタイム初期化用
@@ -20,16 +20,14 @@ public class Controller : MonoBehaviour
     public GameObject deadTimer;
     [SerializeField]
     Text SensText;
-    [SerializeField]
-    Sprite[] aryFace = new Sprite[6];
-    [SerializeField]
-    public GameObject arrow;
+
     int face { get; set; }                               　　 // 顔設定用乱数を入れておく1～100
     float stickRot = 0f;                                　　　// 棒の角度
     float jumpforce = 8.3f;                            　　　 // Y軸ジャンプ力
     bool  onFloor, onSurface, onPlayer, onStick, onPinball;   // 接触している時は true
     bool  inputCrossX;                               　　　 　// 十字ボタンの入力があるときはtrue
     float delay = 0.15f;
+    public float rotZ { get; set; } 
     bool delayFlag = false;
     bool isRespowing = false;
     private GameObject nameTag;        //ネームタグ
@@ -41,13 +39,6 @@ public class Controller : MonoBehaviour
     private float   saveCount = 0; 　　　　　　　　　　　　　　　　　   // ポーズ処理に使用
     private Body    body;
     GameObject bodyObj;
-
-
-
-
-
-
-    readonly int[] aryFaceRatio = { 25, 50, 70, 88, 94, 100};   // 顔の変化用
 
 
     void Start()
@@ -64,46 +55,25 @@ public class Controller : MonoBehaviour
         onSurface    = false;
         onPlayer     = false;
         onStick      = false;
+        onPinball    = false;
         stickRb = GetComponent<Rigidbody2D>();
 
-        if (GameStart.Stage == 1)
-        {
-            arrow.SetActive(true);
-        }
-        else
-        {
-            arrow.SetActive(false);
-        }
 
-        // 顔をランダムで設定する
-        face = UnityEngine.Random.Range(1, 100);
-        for(int i = 0; i < aryFaceRatio.Length; i++)
-        {
-            if(face <= aryFaceRatio[i])
-            {
-                parentSprite.sprite = aryFace[i];
-                return;
-            }
-		}
-        // ゲームプレイ時の処理(タイトル画面では行わない)
-        if (SceneManager.GetActiveScene().name == "Stage")
-        {     
-            if (GameStart.Stage == 4)
-            {
-                GameObject.Find("P" + id.ToString() + "Face").GetComponent<SpriteRenderer>().sprite = parentSprite.sprite;
-
-            }     
-        }
 
     }
 
     // 入力は Update で行う
     void Update()
     {
+        //rotZの設定
+        rotZ = transform.eulerAngles.z;
+        if (rotZ < 0) { rotZ += 360; }// 0 度未満なら正の値にする
+        if (rotZ > 180) { rotZ -= 180; }//上に向いているほうの棒の角度のみ取得
+
         body = bodyObj.GetComponent<Body>();// 親から Body を取得する
         onFloor   = onSurface | onPlayer | onStick | body.onSurface | body.onPlayer | body.onStick; // 何かに接触している時は true
         onPinball = onPinball | body.onPinball; 
-        Acceleration();
+        //Acceleration();
         if (!(isRespowing))
         {
             if (GameSetting.Playable && ButtonInGame.Paused != 1 || GameStart.inDemoPlay) //プレイヤー数選択画面でも操作可能
@@ -112,7 +82,6 @@ public class Controller : MonoBehaviour
             }
             Move();
         }
-        GuideArrow();
         ChangeSensitivity();
         ExitDelay();
     }
@@ -157,20 +126,12 @@ public class Controller : MonoBehaviour
         }
 
         // キー(あらかじめ左右のどちらかが押されていて、もう一方のキーが押された瞬間を調べる)
-        bool key1 = Input.GetKeyDown(KeyRight) && Input.GetKey(    KeyLeft);
-        bool key2 = Input.GetKey(    KeyRight) && Input.GetKeyDown(KeyLeft);
+        bool jumpKey = Input.GetKeyDown(KeyJump);
 
-        // キー(左右キーどちらも押した瞬間かを調べる)
-        bool key3 = Input.GetKeyDown(KeyRight) && Input.GetKeyDown(KeyLeft);
         
-        if (onFloor && (key1 || key2 || key3 || ControllerInput.jump[id - 1]))
+        if (onFloor && (jumpKey || ControllerInput.jump[id - 1]))
         {
-            // ジャンプの方向を求める
-            float rotZ = transform.eulerAngles.z;
-
-            if (rotZ <   0) { rotZ += 360; }// 0 度未満なら正の値にする
-            if (rotZ > 180) { rotZ -= 180; }//上に向いているほうの棒の角度のみ取得
-
+          
             float jumpDirection;                        // 棒の回転値に合わせて飛ぶ方向を求める
             if (rotZ < 180) { jumpDirection = 6; }
             else { jumpDirection = 18; }
@@ -182,23 +143,13 @@ public class Controller : MonoBehaviour
                 stickRb.velocity = new Vector2(jumpDirection, jumpforce);
                 onFloor = false; onPinball = false; onPlayer = false; onStick = false; onSurface = false; body.onSurface = false; body.onPlayer = false; body.onStick = false;
                 //効果音鳴らす
-                SoundEffect.PowanTrigger = 1;
+                SoundEffect.soundTrigger[5] = 1;
             }
 
             // クールタイム(この時間は入力を受け付けない)
             coolTime = CoolTime_;
         
         }
-    }
-    //ガイド矢印
-    void GuideArrow() 
-    {
-        float rotZ = transform.eulerAngles.z;
-        if (rotZ < 0) { rotZ += 360; }// 0 度未満なら正の値にする
-        if (rotZ > 180) { rotZ -= 180; }//上に向いているほうの棒の角度のみ取得
-        
-        arrow.transform.position = this.transform.position;
-        arrow.transform.rotation = Quaternion.Euler(0, 0, rotZ);
     }
 
     // 移動
@@ -207,8 +158,8 @@ public class Controller : MonoBehaviour
         rotSpeed = 120 + Settings.rotStage[id - 1] * 4;  //感度反映
         if (GameSetting.Playable && ButtonInGame.Paused != 1 || GameStart.inDemoPlay) //プレイヤー数選択画面でも操作可能
         {
-            if (Input.GetKey(KeyRight) || ControllerInput.Lstick[id - 1] > 0) { stickRot -= rotSpeed * Time.deltaTime; }
-            if (Input.GetKey(KeyLeft) || ControllerInput.Lstick[id - 1] < 0) { stickRot += rotSpeed * Time.deltaTime; }
+            if (Input.GetKey(KeyRight) || ControllerInput.LstickX[id - 1] > 0) { stickRot -= rotSpeed * Time.deltaTime; }
+            if (Input.GetKey(KeyLeft) || ControllerInput.LstickX[id - 1] < 0) { stickRot += rotSpeed * Time.deltaTime; }
         }
     }
 
@@ -220,8 +171,8 @@ public class Controller : MonoBehaviour
         {
             if (ControllerInput.crossX[id - 1] == 0) { inputCrossX = false; }
             //十字ボタン(横)を一回倒すごとに感度を一段階変更
-            if (ControllerInput.crossX[id - 1] >= 0.1f && inputCrossX == false) { Settings.rotStage[id - 1] += 1; inputCrossX = true; SoundEffect.BunTrigger = 1; }
-            if (ControllerInput.crossX[id - 1] <= -0.1f && inputCrossX == false) { Settings.rotStage[id - 1] -= 1; inputCrossX = true; SoundEffect.BunTrigger = 1; }
+            if (ControllerInput.crossX[id - 1] >= 0.1f && inputCrossX == false) { Settings.rotStage[id - 1] += 1; inputCrossX = true; SoundEffect.soundTrigger[3] = 1; }
+            if (ControllerInput.crossX[id - 1] <= -0.1f && inputCrossX == false) { Settings.rotStage[id - 1] -= 1; inputCrossX = true; SoundEffect.soundTrigger[3] = 1; }
             SensText.text = Settings.rotStage[id - 1].ToString();
         }
     }
@@ -229,10 +180,11 @@ public class Controller : MonoBehaviour
     // 死亡
     public void StartDead()
     {
-        arrow.SetActive(false);
+        //arrow.SetActive(false);
         isRespowing = true;
         stickSprite.enabled = false;
         parentSprite.enabled = false;
+        body.eyeActive = false;
         StartCoroutine(Respown());
     }
 
@@ -251,13 +203,13 @@ public class Controller : MonoBehaviour
         deadTimer.transform.position = gameObject.transform.position + new Vector3(0, 0.5f, 0);
         Text deadText = deadTimer.GetComponent<Text>();
         deadText.text = "3";
-        SoundEffect.BunTrigger = 1;
+        SoundEffect.soundTrigger[3] = 1;
 		yield return new WaitForSeconds(1.0f);					// 待ち時間
         deadText.text = "2";
-        SoundEffect.BunTrigger = 1;
+        SoundEffect.soundTrigger[3] = 1;
         yield return new WaitForSeconds(1.0f);					// 待ち時間
         deadText.text = "1";
-        SoundEffect.BunTrigger = 1;
+        SoundEffect.soundTrigger[3] = 1;
         yield return new WaitForSeconds(1.0f);					// 待ち時間
         deadText.text = "";
 
@@ -270,13 +222,10 @@ public class Controller : MonoBehaviour
         //チェックポイントにリスポーン
         bodyObj.transform.position = GameSetting.respownPos[id - 1];
 
-        if (GameStart.Stage == 1)
-        {
-            arrow.SetActive(true);
-        }
         nameTag.SetActive(true);
         stickSprite.enabled = true;
         parentSprite.enabled = true;
+        body.eyeActive = true;
         isRespowing = false;
     }
 
@@ -285,7 +234,7 @@ public class Controller : MonoBehaviour
     // コリジョン
     private void OnCollisionEnter2D(Collision2D other)
     {
-        if (other.gameObject.CompareTag("Surface")) { SoundEffect.BonTrigger = 1;}
+        if (other.gameObject.CompareTag("Surface")) { SoundEffect.soundTrigger[0] = 1;}
         if (onPinball && other.gameObject.CompareTag("Surface")) { stickRb.velocity = -Playerspeed * 2; } //ピンボールゾーンでの床との接触時反発
     }
     private void OnCollisionStay2D(Collision2D other)
@@ -330,7 +279,7 @@ public class Controller : MonoBehaviour
             var material = GetComponent<Rigidbody2D>().sharedMaterial;
             material.friction = 0f;
         }
-        else if (onPinball == false)
+        if (onPinball == false)
         {
             var material = GetComponent<Rigidbody2D>().sharedMaterial;
             material.friction = 2f;

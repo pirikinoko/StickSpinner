@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,6 +11,7 @@ public class ShowHighScore : MonoBehaviour
     public static float[,] topScore = new float[4, 5];
     string[] unit = { "秒", "秒", "秒", "P" };
 
+    /*
     // GameObject.Findで見つけるためにAwakeで処理
     void Awake()
     {
@@ -39,5 +40,6 @@ public class ShowHighScore : MonoBehaviour
             }
         }
     }
+    */
 }
 

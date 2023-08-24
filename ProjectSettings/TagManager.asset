@@ -12,6 +12,10 @@ TagManager:
   - Reverse
   - Circle
   - Pinball
+  - TargetButtonNomal
+  - TargetButtonArcade
+  - TargetButtonSingle
+  - Button
   layers:
   - Default
   - TransparentFX

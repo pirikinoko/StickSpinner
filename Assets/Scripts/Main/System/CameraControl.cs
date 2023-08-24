@@ -6,15 +6,16 @@ using System;
 public class CameraControl : MonoBehaviour
 {
     public GameObject[] players;
+    public GameObject[] goalFlagsSingle, goalFlagsNomal, goalFlagsArcade;
     Vector2[] playerPos = new Vector2[4];
     public float minCameraSize = 3.5f;
     public float maxCameraSize = 5.5f;
-    public float cameraMoveSpeed = 0.015f;
-
+    float cameraSpeed = 0.015f, cameraSpeedStart, cameraSize, cameraSizeStart;
     private Camera mainCamera;
-    Vector3 cameraPos;
+    Vector3 cameraPos, vectorZero = new Vector3(0, 0, 0);
     int goals = 0;
     bool[] isGoaled = new bool[4];
+    bool chasePlayers = false;
     int playerAlive;
     private void Start()
     {
@@ -24,7 +25,28 @@ public class CameraControl : MonoBehaviour
         }
         goals = 0;
         mainCamera = GetComponent<Camera>();
-        cameraPos = this.transform.position;
+        cameraPos = vectorZero;
+        cameraPos.z = -10;
+        if (GameStart.gameMode1 == "Single")
+        {
+            cameraPos = goalFlagsSingle[GameStart.Stage - 1].transform.position;
+        }
+        else if(GameStart.gameMode2 == "Nomal") 
+        {
+            cameraPos = goalFlagsNomal[GameStart.Stage - 1].transform.position;
+        }
+        else 
+        {
+            cameraPos = goalFlagsArcade[GameStart.Stage - 1].transform.position;
+        }
+
+        cameraPos.z = -10;
+        transform.position = cameraPos;
+        cameraSizeStart = 1;
+        cameraSpeedStart = 0.005f;
+        chasePlayers = false;
+        mainCamera.orthographicSize = cameraSizeStart;
+     
     }
 
     private void Update()
@@ -38,10 +60,14 @@ public class CameraControl : MonoBehaviour
                 playerAlive++;
             }
         }
-        //àÍêlÉvÉåÉCÇÃéû
+        //‰∏Ä‰∫∫„Éó„É¨„Ç§„ÅÆÊôÇ
         if (playerAlive == 1)
         {
-            mainCamera.orthographicSize = 3.0f;
+            if (GameSetting.startTime < 3) 
+            {
+                mainCamera.orthographicSize = 3.0f;
+            }
+           
             for (int i = 0; i < 4; i++)
             {
                 if (players[i].activeSelf)
@@ -51,7 +77,7 @@ public class CameraControl : MonoBehaviour
             }
         }
 
-        // ï°êîêlÉvÉåÉCÇÃéûÇÕç≈Ç‡ó£ÇÍÇƒÇ¢ÇÈìÒì_(X,Y)ÇÃíÜì_Ç…ÉJÉÅÉâ
+        // Ë§áÊï∞‰∫∫„Éó„É¨„Ç§„ÅÆÊôÇ„ÅØÊúÄ„ÇÇÈõ¢„Çå„Å¶„ÅÑ„Çã‰∫åÁÇπ(X,Y)„ÅÆ‰∏≠ÁÇπ„Å´„Ç´„É°„É©
         float maxDistance = 0f;
         float maxDistanceX = 0f;
         float maxDistanceY = 0f;
@@ -83,33 +109,53 @@ public class CameraControl : MonoBehaviour
                     centerPoint.y = (playerPos[i].y + playerPos[j].y) / 2;
                     yIsZero = false;
                 }
-                else if (distanceY == 0 && yIsZero) { centerPoint.y = (playerPos[i].y + playerPos[j].y) / 2; } //ÉXÉ^Å[ÉgéûÇÕdistanceYÇ™0ÇÃÇΩÇﬂÇÃèàóù
+                else if (distanceY == 0 && yIsZero) { centerPoint.y = (playerPos[i].y + playerPos[j].y) / 2; } //„Çπ„Çø„Éº„ÉàÊôÇ„ÅØdistanceY„Åå0„ÅÆ„Åü„ÇÅ„ÅÆÂá¶ÁêÜ
 
             }
         }
 
-        // ÉJÉÅÉâÇÃägëÂó¶Çãóó£Ç…âûÇ∂ÇƒïœçX
-        float cameraSize = maxDistance / 1.3f;
+        // „Ç´„É°„É©„ÅÆÊã°Â§ßÁéá„Çí„Éó„É¨„Ç§„É§„ÉºÂêåÂ£´„ÅÆË∑ùÈõ¢„Å´Âøú„Åò„Å¶Â§âÊõ¥
+        cameraSize = maxDistance / 1.3f;
         cameraSize = System.Math.Min(cameraSize, maxCameraSize);
         cameraSize = System.Math.Max(cameraSize, minCameraSize);
-        mainCamera.orthographicSize = cameraSize;
 
-        // ÉJÉÅÉâÇíÜì_Ç…à⁄ìÆ
-        cameraPos = Vector3.Lerp(transform.position, centerPoint, cameraMoveSpeed);
+        if (chasePlayers == false)
+        {
+            if(GameSetting.startTime < 4.3) 
+            {
+                cameraSizeStart += 1.5f * Time.deltaTime;
+                cameraSizeStart = System.Math.Min(cameraSize, cameraSizeStart);
+                mainCamera.orthographicSize = cameraSizeStart;
+                cameraPos = Vector3.Lerp(transform.position, centerPoint, cameraSpeedStart * Time.deltaTime);
+                cameraSpeedStart += 0.01f;
+                cameraPos.z = -10;
+                transform.position = cameraPos;
+                if (GameSetting.startTime < 0)
+                {
+                    chasePlayers = true;
+                }
+            }
+            return;
+        }
+
+
+        // „Ç´„É°„É©ÁßªÂãï 
+        mainCamera.orthographicSize = cameraSize;
+        cameraPos = Vector3.Lerp(transform.position, centerPoint, cameraSpeed);
         cameraPos.z = -10;
         transform.position = cameraPos;
 
         GoaledPlayersPos();
     }
 
-    //ÉSÅ[ÉãÇµÇΩÉvÉåÉCÉÑÅ[ÇÉJÉÅÉâÇÃëŒè€Ç©ÇÁäOÇ∑
+    //„Ç¥„Éº„É´„Åó„Åü„Éó„É¨„Ç§„É§„Éº„Çí„Ç´„É°„É©„ÅÆÂØæË±°„Åã„ÇâÂ§ñ„Åô
     void GoaledPlayersPos()
     {
-        if (!(GameMode.Goaled))
+        if (GameStart.gameMode2 == "Nomal" && !(GameMode.Goaled))
         {
             if (GameMode.goaledPlayer[goals] != null)
             {
-                int playerid = int.Parse(GameMode.goaledPlayer[goals].Substring(6)); // PlayerÇÃî‘çÜÇéÊìæ
+                int playerid = int.Parse(GameMode.goaledPlayer[goals].Substring(6)); // Player„ÅÆÁï™Âè∑„ÇíÂèñÂæó
                 isGoaled[playerid - 1] =  true;
                 goals++;
             }

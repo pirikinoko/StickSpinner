@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -22,6 +22,6 @@ public class GetFirstName : MonoBehaviour
             GameMode.goaledPlayer[0] = inputField.text;
         }
        
-        SoundEffect.PironTrigger = 1;
+        SoundEffect.soundTrigger[2] = 1;
     }
 }

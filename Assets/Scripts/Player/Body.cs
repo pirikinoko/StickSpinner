@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,8 +12,15 @@ public class Body : MonoBehaviour
     [SerializeField]
     public int id;                                          // プレイヤー番号(1～4)
 
+    Controller controller;
+
     [SerializeField]
-    GameObject DEATH;                                       // 死亡エフェクト
+    GameObject leftEye, rightEye;
+
+    Vector2 leftPos, rightPos, leftPosGoal, rightPosGoal;
+
+    SpriteRenderer leftEyeSprite, rightEyeSprite;
+    public bool eyeActive { set; get; }
 
     // 内部で使うもの
     public bool  onFloor  { set; get; } 
@@ -37,12 +44,9 @@ public class Body : MonoBehaviour
         if(other.gameObject.CompareTag("Stick")){   onStick   = false;}
         if(other.gameObject.CompareTag("Pinball")){ onPinball = false; }
     }
-    private void OnTriggerEnter2D(Collider2D other)　//トゲに衝突時の処理
+    void Start() 
     {
-        if (other.gameObject.CompareTag("thorn"))
-        {  
-            Instantiate(DEATH, this.gameObject.transform.position, Quaternion.identity);
-        }
+        eyeActive = true;
     }
     void Update()
     {
@@ -57,6 +61,40 @@ public class Body : MonoBehaviour
             var material = GetComponent<Rigidbody2D>().sharedMaterial;
             material.friction = 1f;
             material.bounciness = 0;
+        }
+        EyePosition();
+    }
+
+    void EyePosition() 
+    {
+        controller = transform.GetChild(0).gameObject.GetComponent<Controller>();
+        leftPosGoal = transform.position;
+        rightPosGoal = transform.position;
+        //目の位置
+        leftPosGoal.x -= 0.13f;
+        leftPosGoal.y += 0.03f;
+        rightPosGoal.x += 0.13f;
+        rightPosGoal.y += 0.03f;
+        //角度によって移動
+        leftPosGoal.x += (180 - controller.rotZ) / 1000;
+        rightPosGoal.x -=  controller.rotZ / 1000;
+        //少しずつ反映
+        leftPos = Vector2.Lerp(leftPos, leftPosGoal, 60 * Time.deltaTime) ;
+        rightPos = Vector2.Lerp(rightPos, rightPosGoal, 60 * Time.deltaTime);
+
+        leftEye.transform.position = leftPos;
+        rightEye.transform.position = rightPos;
+        leftEyeSprite = leftEye.GetComponent<SpriteRenderer>();
+        rightEyeSprite = rightEye.GetComponent<SpriteRenderer>();
+        if (!eyeActive) 
+        {
+            leftEyeSprite.enabled = false;
+            rightEyeSprite.enabled = false;
+        }
+        else 
+        {
+            leftEyeSprite.enabled = true;
+            rightEyeSprite.enabled = true;
         }
     }
 }

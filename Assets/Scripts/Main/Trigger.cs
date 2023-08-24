@@ -1,7 +1,7 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using System.Text.RegularExpressions;
 
 public class Trigger : MonoBehaviour
 {
@@ -9,6 +9,7 @@ public class Trigger : MonoBehaviour
     float   pointTimer;
     int playerId;                   // プレイヤー番号(1～4)      
     GameMode gamemode;
+    int checkNum = 0;
     void Start()
     {
         gamemode = GameObject.Find("Scripts").GetComponent<GameMode>();
@@ -30,24 +31,32 @@ public class Trigger : MonoBehaviour
 
     private void OnTriggerStay2D(Collider2D other)
     {
-        //
-        if (other.gameObject.name.Contains("CheckPos"))
-        {
-            GameSetting.respownPos[playerId - 1] = other.gameObject.transform.position;
-        }
+
 
         if (this.gameObject.name.Contains("Player"))
         {
+            if (other.gameObject.name.Contains("CheckPos"))
+            {
+                int tmp = int.Parse(Regex.Replace(other.gameObject.name, @"[^0-9]", ""));
+                if (tmp > checkNum)
+                {
+                    GameSetting.respownPos[playerId - 1] = other.gameObject.transform.position;
+                    checkNum = tmp;
+                    SoundEffect.soundTrigger[2] = 1;
+                }
+
+            }
+
             if (other.gameObject.name.Contains("Point"))
             {
 
                 {
-                    if (GameSetting.PlayTime > 0 && ButtonInGame.Paused != 1)
+                    if (GameSetting.playTime > 0 && ButtonInGame.Paused != 1)
                     {
                         pointTimer += Time.deltaTime;
                         if (pointTimer > 1)
                         {
-                            SoundEffect.KinTrigger = 1;
+                            SoundEffect.soundTrigger[6] = 1;
                             GameMode.points[playerId - 1] += 1;
                             GameMode.playParticle[playerId - 1] = 1;
                             pointTimer = 0;
@@ -60,7 +69,7 @@ public class Trigger : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (GameStart.Stage != 4)　　//対戦モードを除き
+        if (GameStart.gameMode2 != "Arcade")　　//対戦モードを除き
         {
             //自身がプレイヤーならゴール処理
             if (this.gameObject.CompareTag("Player"))
@@ -91,7 +100,7 @@ public class Trigger : MonoBehaviour
     
     private void OnCollisionStay2D(Collision2D other)
     {
-        if(GameStart.Stage == 4)
+        if(GameStart.gameMode2 == "Arcade")
         {
             if(other.gameObject.CompareTag("Player") || other.gameObject.CompareTag("Stick"))
             {
@@ -103,5 +112,6 @@ public class Trigger : MonoBehaviour
                 GameMode.killTimer[playerId - 1, other.gameObject.GetComponent<Trigger>().playerId - 1] = 3.0f;
             }       
         }
+       
     }
 }

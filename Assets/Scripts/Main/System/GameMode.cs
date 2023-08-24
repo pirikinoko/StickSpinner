@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -9,14 +9,13 @@ using System;
 public class GameMode : MonoBehaviour
 {
     //基本
-    public static string[] goaledPlayer{ get; set;} = new string[GameStart.MaxPlayer];
-    GameObject[] players  = new GameObject[GameStart.MaxPlayer];
-    GameObject[] sticks   = new GameObject[GameStart.MaxPlayer];
+    public static string[] goaledPlayer { get; set; } = new string[GameStart.MaxPlayer];
+    GameObject[] players = new GameObject[GameStart.MaxPlayer];
+    GameObject[] sticks = new GameObject[GameStart.MaxPlayer];
     GameObject[] nameTags = new GameObject[GameStart.MaxPlayer];
     GameObject[] resultTextGO = new GameObject[GameStart.MaxPlayer];
     Text[] resultText = new Text[GameStart.MaxPlayer];
-    [SerializeField] GameObject ResultPanel, ResultPanelFront;
-    GameObject InputField;
+    [SerializeField] GameObject ResultPanel, ResultPanelFront, TextCanvas;
     //通常ステージ
     public static byte Goals = 0;
     public static float[] clearTime = new float[GameStart.MaxPlayer];
@@ -24,11 +23,11 @@ public class GameMode : MonoBehaviour
     //バトルモード
     public GameObject KillLogBack, Plus1, Plus5;
     GameObject[] pointTextGO = new GameObject[4], pointBox = new GameObject[4];
-    [SerializeField] GameObject[] respownPos2 = new GameObject[GameStart.MaxPlayer];
+    [SerializeField] GameObject[] chanceRespown1, chanceRespown2;
     public static float[] points = new float[4], pointsInOrder = new float[4];
     public static float topPoint, KillLogTimer;
     float p1Points, p2Points, p3Points, p4Points;
-    public static string[] plasement = new string [4];
+    public static string[] plasement = new string[4];
     Text[] pointText = new Text[4];
     public static string killer, died;
     public Text KillLogText = null;
@@ -37,76 +36,74 @@ public class GameMode : MonoBehaviour
     byte count = 0;
     private Vector2[] particlePos = new Vector2[4];
     public static float[,] killTimer = new float[4, 4];       // プレイヤー同士の衝突を記録(プレイヤー1～4とプレイヤー1～4の衝突)
-    Renderer[] respownPos2Rend = new Renderer[4];
-
+    Renderer[] chanceRespown1Rend = new Renderer[4];
+    Renderer[] chanceRespown2Rend = new Renderer[4];
     void Start()
     {   //基本
         for (int i = 0; i < GameStart.MaxPlayer; i++) //初期化処理
-        {        
-            nameTags[       i] = GameObject.Find("P" +      (i + 1).ToString() + "Text");
-            players[        i] = GameObject.Find("Player" + (i + 1).ToString());
-            sticks[         i] = GameObject.Find("Stick"  + (i + 1).ToString());
-            resultTextGO[   i] = GameObject.Find("resultText" + (i + 1).ToString());
-            respownPos2Rend[i] = respownPos2[i].gameObject.GetComponent<SpriteRenderer>();
-            respownPos2Rend[i].enabled = false;
-            resultNameGO[   i].SetActive(false);
-            resultPointGO[  i].SetActive(false);
-            barObject[      i].SetActive(false);
-            resultText[     i] = resultTextGO[i].GetComponent<Text>();
-            for(int j = 0; j < 4; j++)
+        {
+            nameTags[i] = GameObject.Find("P" + (i + 1).ToString() + "Text");
+            players[i] = GameObject.Find("Player" + (i + 1).ToString());
+            sticks[i] = GameObject.Find("Stick" + (i + 1).ToString());
+            resultTextGO[i] = GameObject.Find("resultText" + (i + 1).ToString());
+            chanceRespown1Rend[i] = chanceRespown1[i].gameObject.GetComponent<SpriteRenderer>();
+            chanceRespown1Rend[i].enabled = false;
+            chanceRespown2Rend[i] = chanceRespown2[i].gameObject.GetComponent<SpriteRenderer>();
+            chanceRespown2Rend[i].enabled = false;
+            resultText[i] = resultTextGO[i].GetComponent<Text>();
+            for (int j = 0; j < 4; j++)
             {
                 killTimer[i, j] = 0f;
             }
         }
-        InputField = GameObject.Find("InputField");
         ResultPanel.gameObject.SetActive(false);
         ResultPanelFront.gameObject.SetActive(false);
-        InputField.gameObject.SetActive(false);
-
+        TextCanvas.gameObject.SetActive(false);
+        Finished = false;
+        Goaled = false;
+        Goals = 0;
         // 通常ステージ
-        if(GameStart.Stage != 4)
+        if (GameStart.gameMode2 != "Arcade")
         {
             for (int i = 0; i < GameStart.MaxPlayer; i++) //初期化処理
             {
                 clearTime[i] = 0;
                 goaledPlayer[i] = null;
             }
-            Goaled = false;
-            Goals = 0;
         }
 
         //バトルモード
-        if (GameStart.Stage == 4)
-        {          
+        if (GameStart.gameMode2 == "Arcade")
+        {
             for (int i = 0; i < 4; i++)
             {
                 plasement[i] = null;
                 points[i] = 0;
                 pointsInOrder[i] = 0;
                 pointBox[i] = GameObject.Find("PointFrame" + (i + 1).ToString());
-                pointTextGO[i] = GameObject.Find("P" + (i + 1).ToString() +"Point");
+                pointTextGO[i] = GameObject.Find("P" + (i + 1).ToString() + "Point");
                 pointText[i] = pointTextGO[i].GetComponent<Text>();
             }
             count = 0;
             KillLogTimer = 0;
-            Finished = false;
-           
+
+
             // 画面上部スコアプレイヤー数分表示
             for (int i = 0; i < GameStart.PlayerNumber; i++) { pointBox[i].gameObject.SetActive(true); pointTextGO[i].gameObject.SetActive(true); }
             for (int i = 3; i >= GameStart.PlayerNumber; i--) { pointBox[i].gameObject.SetActive(false); pointTextGO[i].gameObject.SetActive(false); }
         }
-          
+
     }
 
     void Update()
     {
         // 通常ステージ
-        if (GameStart.Stage != 4)
+        if (GameStart.gameMode2 != "Arcade")
         {
             CheckFinish();
         }
         // バトルモード
-        if (GameStart.Stage == 4)
+        if (GameStart.gameMode2 == "Arcade")
         {
             KillSystem();
             PointDisplay();
@@ -124,13 +121,13 @@ public class GameMode : MonoBehaviour
         {
             Goaled = true;
             GameSetting.Playable = false;
+            TextCanvas.gameObject.SetActive(true);
             ResultPanel.gameObject.SetActive(true);
             ResultPanelFront.gameObject.SetActive(true);
-            InputField.gameObject.SetActive(true);
             // 参加プレイヤー数分タイム表示
             for (int i = 0; i < GameStart.PlayerNumber; i++)
             {
-                resultText[i].text = (i + 1).ToString() + "位: " + goaledPlayer[i] + " タイム:" + clearTime[i] + "秒";
+                resultText[i].text = "#" + (i + 1).ToString() + "  " + goaledPlayer[i] + "    " + clearTime[i] + "Sec";
             }
         }
     }
@@ -138,9 +135,9 @@ public class GameMode : MonoBehaviour
     public void GoalProcess(int playerid)
     {
         // ゴールしたプレイヤーを表示する
-        clearTime[Goals] = GameSetting.PlayTime;
+        clearTime[Goals] = GameSetting.playTime;
         goaledPlayer[Goals] = "Player" + playerid.ToString();
-        SoundEffect.PironTrigger = 1;
+        SoundEffect.soundTrigger[2] = 1;
         Goals++;
         players[playerid - 1].gameObject.SetActive(false);
         sticks[playerid - 1].gameObject.SetActive(false);
@@ -148,12 +145,24 @@ public class GameMode : MonoBehaviour
     }
     void LastChance()
     {
-        if(GameSetting.PlayTime < 30)
+        if (GameSetting.playTime < 30)
         {
-            for (int i = 0; i < GameStart.MaxPlayer; i++)
+            switch (GameStart.Stage)
             {
-                GameSetting.respownPos[i] = respownPos2[i].gameObject.transform.position;
+                case 1:
+                    for (int i = 0; i < GameStart.MaxPlayer; i++)
+                    {
+                        GameSetting.respownPos[i] = chanceRespown1[i].gameObject.transform.position;
+                    }
+                    break;
+                case 2:
+                    for (int i = 0; i < GameStart.MaxPlayer; i++)
+                    {
+                        GameSetting.respownPos[i] = chanceRespown2[i].gameObject.transform.position;
+                    }
+                    break;
             }
+
         }
     }
     //バトルモード
@@ -194,7 +203,7 @@ public class GameMode : MonoBehaviour
 
     void checkResult()
     {
-        if (GameSetting.PlayTime <= 0)
+        if (GameSetting.playTime <= 0)
         {
             Finished = true;
             for (int i = 0; i < GameStart.PlayerNumber; i++)
@@ -206,46 +215,45 @@ public class GameMode : MonoBehaviour
             }
             ResultPanel.gameObject.SetActive(true);
             ResultPanelFront.gameObject.SetActive(true);
-            InputField.gameObject.SetActive(true);
+            TextCanvas.gameObject.SetActive(true);
 
 
             if (count == 0)
             {
-          
+
                 //ポイント並び替え
                 points.CopyTo(pointsInOrder, 0);
                 Array.Sort(pointsInOrder);
                 Array.Reverse(pointsInOrder);
                 int num = 3;
-                /*
-          //順位計測
-          for (int i = GameStart.PlayerNumber - 1; i >= 0; i--)
-          {
 
-              if (points[i] == 0)
-              {
-                  plasement[num] = "Player" + (i + 1).ToString();
-                  num --;
-              }
-              else
-              {
-                  for (int j = 0; j < GameStart.PlayerNumber; j++)
-                  {
-                      if (pointsInOrder[j] == points[i])
-                      {
-                          plasement[j] = "Player" + (i + 1).ToString();
-                      }
+                //順位計測
+                for (int i = GameStart.PlayerNumber - 1; i >= 0; i--)
+                {
 
-                  }
-              }                   
+                    if (points[i] == 0)
+                    {
+                        plasement[num] = "Player" + (i + 1).ToString();
+                        num--;
+                    }
+                    else
+                    {
+                        for (int j = 0; j < GameStart.PlayerNumber; j++)
+                        {
+                            if (pointsInOrder[j] == points[i])
+                            {
+                                plasement[j] = "Player" + (i + 1).ToString();
+                            }
 
-          }
-          topPoint = pointsInOrder[0];
-          */
-                StartCoroutine("ShowResult2");
+                        }
+                    }
+
+                }
+                topPoint = pointsInOrder[0];
+
                 count = 1;
             }
-        }     
+        }
     }
 
     void PlayParticle()
@@ -262,7 +270,7 @@ public class GameMode : MonoBehaviour
             }
             if (playParticle[i] == 2)
             {
-                SoundEffect.KirarinTrigger = 1;
+                SoundEffect.soundTrigger[7] = 1;
                 Instantiate(Plus5, particlePos[i], Quaternion.identity); //パーティクル用ゲームオブジェクト生成
                 playParticle[i] = 0;
             }
@@ -275,63 +283,11 @@ public class GameMode : MonoBehaviour
             //リザルト表示
             for (int i = 0; i < GameStart.PlayerNumber; i++)
             {
-                resultText[i].text = (i + 1) + "位: " + plasement[i] + "  " + pointsInOrder[i] + "ポイント";
+                resultText[i].text = "# " + (i + 1) + plasement[i] + "  " + pointsInOrder[i] + "point";
             }
         }
     }
 
-    [SerializeField] GameObject[] resultNameGO, resultPointGO, barObject;
-    [SerializeField] int barAspectRatioX, barAspectRatioY, barSizeX, barSizeY;
-    [SerializeField] Color[] playerColor;
-    Text[] resultNameText = new Text[4], resultPointText = new Text[4];
-    Vector2 barScale, barPos, pointPos, namePos;
-     IEnumerator ShowResult2()
-    {
-        float sumPoints = points[0] + points[1] + points[2] + points[3];
-        float[] pointRatio = new float[4]; //全プレイヤーのポイントの合計に対するプレイヤーごとのポイントの割合
-        barPos.x = -1000;
-        barPos.y = -400 ;
-        namePos.x = -1200;
-        namePos.y = -500;
-        for (int i = (GameStart.PlayerNumber - 1); i >= 0; i--)
-        {
-            int num = 0;
-            string nameTagStr = nameTags[i].gameObject.GetComponent<Text>().text;
-            int playerId = int.Parse(nameTagStr.Substring(6));
-            pointRatio[i] = pointsInOrder[i] / sumPoints;
-            barPos.x += 400;
-            namePos.x += 400;
-            barScale.x = barSizeX * (pointRatio[i] + 0.2f);
-            pointPos = barPos;
-            resultPointGO[i].transform.localPosition = barPos;
-            resultNameText[i] = resultNameGO[i].GetComponent<Text>();
-            resultPointText[i] = resultPointGO[i].GetComponent<Text>();
-            SpriteRenderer spriteRenderer = barObject[i].GetComponent<SpriteRenderer>();
-            spriteRenderer.color = playerColor[playerId - 1];
-            resultNameText[i].text = nameTagStr;
-
-
-
-            spriteRenderer.color = playerColor[i];
-            while (num < pointsInOrder[i])
-            {
-                num++;
-                resultNameGO[i].SetActive(true);
-                resultPointGO[i].SetActive(true);
-                barObject[i].SetActive(true);
-               
-                resultPointText[i].text = num.ToString();
-                barScale.y = (num * 10) * pointRatio[i];
-                barObject[i].transform.localScale = barScale;
-                pointPos.y += 8;
-                barPos.y += (5.0f * pointRatio[i]);
-                barObject[i].transform.localPosition = barPos;
-                resultPointGO[i].transform.localPosition = pointPos;
-                resultNameGO[i].transform.localPosition = namePos;
-                yield return new WaitForSeconds(1 / pointsInOrder[i]);
-            }
-        }
-    }
 }
 
 

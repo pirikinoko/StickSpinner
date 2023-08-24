@@ -1,22 +1,26 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 public class Settings : MonoBehaviour
 {
     public GameObject SettingPanel, TLFrame;
+    public Text[] targetText;
+    public GameObject[] targetObject;
     public static bool SettingPanelActive = false, inSetting = false;
     bool InputCrossX, InputCrossY;
     int Selected = 0;
     float[] settingStages = new float[2];
     int max, min = 0;
-    public GameObject[] item;
-    Vector2[] itemPos = new Vector2[2];
-    public static float[] rotStage = { 10, 10, 10, 10 };　//感度を保存しておく
+    public GameObject[] item = new GameObject[3];
+    Vector2[] itemPos = new Vector2[10];
+    public static float[] rotStage = { 10, 10, 10, 10 }; //感度を保存しておく
+    float lastLstickX, lastLstickY;
     Controller controller;
     void Start()
     {
-        max = settingStages.Length - 1;
+       
         Selected = 0;
         SettingPanelActive = false;
         inSetting = false;
@@ -32,33 +36,50 @@ public class Settings : MonoBehaviour
             SettingPanel.gameObject.SetActive(false);
         }
         SettingControl();
+        SelectEffect();
+        lastLstickX = ControllerInput.LstickX[0];
+        lastLstickY = ControllerInput.LstickY[0];
     }
-  
-   
+
+
     //@@一旦保留
     void SettingControl()
     {
 
-            //設定項目の割り当て
-            settingStages[0] = BGM.BGMStage;
-            settingStages[1] = SoundEffect.SEStage;
+        //設定項目の割り当て
+        settingStages[0] = BGM.BGMStage;
+        settingStages[1] = SoundEffect.SEStage;
+        max = item.Length - 1;
+        for (int i = 0; i < item.Length; i++)
+        {
+            itemPos[i] = item[i].transform.position;
+        }
 
-            itemPos[0] = item[0].transform.position;
-            itemPos[1] = item[1].transform.position;
-            Transform TLFrameTransform = TLFrame.transform;
-            Vector2 TLFramePos = TLFrameTransform.position;
+        Transform TLFrameTransform = TLFrame.transform;
+        Vector2 TLFramePos = TLFrameTransform.position;
         for (int i = 0; i < GameStart.PlayerNumber; i++)
         {
             if (inSetting)
             {
                 if (ControllerInput.crossX[0] == 0) { InputCrossX = false; }
                 if (ControllerInput.crossY[0] == 0) { InputCrossY = false; }
+                /*ボタン選択（縦）*/
+                if (lastLstickX > 0.1f || lastLstickX < -0.1f || lastLstickY > 0.1f || lastLstickY < -0.1f) { return; }
+
 
                 /*設定項目の選択*/
                 if (InputCrossY == false)
                 {
-                    if (ControllerInput.crossY[0] >= 0.1f) { Selected++; InputCrossY = true; SoundEffect.BunTrigger = 1; }
-                    else if (ControllerInput.crossY[0] <= -0.1f) { Selected--; InputCrossY = true; SoundEffect.BunTrigger = 1; }
+                    /*十字ボタン縦*/
+                    if (ControllerInput.crossY[0] >= 0.1f) { Selected++; InputCrossY = true; SoundEffect.soundTrigger[3] = 1; }
+                    else if (ControllerInput.crossY[0] <= -0.1f) { Selected--; InputCrossY = true; SoundEffect.soundTrigger[3] = 1; }
+                    /*十字ボタン縦*/
+
+                    /*Lスティック縦*/
+                    if (ControllerInput.LstickY[0] > 0.5f) { Selected--; SoundEffect.soundTrigger[3] = 1; }
+                    else if (ControllerInput.LstickY[0] < -0.5f) { Selected++; SoundEffect.soundTrigger[3] = 1; }
+                    /*Lスティック縦*/
+
                     //上限下限の設定
                     Selected = Mathf.Clamp(Selected, min, max);
                 }
@@ -67,8 +88,16 @@ public class Settings : MonoBehaviour
                 /*数値変更*/
                 if (InputCrossX == false)
                 {
-                    if (ControllerInput.crossX[0] >= 0.1f) { settingStages[Selected]++; InputCrossX = true; SoundEffect.BunTrigger = 1; }
-                    else if (ControllerInput.crossX[0] <= -0.1f) { settingStages[Selected]--; InputCrossX = true; SoundEffect.BunTrigger = 1; }
+                    /*十字ボタン横*/
+                    if (ControllerInput.crossX[0] >= 0.1f) { settingStages[Selected]++; InputCrossX = true; SoundEffect.soundTrigger[3] = 1; }
+                    else if (ControllerInput.crossX[0] <= -0.1f) { settingStages[Selected]--; InputCrossX = true; SoundEffect.soundTrigger[3] = 1; }
+                    /*十字ボタン横*/
+
+
+                    /*Lスティック横*/
+                    if (ControllerInput.LstickX[0] > 0.5f) { settingStages[Selected]++; SoundEffect.soundTrigger[3] = 1; }
+                    else if (ControllerInput.LstickX[0] < -0.5f) { settingStages[Selected]--; SoundEffect.soundTrigger[3] = 1; }
+                
                 }
                 /*数値変更*/
 
@@ -86,5 +115,38 @@ public class Settings : MonoBehaviour
         TLFramePos.y = itemPos[Selected].y;
         TLFrameTransform.position = TLFramePos;
 
+    }
+
+    void SelectEffect()
+    {
+        for (int i = 0; i < targetText.Length; i++)
+        {
+            targetText[i].color = Color.white;
+        }
+        switch (Selected)
+        {
+            case 0:
+                targetText[0].color = Color.yellow;
+                targetText[1].color = Color.yellow;
+                break;
+            case 1:
+                targetText[2].color = Color.yellow;
+                targetText[3].color = Color.yellow;
+                break;
+            case 2:
+
+                targetText[4].color = Color.yellow;
+                if (ControllerInput.jump[0])
+                {
+                    SoundEffect.soundTrigger[2] = 1;
+                    GameStart.phase = 0;
+                    GameStart.inDemoPlay = false;
+                    GameSetting.Playable = false;
+                    GameStart.PlayerNumber = 1;
+                    SettingPanelActive = false;
+                    SceneManager.LoadScene("Title");
+                }
+                break;
+        }
     }
 }
