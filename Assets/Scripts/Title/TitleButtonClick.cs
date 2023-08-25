@@ -152,6 +152,15 @@ public class TitleButtonClick : MonoBehaviour　//クリック用ボタン
             SoundEffect.soundTrigger[3] = 1;
         }
     }
+    public void OpenInfo()
+    {
+        gameStart.stageInfoActive = true;
+    }
+
+    public void CloseInfo()
+    {
+        gameStart.stageInfoActive = false;
+    }
     public void StartGame()
     {
         string str = Regex.Replace(this.gameObject.name, @"[^0-9]", "");
