@@ -28,7 +28,7 @@ public class GameSetting : MonoBehaviour
     bool StartFlag;
 
     //ステージ切り替え用
-    [SerializeField] GameObject[] stageObjectSingle, stageObjectNomal, stageObjectArcade;
+    [SerializeField] GameObject[] stageObjectSingle, stageObjectSingleArcade, stageObjectMulti, stageObjectMultiArcade;
     [SerializeField] GameObject[] battleModeUI;
     //背景色
     [SerializeField] Tilemap tilemap;
@@ -66,24 +66,42 @@ public class GameSetting : MonoBehaviour
         {
             stageObjectSingle[i].gameObject.SetActive(false);
         }
-        for (int i = 0; i < stageObjectNomal.Length; i++)
+        for (int i = 0; i < stageObjectMulti.Length; i++)
         {
-            stageObjectNomal[i].gameObject.SetActive(false);
+            stageObjectMulti[i].gameObject.SetActive(false);
         }
-        for (int i = 0; i < stageObjectArcade.Length; i++)
+        for (int i = 0; i < stageObjectSingleArcade.Length; i++)
         {
-            stageObjectArcade[i].gameObject.SetActive(false);
+            stageObjectSingleArcade[i].gameObject.SetActive(false);
+        }
+        for (int i = 0; i < stageObjectMultiArcade.Length; i++)
+        {
+            stageObjectMultiArcade[i].gameObject.SetActive(false);
         }
         if (GameStart.gameMode1 == "Single")
         {
-            stageObjectSingle[GameStart.Stage - 1].gameObject.SetActive(true);
-            tilemap.color = new Color32(50, 50, 50, 255);
-            playTime = 0;
-            elapsedTime = 0;
-
-            for (int i = 0; i < battleModeUI.Length; i++)
+            switch (GameStart.gameMode2)
             {
-                battleModeUI[i].gameObject.SetActive(false);
+                case "Nomal":
+                    stageObjectSingle[GameStart.Stage - 1].gameObject.SetActive(true);
+                    tilemap.color = new Color32(50, 50, 50, 255);
+                    playTime = 0;
+                    elapsedTime = 0;
+                    for (int i = 0; i < battleModeUI.Length; i++)
+                    {
+                        battleModeUI[i].gameObject.SetActive(false);
+                    }
+                    break;
+                case "Arcade":
+                    stageObjectSingleArcade[GameStart.Stage - 1].gameObject.SetActive(true);
+                    tilemap.color = new Color32(50, 50, 50, 255);
+                    playTime = 0;
+                    elapsedTime = 0;
+                    for (int i = 0; i < battleModeUI.Length; i++)
+                    {
+                        battleModeUI[i].gameObject.SetActive(false);
+                    }
+                    break;
             }
         }
         else
@@ -92,7 +110,7 @@ public class GameSetting : MonoBehaviour
             switch (GameStart.gameMode2)
             {
                 case "Nomal":
-                    stageObjectNomal[GameStart.Stage - 1].gameObject.SetActive(true);
+                    stageObjectMulti[GameStart.Stage - 1].gameObject.SetActive(true);
                     playTime = 0;
                     elapsedTime = 0;
                     for (int i = 0; i < battleModeUI.Length; i++)
@@ -102,7 +120,7 @@ public class GameSetting : MonoBehaviour
                     break;
 
                 case "Arcade":
-                    stageObjectArcade[GameStart.Stage - 1].gameObject.SetActive(true);
+                    stageObjectMultiArcade[GameStart.Stage - 1].gameObject.SetActive(true);
                     playTimeTx.text = timeLimit.ToString();
                     playTime = timeLimit;
                     elapsedTime = timeLimit;

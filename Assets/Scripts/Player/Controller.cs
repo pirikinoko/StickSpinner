@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEditor;
 
 
 public class Controller : MonoBehaviour
@@ -11,7 +12,7 @@ public class Controller : MonoBehaviour
     [SerializeField]
     public int id;                                      // プレイヤー番号(1～4)
     [SerializeField]
-    KeyCode KeyLeft, KeyRight, KeyJump;                          // 左右キー(キーボード使用時)
+    KeyCode KeyLeft, KeyRight, KeyJump, KeyDown;                          // 左右キー(キーボード使用時)
     float rotSpeed = 160f;                              // 棒の回転速度
     [SerializeField]
     float CoolTime_ = 0.2f;                             // ジャンプのクールタイム初期化用
@@ -27,6 +28,7 @@ public class Controller : MonoBehaviour
     bool  onFloor, onSurface, onPlayer, onStick, onPinball;   // 接触している時は true
     bool  inputCrossX;                               　　　 　// 十字ボタンの入力があるときはtrue
     float delay = 0.15f;
+    float selfDeathTimer = 1.0f;
     public float rotZ { get; set; } 
     bool delayFlag = false;
     bool isRespowing = false;
@@ -57,9 +59,6 @@ public class Controller : MonoBehaviour
         onStick      = false;
         onPinball    = false;
         stickRb = GetComponent<Rigidbody2D>();
-
-
-
     }
 
     // 入力は Update で行う
@@ -78,6 +77,7 @@ public class Controller : MonoBehaviour
         {
             if (GameSetting.Playable && ButtonInGame.Paused != 1 || GameStart.inDemoPlay) //プレイヤー数選択画面でも操作可能
             {
+                selfDeath();
                 Jump();
             }
             Move();
@@ -180,11 +180,16 @@ public class Controller : MonoBehaviour
     // 死亡
     public void StartDead()
     {
-        //arrow.SetActive(false);
         isRespowing = true;
         stickSprite.enabled = false;
         parentSprite.enabled = false;
         body.eyeActive = false;
+        //効果音
+        SoundEffect.soundTrigger[1] = 1;
+        //エフェクト
+        Vector2 effPos = this.transform.position;
+        GameObject effectPrefab = (GameObject)Resources.Load("DeathEffect1");
+        GameObject effectObj = Instantiate(effectPrefab, effPos, Quaternion.identity);
         StartCoroutine(Respown());
     }
 
@@ -229,6 +234,53 @@ public class Controller : MonoBehaviour
         isRespowing = false;
     }
 
+    void selfDeath()
+    {
+        Vector2 animPos = this.transform.position;
+        animPos.y += 1;
+        if (Input.GetKey(KeyDown))
+        {
+            selfDeathTimer -= Time.deltaTime;
+        }
+        else
+        {
+            selfDeathTimer = 1.0f;
+        }
+
+        if(selfDeathTimer < 0)
+        {
+            StartDead();
+            GameObject objToDelete = GameObject.Find("HoldAnim" + id.ToString());
+            if (objToDelete != null)
+            {
+                Destroy(objToDelete);
+            }
+        }
+        
+        if (Input.GetKeyDown(KeyDown))
+        {
+            GameObject animPrefab = (GameObject)Resources.Load("HoldDeathEffect");
+            GameObject animObj = Instantiate(animPrefab, animPos, Quaternion.identity);
+            animObj.name = "HoldAnim" + id.ToString();
+        }
+
+        GameObject targetObj = GameObject.Find("HoldAnim" + id.ToString());
+        if(targetObj != null)
+        {
+            targetObj.transform.position = animPos;
+        }
+
+        if (Input.GetKeyUp(KeyDown))
+        {
+            GameObject objToDelete = GameObject.Find("HoldAnim" + id.ToString());
+            if (objToDelete != null)
+            {
+                Destroy(objToDelete);
+            }
+        }
+
+        
+    }
 
 
     // コリジョン

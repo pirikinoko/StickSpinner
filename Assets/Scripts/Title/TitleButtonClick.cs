@@ -35,6 +35,21 @@ public class TitleButtonClick : MonoBehaviour　//クリック用ボタン
         GameStart.gameMode1 = "Multi";
         SoundEffect.soundTrigger[2] = 1;
         GameStart.phase++;
+        titleButton.targetNum = 0;
+    }
+      //次の画面(通常モード)
+    public void NextPhaseNomal()
+    {
+        GameStart.gameMode2 = "Nomal";
+        SoundEffect.soundTrigger[2] = 1;
+        GameStart.phase++;
+    }
+      //次の画面(ミニゲーム)
+    public void NextPhaseArcade()
+    {
+        GameStart.gameMode2 = "Arcade";
+        SoundEffect.soundTrigger[2] = 1;
+        GameStart.phase++;
     }
     public void PrevPhase()
     {
@@ -108,18 +123,12 @@ public class TitleButtonClick : MonoBehaviour　//クリック用ボタン
     //ステージ変更
     public void NextStage()
     {
-        if (GameStart.Stage < Stage4)
-        {
-            GameStart.Stage++;
-        }
+        titleButton.targetNum++;
         SoundEffect.soundTrigger[3] = 1;
     }
     public void PrevStage()　
     {
-        if (GameStart.Stage > Stage1)
-        {
-            GameStart.Stage--;
-        }
+        titleButton.targetNum--;
         SoundEffect.soundTrigger[3] = 1;
     }
 
@@ -163,21 +172,30 @@ public class TitleButtonClick : MonoBehaviour　//クリック用ボタン
     }
     public void StartGame()
     {
-        string str = Regex.Replace(this.gameObject.name, @"[^0-9]", "");
-        GameStart.Stage = int.Parse(str);
-        if (this.gameObject.name.Contains("Arcade")) 
+        if (GameStart.phase == 3 && GameStart.gameMode2 == "Arcade" && GameStart.Stage < 3)
         {
-            GameStart.gameMode2 = "Arcade";
+            GameStart.phase++;
+            return;
         }
-        else { GameStart.gameMode2 = "Nomal"; }
-        SceneManager.LoadScene("Stage");
+            SceneManager.LoadScene("Stage");
     }
-
 
     public void OpenSetting()    //設定画面の表示
     {
         Settings.SettingPanelActive = !(Settings.SettingPanelActive);
         Settings.inSetting = !(Settings.inSetting);
+    }
+
+    public void PlusFlagTime()    
+    {
+        GameStart.flagTimeLimit += 10;
+        GameStart.flagTimeLimit = System.Math.Min(GameStart.flagTimeLimit, 180);
+    }
+    public void MinusFlagTime()   
+    {
+        GameStart.flagTimeLimit -= 10;
+        GameStart.flagTimeLimit = System.Math.Max(60, GameStart.flagTimeLimit);
+
     }
 
 

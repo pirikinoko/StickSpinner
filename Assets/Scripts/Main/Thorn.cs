@@ -56,12 +56,6 @@ public class Thorn : MonoBehaviour
             cnt.StartDead();
             int id = bdy.id;
             nameTags[id - 1].gameObject.SetActive(false);
-            //効果音
-            SoundEffect.soundTrigger[1] = 1;
-            //エフェクト
-            Vector2 effPos = other.transform.position;
-            GameObject effectPrefab = (GameObject)Resources.Load("DeathEffect1");
-            GameObject effectObj = Instantiate(effectPrefab, effPos, Quaternion.identity);
         }
     }
 }

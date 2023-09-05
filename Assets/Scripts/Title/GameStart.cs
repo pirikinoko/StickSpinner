@@ -14,31 +14,38 @@ public class GameStart : MonoBehaviour
     const int KeyboardMode = 5;
     const int ControllerMode = 6;
 
-    public GameObject mainTitle, startPanel, singleSelect, multiSelect, changePlayerNumber, stageSelect, stageInfo;//, stage1Scores, stage2Scores, stage3Scores, stage4Scores, keyboardMouseUI1, keyboardMouseUI2;
-    public GameObject[] controllerUI;
+    public GameObject mainTitle, startPanel, singleSelect, multiSelect, changePlayerNumber, stageSelect, stageInfo, selectGameMode, setArcadeGame;//, keyboardMouseUI1, keyboardMouseUI2;
+    public GameObject[] controllerUI, playerIcon, playerSlot;
+    //チーム選択
+    public Vector2[] playerIconPos { get; set; } = new Vector2[4];
+    public Vector2[] slot1Pos  = new Vector2[4];
+    public int[] teamASlot { get; set; } = { 1, 0, 0};
+    public int[] teamBSlot { get; set; } = { 1, 0, 0};
+    public int[] teamCSlot { get; set; } = { 1, 0, 0};
+    public int[] teamDSlot { get; set; } = { 1, 0, 0};
+    public int[] playerTeam { get; set; } = { 0, 1, 2, 3}; // {p1, p2, p3, p4}が TeamA, TeamB, TeamC, TeamDにいることを示す。ex..a = 1, c =3
     public bool stageInfoActive { get; set; } = false;
+    int lastPlayerNum;
     Button StartButton;
     public static bool inDemoPlay = false;
-    public Text playerNumberText;
-    /*
-    public SpriteRenderer StageTitle, StageDifficulity, StageDescription;
-    public Sprite Stage1Title, Stage1Difficulity, Stage1Description;
-    public Sprite Stage2Title, Stage2Difficulity, Stage2Description;
-    public Sprite Stage3Title, Stage3Difficulity, Stage3Description;
-    public Sprite Stage4Title, Stage4Difficulity, Stage4Description;
-    [SerializeField] Image StageImage;
-    [SerializeField] Sprite[] stageImages = new Sprite[4];
-
+    public Text playerNumberText, stageNumberText, flagTimeLimitTx;
+    public static int flagTimeLimit = 90;
     //動画
-    public VideoPlayer StageVideo;
-    public VideoClip Stage1Video, Stage2Video, Stage3Video, Stage4Video;
-    */
+    public VideoPlayer stageVideo;
+    public VideoClip[] singleStageVideo, singleArcadeVideo, multiStageVideo, multiArcadeVideo;
+    //画像
+    public Image stageImage;
+    private Sprite imageSprite;
+    //テキスト
+    public Text difficultyText;
     public static string gameMode1 = "Single";
     public static string gameMode2 = "Nomal";
     public static int phase = 0;
     public static int PlayerNumber{get; set;} = 1;     // 参加プレイヤー数
     public static int Stage = 1;
-    //ステージロール
+
+
+    //ステージロール *使ってない
     public GameObject[] singleButtons, normalButtons, arcadeButtons;
     Vector2 singleButtonPos, normalButtonPos, arcadeButtonPos, lastSingleButtonPos, lastNormalButtonPos, lastArcadeButtonPos;
     float SingleButtonGap, NormalButtonGap, ArcadeButtonGap;
@@ -58,6 +65,10 @@ public class GameStart : MonoBehaviour
         trigger = 0;
         clicks = 0;
         startPanel.gameObject.SetActive(false);
+        for (int i = 0; i < playerIconPos.Length; i++)
+        {
+            playerIconPos[i] = slot1Pos[i];
+        }
         //ボタン初期位置など設定
         singleButtonPos = singleButtons[0].transform.position;
         normalButtonPos = normalButtons[0].transform.position; 
@@ -72,8 +83,9 @@ public class GameStart : MonoBehaviour
     }
     void Update()
     {
+        Debug.Log("Phase:" + phase + " gamemode1:" + gameMode1 + " gamemode2:" + gameMode2);
         //SwichUI();
-        //SwichStageMaterial();
+        SwichStageMaterial();
         playerNumberText.text = PlayerNumber.ToString();
         if (rollDirection != "None") 
         {
@@ -91,65 +103,62 @@ public class GameStart : MonoBehaviour
         }
         PhaseControll();
         //phase 0～3
-        phase = System.Math.Min(phase, 2);
+        phase = System.Math.Min(phase, 4);
         phase = System.Math.Max(phase, 0);
     }
 
-    /*
+    
     void SwichStageMaterial() //選択ステージ毎に情報切り替え
     {
-        switch (Stage)
+        
+        switch (gameMode1)
         {
-            case 1:
-                StageTitle.sprite = Stage1Title;
-                StageDifficulity.sprite = Stage1Difficulity;
-                StageDescription.sprite = Stage1Description;
-                DisableScores();
-                stage1Scores.gameObject.SetActive(true);
-                StageVideo.clip = Stage1Video;
-                StageImage.sprite = stageImages[Stage - 1];
-                break;
+            case "Single":
+                if(gameMode2 == "Nomal")
+                {
+                    stageNumberText.text = "Stage" + Stage.ToString();
+                    imageSprite = Resources.Load<Sprite>("SingleNomal" + Stage + "Img");
+                    difficultyText.text = "Easy";
+                    //stageVideo.clip = singleStageVideo[Stage - 1];
 
-            case 2:
-                StageTitle.sprite = Stage2Title;
-                StageDifficulity.sprite = Stage2Difficulity;
-                StageDescription.sprite = Stage2Description;
-                DisableScores();
-                stage2Scores.gameObject.SetActive(true);
-                StageVideo.clip = Stage2Video;
-                StageImage.sprite = stageImages[Stage - 1];
+                }
+                else
+                {
+                    imageSprite = Resources.Load<Sprite>("SingleArcade" + Stage + "Img");
+                    //stageVideo.clip = singleArcadeVideo[Stage - 1];
+                }
                 break;
+            case "Multi":
+                if(gameMode2 == "Nomal")
+                {
+                    stageNumberText.text = "Stage" + Stage.ToString();
+                    imageSprite = Resources.Load<Sprite>("MultiNomal" + Stage + "Img");
+                    //stageVideo.clip = multiStageVideo[Stage - 1];
+                }
+                else
+                {
+                    if(Stage < 3) { stageNumberText.text = "FlagMode" + Stage.ToString(); }
+                    imageSprite = Resources.Load<Sprite>("MultiArcade" + Stage + "Img");
+                    //stageVideo.clip = multiArcadeVideo[Stage - 1];
+                    switch (Stage)
+                    {
+                        case 1:
+                            difficultyText.text = "Easy";
+                        break;
 
-            case 3:
-                StageTitle.sprite = Stage3Title;
-                StageDifficulity.sprite = Stage3Difficulity;
-                StageDescription.sprite = Stage3Description;
-                DisableScores();
-                stage3Scores.gameObject.SetActive(true);
-                StageVideo.clip = Stage3Video;
-                StageImage.sprite = stageImages[Stage - 1];
-                break;
+                        case 2:
+                            difficultyText.text = "Nomal";
+                        break;
+                    }
+                    
 
-            case 4:
-                StageTitle.sprite = Stage4Title;
-                StageDifficulity.sprite = Stage4Difficulity;
-                StageDescription.sprite = Stage4Description;
-                DisableScores();
-                stage4Scores.gameObject.SetActive(true);
-                StageVideo.clip = Stage4Video;
-                StageImage.sprite = stageImages[Stage - 1];
+                }
                 break;
+               
         }
+        stageImage.sprite = imageSprite;
     }
-    
-    void DisableScores()
-    {
-        stage1Scores.gameObject.SetActive(false);
-        stage2Scores.gameObject.SetActive(false);
-        stage3Scores.gameObject.SetActive(false);
-        stage4Scores.gameObject.SetActive(false);
-    }
-    */
+
     void PhaseControll()　　　//タイトル画面のフェーズごとの処理
     {
         switch (gameMode1) 
@@ -164,11 +173,11 @@ public class GameStart : MonoBehaviour
                         break;
                     case 1:
                         DisablePanel();
-                        singleSelect.gameObject.SetActive(true);
-                        if (stageInfoActive)
-                        {
-                            stageInfo.gameObject.SetActive(true);
-                        }
+                        selectGameMode.gameObject.SetActive(true);
+                        break;
+                    case 2:
+                    DisablePanel();
+                        stageSelect.gameObject.SetActive(true);
                         break;
                 
                 }
@@ -187,10 +196,37 @@ public class GameStart : MonoBehaviour
                         break;
                     case 2:
                         DisablePanel();
-                        multiSelect.gameObject.SetActive(true);
-                        if (stageInfoActive)
+                        selectGameMode.gameObject.SetActive(true);
+                        lastPlayerNum = PlayerNumber;
+                        break;
+                    case 3:
+                        DisablePanel();
+                        stageSelect.gameObject.SetActive(true);
+                        break;
+                        if(!(gameMode2 == "Arcade") ||  !(Stage < 3))
                         {
-                            stageInfo.gameObject.SetActive(true);
+                            return;
+                        }
+                    case 4:
+                        DisablePanel();
+                        setArcadeGame.gameObject.SetActive(true);
+                        flagTimeLimitTx.text = flagTimeLimit.ToString();
+                        for (int i = 0; i < 4; i++)
+                        {
+                            playerIcon[i].gameObject.SetActive(false);
+                            playerSlot[i].gameObject.SetActive(false);
+                        }
+                        for (int i = 0; i < PlayerNumber; i++)
+                        {
+                            playerIcon[i].gameObject.SetActive(true);
+                            playerSlot[i].gameObject.SetActive(true);
+                        }
+                        Debug.Log("slot1Pos[1]: "+ slot1Pos[1] + "   player2IconPos:" + playerIconPos[1]); 
+                        TeamSelect();
+
+                        for (int i = 0; i < PlayerNumber; i++)
+                        {
+                            playerIcon[i].transform.position = playerIconPos[i];
                         }
                         break;
                 }
@@ -199,15 +235,41 @@ public class GameStart : MonoBehaviour
     
     }
 
+    void TeamSelect()
+    {
+        for (int i = 0; i < PlayerNumber; i++)
+        {
+            for (int j = 0; j < PlayerNumber; j++)
+            {
+                if (playerTeam[i] == j)
+                {
+                    playerIconPos[i] = slot1Pos[j];
+                    int count = 0;
+                    for (int k = 0; k < PlayerNumber; k++)
+                    {
+                        if(k == i) { return; }
+                        if (playerTeam[k] == playerTeam[i])
+                        {
+                            count++;
+                            playerIconPos[i].x  = slot1Pos[playerTeam[i]].x + (1.5f * count);
+                        }
+                    }
+                }
+            }
+           
+        }
+    }
     void DisablePanel()
     {
         stageSelect.gameObject.SetActive(false);
         stageInfo.gameObject.SetActive(false);
         startPanel.gameObject.SetActive(false);
+        selectGameMode.gameObject.SetActive(false);
         mainTitle.gameObject.SetActive(false);
         changePlayerNumber.gameObject.SetActive(false);
         singleSelect.gameObject.SetActive(false);
         multiSelect.gameObject.SetActive(false);
+        setArcadeGame.gameObject.SetActive(false);
         inDemoPlay = false;
     }
     /*
