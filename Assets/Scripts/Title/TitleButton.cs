@@ -33,7 +33,6 @@ public class TitleButton : MonoBehaviour
     }
     void Update()
     {
-        Debug.Log(targetNum);
         OpenSetting();
         SelectButton();
         Selected();
@@ -315,6 +314,11 @@ public class TitleButton : MonoBehaviour
                     SoundEffect.soundTrigger[3] = 1;
                 }
                 /*キーボード*/
+
+                for (int i = 0; i < GameStart.PlayerNumber; i++)
+                {
+                    gameStart.playerTeam[i] = Mathf.Clamp(gameStart.playerTeam[i], 0, GameStart.PlayerNumber - 1);
+                }
                 break;
         }
 

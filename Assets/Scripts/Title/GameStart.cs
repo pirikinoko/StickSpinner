@@ -19,11 +19,8 @@ public class GameStart : MonoBehaviour
     //チーム選択
     public Vector2[] playerIconPos { get; set; } = new Vector2[4];
     public Vector2[] slot1Pos  = new Vector2[4];
-    public int[] teamASlot { get; set; } = { 1, 0, 0};
-    public int[] teamBSlot { get; set; } = { 1, 0, 0};
-    public int[] teamCSlot { get; set; } = { 1, 0, 0};
-    public int[] teamDSlot { get; set; } = { 1, 0, 0};
     public int[] playerTeam { get; set; } = { 0, 1, 2, 3}; // {p1, p2, p3, p4}が TeamA, TeamB, TeamC, TeamDにいることを示す。ex..a = 1, c =3
+    public int[] teamSize { get; set; } = { 0, 0, 0, 0}; // チーム　A, B, C, Dにいるプレイヤーの人数
     public bool stageInfoActive { get; set; } = false;
     int lastPlayerNum;
     Button StartButton;
@@ -83,7 +80,6 @@ public class GameStart : MonoBehaviour
     }
     void Update()
     {
-        Debug.Log("Phase:" + phase + " gamemode1:" + gameMode1 + " gamemode2:" + gameMode2);
         //SwichUI();
         SwichStageMaterial();
         playerNumberText.text = PlayerNumber.ToString();
@@ -221,7 +217,6 @@ public class GameStart : MonoBehaviour
                             playerIcon[i].gameObject.SetActive(true);
                             playerSlot[i].gameObject.SetActive(true);
                         }
-                        Debug.Log("slot1Pos[1]: "+ slot1Pos[1] + "   player2IconPos:" + playerIconPos[1]); 
                         TeamSelect();
 
                         for (int i = 0; i < PlayerNumber; i++)
@@ -239,19 +234,27 @@ public class GameStart : MonoBehaviour
     {
         for (int i = 0; i < PlayerNumber; i++)
         {
+            Debug.Log(i);
             for (int j = 0; j < PlayerNumber; j++)
             {
+                if(i == 1)
+                {
+                    //Debug.Log("PlayerTeam[i]:" + playerTeam[i] + "slotPos[j]" + slot1Pos[j]);
+                }
+              
                 if (playerTeam[i] == j)
                 {
                     playerIconPos[i] = slot1Pos[j];
                     int count = 0;
                     for (int k = 0; k < PlayerNumber; k++)
                     {
-                        if(k == i) { return; }
-                        if (playerTeam[k] == playerTeam[i])
+                        if(k != i)
                         {
-                            count++;
-                            playerIconPos[i].x  = slot1Pos[playerTeam[i]].x + (1.5f * count);
+                            if (playerTeam[k] == playerTeam[i] && k < i)
+                            {
+                                count++;
+                                playerIconPos[i].x = slot1Pos[playerTeam[i]].x + (1.2f * count);
+                            }
                         }
                     }
                 }
