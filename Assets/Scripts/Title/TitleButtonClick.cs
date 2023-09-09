@@ -11,11 +11,11 @@ public class TitleButtonClick : MonoBehaviour　//クリック用ボタン
     const int Stage1 = 1;
     const int Stage2 = 2;
     const int Stage3 = 3;
-    const int Stage4 = 4;       
+    const int Stage4 = 4;
     public static int[] sensChange = new int[4];
     TitleButton titleButton;
     GameStart gameStart;
-    void Start() 
+    void Start()
     {
         gameStart = GameObject.Find("Systems").GetComponent<GameStart>();
         titleButton = GameObject.Find("Systems").GetComponent<TitleButton>();
@@ -50,14 +50,14 @@ public class TitleButtonClick : MonoBehaviour　//クリック用ボタン
         GameStart.phase++;
         titleButton.targetNum = 0;
     }
-      //次の画面(通常モード)
+    //次の画面(通常モード)
     public void NextPhaseNomal()
     {
         GameStart.gameMode2 = "Nomal";
         SoundEffect.soundTrigger[2] = 1;
         GameStart.phase++;
     }
-      //次の画面(ミニゲーム)
+    //次の画面(ミニゲーム)
     public void NextPhaseArcade()
     {
         GameStart.gameMode2 = "Arcade";
@@ -69,16 +69,16 @@ public class TitleButtonClick : MonoBehaviour　//クリック用ボタン
         SoundEffect.soundTrigger[2] = 1;
         GameStart.phase--;
     }
-   
 
-    
+
+
     //ステージ変更
     public void NextStage()
     {
         titleButton.targetNum++;
         SoundEffect.soundTrigger[3] = 1;
     }
-    public void PrevStage()　
+    public void PrevStage()
     {
         titleButton.targetNum--;
         SoundEffect.soundTrigger[3] = 1;
@@ -93,7 +93,7 @@ public class TitleButtonClick : MonoBehaviour　//クリック用ボタン
             SoundEffect.soundTrigger[3] = 1;
         }
     }
-    public void MinusButton()　
+    public void MinusButton()
     {
         bool bProcessed = false;
 
@@ -109,7 +109,7 @@ public class TitleButtonClick : MonoBehaviour　//クリック用ボタン
         }
         if (bProcessed)
         {
-            titleButton.targetNum--;    
+            titleButton.targetNum--;
             SoundEffect.soundTrigger[3] = 1;
         }
     }
@@ -129,7 +129,7 @@ public class TitleButtonClick : MonoBehaviour　//クリック用ボタン
             GameStart.phase++;
             return;
         }
-            SceneManager.LoadScene("Stage");
+        SceneManager.LoadScene("Stage");
     }
 
     public void OpenSetting()    //設定画面の表示
@@ -138,12 +138,12 @@ public class TitleButtonClick : MonoBehaviour　//クリック用ボタン
         Settings.inSetting = !(Settings.inSetting);
     }
 
-    public void PlusFlagTime()    
+    public void PlusFlagTime()
     {
         GameStart.flagTimeLimit += 10;
         GameStart.flagTimeLimit = System.Math.Min(GameStart.flagTimeLimit, 150);
     }
-    public void MinusFlagTime()   
+    public void MinusFlagTime()
     {
         GameStart.flagTimeLimit -= 10;
         GameStart.flagTimeLimit = System.Math.Max(40, GameStart.flagTimeLimit);
@@ -215,5 +215,14 @@ public class TitleButtonClick : MonoBehaviour　//クリック用ボタン
         SoundEffect.SEStage--;
         SoundEffect.soundTrigger[3] = 1;
     }
-
+    public void NextLanguage()
+    {
+        Settings.languageNum++;
+        SoundEffect.soundTrigger[3] = 1;
+    }
+    public void PrevLanguage()
+    {
+        Settings.languageNum--;
+        SoundEffect.soundTrigger[3] = 1;
+    }
 }

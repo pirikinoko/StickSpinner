@@ -7,11 +7,14 @@ public class Settings : MonoBehaviour
 {
     public GameObject SettingPanel, TLFrame, exitPanel;
     public Text[] targetText;
+    public Text languageText;
     public GameObject[] targetObject;
     public static bool SettingPanelActive = false, inSetting = false;
     bool InputCrossX, InputCrossY;
     int Selected = 0;
-    float[] settingStages = new float[2];
+    public static int languageNum = 0;
+    string[] languages = { "JP", "EN" };
+    float[] settingStages = new float[3];
     int max, min = 0;
     public GameObject[] item = new GameObject[3];
     Vector2[] itemPos = new Vector2[10];
@@ -32,6 +35,7 @@ public class Settings : MonoBehaviour
     }
     void Update()
     {
+        Debug.Log(languageNum);
         if (SettingPanelActive)
         {
             SettingPanel.gameObject.SetActive(true);
@@ -44,6 +48,8 @@ public class Settings : MonoBehaviour
         SelectEffect();
         lastLstickX = ControllerInput.LstickX[0];
         lastLstickY = ControllerInput.LstickY[0];
+        languageText.text = languages[languageNum];
+
     }
 
 
@@ -54,6 +60,7 @@ public class Settings : MonoBehaviour
         //設定項目の割り当て
         settingStages[0] = BGM.BGMStage;
         settingStages[1] = SoundEffect.SEStage;
+        settingStages[2] = languageNum;
         max = item.Length - 1;
         for (int i = 0; i < item.Length; i++)
         {
@@ -174,8 +181,8 @@ public class Settings : MonoBehaviour
         //変更した数値を各スクリプトに反映
         BGM.BGMStage = settingStages[0];
         SoundEffect.SEStage = settingStages[1];
-
-
+        languageNum = (int)settingStages[2];
+        languageNum = Mathf.Clamp(languageNum, 0, 1);
         TLFramePos.y = itemPos[Selected].y;
         TLFrameTransform.position = TLFramePos;
 
@@ -198,8 +205,12 @@ public class Settings : MonoBehaviour
                 targetText[3].color = Color.yellow;
                 break;
             case 2:
-
                 targetText[4].color = Color.yellow;
+                targetText[5].color = Color.yellow;
+                break;
+
+            case 3:
+                targetText[6].color = Color.yellow;
                 if (ControllerInput.jump[0])
                 {
                     SoundEffect.soundTrigger[2] = 1;

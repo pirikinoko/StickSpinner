@@ -113,7 +113,6 @@ public class TitleButton : MonoBehaviour
             case 0:
                 min = 0;
                 max = 1;
-                Debug.Log(targetNum);
                 for (int i = 0; i < titleObj.Length; i++)
                 {
                     Vector2 framePos = titleObj[targetNum].transform.position;
