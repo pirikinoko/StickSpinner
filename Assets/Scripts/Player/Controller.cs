@@ -1,4 +1,4 @@
-using System;
+ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -184,6 +184,7 @@ public class Controller : MonoBehaviour
         stickSprite.enabled = false;
         parentSprite.enabled = false;
         body.eyeActive = false;
+        GameMode.isDead[id - 1] = true;
         //効果音
         SoundEffect.soundTrigger[1] = 1;
         //エフェクト
@@ -231,6 +232,7 @@ public class Controller : MonoBehaviour
         stickSprite.enabled = true;
         parentSprite.enabled = true;
         body.eyeActive = true;
+        GameMode.isDead[id - 1] = false;
         isRespowing = false;
     }
 

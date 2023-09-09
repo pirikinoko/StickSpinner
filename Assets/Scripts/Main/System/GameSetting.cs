@@ -122,8 +122,9 @@ public class GameSetting : MonoBehaviour
                 case "Arcade":
                     stageObjectMultiArcade[GameStart.Stage - 1].gameObject.SetActive(true);
                     playTimeTx.text = timeLimit.ToString();
-                    playTime = timeLimit;
-                    elapsedTime = timeLimit;
+                    playTime = GameStart.flagTimeLimit;
+                    elapsedTime = GameStart.flagTimeLimit;
+                    playTimeTx.text = GameStart.flagTimeLimit.ToString();
                     for (int i = 0; i < battleModeUI.Length; i++)
                     {
                         battleModeUI[i].gameObject.SetActive(true);

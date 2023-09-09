@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 public class Settings : MonoBehaviour
 {
-    public GameObject SettingPanel, TLFrame;
+    public GameObject SettingPanel, TLFrame, exitPanel;
     public Text[] targetText;
     public GameObject[] targetObject;
     public static bool SettingPanelActive = false, inSetting = false;
@@ -18,12 +18,17 @@ public class Settings : MonoBehaviour
     public static float[] rotStage = { 10, 10, 10, 10 }; //感度を保存しておく
     float lastLstickX, lastLstickY;
     Controller controller;
+    //OnExitPanel
+    public static bool exitPanelActive = false;
+    [SerializeField] Text confirmText, yesText, noText;
+    [SerializeField] GameObject yesButton, noButton;
+    int buttonSelect = 0;
     void Start()
     {
-       
         Selected = 0;
         SettingPanelActive = false;
         inSetting = false;
+        exitPanelActive = false;
     }
     void Update()
     {
@@ -61,46 +66,105 @@ public class Settings : MonoBehaviour
         {
             if (inSetting)
             {
-                if (ControllerInput.crossX[0] == 0) { InputCrossX = false; }
-                if (ControllerInput.crossY[0] == 0) { InputCrossY = false; }
-                /*ボタン選択（縦）*/
-                if (lastLstickX > 0.1f || lastLstickX < -0.1f || lastLstickY > 0.1f || lastLstickY < -0.1f) { return; }
-
-
-                /*設定項目の選択*/
-                if (InputCrossY == false)
+                if (!exitPanelActive)
                 {
-                    /*十字ボタン縦*/
-                    if (ControllerInput.crossY[0] >= 0.1f) { Selected++; InputCrossY = true; SoundEffect.soundTrigger[3] = 1; }
-                    else if (ControllerInput.crossY[0] <= -0.1f) { Selected--; InputCrossY = true; SoundEffect.soundTrigger[3] = 1; }
-                    /*十字ボタン縦*/
+                    exitPanel.gameObject.SetActive(false);
+                    if (ControllerInput.crossX[0] == 0) { InputCrossX = false; }
+                    if (ControllerInput.crossY[0] == 0) { InputCrossY = false; }
+                    /*ボタン選択（縦）*/
+                    if (lastLstickX > 0.1f || lastLstickX < -0.1f || lastLstickY > 0.1f || lastLstickY < -0.1f) { return; }
 
-                    /*Lスティック縦*/
-                    if (ControllerInput.LstickY[0] > 0.5f) { Selected--; SoundEffect.soundTrigger[3] = 1; }
-                    else if (ControllerInput.LstickY[0] < -0.5f) { Selected++; SoundEffect.soundTrigger[3] = 1; }
-                    /*Lスティック縦*/
 
-                    //上限下限の設定
-                    Selected = Mathf.Clamp(Selected, min, max);
+                    /*設定項目の選択*/
+                    if (InputCrossY == false)
+                    {
+                        /*十字ボタン縦*/
+                        if (ControllerInput.crossY[0] >= 0.1f) { Selected++; InputCrossY = true; SoundEffect.soundTrigger[3] = 1; }
+                        else if (ControllerInput.crossY[0] <= -0.1f) { Selected--; InputCrossY = true; SoundEffect.soundTrigger[3] = 1; }
+                        /*十字ボタン縦*/
+
+                        /*Lスティック縦*/
+                        if (ControllerInput.LstickY[0] > 0.5f) { Selected--; SoundEffect.soundTrigger[3] = 1; }
+                        else if (ControllerInput.LstickY[0] < -0.5f) { Selected++; SoundEffect.soundTrigger[3] = 1; }
+                        /*Lスティック縦*/
+
+                        //上限下限の設定
+                        Selected = Mathf.Clamp(Selected, min, max);
+                    }
+                    /*設定項目の選択*/
+
+                    /*数値変更*/
+                    if (InputCrossX == false)
+                    {
+                        /*十字ボタン横*/
+                        if (ControllerInput.crossX[0] >= 0.1f) { settingStages[Selected]++; InputCrossX = true; SoundEffect.soundTrigger[3] = 1; }
+                        else if (ControllerInput.crossX[0] <= -0.1f) { settingStages[Selected]--; InputCrossX = true; SoundEffect.soundTrigger[3] = 1; }
+                        /*十字ボタン横*/
+
+
+                        /*Lスティック横*/
+                        if (ControllerInput.LstickX[0] > 0.5f) { settingStages[Selected]++; SoundEffect.soundTrigger[3] = 1; }
+                        else if (ControllerInput.LstickX[0] < -0.5f) { settingStages[Selected]--; SoundEffect.soundTrigger[3] = 1; }
+                    }
+                    /*数値変更*/
                 }
-                /*設定項目の選択*/
 
-                /*数値変更*/
-                if (InputCrossX == false)
+
+                /*ゲーム終了*/
+                if (ControllerInput.back[0] || Input.GetKeyDown(KeyCode.Return))
                 {
-                    /*十字ボタン横*/
-                    if (ControllerInput.crossX[0] >= 0.1f) { settingStages[Selected]++; InputCrossX = true; SoundEffect.soundTrigger[3] = 1; }
-                    else if (ControllerInput.crossX[0] <= -0.1f) { settingStages[Selected]--; InputCrossX = true; SoundEffect.soundTrigger[3] = 1; }
-                    /*十字ボタン横*/
-
-
-                    /*Lスティック横*/
-                    if (ControllerInput.LstickX[0] > 0.5f) { settingStages[Selected]++; SoundEffect.soundTrigger[3] = 1; }
-                    else if (ControllerInput.LstickX[0] < -0.5f) { settingStages[Selected]--; SoundEffect.soundTrigger[3] = 1; }
-                
+                    exitPanelActive = true;
                 }
-                /*数値変更*/
+                if (exitPanelActive)
+                {
+                    exitPanel.gameObject.SetActive(true);
 
+                    Button yes = yesButton.gameObject.GetComponent<Button>();
+                    Button no =  noButton.gameObject.GetComponent<Button>();
+                    RectTransform yesButtonRect = yes.GetComponent<RectTransform>();
+                    RectTransform noButtonRect = no.GetComponent<RectTransform>();
+                    if(buttonSelect == 0)
+                    {
+                        yesButtonRect.sizeDelta = new Vector2(350, 175);
+                        noButtonRect.sizeDelta = new Vector2(300, 150);
+                        if (ControllerInput.jump[0] || ControllerInput.next[0] || Input.GetKeyDown(KeyCode.Return))
+                        {
+                            UnityEditor.EditorApplication.isPlaying = false;
+                            Application.Quit();
+                        }
+                    }
+                    else
+                    {
+                        noButtonRect.sizeDelta = new Vector2(350, 175);
+                        yesButtonRect.sizeDelta = new Vector2(300, 150);
+                        if (ControllerInput.jump[0] || ControllerInput.next[0] || Input.GetKeyDown(KeyCode.Return))
+                        {
+                            exitPanelActive = false;
+                        }
+                    }
+                    /*数値変更*/
+                    if (InputCrossX == false)
+                    {
+                        /*十字ボタン横*/
+                        if (ControllerInput.crossX[0] >= 0.1f) { buttonSelect++; InputCrossX = true; SoundEffect.soundTrigger[3] = 1; }
+                        else if (ControllerInput.crossX[0] <= -0.1f) { buttonSelect--; InputCrossX = true; SoundEffect.soundTrigger[3] = 1; }
+                        /*十字ボタン横*/
+
+
+                        /*Lスティック横*/
+                        if (ControllerInput.LstickX[0] > 0.5f) { buttonSelect++; SoundEffect.soundTrigger[3] = 1; }
+                        else if (ControllerInput.LstickX[0] < -0.5f) { buttonSelect--; SoundEffect.soundTrigger[3] = 1; }
+
+                        /*矢印キー横*/
+                        if (Input.GetKeyDown(KeyCode.RightArrow)) { buttonSelect++; SoundEffect.soundTrigger[3] = 1; }
+                        else if (Input.GetKeyDown(KeyCode.LeftArrow)) { buttonSelect--; SoundEffect.soundTrigger[3] = 1; }
+                        /*矢印キー横*/
+                    }
+                    /*数値変更*/
+                    buttonSelect = Mathf.Clamp(buttonSelect, 0, 1);
+
+                }
+                /*ゲーム終了*/
             }
             //上限下限の設定
             rotStage[i] = System.Math.Min(rotStage[i], 20);

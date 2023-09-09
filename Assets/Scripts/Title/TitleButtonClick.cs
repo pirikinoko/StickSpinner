@@ -19,9 +19,22 @@ public class TitleButtonClick : MonoBehaviour　//クリック用ボタン
     {
         gameStart = GameObject.Find("Systems").GetComponent<GameStart>();
         titleButton = GameObject.Find("Systems").GetComponent<TitleButton>();
-        gameStart.clicks = 0;
     }
 
+    //ゲーム終了ボタン
+    public void ExitGame()
+    {
+        Settings.exitPanelActive = true;
+    }
+    public void yesExit()
+    {
+        UnityEditor.EditorApplication.isPlaying = false;
+        Application.Quit();
+    }
+    public void noBack()
+    {
+        Settings.exitPanelActive = false;
+    }
     //次の画面(シングルプレイ)
     public void NextPhaseSingle()
     {
@@ -55,71 +68,10 @@ public class TitleButtonClick : MonoBehaviour　//クリック用ボタン
     {
         SoundEffect.soundTrigger[2] = 1;
         GameStart.phase--;
-        GameObject.Find("Systems").GetComponent<GameStart>().trigger = 1;
-        gameStart.clicks = 0;
     }
-    //
-    public void RollTrigger()
-    {
-        if (gameStart.inProgress) 
-        {
-            return;
-        }
+   
 
-        if (this.name == "RightButtonNomal")
-        {
-            if (gameStart.clicks < gameStart.normalButtons.Length - 1)
-            {
-                gameStart.rollDirection = "RightNomal";
-                gameStart.clicks++;
-            }
-        }
-        else if (this.name == "LeftButtonNomal")
-        {
-            if (0 <= gameStart.clicks)
-            {
-                gameStart.rollDirection = "LeftNomal";
-                gameStart.clicks--; 
-            }
-        }
-
-        else if (this.name == "RightButtonArcade")
-        {
-            if (gameStart.clicks < gameStart.arcadeButtons.Length - 1) 
-            {
-                gameStart.rollDirection = "RightArcade";
-                gameStart.clicks++;
-            }        
-        }
-        else if (this.name == "LeftButtonArcade") 
-        { 
-            if(0 <= gameStart.clicks)
-            {
-                gameStart.rollDirection = "LeftArcade";
-                gameStart.clicks--; 
-            } 
-        }
-
-        else if (this.name == "RightButtonSingle") 
-        { 
-            if (gameStart.clicks < gameStart.singleButtons.Length - 1) 
-            {
-                gameStart.rollDirection = "RightSingle";
-                gameStart.clicks++;
-            }    
-        }
-        else if (this.name == "LeftButtonSingle") 
-        {
-            if(0 <= gameStart.clicks)
-            {
-                gameStart.rollDirection = "LeftSingle";
-                gameStart.clicks--;
-            }
-        }
-
-        Debug.Log("Clicks:" + gameStart.clicks);
-
-    }
+    
     //ステージ変更
     public void NextStage()
     {
@@ -189,12 +141,12 @@ public class TitleButtonClick : MonoBehaviour　//クリック用ボタン
     public void PlusFlagTime()    
     {
         GameStart.flagTimeLimit += 10;
-        GameStart.flagTimeLimit = System.Math.Min(GameStart.flagTimeLimit, 180);
+        GameStart.flagTimeLimit = System.Math.Min(GameStart.flagTimeLimit, 150);
     }
     public void MinusFlagTime()   
     {
         GameStart.flagTimeLimit -= 10;
-        GameStart.flagTimeLimit = System.Math.Max(60, GameStart.flagTimeLimit);
+        GameStart.flagTimeLimit = System.Math.Max(40, GameStart.flagTimeLimit);
 
     }
 

@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.Video;
+using System.Linq;
 
 
 public class GameStart : MonoBehaviour
@@ -14,13 +15,15 @@ public class GameStart : MonoBehaviour
     const int KeyboardMode = 5;
     const int ControllerMode = 6;
 
-    public GameObject mainTitle, startPanel, singleSelect, multiSelect, changePlayerNumber, stageSelect, stageInfo, selectGameMode, setArcadeGame;//, keyboardMouseUI1, keyboardMouseUI2;
+    public GameObject mainTitle, startPanel, changePlayerNumber, stageSelect, stageInfo, selectGameMode, setArcadeGame;//, keyboardMouseUI1, keyboardMouseUI2;
     public GameObject[] controllerUI, playerIcon, playerSlot;
     //チーム選択
     public Vector2[] playerIconPos { get; set; } = new Vector2[4];
     public Vector2[] slot1Pos  = new Vector2[4];
-    public int[] playerTeam { get; set; } = { 0, 1, 2, 3}; // {p1, p2, p3, p4}が TeamA, TeamB, TeamC, TeamDにいることを示す。ex..a = 1, c =3
-    public int[] teamSize { get; set; } = { 0, 0, 0, 0}; // チーム　A, B, C, Dにいるプレイヤーの人数
+    public static int[] playerTeam { get; set; } = { 0, 1, 2, 3}; // {p1, p2, p3, p4}が TeamA, TeamB, TeamC, TeamDにいることを示す。ex..a = 1, c =3
+    public static int[] teamSize { get; set; } = { 0, 0, 0, 0}; // チーム　A, B, C, Dにいるプレイヤーの人数
+    public static int teamCount = 0; //チームの数
+    public static string teamMode  = "FreeForAll"; //対戦チーム分け 
     public bool stageInfoActive { get; set; } = false;
     int lastPlayerNum;
     Button StartButton;
@@ -40,58 +43,27 @@ public class GameStart : MonoBehaviour
     public static int phase = 0;
     public static int PlayerNumber{get; set;} = 1;     // 参加プレイヤー数
     public static int Stage = 1;
-
-
-    //ステージロール *使ってない
-    public GameObject[] singleButtons, normalButtons, arcadeButtons;
-    Vector2 singleButtonPos, normalButtonPos, arcadeButtonPos, lastSingleButtonPos, lastNormalButtonPos, lastArcadeButtonPos;
-    float SingleButtonGap, NormalButtonGap, ArcadeButtonGap;
-    public string rollDirection { get; set; } = "None";
-    public bool inProgress { get; set; } = false;
-    string targetString;
-    private GameObject[] stageButtons;
-    public int trigger { get; set; } = 0;
-    public int clicks { get; set; } = 0;
     void Start()
     {
         inDemoPlay = false;
-        rollDirection = "None";
         Stage = 1;
         PlayerNumber = 1;
         phase = 0;
-        trigger = 0;
-        clicks = 0;
         startPanel.gameObject.SetActive(false);
-        for (int i = 0; i < playerIconPos.Length; i++)
+        for (int i = 0; i < 4; i++)
         {
             playerIconPos[i] = slot1Pos[i];
-        }
-        //ボタン初期位置など設定
-        singleButtonPos = singleButtons[0].transform.position;
-        normalButtonPos = normalButtons[0].transform.position; 
-        arcadeButtonPos = arcadeButtons[0].transform.position;
-        SingleButtonGap = singleButtons[1].transform.position.x - singleButtonPos.x;
-        NormalButtonGap = normalButtons[1].transform.position.x - normalButtonPos.x;
-        ArcadeButtonGap = arcadeButtons[1].transform.position.x - arcadeButtonPos.x;
-        lastSingleButtonPos = singleButtons[singleButtons.Length - 1].transform.position;
-        lastNormalButtonPos = normalButtons[normalButtons.Length - 1].transform.position;
-        lastArcadeButtonPos = arcadeButtons[arcadeButtons.Length - 1].transform.position;
+            playerTeam[i] = i;
 
+        }
     }
     void Update()
     {
+        //Debug.Log("teamSize: " +  teamSize[0] + "    " + teamSize[1] + "    " + teamSize[2] + "    " + teamSize[3]);
+        //Debug.Log("playerTeam: " + playerTeam[0] + "    " + playerTeam[1] + "    " + playerTeam[2] + "    " + playerTeam[3]);
         //SwichUI();
         SwichStageMaterial();
         playerNumberText.text = PlayerNumber.ToString();
-        if (rollDirection != "None") 
-        {
-            StartCoroutine("RollStage");
-        }
-        if(trigger == 1) 
-        {
-            ResetButtonPos();
-            trigger = 0;
-        }
         if (Settings.SettingPanelActive) 
         {
             DisablePanel();
@@ -234,14 +206,8 @@ public class GameStart : MonoBehaviour
     {
         for (int i = 0; i < PlayerNumber; i++)
         {
-            Debug.Log(i);
             for (int j = 0; j < PlayerNumber; j++)
-            {
-                if(i == 1)
-                {
-                    //Debug.Log("PlayerTeam[i]:" + playerTeam[i] + "slotPos[j]" + slot1Pos[j]);
-                }
-              
+            {             
                 if (playerTeam[i] == j)
                 {
                     playerIconPos[i] = slot1Pos[j];
@@ -259,9 +225,56 @@ public class GameStart : MonoBehaviour
                     }
                 }
             }
-           
+            teamSize[i] = 0;
+        }
+
+        for (int i = 0; i < PlayerNumber; i++)
+        {
+            playerTeam[i] = Mathf.Clamp(playerTeam[i], 0, PlayerNumber - 1);
+        }
+        bool allOtherTeam = playerTeam.Take(PlayerNumber).Distinct().Count() == PlayerNumber;
+   
+        if (allOtherTeam)
+        {
+            teamMode = "FreeForAll";
+        }
+        else
+        {
+            bool oneVSThree = false;
+            teamCount = 0;
+            for (int i = 0; i < PlayerNumber; i++)
+            {
+                teamSize[playerTeam[i]]++;
+            }
+            for (int j = 0; j < PlayerNumber; j++)
+            {
+                if (teamSize[j] != 0)
+                {
+                    teamCount++;
+                }
+                if (teamSize[j] == 3)
+                {
+                    oneVSThree = true;
+                }
+            }
+
+            if(teamCount == 2 && PlayerNumber == 3)
+            {
+                teamMode = "1vs2";
+            }
+            else if (teamCount == 2 && PlayerNumber == 4 && oneVSThree)
+            {
+                teamMode = "1vs3";
+            }
+            else if(teamCount == 2 && PlayerNumber == 4)
+            {
+                teamMode = "2vs2";
+            }
+            else { teamMode = "1vs1vs2";}
         }
     }
+
+    
     void DisablePanel()
     {
         stageSelect.gameObject.SetActive(false);
@@ -270,8 +283,6 @@ public class GameStart : MonoBehaviour
         selectGameMode.gameObject.SetActive(false);
         mainTitle.gameObject.SetActive(false);
         changePlayerNumber.gameObject.SetActive(false);
-        singleSelect.gameObject.SetActive(false);
-        multiSelect.gameObject.SetActive(false);
         setArcadeGame.gameObject.SetActive(false);
         inDemoPlay = false;
     }
@@ -306,85 +317,5 @@ public class GameStart : MonoBehaviour
         }
     }
     */
-    private IEnumerator RollStage()
-    {
-        if (inProgress) { yield break; }
-        inProgress = true;
-        float movingDistance = 4.0f, speed = 10.0f, sign = -1;
-        if (rollDirection.Contains("Nomal")) { targetString = "TargetButtonNomal"; movingDistance = NormalButtonGap; }
-        else if (rollDirection.Contains("Arcade")) { targetString = "TargetButtonArcade"; movingDistance = ArcadeButtonGap; }
-        else if (rollDirection.Contains("Single")) { targetString = "TargetButtonSingle"; movingDistance = SingleButtonGap; }
-        if (rollDirection.Contains("Right")) { speed *= sign; }
-        stageButtons = FindObjectsWithName(rollDirection);
-        Vector2 startPos = stageButtons[0].transform.position;
-        Vector2 currentPos = stageButtons[0].transform.position;
-
-
-        while ((currentPos.x > (startPos.x - movingDistance)) && (currentPos.x < (startPos.x + movingDistance)))
-        {
-                for (int i = 0; i < stageButtons.Length; i++)
-                {
-                    //移動
-                    Vector2 targetPos = stageButtons[i].transform.position;
-                    targetPos.x += speed * Time.deltaTime;
-                    stageButtons[i].transform.position = targetPos;
-                    //角度変更
-                    /*
-                    RectTransform rectTransform = stageButtons[i].GetComponent<RectTransform>();
-                    float rotationY = rectTransform.localEulerAngles.y;
-                    float rotationX = rectTransform.localEulerAngles.x;
-                    rotationX += 0.05f;
-                    rotationY += 0.2f;
-                    rectTransform.localRotation = Quaternion.Euler(0f, rotationY, 0);
-                    */
-
-                }
-            currentPos = stageButtons[0].transform.position;
-            yield return new WaitForSecondsRealtime(0.0001f);
-
-        }
-        rollDirection = "None";
-        inProgress = false;
-        yield return null;
-    }
-
-    private GameObject[] FindObjectsWithName(string name)
-    {
-        GameObject[] allObjects = GameObject.FindObjectsOfType<GameObject>();
-        List<GameObject> matchingObjects = new List<GameObject>();
-
-        foreach (GameObject obj in allObjects)
-        {
-            if (obj.CompareTag(targetString))
-            {
-                matchingObjects.Add(obj);
-            }
-        }
-        return matchingObjects.ToArray();
-    }
-    
-    void ResetButtonPos() 
-    {
-        Vector2 tmp1 = singleButtonPos;
-        Vector2 tmp2 = normalButtonPos;
-        Vector2 tmp3 = arcadeButtonPos;
-        for (int i = 0; i < singleButtons.Length; i++)
-        {
-            singleButtons[i].transform.position = singleButtonPos;
-            singleButtonPos.x += SingleButtonGap;
-        }
-        for (int i = 0; i < normalButtons.Length; i++)
-        {
-            normalButtons[i].transform.position = normalButtonPos;
-            normalButtonPos.x += NormalButtonGap;
-        }
-        for (int i = 0; i < arcadeButtons.Length; i++)
-        {
-            arcadeButtons[i].transform.position = arcadeButtonPos;
-            arcadeButtonPos.x += ArcadeButtonGap;
-        }
-        singleButtonPos = tmp1;
-        normalButtonPos = tmp2;
-        arcadeButtonPos = tmp3;
-    }
+ 
 }
