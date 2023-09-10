@@ -19,6 +19,7 @@ public class TitleButton : MonoBehaviour
     //New
     [SerializeField] GameObject[] titleObj, gameModeObj, singleObj, multiObj;
     [SerializeField] GameObject titleFrame, modeFrame, singleFrame, MultiFrame;
+    [SerializeField] int singleStageNum, MultiStageNum, singleArcadeNum, MultiArcadeNum;
     bool InputCrossX, InputCrossY;
     public int targetNum { get; set; }
     int lastPhase;
@@ -162,12 +163,12 @@ public class TitleButton : MonoBehaviour
                     if (GameStart.gameMode2 == "Nomal")
                     {
                         min = 1;
-                        max = 4;
+                        max = singleStageNum;
                     }
                     else
                     {
                         min = 1;
-                        max = 2;
+                        max = singleArcadeNum;
                     }
                     GameStart.Stage = targetNum;
                     if (ControllerInput.jump[0] || Input.GetKeyDown(KeyCode.Return))
@@ -203,12 +204,12 @@ public class TitleButton : MonoBehaviour
                     if (GameStart.gameMode2 == "Nomal")
                     {
                         min = 1;
-                        max = 3;
+                        max = MultiStageNum;
                     }
                     else
                     {
                         min = 1;
-                        max = 2;
+                        max = MultiArcadeNum;
                     }
                     GameStart.Stage = targetNum;
 

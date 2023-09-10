@@ -17,8 +17,12 @@ public class TitleButtonClick : MonoBehaviour　//クリック用ボタン
     GameStart gameStart;
     void Start()
     {
-        gameStart = GameObject.Find("Systems").GetComponent<GameStart>();
-        titleButton = GameObject.Find("Systems").GetComponent<TitleButton>();
+        if(SceneManager.GetActiveScene().name == "Title")
+        {
+            gameStart = GameObject.Find("Systems").GetComponent<GameStart>();
+            titleButton = GameObject.Find("Systems").GetComponent<TitleButton>();
+        }
+   
     }
 
     //ゲーム終了ボタン

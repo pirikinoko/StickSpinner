@@ -6,22 +6,20 @@ using UnityEngine.UI;
 public class SwitchLanguage : MonoBehaviour
 {
     [SerializeField] string[] texts;
+    [SerializeField] int[] fontSize;
     Text targetText;
-    int lastlanguageNum;
     // Start is called before the first frame update
     void Start()
     {
         targetText = this.gameObject.GetComponent<Text>();
-        lastlanguageNum = Settings.languageNum;
         targetText.text = texts[Settings.languageNum];
+        targetText.fontSize = fontSize[Settings.languageNum];
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
-        if(Settings.languageNum != lastlanguageNum)
-        {
-            targetText.text = texts[Settings.languageNum];
-        }
+        targetText.text = texts[Settings.languageNum];
+        targetText.fontSize = fontSize[Settings.languageNum];
     }
 }

@@ -17,7 +17,6 @@ public class GameSetting : MonoBehaviour
     GameObject[] sticks = new GameObject[GameStart.MaxPlayer];
     GameObject[] nameTags = new GameObject[GameStart.MaxPlayer];
     GameObject[] deadTimer = new GameObject[GameStart.MaxPlayer];
-    Text[] nameTagText = new Text[GameStart.MaxPlayer];
     Vector2[] nameTagPos = new Vector2[GameStart.MaxPlayer];
     Vector2[,] startPos = new Vector2[GameStart.MaxPlayer, GameStart.MaxPlayer];
     public static bool Playable = false;
@@ -53,11 +52,9 @@ public class GameSetting : MonoBehaviour
         playTimeTx = GameObject.Find("TimeText").GetComponent<Text>();
         for (int i = 0; i < GameStart.MaxPlayer; i++) //初期化処理
         {
-            nameTags[i] = GameObject.Find("P" + (i + 1).ToString() + "Text");
+            nameTags[i] = GameObject.Find("P" + (i + 1).ToString() + "NameTag");
             players[i] = GameObject.Find("Player" + (i + 1).ToString());
             sticks[i] = GameObject.Find("Stick" + (i + 1).ToString());
-            nameTagText[i] = nameTags[i].GetComponent<Text>(); ;
-            nameTagText[i].text = "Player" + (i + 1).ToString();
             deadTimer[i] = GameObject.Find("P" + (i + 1).ToString() + "CountDown");
             deadTimer[i].SetActive(false);
         }

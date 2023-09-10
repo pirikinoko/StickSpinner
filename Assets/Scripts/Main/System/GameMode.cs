@@ -46,7 +46,7 @@ public class GameMode : MonoBehaviour
     {   //基本
         for (int i = 0; i < GameStart.MaxPlayer; i++) //初期化処理
         {
-            nameTags[i] = GameObject.Find("P" + (i + 1).ToString() + "Text");
+            nameTags[i] = GameObject.Find("P" + (i + 1).ToString() + "NameTag");
             players[i] = GameObject.Find("Player" + (i + 1).ToString());
             sticks[i] = GameObject.Find("Stick" + (i + 1).ToString());
             resultTextGO[i] = GameObject.Find("resultText" + (i + 1).ToString());

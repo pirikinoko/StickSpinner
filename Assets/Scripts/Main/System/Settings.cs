@@ -94,6 +94,11 @@ public class Settings : MonoBehaviour
                         if (ControllerInput.LstickY[0] > 0.5f) { Selected--; SoundEffect.soundTrigger[3] = 1; }
                         else if (ControllerInput.LstickY[0] < -0.5f) { Selected++; SoundEffect.soundTrigger[3] = 1; }
                         /*Lスティック縦*/
+                  
+                        /*矢印キー縦*/
+                        if (Input.GetKeyDown(KeyCode.DownArrow)) { Selected++; SoundEffect.soundTrigger[3] = 1; }
+                        else if (Input.GetKeyDown(KeyCode.UpArrow)) { Selected--; SoundEffect.soundTrigger[3] = 1; }
+                        /*矢印キー縦*/
 
                         //上限下限の設定
                         Selected = Mathf.Clamp(Selected, min, max);
@@ -112,6 +117,12 @@ public class Settings : MonoBehaviour
                         /*Lスティック横*/
                         if (ControllerInput.LstickX[0] > 0.5f) { settingStages[Selected]++; SoundEffect.soundTrigger[3] = 1; }
                         else if (ControllerInput.LstickX[0] < -0.5f) { settingStages[Selected]--; SoundEffect.soundTrigger[3] = 1; }
+
+                        /*矢印キー横*/
+                        if (Input.GetKeyDown(KeyCode.RightArrow)) { settingStages[Selected]++; SoundEffect.soundTrigger[3] = 1; }
+                        else if (Input.GetKeyDown(KeyCode.LeftArrow)) { settingStages[Selected]--; SoundEffect.soundTrigger[3] = 1; }
+                        /*矢印キー横*/
+
                     }
                     /*数値変更*/
                 }

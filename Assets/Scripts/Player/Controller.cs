@@ -45,7 +45,7 @@ public class Controller : MonoBehaviour
 
     void Start()
     {     
-        nameTag = GameObject.Find("P" + id.ToString() + "Text");
+        nameTag = GameObject.Find("P" + id.ToString() + "NameTag");
         // 親スプライト・スティックスプライトを得る
         parentSprite =  transform.parent.gameObject.GetComponent<SpriteRenderer>();
         stickSprite  = GetComponent<SpriteRenderer>();

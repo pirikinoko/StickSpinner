@@ -31,6 +31,20 @@ public class ButtonClick : MonoBehaviour　//クリック用ボタン
     }
 
 
+    //ゲーム終了ボタン
+    public void ExitGame()
+    {
+        Settings.exitPanelActive = true;
+    }
+    public void yesExit()
+    {
+        UnityEditor.EditorApplication.isPlaying = false;
+        Application.Quit();
+    }
+    public void noBack()
+    {
+        Settings.exitPanelActive = false;
+    }
     public void RestartButton()
     {
         ButtonInGame.Paused = 0;
@@ -62,4 +76,14 @@ public class ButtonClick : MonoBehaviour　//クリック用ボタン
         SoundEffect.soundTrigger[3] = 1;
     }
 
+    public void NextLanguage()
+    {
+        Settings.languageNum++;
+        SoundEffect.soundTrigger[3] = 1;
+    }
+    public void PrevLanguage()
+    {
+        Settings.languageNum--;
+        SoundEffect.soundTrigger[3] = 1;
+    }
 }
