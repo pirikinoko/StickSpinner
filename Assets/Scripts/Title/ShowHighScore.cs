@@ -21,6 +21,18 @@ public class ShowHighScore : MonoBehaviour
             {
                 singleHighScore[i] = data.singleHighScore[i];
             }
+            if (multiHighScore[i] == 0)
+            {
+                multiHighScore[i] = data.multiHighScore[i];
+            }
+            if (singleArcadeHighScore[i] == 0)
+            {
+                singleArcadeHighScore[i] = data.singleArcadeHighScore[i];
+            }
+            if (multiArcadeHighScore[i] == 0)
+            {
+                multiArcadeHighScore[i] = data.multiArcadeHighScore[i];
+            }
         }
     }
     private void Update()

@@ -88,13 +88,14 @@ public class ButtonInGame : MonoBehaviour
         // 一台目のコントローラーのStartボタン                                                      
         if ((Input.GetKeyDown(KeyCode.Space) || ControllerInput.start[0] || Input.GetKeyDown(KeyCode.Escape)) && Settings.exitPanelActive == false)
         {
-            if (GameSetting.startTime < 0 && Paused == 0)
+            if (GameSetting.startTime < 0 && Paused == 0 && GameMode.Finished == false && GameMode.Goaled == false)
             {
                 Paused = 1;
                 GameSetting.Playable = false;
                 pauseButton.gameObject.SetActive(false);
                 Settings.SettingPanelActive = true;
                 Settings.inSetting = true;
+                Time.timeScale = 0;
             }
             else if (Paused == 1)
             {
@@ -104,6 +105,7 @@ public class ButtonInGame : MonoBehaviour
                 pauseButton.gameObject.SetActive(true);
                 Settings.SettingPanelActive = false;
                 Settings.inSetting = false;
+                Time.timeScale = 1;
             }
         }
         if(GameMode.Goaled || GameMode.Finished) 

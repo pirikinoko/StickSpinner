@@ -232,4 +232,14 @@ public class TitleButtonClick : MonoBehaviour　//クリック用ボタン
         Settings.languageNum--;
         SoundEffect.soundTrigger[3] = 1;
     }
+    public void NextScreenMode()
+    {
+        Settings.screenModeNum++;
+        SoundEffect.soundTrigger[3] = 1;
+    }
+    public void PrevScreenMode()
+    {
+        Settings.screenModeNum--;
+        SoundEffect.soundTrigger[3] = 1;
+    }
 }

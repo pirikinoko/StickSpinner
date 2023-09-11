@@ -25,7 +25,6 @@ public class ControllerInput : MonoBehaviour
     public static bool[] nextHold = new bool[4];
     public static bool[] backHold = new bool[4];
     //ボタン選択
-    public GameObject cursor;
     GameObject buttonObject;
     Vector2 cursorPos;
     float lastLstickX, lastLstickY;
@@ -214,126 +213,7 @@ public class ControllerInput : MonoBehaviour
 
     }
 
-    void SelectButton()
-    {
-        if(SceneManager.GetActiveScene().name == "Title") 
-        {
-            cursor.gameObject.SetActive(true);
-        }
-        else 
-        {
-            cursor.gameObject.SetActive(false);
-        }
-        if (lastLstickX > 0.1f || lastLstickX < -0.1f || lastLstickY > 0.1f || lastLstickY < -0.1f) { return; }
-        string state = "None";
-        int directionX = 0, directionY = 0;
-        float absX = LstickX[0] * LstickX[0];
-        float absY = LstickY[0] * LstickY[0];
-        if (LstickX[0] > 0.5f)
-        {
-            directionX = 1;
-            state = "Xray";
+   
 
-        }
-        else if (LstickX[0] < -0.5f)
-        {
-            directionX = -1;
-            state = "Xray";
-        }
-
-        if (LstickY[0] > 0.5f && absY > absX)
-        {
-            directionY = 1;
-            state = "Yray";
-        }
-        else if (LstickY[0] < -0.5f && absY > absX)
-        {
-            directionY = -1;
-            state = "Yray";
-        }
-
-        Vector2 startPos = cursor.transform.position;
-        cursorPos = startPos;   
-        if (state != "None")
-        {
-            for (int i = 0; i < 100; i++)
-            {
-                float length = 0.1f; //長さ
-                for (int j = 0; j < 70; j++)
-                {
-
-                    Vector3 direction;
-                    if (state == "Xray")
-                    {
-                        direction = new Vector2(0, directionY); //方向
-                    }
-                    else
-                    {
-                        direction = new Vector2(directionX, 0); //方向
-                    }
-
-                    Ray ray = new Ray(cursorPos, direction); // Rayを生成;
-                    RaycastHit2D hit = Physics2D.Raycast(cursorPos, direction, length);
-                    Debug.DrawRay(cursorPos, ray.direction * length, Color.red, 1.0f); // 長さ３０、赤色で５秒間可視化   
-
-
-                    if (hit.collider != null) // もしRayを投射して何らかのコライダーに衝突したら
-                    {
-                        buttonObject = hit.collider.gameObject;
-                        string tag = buttonObject.tag;
-                        string name = buttonObject.name; // 衝突した相手オブジェクトの名前を取得
-                        
-                        Debug.Log(tag);
-                        if (tag.Contains("Button") && currentObject != name)
-                        {
-                            cursorPos = hit.transform.position;
-                            cursor.transform.position = cursorPos;
-                            currentObject = name;
-                            Debug.Log(name); // コンソールに表示
-                            return;
-                        }
-                    }
-
-                    if (state == "Xray")
-                    {
-                        if (directionY == 0)
-                        {
-                            directionY = 1;
-                        }
-                        directionY *= -1;
-                    }
-                    else
-                    {
-                        if (directionX == 0)
-                        {
-                            directionX = 1;
-                        }
-                        directionX *= -1;
-                    }
-
-                    length += 0.2f;
-
-                }
-
-                if (state == "Xray")
-                {
-                    cursorPos.x += 0.2f * directionX;
-                }
-                else
-                {
-                    cursorPos.y += 0.2f * directionY;
-                }
-                cursor.transform.position = cursorPos;
-                if (i == 89)
-                {
-                    cursor.transform.position = startPos;
-                    return;
-                }
-
-            }
-
-        }
-
-
-    }
+    
 }

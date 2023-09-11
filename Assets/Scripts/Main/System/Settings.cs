@@ -19,6 +19,7 @@ public class Settings : MonoBehaviour
     public static int screenModeNum = 0;
     string[] screenMode = {"フルスクリーン", "ウィンドウ" , "FullScreen", "Window" };
     float[] settingStages = new float[4];
+    int changeCount = 0, lastScreenNum;
     int max, min = 0;
     public GameObject[] item = new GameObject[3];
     Vector2[] itemPos = new Vector2[10];
@@ -34,6 +35,8 @@ public class Settings : MonoBehaviour
     void Start()
     {
         Selected = 0;
+        changeCount = 0;
+        languageNum = screenModeNum;
         SettingPanelActive = false;
         inSetting = false;
         exitPanelActive = false;
@@ -41,7 +44,7 @@ public class Settings : MonoBehaviour
 
     void Update()
     {
-        Debug.Log(languageNum);
+        SetScreenMode();
         if (SettingPanelActive)
         {
             SettingPanel.gameObject.SetActive(true);
@@ -218,6 +221,30 @@ public class Settings : MonoBehaviour
         TLFramePos.y = itemPos[Selected].y;
         TLFrameTransform.position = TLFramePos;
 
+        if(lastScreenNum != screenModeNum)
+        {
+            changeCount = 0;
+        }
+        lastScreenNum = screenModeNum;
+        
+    }
+
+    private void SetScreenMode()
+    {
+        if(changeCount == 0)
+        {
+            // ウィンドウモード、フルスクリーンモード、擬似フルスクリーンモードの設定
+            if (screenModeNum == 0)
+            {
+                Screen.SetResolution(Screen.currentResolution.width, Screen.currentResolution.height, FullScreenMode.FullScreenWindow);
+            }
+            else
+            {
+                Screen.SetResolution(1280, 720, FullScreenMode.Windowed);
+            }
+            changeCount = 1;
+        }
+    
     }
 
     void SelectEffect()

@@ -32,6 +32,7 @@ public class Controller : MonoBehaviour
     public float rotZ { get; set; } 
     bool delayFlag = false;
     bool isRespowing = false;
+    private Coroutine countdownCoroutine;
     private GameObject nameTag;        //ネームタグ
     SpriteRenderer stickSprite;       // 棒スプライト
     Rigidbody2D stickRb;              // 棒のRigidbody  
@@ -82,6 +83,7 @@ public class Controller : MonoBehaviour
             }
             Move();
         }
+      
         ChangeSensitivity();
         ExitDelay();
     }
@@ -208,17 +210,17 @@ public class Controller : MonoBehaviour
         deadTimer.SetActive(true);
         deadTimer.transform.position = gameObject.transform.position + new Vector3(0, 0.5f, 0);
         Text deadText = deadTimer.GetComponent<Text>();
-        deadText.text = "3";
-        SoundEffect.soundTrigger[3] = 1;
-		yield return new WaitForSeconds(1.0f);					// 待ち時間
-        deadText.text = "2";
-        SoundEffect.soundTrigger[3] = 1;
-        yield return new WaitForSeconds(1.0f);					// 待ち時間
-        deadText.text = "1";
-        SoundEffect.soundTrigger[3] = 1;
-        yield return new WaitForSeconds(1.0f);					// 待ち時間
-        deadText.text = "";
+        float countdown = 3.0f; // 開始するカウントダウンの数
 
+        while (countdown > 0)
+        {
+            deadText.text = Mathf.Ceil(countdown).ToString(); // カウントダウンの整数部分を表示
+            SoundEffect.soundTrigger[3] = 1;
+            countdown -= Time.deltaTime; // Time.deltaTime を使用して時間を減少させる
+            yield return null; // 次のフレームまで待機
+        }
+
+        deadText.text = ""; // カウントダウン終了後に空の文字列を設定
 
         //当たり判定O
         this.GetComponent<BoxCollider2D>().enabled = true;

@@ -43,20 +43,18 @@ public class ActiveObject : MonoBehaviour  //動く床などのオブジェク�
         }
         else
         {
+            if (this.gameObject.name.Contains("Anim")) { return; }
+            RigidbodyConstraints2D constraints = rbody2D.constraints;
+
             if (ButtonInGame.Paused == 1)
             {
-                tmpSpeed = speed;
-                speed = 0;
+                constraints |= RigidbodyConstraints2D.FreezePosition;
             }
             else
             {
-                if(tmpSpeed != 0)
-                {
-                    speed = tmpSpeed;
-                    tmpSpeed = 0;
-                }
+                constraints &= ~RigidbodyConstraints2D.FreezePosition;
             }
-
+            rbody2D.constraints = constraints;
             if (this.gameObject.name.Contains("MoveCircle"))
             {
                 LimitMove();

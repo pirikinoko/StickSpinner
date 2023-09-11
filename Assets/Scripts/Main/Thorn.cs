@@ -26,7 +26,7 @@ public class Thorn : MonoBehaviour
         for (int i = 0; i < GameStart.MaxPlayer; i++)
         {
             players[ i] = GameObject.Find("Player" + (i + 1).ToString());
-            nameTags[i] = GameObject.Find("P" + (i + 1).ToString() + "Text");
+            nameTags[i] = GameObject.Find("P" + (i + 1).ToString() + "NameTag");
             // thorn21, 27 でエラーがでるので例外処理を書いておく
             try {
                 stickrb[i]  = GameObject.Find("Stick"  + (i + 1).ToString()).GetComponent<Rigidbody2D>();

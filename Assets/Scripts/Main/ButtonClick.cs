@@ -19,7 +19,7 @@ public class ButtonClick : MonoBehaviour　//クリック用ボタン
     }
     public void PauseButton()
     {
-        if (GameSetting.startTime < 0)
+        if (GameSetting.startTime < 0 && GameMode.Finished == false && GameMode.Goaled == false)
         {
             ButtonInGame.Paused = 1;
             GameSetting.Playable = false;
@@ -87,6 +87,16 @@ public class ButtonClick : MonoBehaviour　//クリック用ボタン
     public void PrevLanguage()
     {
         Settings.languageNum--;
+        SoundEffect.soundTrigger[3] = 1;
+    }
+    public void NextScreenMode()
+    {
+        Settings.screenModeNum++;
+        SoundEffect.soundTrigger[3] = 1;
+    }
+    public void PrevScreenMode()
+    {
+        Settings.screenModeNum--;
         SoundEffect.soundTrigger[3] = 1;
     }
 }
