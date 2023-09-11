@@ -86,7 +86,7 @@ public class ButtonInGame : MonoBehaviour
         }
         */
         // 一台目のコントローラーのStartボタン                                                      
-        if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Escape) || ControllerInput.start[0])
+        if ((Input.GetKeyDown(KeyCode.Space) || ControllerInput.start[0] || Input.GetKeyDown(KeyCode.Escape)) && Settings.exitPanelActive == false)
         {
             if (GameSetting.startTime < 0 && Paused == 0)
             {

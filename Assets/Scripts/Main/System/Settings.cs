@@ -3,18 +3,22 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using CI.QuickSave;
+
 public class Settings : MonoBehaviour
 {
     public GameObject SettingPanel, TLFrame, exitPanel;
     public Text[] targetText;
-    public Text languageText;
+    public Text languageText, screenText;
     public GameObject[] targetObject;
     public static bool SettingPanelActive = false, inSetting = false;
     bool InputCrossX, InputCrossY;
     int Selected = 0;
     public static int languageNum = 0;
     string[] languages = { "JP", "EN" };
-    float[] settingStages = new float[3];
+    public static int screenModeNum = 0;
+    string[] screenMode = {"フルスクリーン", "ウィンドウ" , "FullScreen", "Window" };
+    float[] settingStages = new float[4];
     int max, min = 0;
     public GameObject[] item = new GameObject[3];
     Vector2[] itemPos = new Vector2[10];
@@ -26,6 +30,7 @@ public class Settings : MonoBehaviour
     [SerializeField] Text confirmText, yesText, noText;
     [SerializeField] GameObject yesButton, noButton;
     int buttonSelect = 0;
+
     void Start()
     {
         Selected = 0;
@@ -33,6 +38,7 @@ public class Settings : MonoBehaviour
         inSetting = false;
         exitPanelActive = false;
     }
+
     void Update()
     {
         Debug.Log(languageNum);
@@ -49,6 +55,15 @@ public class Settings : MonoBehaviour
         lastLstickX = ControllerInput.LstickX[0];
         lastLstickY = ControllerInput.LstickY[0];
         languageText.text = languages[languageNum];
+        screenText.text = screenMode[(languageNum * 2) + screenModeNum];
+        if (languageNum == 0)
+        {
+            screenText.fontSize = 160;
+        }
+        else
+        {
+            screenText.fontSize = 200;
+        }
 
     }
 
@@ -61,6 +76,7 @@ public class Settings : MonoBehaviour
         settingStages[0] = BGM.BGMStage;
         settingStages[1] = SoundEffect.SEStage;
         settingStages[2] = languageNum;
+        settingStages[3] = screenModeNum;
         max = item.Length - 1;
         for (int i = 0; i < item.Length; i++)
         {
@@ -129,7 +145,7 @@ public class Settings : MonoBehaviour
 
 
                 /*ゲーム終了*/
-                if (ControllerInput.back[0] || Input.GetKeyDown(KeyCode.Return))
+                if (ControllerInput.back[0] || Input.GetKeyDown(KeyCode.Q))
                 {
                     exitPanelActive = true;
                 }
@@ -147,8 +163,11 @@ public class Settings : MonoBehaviour
                         noButtonRect.sizeDelta = new Vector2(300, 150);
                         if (ControllerInput.jump[0] || ControllerInput.next[0] || Input.GetKeyDown(KeyCode.Return))
                         {
-                            UnityEditor.EditorApplication.isPlaying = false;
-                            Application.Quit();
+                            #if UNITY_EDITOR
+                            UnityEditor.EditorApplication.isPlaying = false;//ゲームプレイ終了
+                            #else
+                            Application.Quit();//ゲームプレイ終了
+                            #endif
                         }
                     }
                     else
@@ -193,7 +212,9 @@ public class Settings : MonoBehaviour
         BGM.BGMStage = settingStages[0];
         SoundEffect.SEStage = settingStages[1];
         languageNum = (int)settingStages[2];
+        screenModeNum = (int)settingStages[3];
         languageNum = Mathf.Clamp(languageNum, 0, 1);
+        screenModeNum = Mathf.Clamp(screenModeNum, 0, 1);
         TLFramePos.y = itemPos[Selected].y;
         TLFrameTransform.position = TLFramePos;
 
@@ -219,8 +240,11 @@ public class Settings : MonoBehaviour
                 targetText[4].color = Color.yellow;
                 targetText[5].color = Color.yellow;
                 break;
-
             case 3:
+                targetText[4].color = Color.yellow;
+                targetText[5].color = Color.yellow;
+                break;
+            case 4:
                 targetText[6].color = Color.yellow;
                 if (ControllerInput.jump[0])
                 {

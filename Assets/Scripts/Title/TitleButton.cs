@@ -421,7 +421,7 @@ public class TitleButton : MonoBehaviour
 
     void OpenSetting()　//設定表示
     {
-        if (ControllerInput.start[0] || Input.GetKeyDown(KeyCode.Escape))
+        if ((ControllerInput.start[0] || Input.GetKeyDown(KeyCode.Escape)) && Settings.exitPanelActive == false)
         {
             Settings.SettingPanelActive = !(Settings.SettingPanelActive);
             Settings.inSetting = !(Settings.inSetting);

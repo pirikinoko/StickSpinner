@@ -2182,7 +2182,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &292545491
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2216,7 +2216,7 @@ MonoBehaviour:
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 1920, y: 1080}
-  m_ScreenMatchMode: 0
+  m_ScreenMatchMode: 1
   m_MatchWidthOrHeight: 0
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 96
@@ -6956,6 +6956,7 @@ GameObject:
   - component: {fileID: 904680234}
   - component: {fileID: 904680235}
   - component: {fileID: 904680236}
+  - component: {fileID: 904680233}
   m_Layer: 0
   m_Name: Systems
   m_TagString: Untagged
@@ -7042,6 +7043,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   highScoreText: {fileID: 548643100}
+--- !u!114 &904680233
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 904680229}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a36e6a89bd2f54a2e9ad0e07a0087357, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  data:
+    singleHighScore: 00000000000000000000000000000000000000000000000000000000000000000000000000000000
+    multiHighScore: 00000000000000000000000000000000000000000000000000000000000000000000000000000000
+    singleArcadeHighScore: 00000000000000000000000000000000000000000000000000000000000000000000000000000000
+    multiArcadeHighScore: 00000000000000000000000000000000000000000000000000000000000000000000000000000000
 --- !u!114 &904680234
 MonoBehaviour:
   m_ObjectHideFlags: 0

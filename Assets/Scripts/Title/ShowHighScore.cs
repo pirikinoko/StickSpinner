@@ -6,37 +6,22 @@ using CI.QuickSave;
 
 public class ShowHighScore : MonoBehaviour
 {
-    QuickSaveSettings settings = new QuickSaveSettings();
-    QuickSaveWriter writer = QuickSaveWriter.Create("Data");
-    QuickSaveReader reader = QuickSaveReader.Create("Data");
+
     public Text highScoreText;
     public static int[] singleHighScore = new int[10], multiHighScore = new int[10], singleArcadeHighScore = new int[10], multiArcadeHighScore = new int[10];
     string[] text = { "ハイスコア", "HighScore" };
     string[] unit = { "秒", "Sec" };
-
-    private void Awake()
+    SaveData data;
+    private void Start()
     {
-        //データロード
+        data = GetComponent<DataManager>().data;
         for (int i = 0; i < 10; i++)
         {
-            singleHighScore[i] = reader.Read<int>("SingleHighScore" + i.ToString());
-            multiHighScore[i] = reader.Read<int>("MultiHighScore" + i.ToString());
-            singleArcadeHighScore[i] = reader.Read<int>("SingleArcadeHighScore" + i.ToString());
-            multiArcadeHighScore[i] = reader.Read<int>("MultiArcadeHighScore" + i.ToString());
+            if (singleHighScore[i] == 0)
+            {
+                singleHighScore[i] = data.singleHighScore[i];
+            }
         }
-    }
-
-    private void OnApplicationQuit()
-    {
-        //データ書き込み
-        for (int i = 0; i < 10; i++)
-        {
-            writer.Write("SingleHighScore" + i.ToString(), singleHighScore[i]);
-            writer.Write("MultiHighScore" + i.ToString(), multiHighScore[i]);
-            writer.Write("SingleArcadeHighScore" + i.ToString(), singleArcadeHighScore[i]);
-            writer.Write("MultiArcadeHighScore" + i.ToString(), multiArcadeHighScore[i]);
-        }
-        writer.Commit();
     }
     private void Update()
     {
@@ -62,6 +47,10 @@ public class ShowHighScore : MonoBehaviour
             {
                 highScoreText.text = text[Settings.languageNum] + ":" + multiArcadeHighScore[GameStart.Stage - 1] + "P";
             }
+        }
+        for (int i = 0; i < 10; i++)
+        {
+            data.singleHighScore[i] = singleHighScore[i];
         }
     }
 }

@@ -12,6 +12,7 @@ public class ActiveObject : MonoBehaviour  //動く床などのオブジェク�
     public float RightLimit = 1.0f, LeftLimit = 1.0f, UpLimit = 1.0f, DownLimit = 1.0f;
     float ReverseCoolDown = 1.0f;
     bool reverse = true;
+    float tmpSpeed = 0;
     //サイズ制限
     float startSize, sizeLimit;
     public float sizeMulti;
@@ -44,8 +45,18 @@ public class ActiveObject : MonoBehaviour  //動く床などのオブジェク�
         {
             if (ButtonInGame.Paused == 1)
             {
-                rbody2D.constraints = RigidbodyConstraints2D.FreezeAll;
+                tmpSpeed = speed;
+                speed = 0;
             }
+            else
+            {
+                if(tmpSpeed != 0)
+                {
+                    speed = tmpSpeed;
+                    tmpSpeed = 0;
+                }
+            }
+
             if (this.gameObject.name.Contains("MoveCircle"))
             {
                 LimitMove();

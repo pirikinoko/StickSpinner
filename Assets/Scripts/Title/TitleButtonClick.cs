@@ -32,8 +32,11 @@ public class TitleButtonClick : MonoBehaviour　//クリック用ボタン
     }
     public void yesExit()
     {
-        UnityEditor.EditorApplication.isPlaying = false;
-        Application.Quit();
+        #if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;//ゲームプレイ終了
+        #else
+        Application.Quit();//ゲームプレイ終了
+        #endif
     }
     public void noBack()
     {
