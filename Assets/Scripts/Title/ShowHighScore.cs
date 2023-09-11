@@ -2,44 +2,67 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using CI.QuickSave;
 
 public class ShowHighScore : MonoBehaviour
 {
+    QuickSaveSettings settings = new QuickSaveSettings();
+    QuickSaveWriter writer = QuickSaveWriter.Create("Data");
+    QuickSaveReader reader = QuickSaveReader.Create("Data");
+    public Text highScoreText;
+    public static int[] singleHighScore = new int[10], multiHighScore = new int[10], singleArcadeHighScore = new int[10], multiArcadeHighScore = new int[10];
+    string[] text = { "ハイスコア", "HighScore" };
+    string[] unit = { "秒", "Sec" };
 
-    public Text[,] ranking = new Text[4, 5]; //　4はステージ、5は5位までの意味
-    public static string[,] topName = new string[4, 5];
-    public static float[,] topScore = new float[4, 5];
-    string[] unit = { "秒", "秒", "秒", "P" };
-
-    /*
-    // GameObject.Findで見つけるためにAwakeで処理
-    void Awake()
+    private void Awake()
     {
-        int num = 0;
-        for (int i = 0; i < 4; i++)
+        //データロード
+        for (int i = 0; i < 10; i++)
         {
-            for (int j = 0; j < 5; j++)
-            {
-                num++;
-                ranking[i, j] = GameObject.Find("HighScore" + num.ToString()).GetComponent<Text>();
-            }
+            singleHighScore[i] = reader.Read<int>("SingleHighScore" + i.ToString());
+            multiHighScore[i] = reader.Read<int>("MultiHighScore" + i.ToString());
+            singleArcadeHighScore[i] = reader.Read<int>("SingleArcadeHighScore" + i.ToString());
+            multiArcadeHighScore[i] = reader.Read<int>("MultiArcadeHighScore" + i.ToString());
         }
     }
 
-    void Update()
+    private void OnApplicationQuit()
     {
-        for (int i = 0; i < 4; i++)
+        //データ書き込み
+        for (int i = 0; i < 10; i++)
         {
-            for (int j = 0; j < 5; j++)
+            writer.Write("SingleHighScore" + i.ToString(), singleHighScore[i]);
+            writer.Write("MultiHighScore" + i.ToString(), multiHighScore[i]);
+            writer.Write("SingleArcadeHighScore" + i.ToString(), singleArcadeHighScore[i]);
+            writer.Write("MultiArcadeHighScore" + i.ToString(), multiArcadeHighScore[i]);
+        }
+        writer.Commit();
+    }
+    private void Update()
+    {
+        if(GameStart.Stage < 1) { return; }
+        if (GameStart.gameMode1 == "Single")
+        {
+            if (GameStart.gameMode2 == "Nomal")
             {
-                ranking[i, j].text = (j + 1).ToString() + "位: " + topName[i, j] + " " + topScore[i, j].ToString() + unit[i];
-                if (topScore[i, j] == 0)
-                {
-                    ranking[i, j].text = "";
-                }
+                highScoreText.text = text[Settings.languageNum] + ":" + singleHighScore[GameStart.Stage - 1] + unit[Settings.languageNum];
+            }
+            else
+            {
+                highScoreText.text = text[Settings.languageNum] + ":" + singleArcadeHighScore[GameStart.Stage - 1] + unit[Settings.languageNum];
+            }
+        }
+        else
+        {
+            if (GameStart.gameMode2 == "Nomal")
+            {
+                highScoreText.text = text[Settings.languageNum] + ":" + multiHighScore[GameStart.Stage - 1] + unit[Settings.languageNum];
+            }
+            else
+            {
+                highScoreText.text = text[Settings.languageNum] + ":" + multiArcadeHighScore[GameStart.Stage - 1] + "P";
             }
         }
     }
-    */
 }
 

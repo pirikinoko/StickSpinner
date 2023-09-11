@@ -5,53 +5,39 @@ using System;
 
 public class SetHighScore : MonoBehaviour
 {
-
-    //ランキングの５位以内であればスコアを登録&並び替え
-    public static void ToSetHighscore()
+    private void Update()
     {
-        int i = GameStart.Stage - 1;
-        if (GameStart.Stage != 4)
+        if(GameMode.Finished || GameMode.Goaled)
         {
-            if (GameMode.goaledPlayer[0] == "") //名前が空欄ならplayerとする
+            if (Input.GetKeyDown(KeyCode.Return))
             {
-                GameMode.goaledPlayer[0] = "player";
+                ToSetHighScore();
             }
-            for (int j = 0; j < 5; j++)
+        }
+    }
+    public void ToSetHighScore()
+    {
+        if (GameStart.gameMode1 == "Single")
+        {
+            if (GameStart.gameMode2 == "Nomal")
             {
-                if (GameMode.clearTime[0] < ShowHighScore.topScore[i , j] || ShowHighScore.topScore[i, j] == 0)
-                {                  
-                    for(int k = 3; k >= j; k--)
-                    {
-                        ShowHighScore.topScore[i, k + 1] = ShowHighScore.topScore[i, k];
-                        ShowHighScore.topName[i, k + 1] = ShowHighScore.topName[i, k];
-                    }
-                    ShowHighScore.topScore[i, j] = GameMode.clearTime[0];
-                    ShowHighScore.topName[i, j] = GameMode.goaledPlayer[0];
-                    return;
-                }
+                ShowHighScore.singleHighScore[GameStart.Stage - 1] = Mathf.Max((int)(GameMode.clearTime[0]), (int)(ShowHighScore.singleHighScore[GameStart.Stage - 1]));
+            }
+            else
+            {
+                ShowHighScore.singleArcadeHighScore[GameStart.Stage - 1] = Mathf.Max((int)(GameMode.clearTime[0]), (int)(ShowHighScore.singleArcadeHighScore[GameStart.Stage - 1]));
             }
         }
         else
         {
-            if (GameMode.plasement[0] == "")
+            if (GameStart.gameMode2 == "Nomal")
             {
-                GameMode.plasement[0] = "player";
+                ShowHighScore.multiHighScore[GameStart.Stage - 1] = Mathf.Max((int)(GameMode.clearTime[0]), (int)(ShowHighScore.multiHighScore[GameStart.Stage - 1]));
             }
-            for (int j = 0; j < 5; j++)
+            else
             {
-                if (GameMode.pointsInOrder[0] > ShowHighScore.topScore[i , j])
-                {
-                    for (int k = 3; k >= j; k--)
-                    {
-                        ShowHighScore.topScore[i, k + 1] = ShowHighScore.topScore[i, k];
-                        ShowHighScore.topName[i, k + 1] = ShowHighScore.topName[i, k];
-                    }
-                    ShowHighScore.topScore[i, j] = GameMode.pointsInOrder[0];
-                    ShowHighScore.topName[i, j] = GameMode.plasement[0];
-                    return;
-                }
+                ShowHighScore.multiArcadeHighScore[GameStart.Stage - 1] = Mathf.Max((int)(GameMode.topPoint), (int)(ShowHighScore.multiHighScore[GameStart.Stage - 1]));
             }
         }
-      
-    }   
+    }
 }
