@@ -10,20 +10,20 @@ using System.Linq;
 
 public class GameStart : MonoBehaviour
 {
-    public const int MaxStage  = 4;     // 総ステージ数
+    public const int MaxStage = 4;     // 総ステージ数
     public const int MaxPlayer = 4;     // 総プレイヤー数
     const int KeyboardMode = 5;
     const int ControllerMode = 6;
 
-    public GameObject mainTitle, startPanel, changePlayerNumber, stageSelect, stageInfo, selectGameMode, setArcadeGame;//, keyboardMouseUI1, keyboardMouseUI2;
+    public GameObject mainTitle, startPanel, changePlayerNumber, stageSelect, selectGameMode, setArcadeGame, keyBoardMouseUI;
     public GameObject[] controllerUI, playerIcon, playerSlot;
     //チーム選択
     public Vector2[] playerIconPos { get; set; } = new Vector2[4];
-    public Vector2[] slot1Pos  = new Vector2[4];
-    public static int[] playerTeam { get; set; } = { 0, 1, 2, 3}; // {p1, p2, p3, p4}が TeamA, TeamB, TeamC, TeamDにいることを示す。ex..a = 1, c =3
-    public static int[] teamSize { get; set; } = { 0, 0, 0, 0}; // チーム　A, B, C, Dにいるプレイヤーの人数
+    public Vector2[] slot1Pos = new Vector2[4];
+    public static int[] playerTeam { get; set; } = { 0, 1, 2, 3 }; // {p1, p2, p3, p4}が TeamA, TeamB, TeamC, TeamDにいることを示す。ex..a = 1, c =3
+    public static int[] teamSize { get; set; } = { 0, 0, 0, 0 }; // チーム　A, B, C, Dにいるプレイヤーの人数
     public static int teamCount = 0; //チームの数
-    public static string teamMode  = "FreeForAll"; //対戦チーム分け 
+    public static string teamMode = "FreeForAll"; //対戦チーム分け 
     public bool stageInfoActive { get; set; } = false;
     int lastPlayerNum;
     Button StartButton;
@@ -38,6 +38,7 @@ public class GameStart : MonoBehaviour
     private Sprite imageSprite;
     //テキスト
     public Text difficultyText;
+    string[] difficultyStage = { "簡単", "普通", "難しい", "Easy", "Nomal", "Hard" };
     public static string gameMode1 = "Single";
     public static string gameMode2 = "Nomal";
     public static int phase = 0;
@@ -49,7 +50,6 @@ public class GameStart : MonoBehaviour
         Stage = 1;
         PlayerNumber = 1;
         phase = 0;
-        startPanel.gameObject.SetActive(false);
         for (int i = 0; i < 4; i++)
         {
             playerIconPos[i] = slot1Pos[i];
@@ -59,9 +59,7 @@ public class GameStart : MonoBehaviour
     }
     void Update()
     {
-        //Debug.Log("teamSize: " +  teamSize[0] + "    " + teamSize[1] + "    " + teamSize[2] + "    " + teamSize[3]);
-        //Debug.Log("playerTeam: " + playerTeam[0] + "    " + playerTeam[1] + "    " + playerTeam[2] + "    " + playerTeam[3]);
-        //SwichUI();
+        SwichUI();
         SwichStageMaterial();
         playerNumberText.text = PlayerNumber.ToString();
         if (Settings.SettingPanelActive) 
@@ -86,7 +84,27 @@ public class GameStart : MonoBehaviour
                 {
                     stageNumberText.text = "Stage" + Stage.ToString();
                     imageSprite = Resources.Load<Sprite>("SingleNomal" + Stage + "Img");
-                    difficultyText.text = "Easy";
+                    switch (Stage)
+                    {
+                        case 1:
+                            difficultyText.text = difficultyStage[0 + (Settings.languageNum * 3)];
+                            break;
+                        case 2:
+                            difficultyText.text = difficultyStage[0 + (Settings.languageNum * 3)];
+                            break;
+                        case 3:
+                            difficultyText.text = difficultyStage[1 + (Settings.languageNum * 3)];
+                            break;
+                        case 4:
+                            difficultyText.text = difficultyStage[1 + (Settings.languageNum * 3)];
+                            break;
+                        case 5:
+                            difficultyText.text = difficultyStage[2 + (Settings.languageNum * 3)];
+                            break;
+
+                    }
+                        
+                   
                     //stageVideo.clip = singleStageVideo[Stage - 1];
 
                 }
@@ -101,7 +119,22 @@ public class GameStart : MonoBehaviour
                 {
                     stageNumberText.text = "Stage" + Stage.ToString();
                     imageSprite = Resources.Load<Sprite>("MultiNomal" + Stage + "Img");
-                    //stageVideo.clip = multiStageVideo[Stage - 1];
+                    switch (Stage)
+                    {
+                        case 1:
+                            difficultyText.text = difficultyStage[0 + (Settings.languageNum * 3)];
+                            break;
+                        case 2:
+                            difficultyText.text = difficultyStage[0 + (Settings.languageNum * 3)];
+                            break;
+                        case 3:
+                            difficultyText.text = difficultyStage[1 + (Settings.languageNum * 3)];
+                            break;
+                        case 4:
+                            difficultyText.text = difficultyStage[1 + (Settings.languageNum * 3)];
+                            break;
+
+                    }
                 }
                 else
                 {
@@ -137,9 +170,12 @@ public class GameStart : MonoBehaviour
                     case 0:
                         DisablePanel();
                         GameStart.PlayerNumber = 1;
-                        mainTitle.gameObject.SetActive(true);                  
+                        mainTitle.gameObject.SetActive(true);
                         break;
-                    case 1:
+                    case 1:                     
+                        phase++;
+                        gameMode2 = "Nomal";
+                        return;
                         DisablePanel();
                         selectGameMode.gameObject.SetActive(true);
                         break;
@@ -278,15 +314,13 @@ public class GameStart : MonoBehaviour
     void DisablePanel()
     {
         stageSelect.gameObject.SetActive(false);
-        stageInfo.gameObject.SetActive(false);
-        startPanel.gameObject.SetActive(false);
         selectGameMode.gameObject.SetActive(false);
         mainTitle.gameObject.SetActive(false);
         changePlayerNumber.gameObject.SetActive(false);
         setArcadeGame.gameObject.SetActive(false);
         inDemoPlay = false;
     }
-    /*
+    
     void SwichUI()
     {
         //キーボードマウス用UIとコントローラー用UIの切り替え
@@ -294,28 +328,17 @@ public class GameStart : MonoBehaviour
         //キーボード,マウスのとき
         if (!(ControllerInput.usingController))
         {
-            if (phase == 1)
-            {
-                keyboardMouseUI1.gameObject.SetActive(true);
-            }
-            else if (phase == 3)
-            {
-                keyboardMouseUI2.gameObject.SetActive(true);
-            }
-            for(int i = 0; i < 5; i++) { controllerUI[i].gameObject.SetActive(false); }
-            
+            //keyBoardMouseUI.gameObject.SetActive(true);
+            for (int i = 0; i < controllerUI.Length; i++) { controllerUI[i].gameObject.SetActive(false); }
         }
         //コントローラーのとき
         else if (ControllerInput.usingController)
         {
 
-            for (int i = 0; i < 5; i++) { controllerUI[i].gameObject.SetActive(false); }
-            controllerUI[phase].gameObject.SetActive(true);
-            controllerUI[4].gameObject.SetActive(true);
-            keyboardMouseUI1.gameObject.SetActive(false);
-            keyboardMouseUI2.gameObject.SetActive(false);
+            for (int i = 0; i < controllerUI.Length; i++) { controllerUI[i].gameObject.SetActive(true); }
+            //keyBoardMouseUI.gameObject.SetActive(false);
         }
     }
-    */
+    
  
 }

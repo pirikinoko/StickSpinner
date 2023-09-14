@@ -36,6 +36,7 @@ public class Settings : MonoBehaviour
     {
         Selected = 0;
         changeCount = 0;
+        Time.timeScale = 1;
         languageNum = screenModeNum;
         SettingPanelActive = false;
         inSetting = false;
@@ -71,7 +72,6 @@ public class Settings : MonoBehaviour
     }
 
 
-    //@@一旦保留
     void SettingControl()
     {
 
@@ -125,7 +125,7 @@ public class Settings : MonoBehaviour
                     /*設定項目の選択*/
 
                     /*数値変更*/
-                    if (InputCrossX == false)
+                    if (InputCrossX == false && Selected < 4)
                     {
                         /*十字ボタン横*/
                         if (ControllerInput.crossX[0] >= 0.1f) { settingStages[Selected]++; InputCrossX = true; SoundEffect.soundTrigger[3] = 1; }
@@ -137,6 +137,7 @@ public class Settings : MonoBehaviour
                         if (ControllerInput.LstickX[0] > 0.5f) { settingStages[Selected]++; SoundEffect.soundTrigger[3] = 1; }
                         else if (ControllerInput.LstickX[0] < -0.5f) { settingStages[Selected]--; SoundEffect.soundTrigger[3] = 1; }
 
+                    
                         /*矢印キー横*/
                         if (Input.GetKeyDown(KeyCode.RightArrow)) { settingStages[Selected]++; SoundEffect.soundTrigger[3] = 1; }
                         else if (Input.GetKeyDown(KeyCode.LeftArrow)) { settingStages[Selected]--; SoundEffect.soundTrigger[3] = 1; }
@@ -148,36 +149,44 @@ public class Settings : MonoBehaviour
 
 
                 /*ゲーム終了*/
-                if (ControllerInput.back[0] || Input.GetKeyDown(KeyCode.Q))
+                if (!(exitPanelActive) && (ControllerInput.back[0] || Input.GetKeyDown(KeyCode.Q)))
                 {
                     exitPanelActive = true;
+                    return;
                 }
+
                 if (exitPanelActive)
                 {
-                    exitPanel.gameObject.SetActive(true);
 
+                    exitPanel.gameObject.SetActive(true);
+                    if (ControllerInput.crossX[0] == 0) { InputCrossX = false; }
+                    if (ControllerInput.crossY[0] == 0) { InputCrossY = false; }
                     Button yes = yesButton.gameObject.GetComponent<Button>();
-                    Button no =  noButton.gameObject.GetComponent<Button>();
+                    Button no = noButton.gameObject.GetComponent<Button>();
                     RectTransform yesButtonRect = yes.GetComponent<RectTransform>();
                     RectTransform noButtonRect = no.GetComponent<RectTransform>();
-                    if(buttonSelect == 0)
+                    if (buttonSelect == 0)
                     {
                         yesButtonRect.sizeDelta = new Vector2(350, 175);
                         noButtonRect.sizeDelta = new Vector2(300, 150);
                         if (ControllerInput.jump[0] || ControllerInput.next[0] || Input.GetKeyDown(KeyCode.Return))
                         {
-                            #if UNITY_EDITOR
+#if UNITY_EDITOR
                             UnityEditor.EditorApplication.isPlaying = false;//ゲームプレイ終了
-                            #else
+#else
                             Application.Quit();//ゲームプレイ終了
-                            #endif
+#endif
+                        }
+                        else if (ControllerInput.back[0] )
+                        {
+                            exitPanelActive = false;
                         }
                     }
                     else
                     {
                         noButtonRect.sizeDelta = new Vector2(350, 175);
                         yesButtonRect.sizeDelta = new Vector2(300, 150);
-                        if (ControllerInput.jump[0] || ControllerInput.next[0] || Input.GetKeyDown(KeyCode.Return))
+                        if (ControllerInput.jump[0] || ControllerInput.next[0] || Input.GetKeyDown(KeyCode.Return) || ControllerInput.back[0])
                         {
                             exitPanelActive = false;
                         }
@@ -280,8 +289,10 @@ public class Settings : MonoBehaviour
                     GameStart.inDemoPlay = false;
                     GameSetting.Playable = false;
                     GameStart.PlayerNumber = 1;
+                    ButtonInGame.Paused = 0;
                     SettingPanelActive = false;
                     SceneManager.LoadScene("Title");
+
                 }
                 break;
         }

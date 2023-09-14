@@ -39,6 +39,10 @@ public class TitleButton : MonoBehaviour
         Selected();
         if (ControllerInput.back[0] || Input.GetKeyDown(KeyCode.Backspace))
         {
+            if(GameStart.gameMode1 == "Single" && GameStart.phase == 2) 
+            {
+                GameStart.phase--;
+            }
             GameStart.phase--;
             targetNum = 0;
             min = 0;
@@ -215,7 +219,7 @@ public class TitleButton : MonoBehaviour
 
                     if (ControllerInput.jump[0] || Input.GetKeyDown(KeyCode.Return))
                     {
-                        if (GameStart.Stage > 2)
+                        if (GameStart.gameMode2 == "Nomal")
                         {
                             //ゲーム開始処理
                             SceneManager.LoadScene("Stage");
@@ -238,12 +242,12 @@ public class TitleButton : MonoBehaviour
                 }
 
                 //制限時間増減
-                if (ControllerInput.next[0])
+                if (ControllerInput.plus[0])
                 {
                     GameStart.flagTimeLimit += 10;
                     GameStart.flagTimeLimit = System.Math.Min(GameStart.flagTimeLimit, 150);
                 }
-                if (ControllerInput.back[0])
+                if (ControllerInput.minus[0])
                 {
                     GameStart.flagTimeLimit -= 10;
                     GameStart.flagTimeLimit = System.Math.Max(40, GameStart.flagTimeLimit);

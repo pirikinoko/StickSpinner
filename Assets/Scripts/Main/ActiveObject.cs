@@ -7,6 +7,7 @@ public class ActiveObject : MonoBehaviour  //動く床などのオブジェク�
     //基本
     public float speed = 1.3f;
     Rigidbody2D rbody2D;
+    RigidbodyConstraints2D defaultConstraints;
     //移動制限
     Vector2 StartPos;
     public float RightLimit = 1.0f, LeftLimit = 1.0f, UpLimit = 1.0f, DownLimit = 1.0f;
@@ -21,6 +22,11 @@ public class ActiveObject : MonoBehaviour  //動く床などのオブジェク�
     void Start()
     {
         rbody2D = GetComponent<Rigidbody2D>();
+        if (rbody2D != null) 
+        {
+            defaultConstraints = rbody2D.constraints;
+        }
+       
         StartPos = this.gameObject.transform.position;
         startSize = transform.localScale.y;
         sizeLimit = startSize * sizeMulti;
@@ -48,11 +54,11 @@ public class ActiveObject : MonoBehaviour  //動く床などのオブジェク�
 
             if (ButtonInGame.Paused == 1)
             {
-                constraints |= RigidbodyConstraints2D.FreezePosition;
+                constraints = RigidbodyConstraints2D.FreezePosition;
             }
             else
             {
-                constraints &= ~RigidbodyConstraints2D.FreezePosition;
+                constraints = defaultConstraints;
             }
             rbody2D.constraints = constraints;
             if (this.gameObject.name.Contains("MoveCircle"))

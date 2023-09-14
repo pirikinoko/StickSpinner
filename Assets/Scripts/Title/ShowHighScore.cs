@@ -63,6 +63,9 @@ public class ShowHighScore : MonoBehaviour
         for (int i = 0; i < 10; i++)
         {
             data.singleHighScore[i] = singleHighScore[i];
+            data.singleArcadeHighScore[i] = singleArcadeHighScore[i];
+            data.multiHighScore[i] = multiHighScore[i];
+            data.multiArcadeHighScore[i] = multiArcadeHighScore[i];
         }
     }
 }

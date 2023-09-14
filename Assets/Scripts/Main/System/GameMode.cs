@@ -57,6 +57,7 @@ public class GameMode : MonoBehaviour
             resultText[i] = resultTextGO[i].GetComponent<Text>();
             teamTag[i].gameObject.SetActive(false);
             isDead[i] = false;
+            teamTag[i].gameObject.SetActive(false);
             for (int j = 0; j < 4; j++)
             {
                 killTimer[i, j] = 0f;
@@ -130,8 +131,6 @@ public class GameMode : MonoBehaviour
 
     void Update()
     {
-        //Debug.Log("teamPoints: " +  teamPoints[0] + "    " + teamPoints[1] + "    " + teamPoints[2] + "    " + teamPoints[3]);
-        Debug.Log("teamCount " + GameStart.teamCount);
         // 通常ステージ
         if (GameStart.gameMode2 != "Arcade")
         {

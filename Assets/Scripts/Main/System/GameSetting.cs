@@ -19,6 +19,7 @@ public class GameSetting : MonoBehaviour
     GameObject[] deadTimer = new GameObject[GameStart.MaxPlayer];
     Vector2[] nameTagPos = new Vector2[GameStart.MaxPlayer];
     Vector2[,] startPos = new Vector2[GameStart.MaxPlayer, GameStart.MaxPlayer];
+    string[] startText = { "スタート", "Start" };
     public static bool Playable = false;
     float elapsedTime;
     public static float playTime;
@@ -28,10 +29,10 @@ public class GameSetting : MonoBehaviour
 
     //ステージ切り替え用
     [SerializeField] GameObject[] stageObjectSingle, stageObjectSingleArcade, stageObjectMulti, stageObjectMultiArcade;
-    [SerializeField] GameObject[] battleModeUI;
+    [SerializeField] GameObject[] controllerUI,battleModeUI;
     //背景色
     [SerializeField] Tilemap tilemap;
-    public GameObject CountDownGO, ControllerUI1, ControllerUI2, ControllerUI3;
+    public GameObject CountDownGO;
     //UI切り替え用
     int UIMode;
     const int KeyboardMode = 5;
@@ -199,7 +200,7 @@ public class GameSetting : MonoBehaviour
 
         void Update()
         {
-            //SwichUI();
+            SwichUI();
             StartTimer();
         }
 
@@ -231,7 +232,7 @@ public class GameSetting : MonoBehaviour
                 }
                 else if (startTime < 0 && startTime > -0.5f)
                 {
-                    countDown.text = ("スタート");
+                countDown.text = startText[Settings.languageNum];
                 }
                 else if (startTime < 0.9f)
                 {
@@ -283,30 +284,24 @@ public class GameSetting : MonoBehaviour
             }
         }
 
-        void SwichUI()
-        {
-            //キーボードマウス用UIとコントローラー用UIの切り替え
-            if (ControllerInput.usingController)
-            {
-                UIMode = ControllerMode;
-            }
-            else
-            {
-                UIMode = KeyboardMode;
-            }
-            if (UIMode == KeyboardMode)
-            {
-                ControllerUI1.gameObject.SetActive(false);
-                ControllerUI2.gameObject.SetActive(false);
-                ControllerUI3.gameObject.SetActive(false);
-            }
-            else
-            {
-                ControllerUI1.gameObject.SetActive(true);
-                ControllerUI2.gameObject.SetActive(true);
-                ControllerUI3.gameObject.SetActive(true);
-            }
-        }
+    void SwichUI()
+    {
+        //キーボードマウス用UIとコントローラー用UIの切り替え
 
-    
+        //キーボード,マウスのとき
+        if (!(ControllerInput.usingController))
+        {
+            //keyBoardMouseUI.gameObject.SetActive(true);
+            for (int i = 0; i < controllerUI.Length; i++) { controllerUI[i].gameObject.SetActive(false); }
+        }
+        //コントローラーのとき
+        else if (ControllerInput.usingController)
+        {
+
+            for (int i = 0; i < controllerUI.Length; i++) { controllerUI[i].gameObject.SetActive(true); }
+            //keyBoardMouseUI.gameObject.SetActive(false);
+        }
+    }
+
+
 }

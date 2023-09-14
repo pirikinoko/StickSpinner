@@ -6,7 +6,7 @@ using System;
 public class CameraControl : MonoBehaviour
 {
     public GameObject[] players;
-    public GameObject[] goalFlagsSingle, goalFlagsNomal, goalFlagsArcade;
+    GameObject goalFlag;
     Vector2[] playerPos = new Vector2[4];
     public float minCameraSize = 3.5f;
     public float maxCameraSize = 5.5f;
@@ -19,6 +19,8 @@ public class CameraControl : MonoBehaviour
     int playerAlive;
     private void Start()
     {
+        goalFlag = null;
+      
         for (int i = 0; i < 4; i++)
         {
             isGoaled[i] = false;
@@ -27,30 +29,25 @@ public class CameraControl : MonoBehaviour
         mainCamera = GetComponent<Camera>();
         cameraPos = vectorZero;
         cameraPos.z = -10;
-        if (GameStart.gameMode1 == "Single")
-        {
-            cameraPos = goalFlagsSingle[GameStart.Stage - 1].transform.position;
-        }
-        else if(GameStart.gameMode2 == "Nomal") 
-        {
-            cameraPos = goalFlagsNomal[GameStart.Stage - 1].transform.position;
-        }
-        else 
-        {
-            cameraPos = goalFlagsArcade[GameStart.Stage - 1].transform.position;
-        }
-
-        cameraPos.z = -10;
-        transform.position = cameraPos;
-        cameraSizeStart = 1;
-        cameraSpeedStart = 0.005f;
-        chasePlayers = false;
-        mainCamera.orthographicSize = cameraSizeStart;
+     
      
     }
 
     private void Update()
     {
+        if(goalFlag == null) 
+        {
+            goalFlag = GameObject.Find("GoalFlag");
+            cameraPos = goalFlag.transform.position;
+
+
+            cameraPos.z = -10;
+            transform.position = cameraPos;
+            cameraSizeStart = 1;
+            cameraSpeedStart = 0.005f;
+            chasePlayers = false;
+            mainCamera.orthographicSize = cameraSizeStart;
+        }
         Vector3 centerPoint = Vector3.zero;
         playerAlive = 0;
         for (int i = 0; i < 4; i++)

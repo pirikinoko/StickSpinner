@@ -25,11 +25,11 @@ public class Controller : MonoBehaviour
     int face { get; set; }                               　　 // 顔設定用乱数を入れておく1～100
     float stickRot = 0f;                                　　　// 棒の角度
     float jumpforce = 8.3f;                            　　　 // Y軸ジャンプ力
-    bool  onFloor, onSurface, onPlayer, onStick, onPinball;   // 接触している時は true
-    bool  inputCrossX;                               　　　 　// 十字ボタンの入力があるときはtrue
+    bool onFloor, onSurface, onPlayer, onStick, onPinball;   // 接触している時は true
+    bool inputCrossX;                               　　　 　// 十字ボタンの入力があるときはtrue
     float delay = 0.15f;
     float selfDeathTimer = 1.0f;
-    public float rotZ { get; set; } 
+    public float rotZ { get; set; }
     bool delayFlag = false;
     bool isRespowing = false;
     private Coroutine countdownCoroutine;
@@ -39,26 +39,26 @@ public class Controller : MonoBehaviour
     SpriteRenderer parentSprite;      // プレイヤーの顔
     private Vector3 playerPos, pausedPos, latestPos; 　　　　　　　　 　//プレイヤー,棒の位置
     private Vector2 Playerspeed, speedWhenPaused, deadPlayerPos;　　　　//プレイヤー速度,ポーズ直前のプレイヤー速度
-    private float   saveCount = 0; 　　　　　　　　　　　　　　　　　   // ポーズ処理に使用
-    private Body    body;
+    private float saveCount = 0; 　　　　　　　　　　　　　　　　　   // ポーズ処理に使用
+    private Body body;
     GameObject bodyObj;
 
 
     void Start()
-    {     
+    {
         nameTag = GameObject.Find("P" + id.ToString() + "NameTag");
         // 親スプライト・スティックスプライトを得る
-        parentSprite =  transform.parent.gameObject.GetComponent<SpriteRenderer>();
-        stickSprite  = GetComponent<SpriteRenderer>();
+        parentSprite = transform.parent.gameObject.GetComponent<SpriteRenderer>();
+        stickSprite = GetComponent<SpriteRenderer>();
         bodyObj = transform.parent.gameObject;
 
-        isRespowing    = false;
-        stickRot     = 0f;
-        coolTime     = 0.0f;
-        onSurface    = false;
-        onPlayer     = false;
-        onStick      = false;
-        onPinball    = false;
+        isRespowing = false;
+        stickRot = 0f;
+        coolTime = 0.0f;
+        onSurface = false;
+        onPlayer = false;
+        onStick = false;
+        onPinball = false;
         stickRb = GetComponent<Rigidbody2D>();
     }
 
@@ -71,8 +71,8 @@ public class Controller : MonoBehaviour
         if (rotZ > 180) { rotZ -= 180; }//上に向いているほうの棒の角度のみ取得
 
         body = bodyObj.GetComponent<Body>();// 親から Body を取得する
-        onFloor   = onSurface | onPlayer | onStick | body.onSurface | body.onPlayer | body.onStick; // 何かに接触している時は true
-        onPinball = onPinball | body.onPinball; 
+        onFloor = onSurface | onPlayer | onStick | body.onSurface | body.onPlayer | body.onStick; // 何かに接触している時は true
+        onPinball = onPinball | body.onPinball;
         //Acceleration();
         if (!(isRespowing))
         {
@@ -83,7 +83,7 @@ public class Controller : MonoBehaviour
             }
             Move();
         }
-      
+
         ChangeSensitivity();
         ExitDelay();
     }
@@ -95,7 +95,7 @@ public class Controller : MonoBehaviour
         Playerspeed = ((transform.parent.gameObject.transform.position - latestPos) / Time.deltaTime);
         if (ButtonInGame.Paused == 1 && saveCount == 0)
         {
-            pausedPos   = transform.parent.gameObject.transform.position;
+            pausedPos = transform.parent.gameObject.transform.position;
             speedWhenPaused = Playerspeed;
             saveCount = 1;
         }
@@ -112,7 +112,7 @@ public class Controller : MonoBehaviour
         }
         latestPos = transform.parent.gameObject.transform.position;
 
-        stickRb = GetComponent<Rigidbody2D>();  
+        stickRb = GetComponent<Rigidbody2D>();
         stickRb.MoveRotation(stickRot);            // 角度反映 これはポーズ時も行う
     }
 
@@ -130,10 +130,10 @@ public class Controller : MonoBehaviour
         // キー(あらかじめ左右のどちらかが押されていて、もう一方のキーが押された瞬間を調べる)
         bool jumpKey = Input.GetKeyDown(KeyJump);
 
-        
+
         if (onFloor && (jumpKey || ControllerInput.jump[id - 1]))
         {
-          
+
             float jumpDirection;                        // 棒の回転値に合わせて飛ぶ方向を求める
             if (rotZ < 180) { jumpDirection = 6; }
             else { jumpDirection = 18; }
@@ -150,7 +150,7 @@ public class Controller : MonoBehaviour
 
             // クールタイム(この時間は入力を受け付けない)
             coolTime = CoolTime_;
-        
+
         }
     }
 
@@ -214,8 +214,11 @@ public class Controller : MonoBehaviour
 
         while (countdown > 0)
         {
+            if (Mathf.Floor(countdown) < Mathf.Floor(countdown + Time.deltaTime)) 
+            {
+                SoundEffect.soundTrigger[3] = 1;
+            }
             deadText.text = Mathf.Ceil(countdown).ToString(); // カウントダウンの整数部分を表示
-            SoundEffect.soundTrigger[3] = 1;
             countdown -= Time.deltaTime; // Time.deltaTime を使用して時間を減少させる
             yield return null; // 次のフレームまで待機
         }
@@ -238,11 +241,14 @@ public class Controller : MonoBehaviour
         isRespowing = false;
     }
 
+    float lastLStickY;
     void selfDeath()
     {
+        Debug.Log(ControllerInput.LstickY[id - 1]);
+        bool VerticalInput = ControllerInput.LstickX[id - 1] < 0.2f && ControllerInput.LstickX[id - 1] > -0.2f;
         Vector2 animPos = this.transform.position;
         animPos.y += 1;
-        if (Input.GetKey(KeyDown))
+        if (Input.GetKey(KeyDown) || (ControllerInput.LstickY[id - 1] < -0.9f && VerticalInput))
         {
             selfDeathTimer -= Time.deltaTime;
         }
@@ -261,7 +267,7 @@ public class Controller : MonoBehaviour
             }
         }
         
-        if (Input.GetKeyDown(KeyDown))
+        if (Input.GetKeyDown(KeyDown) || (lastLStickY > -0.9f && (ControllerInput.LstickY[id - 1] < -0.9f && VerticalInput)))
         {
             GameObject animPrefab = (GameObject)Resources.Load("HoldDeathEffect");
             GameObject animObj = Instantiate(animPrefab, animPos, Quaternion.identity);
@@ -274,7 +280,7 @@ public class Controller : MonoBehaviour
             targetObj.transform.position = animPos;
         }
 
-        if (Input.GetKeyUp(KeyDown))
+        if (Input.GetKeyUp(KeyDown) || (ControllerInput.LstickY[id - 1] > -0.9f))
         {
             GameObject objToDelete = GameObject.Find("HoldAnim" + id.ToString());
             if (objToDelete != null)
@@ -282,8 +288,8 @@ public class Controller : MonoBehaviour
                 Destroy(objToDelete);
             }
         }
+        lastLStickY = ControllerInput.LstickY[id - 1];
 
-        
     }
 
 

@@ -17,7 +17,7 @@ public class SwitchLanguage : MonoBehaviour
     }
 
     // Update is called once per frame
-    void FixedUpdate()
+    void Update()
     {
         targetText.text = texts[Settings.languageNum];
         targetText.fontSize = fontSize[Settings.languageNum];

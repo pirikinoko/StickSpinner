@@ -11,6 +11,7 @@ public class ButtonClick : MonoBehaviour　//クリック用ボタン
     {
         SoundEffect.soundTrigger[2] = 1;
         GameStart.phase = 0;
+        ButtonInGame.Paused = 0;
         GameStart.inDemoPlay = false;
         GameSetting.Playable = false;
         GameStart.PlayerNumber = 1;
@@ -81,22 +82,34 @@ public class ButtonClick : MonoBehaviour　//クリック用ボタン
 
     public void NextLanguage()
     {
-        Settings.languageNum++;
-        SoundEffect.soundTrigger[3] = 1;
+        if (Settings.languageNum < 1)
+        {
+            Settings.languageNum++;
+            SoundEffect.soundTrigger[3] = 1;
+        }
     }
     public void PrevLanguage()
     {
-        Settings.languageNum--;
-        SoundEffect.soundTrigger[3] = 1;
+        if (Settings.languageNum > 0)
+        {
+            Settings.languageNum--;
+            SoundEffect.soundTrigger[3] = 1;
+        }
     }
     public void NextScreenMode()
     {
-        Settings.screenModeNum++;
-        SoundEffect.soundTrigger[3] = 1;
+        if (Settings.screenModeNum < 1)
+        {
+            Settings.screenModeNum++;
+            SoundEffect.soundTrigger[3] = 1;
+        }
     }
     public void PrevScreenMode()
     {
-        Settings.screenModeNum--;
-        SoundEffect.soundTrigger[3] = 1;
+        if (Settings.screenModeNum > 0)
+        {
+            Settings.screenModeNum--;
+            SoundEffect.soundTrigger[3] = 1;
+        }
     }
 }
