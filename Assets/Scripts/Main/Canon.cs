@@ -9,6 +9,8 @@ public class Canon : MonoBehaviour
     Rigidbody2D ballRb;
     public float cycle = 1.0f;
     float time;
+    public float xMin, xMax;
+    public float yMin, yMax;
     // Update is called once per frame
     void Update()
     {
@@ -23,8 +25,8 @@ public class Canon : MonoBehaviour
         GameObject obj = Instantiate(Resources.Load("Ball") as GameObject, firePos, Quaternion.identity);
         ballRb = obj.GetComponent<Rigidbody2D>();
 
-        float xForce = Random.Range(3f, 10f);
-        float yForce = Random.Range(-3f, 3f);
+        float xForce = Random.Range(xMin, xMax);
+        float yForce = Random.Range(-yMin, yMax);
         fireForce = new Vector3(-xForce, yForce);  // 力を設定
         ballRb.velocity = fireForce;
 

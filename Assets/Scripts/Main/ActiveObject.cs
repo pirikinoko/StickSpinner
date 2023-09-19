@@ -22,11 +22,11 @@ public class ActiveObject : MonoBehaviour  //動く床などのオブジェク�
     void Start()
     {
         rbody2D = GetComponent<Rigidbody2D>();
-        if (rbody2D != null) 
+        if (rbody2D != null)
         {
             defaultConstraints = rbody2D.constraints;
         }
-       
+
         StartPos = this.gameObject.transform.position;
         startSize = transform.localScale.y;
         sizeLimit = startSize * sizeMulti;
@@ -81,9 +81,13 @@ public class ActiveObject : MonoBehaviour  //動く床などのオブジェク�
             {
                 ExtendY();
             }
+            if (this.gameObject.name.Contains("Rotate"))
+            {
+                RotateObj();
+            }
         }
-     
-       
+
+
 
     }
     //または床、壁、他のCircleに当たったら反転
@@ -176,5 +180,12 @@ public class ActiveObject : MonoBehaviour  //動く床などのオブジェク�
 
     }
 
+    void RotateObj() 
+    {
+        Transform myTransform = this.transform;
+        Vector3 worldAngle = myTransform.eulerAngles;
+        worldAngle.z += speed * Time.deltaTime;
+        myTransform.eulerAngles = worldAngle; // 回転角度を設定
+    }
 
 }

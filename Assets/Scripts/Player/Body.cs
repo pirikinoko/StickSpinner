@@ -59,7 +59,7 @@ public class Body : MonoBehaviour
         else
         {
             var material = GetComponent<Rigidbody2D>().sharedMaterial;
-            material.friction = 0.2f;
+            material.friction = 0.3f;
             material.bounciness = 0;
         }
         EyePosition();

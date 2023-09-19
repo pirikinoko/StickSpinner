@@ -280,7 +280,7 @@ public class Controller : MonoBehaviour
             targetObj.transform.position = animPos;
         }
 
-        if (Input.GetKeyUp(KeyDown) || (ControllerInput.LstickY[id - 1] > -0.9f))
+        if (Input.GetKeyUp(KeyDown) || (ControllerInput.usingController && (ControllerInput.LstickY[id - 1] > -0.9f)))
         {
             GameObject objToDelete = GameObject.Find("HoldAnim" + id.ToString());
             if (objToDelete != null)

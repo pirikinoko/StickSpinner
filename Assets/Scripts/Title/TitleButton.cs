@@ -1,4 +1,4 @@
-
+    
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -116,6 +116,12 @@ public class TitleButton : MonoBehaviour
         {
             //タイトル（シングルorマルチ選択）
             case 0:
+                //フェーズごとに選択を１にリセット
+                if (GameStart.phase != lastPhase)
+                {
+                    targetNum = 0;
+                    lastPhase = GameStart.phase;
+                }
                 min = 0;
                 max = 1;
                 for (int i = 0; i < titleObj.Length; i++)

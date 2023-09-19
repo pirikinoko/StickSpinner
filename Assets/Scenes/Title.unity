@@ -5488,7 +5488,7 @@ MonoBehaviour:
   modeFrame: {fileID: 125338442}
   singleFrame: {fileID: 0}
   MultiFrame: {fileID: 0}
-  singleStageNum: 5
+  singleStageNum: 6
   MultiStageNum: 4
   singleArcadeNum: 1
   MultiArcadeNum: 2

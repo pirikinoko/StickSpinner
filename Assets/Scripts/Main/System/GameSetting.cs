@@ -29,7 +29,7 @@ public class GameSetting : MonoBehaviour
 
     //ステージ切り替え用
     [SerializeField] GameObject[] stageObjectSingle, stageObjectSingleArcade, stageObjectMulti, stageObjectMultiArcade;
-    [SerializeField] GameObject[] controllerUI,battleModeUI;
+    [SerializeField] GameObject[] keyBoardMouseUI, controllerUI, battleModeUI;
     //背景色
     [SerializeField] Tilemap tilemap;
     public GameObject CountDownGO;
@@ -128,7 +128,6 @@ public class GameSetting : MonoBehaviour
                         battleModeUI[i].gameObject.SetActive(true);
                     }
                     break;
-
             }
 
         }
@@ -291,15 +290,15 @@ public class GameSetting : MonoBehaviour
         //キーボード,マウスのとき
         if (!(ControllerInput.usingController))
         {
-            //keyBoardMouseUI.gameObject.SetActive(true);
+            for (int i = 0; i < keyBoardMouseUI.Length; i++) { keyBoardMouseUI[i].gameObject.SetActive(true); }
             for (int i = 0; i < controllerUI.Length; i++) { controllerUI[i].gameObject.SetActive(false); }
         }
         //コントローラーのとき
         else if (ControllerInput.usingController)
         {
 
-            for (int i = 0; i < controllerUI.Length; i++) { controllerUI[i].gameObject.SetActive(true); }
-            //keyBoardMouseUI.gameObject.SetActive(false);
+            for (int i = 0; i < keyBoardMouseUI.Length; i++) { keyBoardMouseUI[i].gameObject.SetActive(false); }
+            for (int i = 0; i < controllerUI.Length; i++) { controllerUI[i].gameObject.SetActive(true); }      
         }
     }
 
