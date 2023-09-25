@@ -20,9 +20,9 @@ public class BGM : MonoBehaviour //BGM音量調整スクリプト
     void Update()
     {
         //上限下限の設定
-        if (BGMStage > 20)
+        if (BGMStage > 30)
         {
-            BGMStage = 20;
+            BGMStage = 30;
         }
         if (BGMStage < 0)
         {

@@ -277,12 +277,12 @@ public class Settings : MonoBehaviour
                 targetText[5].color = Color.yellow;
                 break;
             case 3:
-                targetText[4].color = Color.yellow;
-                targetText[5].color = Color.yellow;
+                targetText[6].color = Color.yellow;
+                targetText[7].color = Color.yellow;
                 break;
             case 4:
-                targetText[6].color = Color.yellow;
-                if (ControllerInput.jump[0])
+                targetText[8].color = Color.yellow;
+                if (ControllerInput.jump[0] || Input.GetKey(KeyCode.Return))
                 {
                     SoundEffect.soundTrigger[2] = 1;
                     GameStart.phase = 0;

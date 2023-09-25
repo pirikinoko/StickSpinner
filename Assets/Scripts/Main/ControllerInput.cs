@@ -40,6 +40,15 @@ public class ControllerInput : MonoBehaviour
         {
             controller[i] = null;
             joystickNames = null;
+            jump[i] = false;
+            next[i] = false;
+            back[i] = false;
+            plus[i] = false;
+            minus[i] = false;
+            start[i] = false;
+            nextHold[i] = false;
+            backHold[i] = false;
+
         }
 
 

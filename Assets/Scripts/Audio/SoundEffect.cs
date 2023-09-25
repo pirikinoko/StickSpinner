@@ -25,9 +25,9 @@ public class SoundEffect : MonoBehaviour　//効果音呼び出しスクリプ�
     void Update()
     {   
         //音量上限下限の設定
-        if (SEStage > 20)
+        if (SEStage > 30)
         {
-            SEStage = 20;
+            SEStage = 30;
         }
         if (SEStage < 0)
         {

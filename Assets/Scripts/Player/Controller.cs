@@ -1,4 +1,4 @@
- using System;
+  using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -22,10 +22,9 @@ public class Controller : MonoBehaviour
     [SerializeField]
     Text SensText;
 
-    int face { get; set; }                               　　 // 顔設定用乱数を入れておく1～100
     float stickRot = 0f;                                　　　// 棒の角度
     float jumpforce = 8.3f;                            　　　 // Y軸ジャンプ力
-    bool onFloor, onSurface, onPlayer, onStick, onPinball;   // 接触している時は true
+    bool onFloor, onSurface, onPlayer, onStick;   // 接触している時は true
     bool inputCrossX;                               　　　 　// 十字ボタンの入力があるときはtrue
     float delay = 0.15f;
     float selfDeathTimer = 1.0f;
@@ -58,7 +57,6 @@ public class Controller : MonoBehaviour
         onSurface = false;
         onPlayer = false;
         onStick = false;
-        onPinball = false;
         stickRb = GetComponent<Rigidbody2D>();
     }
 
@@ -72,8 +70,7 @@ public class Controller : MonoBehaviour
 
         body = bodyObj.GetComponent<Body>();// 親から Body を取得する
         onFloor = onSurface | onPlayer | onStick | body.onSurface | body.onPlayer | body.onStick; // 何かに接触している時は true
-        onPinball = onPinball | body.onPinball;
-        //Acceleration();
+   
         if (!(isRespowing))
         {
             if (GameSetting.Playable && ButtonInGame.Paused != 1 || GameStart.inDemoPlay) //プレイヤー数選択画面でも操作可能
@@ -143,7 +140,7 @@ public class Controller : MonoBehaviour
             if (!(rotZ > 179) && !(rotZ < 1))
             {
                 stickRb.velocity = new Vector2(jumpDirection, jumpforce);
-                onFloor = false; onPinball = false; onPlayer = false; onStick = false; onSurface = false; body.onSurface = false; body.onPlayer = false; body.onStick = false;
+                onFloor = false; onPlayer = false; onStick = false; onSurface = false; body.onSurface = false; body.onPlayer = false; body.onStick = false;
                 //効果音鳴らす
                 SoundEffect.soundTrigger[5] = 1;
             }
@@ -211,7 +208,6 @@ public class Controller : MonoBehaviour
         deadTimer.transform.position = gameObject.transform.position + new Vector3(0, 0.5f, 0);
         Text deadText = deadTimer.GetComponent<Text>();
         float countdown = 3.0f; // 開始するカウントダウンの数
-
         while (countdown > 0)
         {
             if (Mathf.Floor(countdown) < Mathf.Floor(countdown + Time.deltaTime)) 
@@ -245,10 +241,10 @@ public class Controller : MonoBehaviour
     void selfDeath()
     {
         Debug.Log(ControllerInput.LstickY[id - 1]);
-        bool VerticalInput = ControllerInput.LstickX[id - 1] < 0.2f && ControllerInput.LstickX[id - 1] > -0.2f;
+        bool noVerticalInput = ControllerInput.LstickX[id - 1] < 0.1f && ControllerInput.LstickX[id - 1] > -0.1f;
         Vector2 animPos = this.transform.position;
         animPos.y += 1;
-        if (Input.GetKey(KeyDown) || (ControllerInput.LstickY[id - 1] < -0.9f && VerticalInput))
+        if (Input.GetKey(KeyDown) || (ControllerInput.LstickY[id - 1] < -0.9f && noVerticalInput))
         {
             selfDeathTimer -= Time.deltaTime;
         }
@@ -267,7 +263,7 @@ public class Controller : MonoBehaviour
             }
         }
         
-        if (Input.GetKeyDown(KeyDown) || (lastLStickY > -0.9f && (ControllerInput.LstickY[id - 1] < -0.9f && VerticalInput)))
+        if (Input.GetKeyDown(KeyDown) || (lastLStickY > -0.9f && (ControllerInput.LstickY[id - 1] < -0.9f && noVerticalInput)))
         {
             GameObject animPrefab = (GameObject)Resources.Load("HoldDeathEffect");
             GameObject animObj = Instantiate(animPrefab, animPos, Quaternion.identity);
@@ -297,7 +293,6 @@ public class Controller : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D other)
     {
         if (other.gameObject.CompareTag("Surface")) { SoundEffect.soundTrigger[0] = 1;}
-        if (onPinball && other.gameObject.CompareTag("Surface")) { stickRb.velocity = -Playerspeed * 2; } //ピンボールゾーンでの床との接触時反発
     }
     private void OnCollisionStay2D(Collision2D other)
     {
@@ -305,19 +300,11 @@ public class Controller : MonoBehaviour
         if (other.gameObject.CompareTag("Player"))  { onPlayer = true; }
         if (other.gameObject.CompareTag("Stick"))   { onStick = true; }
     }
-    private void OnTriggerStay2D(Collider2D collision)
-    {
-        if (collision.gameObject.CompareTag("Pinball")) { onPinball = true; }
-    }
     private void OnCollisionExit2D(Collision2D other)
     {
         if (other.gameObject.CompareTag("Surface")) { delay = 0.1f;  delayFlag = true; }
         if (other.gameObject.CompareTag("Player")) { onPlayer = false; }
         if (other.gameObject.CompareTag("Stick")) { onStick = false; }
-    }
-    void OnTriggerExit2D(Collider2D collision)
-    {
-        if (collision.gameObject.CompareTag("Pinball")) { onPinball = false; }
     }
     void ExitDelay()    //床との設置判定に余裕を
     {
@@ -332,22 +319,5 @@ public class Controller : MonoBehaviour
             }
         }
     }
-
-    // Stage3のピンボールゾーンのオブジェクトに触れると加速
-    public void Acceleration()
-    {
-        if (onPinball && GameSetting.Playable && ButtonInGame.Paused != 1)
-        {
-            var material = GetComponent<Rigidbody2D>().sharedMaterial;
-            material.friction = 0f;
-        }
-        if (onPinball == false)
-        {
-            var material = GetComponent<Rigidbody2D>().sharedMaterial;
-            material.friction = 2f;
-        }
-    }
-
-   
 }
 

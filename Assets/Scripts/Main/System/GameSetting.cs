@@ -48,6 +48,7 @@ public class GameSetting : MonoBehaviour
     {
         canvas.gameObject.SetActive(true);
         frontCanvas.gameObject.SetActive(true);
+        playTimeTx.color = new Color32(255, 255, 255, 255); // 例: 赤色
         Debug.Log("PlayerNumber: " + GameStart.PlayerNumber + " Stage: " + GameStart.Stage);
         countDown = GameObject.Find("CountDown").GetComponent<Text>();
         playTimeTx = GameObject.Find("TimeText").GetComponent<Text>();
@@ -251,6 +252,10 @@ public class GameSetting : MonoBehaviour
                 if (GameStart.gameMode2 == "Arcade" && playTime > 0)
                 {
                     elapsedTime -= Time.deltaTime;
+                if (playTime < 30)
+                {
+                    playTimeTx.color = new Color32(255, 180, 0, 255); // 例: 赤色
+                }
                 }
                 else if (GameStart.gameMode2 != "Arcade")
                 {

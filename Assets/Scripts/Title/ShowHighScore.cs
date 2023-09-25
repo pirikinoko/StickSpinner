@@ -34,6 +34,9 @@ public class ShowHighScore : MonoBehaviour
                 multiArcadeHighScore[i] = data.multiArcadeHighScore[i];
             }
         }
+        Settings.languageNum = data.languageNum;
+        BGM.BGMStage = data.BGM;
+        SoundEffect.SEStage = data.SE;
     }
     private void Update()
     {
@@ -67,6 +70,9 @@ public class ShowHighScore : MonoBehaviour
             data.multiHighScore[i] = multiHighScore[i];
             data.multiArcadeHighScore[i] = multiArcadeHighScore[i];
         }
+        data.languageNum = Settings.languageNum;
+        data.BGM = BGM.BGMStage;
+        data.SE = SoundEffect.SEStage;
     }
 }
 

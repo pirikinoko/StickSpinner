@@ -10,7 +10,7 @@ public class CameraControl : MonoBehaviour
     Vector2[] playerPos = new Vector2[4];
     public float minCameraSize = 3.5f;
     public float maxCameraSize = 5.5f;
-    float cameraSpeed = 0.015f, cameraSpeedStart, cameraSize, cameraSizeStart;
+    float cameraSpeed = 0.02f, cameraSpeedStart, cameraSize, cameraSizeStart;
     private Camera mainCamera;
     Vector3 cameraPos, vectorZero = new Vector3(0, 0, 0);
     int goals = 0;

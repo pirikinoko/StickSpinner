@@ -14,6 +14,7 @@ public class GameMode : MonoBehaviour
     GameObject[] sticks = new GameObject[GameStart.MaxPlayer];
     GameObject[] nameTags = new GameObject[GameStart.MaxPlayer];
     GameObject[] resultTextGO = new GameObject[GameStart.MaxPlayer];
+   // GameObject[] icons = new GameObject[GameStart.MaxPlayer];
     Text[] resultText = new Text[GameStart.MaxPlayer];
     [SerializeField] GameObject ResultPanel, ResultPanelFront, TextCanvas;
     //通常ステージ
@@ -56,6 +57,7 @@ public class GameMode : MonoBehaviour
             chanceRespown2Rend[i].enabled = false;
             resultText[i] = resultTextGO[i].GetComponent<Text>();
             teamTag[i].gameObject.SetActive(false);
+            //icons[i].gameObject.SetActive(false);
             isDead[i] = false;
             teamTag[i].gameObject.SetActive(false);
             for (int j = 0; j < 4; j++)
@@ -80,7 +82,7 @@ public class GameMode : MonoBehaviour
         }
 
         //バトルモード
-        if (GameStart.gameMode2 == "Arcade")
+        if (GameStart.gameMode1 == "Multi"  && GameStart.gameMode2 == "Arcade")
         {
             for (int i = 0; i < 4; i++)
             {
@@ -137,7 +139,7 @@ public class GameMode : MonoBehaviour
             CheckFinish();
         }
         // バトルモード
-        if (GameStart.gameMode2 == "Arcade")
+        if (GameStart.gameMode1 == "Multi" && GameStart.gameMode2 == "Arcade")
         {
             KillSystem();
             PointDisplay();

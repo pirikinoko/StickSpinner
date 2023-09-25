@@ -21,6 +21,7 @@ public class SetHighScore : MonoBehaviour
         {
             if (GameStart.gameMode2 == "Nomal")
             {
+                if(ShowHighScore.singleHighScore[GameStart.Stage - 1] == 0) { ShowHighScore.singleHighScore[GameStart.Stage - 1] = (int)(GameMode.clearTime[0]); }
                 ShowHighScore.singleHighScore[GameStart.Stage - 1] = Mathf.Min((int)(GameMode.clearTime[0]), (int)(ShowHighScore.singleHighScore[GameStart.Stage - 1]));
             }
             else
@@ -32,6 +33,7 @@ public class SetHighScore : MonoBehaviour
         {
             if (GameStart.gameMode2 == "Nomal")
             {
+                if (ShowHighScore.multiHighScore[GameStart.Stage - 1] == 0) { ShowHighScore.multiHighScore[GameStart.Stage - 1] = (int)(GameMode.clearTime[0]); }
                 ShowHighScore.multiHighScore[GameStart.Stage - 1] = Mathf.Min((int)(GameMode.clearTime[0]), (int)(ShowHighScore.multiHighScore[GameStart.Stage - 1]));
             }
             else
