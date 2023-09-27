@@ -79,8 +79,8 @@ public class Body : MonoBehaviour
         leftPosGoal.x += (180 - controller.rotZ) / 1000;
         rightPosGoal.x -=  controller.rotZ / 1000;
         //少しずつ反映
-        leftPos = Vector2.Lerp(leftPos, leftPosGoal, 60 * Time.deltaTime) ;
-        rightPos = Vector2.Lerp(rightPos, rightPosGoal, 60 * Time.deltaTime);
+        leftPos = Vector2.Lerp(leftPos, leftPosGoal, 80 * Time.deltaTime) ;
+        rightPos = Vector2.Lerp(rightPos, rightPosGoal, 80 * Time.deltaTime);
 
         leftEye.transform.position = leftPos;
         rightEye.transform.position = rightPos;

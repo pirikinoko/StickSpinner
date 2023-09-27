@@ -20,7 +20,7 @@ public class CameraControl : MonoBehaviour
     private void Start()
     {
         goalFlag = null;
-      
+
         for (int i = 0; i < 4; i++)
         {
             isGoaled[i] = false;
@@ -29,13 +29,14 @@ public class CameraControl : MonoBehaviour
         mainCamera = GetComponent<Camera>();
         cameraPos = vectorZero;
         cameraPos.z = -10;
-     
-     
+
+
     }
 
     private void Update()
     {
-        if(goalFlag == null) 
+        if (GameStart.gameMode1 != "Single" && GameStart.gameMode2 != "Arcade")
+            if (goalFlag == null) 
         {
             goalFlag = GameObject.Find("GoalFlag");
             cameraPos = goalFlag.transform.position;

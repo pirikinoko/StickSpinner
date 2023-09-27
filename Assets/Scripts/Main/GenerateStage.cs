@@ -7,26 +7,38 @@ using UnityEngine;
 
 public class GenerateStage : MonoBehaviour
 {
-    [SerializeField] GameObject player, checkLine;
+    [SerializeField] GameObject player, checkLine, leftWall, rightWall, surface, thorns;
     [SerializeField] GameObject[] frames;
     GameObject[] obj = new GameObject[objUnit];
     GameObject[] objForCheckLength;
+    Vector2 playerPos, leftWallPos, rightWallPos, surfacePos;
     const int Floor = 0, Wall = 1, Right = 0, Left = 1, objUnit = 30;
-    const float rightLimit = -2f, leftLimit = 10f;
+    public static float maxHeight;
+    float rightLimit = 10f, leftLimit = -2f, startHeight;
     string[,] objNames = { { "Floor1", "Floor2", "Floor3", "Floor4" }, { "Wall1", "Wall2", "Wall3", "Wall4" } };
     float[,] eachLength = new float[2, 4];
-    float xMax = 0, xMin = 0, yMax = 0, yMin = 0, playerYPrev, sizeX, sizeY, posX = -10, posY = 0;
+    float xMax = 0, xMin = 0, yMax = 0, yMin = 0, playerYPrev, sizeX, sizeY, posX = -30, posY = 0;
     bool[] objActive = new bool[objUnit];
     Vector3[] objPos = new Vector3[objUnit];
     Vector2 checkLinePos;
     public float deadLine { get; set; }
     int[] objectType = new int[objUnit];
-    int currentObj = 0, prev, prev2, count = 0, target = 0, tileY, objLength, objDirection = 0, enemyCount = 0, startCount;
+    int currentObj = 0, prev, prev2, count = 0, target = 0, objLength, objLengthPrev ,objDirection = 0, enemyCount = 0, startCount;
     public static float[] collisionPos = new float[30];
 
     // Start is called before the first frame update
     void Start()
     {
+        maxHeight = 0;
+        startHeight = player.transform.position.y;
+        surfacePos = surface.transform.position;
+        thorns.gameObject.SetActive(false);
+        leftWallPos = leftWall.transform.position;
+        rightWallPos = rightWall.transform.position;
+        //ステージの端
+        leftLimit =  leftWall.transform.position.x;
+        rightLimit = rightWall.transform.position.x;    
+
         //生成するオブジェクトの長さを測る
         int length1 = objNames.GetLength(0);
         int length2 = objNames.GetLength(1);
@@ -73,8 +85,7 @@ public class GenerateStage : MonoBehaviour
             }
         }
 
-        playerYPrev = player.transform.position.y;
-        tileY = 0;
+        playerYPrev = player.transform.position.y;;
         currentObj = 0;
         objectType[0] = 0;
         startCount = 0;
@@ -91,7 +102,7 @@ public class GenerateStage : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(GameStart.gameMode1 != "Single" || GameStart.gameMode2 != "Arcade")
+        if (GameStart.gameMode1 != "Single" || GameStart.gameMode2 != "Arcade")
         {
             return;
         }
@@ -116,6 +127,7 @@ public class GenerateStage : MonoBehaviour
                 }
                 startCount++;
             }
+
         }
         else
         {
@@ -137,9 +149,34 @@ public class GenerateStage : MonoBehaviour
                 currentObj++;
                 if (currentObj == objUnit) { currentObj = 0; }
                 count++;
+                objLengthPrev = objLength;
             }
         }
-
+        playerPos = GameObject.Find("Player1").transform.position;
+        leftWallPos.y = playerPos.y;
+        rightWallPos.y = playerPos.y;
+        float surfacePosGoal = maxHeight - 10;
+        if (playerPos.y > 2.5f) 
+        {
+            thorns.gameObject.SetActive(true);
+            if (surfacePos.y < surfacePosGoal)
+            {
+                surfacePos.y += 2 * Time.deltaTime;
+            }
+            surface.transform.position = surfacePos;
+        }
+        if (playerPos.y > 10)
+        {
+            thorns.gameObject.SetActive(true);
+            leftWall.transform.position = leftWallPos;
+            rightWall.transform.position = rightWallPos;
+        }
+        UnityEngine.Debug.Log(maxHeight);
+        if (playerPos.y > maxHeight) 
+        {
+            maxHeight = playerPos.y;
+            maxHeight -= startHeight;
+        }
     }
     void GenerateObjects(int targetNum)
     {
@@ -154,22 +191,13 @@ public class GenerateStage : MonoBehaviour
         if (count == 0)
         {
             objectType[targetNum] = Floor;　//最初は床オブジェクトを生成
-            objPos[targetNum] = new Vector3(1.0f, -3.8f, 0);
+            objPos[targetNum] = new Vector3(-6, -3.8f, 0);
             objectType[0] = 0;
             return;
         }
 
         //次に生成するオブジェクトの方向を決定
-        objDirection = UnityEngine. Random.Range(0, 2);  //0・・Left  1・・Right 
-        //前のオブジェクトが壁の時壁ジャンプの方向にオブジェクトを生成
-        if (objectType[prev] == Wall && count > 1)
-        {
-            if (((objPos[prev].x - objPos[prev2].x) > 0))
-            {
-                objDirection = Left;
-            }
-            else { objDirection = Right; }
-        }
+        objDirection = UnityEngine.Random.Range(0, 2);  //0・・Left  1・・Right 
 
         while (true)
         {
@@ -177,31 +205,23 @@ public class GenerateStage : MonoBehaviour
             switch (objectType[targetNum])
             {
                 case Floor: //床        
-                    xMin = 0.5f; xMax = 0.8f;
-                    yMin = 0.55f; yMax = 0.60f;
-                    //壁→床の時
-                    if (count >= 1 && objectType[prev] == Wall)
-                    {
-                        xMin = 0.6f; xMax = 0.9f;
-                        yMin = 0.3f; yMax = 0.4f;
-                        yMin -= 0.1f * eachLength[objectType[targetNum], objLength - 1];
-                        yMax -= 0.1f * eachLength[objectType[targetNum], objLength - 1];
-                    }
-                    xMin += 0.3f * eachLength[objectType[targetNum], objLength - 1];
-                    xMax += 0.3f * eachLength[objectType[targetNum], objLength - 1];
-                    break;
-                case Wall:  //壁      
-                    xMin = 0.6f; xMax = 0.8f;
-                    yMin = 0.4f; yMax = 0.6f;
-                    //床→壁の時
-                    if (count >= 1 && objectType[prev] == Floor)
-                    {
-                        xMin = 0.7f; xMax = 0.9f;
-                        yMin = 0.7f; yMax = 0.9f;
-                    }
+                    xMin = 1.0f; xMax = 1.8f;
+                    yMin = 0.6f; yMax = 1.10f;
+                    xMin += 0.5f * eachLength[objectType[targetNum], objLengthPrev - 1];
+                    xMax += 0.5f * eachLength[objectType[targetNum], objLengthPrev - 1];
                     break;
             }
 
+
+            //UnityEngine.Debug.Log(eachLength[0, 3]);
+            float x, y;
+            float sum;
+            do
+            {
+                x = UnityEngine.Random.Range(xMin, xMax);
+                y = UnityEngine.Random.Range(yMin, yMax);
+                sum = x + y;
+            } while (sum > 2.8f ||  sum  < 2.6f);
             // 新しいオブジェクトの位置を計算
             Vector3 newObjPos = new Vector3();
             newObjPos.y = UnityEngine.Random.Range(objPos[prev].y + yMin, objPos[prev].y + yMax);
@@ -217,22 +237,10 @@ public class GenerateStage : MonoBehaviour
             if (newObjPos.x > rightLimit - (eachLength[objectType[targetNum], objLength - 1] / 2))
             {
                 objDirection = Left;
-                objectType[targetNum] = Floor;
-                if (objectType[prev] == Wall)
-                {
-                    objectType[targetNum] = Wall;
-                    objDirection = Right;
-                }
             }
             else if (newObjPos.x < leftLimit + (eachLength[objectType[targetNum], objLength - 1] / 2))
             {
                 objDirection = Right;
-                objectType[targetNum] = Floor;
-                if (objectType[prev] == Wall)
-                {
-                    objectType[targetNum] = Wall;
-                    objDirection = Left;
-                }
             }
             else
             {

@@ -240,7 +240,6 @@ public class Controller : MonoBehaviour
     float lastLStickY;
     void selfDeath()
     {
-        Debug.Log(ControllerInput.LstickY[id - 1]);
         bool noVerticalInput = ControllerInput.LstickX[id - 1] < 0.1f && ControllerInput.LstickX[id - 1] > -0.1f;
         Vector2 animPos = this.transform.position;
         animPos.y += 1;
