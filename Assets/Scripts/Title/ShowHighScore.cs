@@ -34,9 +34,13 @@ public class ShowHighScore : MonoBehaviour
                 multiArcadeHighScore[i] = data.multiArcadeHighScore[i];
             }
         }
-        Settings.languageNum = data.languageNum;
-        BGM.BGMStage = data.BGM;
-        SoundEffect.SEStage = data.SE;
+        if(GameStart.loadData == 0) 
+        {
+            Settings.languageNum = data.languageNum;
+            BGM.BGMStage = data.BGM;
+            SoundEffect.SEStage = data.SE;
+        }
+      
     }
     private void Update()
     {
@@ -49,7 +53,7 @@ public class ShowHighScore : MonoBehaviour
             }
             else
             {
-                highScoreText.text = text[Settings.languageNum] + ":" + singleArcadeHighScore[GameStart.Stage - 1] + unit[Settings.languageNum];
+                highScoreText.text = text[Settings.languageNum] + ":" + singleArcadeHighScore[GameStart.Stage - 1] + "m";
             }
         }
         else

@@ -9,16 +9,17 @@ public class Settings : MonoBehaviour
 {
     public GameObject SettingPanel, TLFrame, exitPanel;
     public Text[] targetText;
-    public Text languageText, screenText;
+    public Text languageText, screenText, guideText;
     public GameObject[] targetObject;
     public static bool SettingPanelActive = false, inSetting = false;
     bool InputCrossX, InputCrossY;
     int Selected = 0;
-    public static int languageNum = 0;
+    public static int languageNum = 0, guideMode = 0;
     string[] languages = { "JP", "EN" };
     public static int screenModeNum = 0;
-    string[] screenMode = {"フルスクリーン", "ウィンドウ" , "FullScreen", "Window" };
-    float[] settingStages = new float[4];
+    string[] screenMode = { "フルスクリーン", "ウィンドウ", "FullScreen", "Window" };
+    string[] guide = { "On", "Off" };
+    float[] settingStages = new float[5]; //設定項目の数
     int changeCount = 0, lastScreenNum;
     int max, min = 0;
     public GameObject[] item = new GameObject[3];
@@ -37,7 +38,6 @@ public class Settings : MonoBehaviour
         Selected = 0;
         changeCount = 0;
         Time.timeScale = 1;
-        languageNum = screenModeNum;
         SettingPanelActive = false;
         inSetting = false;
         exitPanelActive = false;
@@ -45,32 +45,39 @@ public class Settings : MonoBehaviour
 
     void Update()
     {
+
         SetScreenMode();
         if (SettingPanelActive)
         {
             SettingPanel.gameObject.SetActive(true);
+            SettingControl();
+            SelectEffect();
+            lastLstickX = ControllerInput.LstickX[0];
+            lastLstickY = ControllerInput.LstickY[0];
+            languageText.text = languages[languageNum];
+            screenText.text = screenMode[(languageNum * 2) + screenModeNum];
+            guideText.text = guide[guideMode];
+            if (languageNum == 0)
+            {
+                screenText.fontSize = 160;
+            }
+            else
+            {
+                screenText.fontSize = 200;
+            }
         }
+
+
         else
         {
             SettingPanel.gameObject.SetActive(false);
         }
-        SettingControl();
-        SelectEffect();
-        lastLstickX = ControllerInput.LstickX[0];
-        lastLstickY = ControllerInput.LstickY[0];
-        languageText.text = languages[languageNum];
-        screenText.text = screenMode[(languageNum * 2) + screenModeNum];
-        if (languageNum == 0)
-        {
-            screenText.fontSize = 160;
-        }
-        else
-        {
-            screenText.fontSize = 200;
-        }
 
     }
+    void FixedUpdate() 
+    {
 
+    }
 
     void SettingControl()
     {
@@ -80,6 +87,7 @@ public class Settings : MonoBehaviour
         settingStages[1] = SoundEffect.SEStage;
         settingStages[2] = languageNum;
         settingStages[3] = screenModeNum;
+        settingStages[4] = guideMode;
         max = item.Length - 1;
         for (int i = 0; i < item.Length; i++)
         {
@@ -113,7 +121,7 @@ public class Settings : MonoBehaviour
                         if (ControllerInput.LstickY[0] > 0.5f) { Selected--; SoundEffect.soundTrigger[3] = 1; }
                         else if (ControllerInput.LstickY[0] < -0.5f) { Selected++; SoundEffect.soundTrigger[3] = 1; }
                         /*Lスティック縦*/
-                  
+
                         /*矢印キー縦*/
                         if (Input.GetKeyDown(KeyCode.DownArrow)) { Selected++; SoundEffect.soundTrigger[3] = 1; }
                         else if (Input.GetKeyDown(KeyCode.UpArrow)) { Selected--; SoundEffect.soundTrigger[3] = 1; }
@@ -125,7 +133,7 @@ public class Settings : MonoBehaviour
                     /*設定項目の選択*/
 
                     /*数値変更*/
-                    if (InputCrossX == false && Selected < 4)
+                    if (InputCrossX == false && Selected <= settingStages.Length)
                     {
                         /*十字ボタン横*/
                         if (ControllerInput.crossX[0] >= 0.1f) { settingStages[Selected]++; InputCrossX = true; SoundEffect.soundTrigger[3] = 1; }
@@ -137,7 +145,7 @@ public class Settings : MonoBehaviour
                         if (ControllerInput.LstickX[0] > 0.5f) { settingStages[Selected]++; SoundEffect.soundTrigger[3] = 1; }
                         else if (ControllerInput.LstickX[0] < -0.5f) { settingStages[Selected]--; SoundEffect.soundTrigger[3] = 1; }
 
-                    
+
                         /*矢印キー横*/
                         if (Input.GetKeyDown(KeyCode.RightArrow)) { settingStages[Selected]++; SoundEffect.soundTrigger[3] = 1; }
                         else if (Input.GetKeyDown(KeyCode.LeftArrow)) { settingStages[Selected]--; SoundEffect.soundTrigger[3] = 1; }
@@ -147,13 +155,16 @@ public class Settings : MonoBehaviour
                     /*数値変更*/
                 }
 
-
                 /*ゲーム終了*/
-                if (!(exitPanelActive) && (ControllerInput.back[0] || Input.GetKeyDown(KeyCode.Q)))
+                if (ControllerInput.back[0] || Input.GetKeyDown(KeyCode.Q))
                 {
-                    exitPanelActive = true;
-                    return;
+                    if (GameSetting.Playable == false && ButtonInGame.Paused == 0 && !(exitPanelActive))
+                    {
+                        exitPanelActive = true;
+                        return;
+                    }
                 }
+               
 
                 if (exitPanelActive)
                 {
@@ -225,8 +236,10 @@ public class Settings : MonoBehaviour
         SoundEffect.SEStage = settingStages[1];
         languageNum = (int)settingStages[2];
         screenModeNum = (int)settingStages[3];
+        guideMode = (int)settingStages[4];
         languageNum = Mathf.Clamp(languageNum, 0, 1);
         screenModeNum = Mathf.Clamp(screenModeNum, 0, 1);
+        guideMode = Mathf.Clamp(guideMode, 0, 1);
         TLFramePos.y = itemPos[Selected].y;
         TLFrameTransform.position = TLFramePos;
 
@@ -282,6 +295,10 @@ public class Settings : MonoBehaviour
                 break;
             case 4:
                 targetText[8].color = Color.yellow;
+                targetText[9].color = Color.yellow;
+                break;
+            case 5:
+                targetText[10].color = Color.yellow;
                 if (ControllerInput.jump[0] || Input.GetKey(KeyCode.Return))
                 {
                     SoundEffect.soundTrigger[2] = 1;

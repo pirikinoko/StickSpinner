@@ -14,7 +14,7 @@ public class GameMode : MonoBehaviour
     GameObject[] sticks = new GameObject[GameStart.MaxPlayer];
     GameObject[] nameTags = new GameObject[GameStart.MaxPlayer];
     GameObject[] resultTextGO = new GameObject[GameStart.MaxPlayer];
-   // GameObject[] icons = new GameObject[GameStart.MaxPlayer];
+    // GameObject[] icons = new GameObject[GameStart.MaxPlayer];
     Text[] resultText = new Text[GameStart.MaxPlayer];
     [SerializeField] GameObject ResultPanel, ResultPanelFront, TextCanvas;
     //通常ステージ
@@ -28,7 +28,7 @@ public class GameMode : MonoBehaviour
     [SerializeField] private Text[] teamTagText;
     string[] teamTagName = { "A", "B", "C", "D" };
     private Color[] teamColors = { Color.white, Color.red, Color.blue, Color.green };
-    public static bool[] isDead = { false, false, false, false};
+    public static bool[] isDead = { false, false, false, false };
     public static float[] points = new float[4], pointsInOrder = new float[4], teamPoints = new float[4];
     public static float topPoint, KillLogTimer;
     float p1Points, p2Points, p3Points, p4Points;
@@ -43,6 +43,8 @@ public class GameMode : MonoBehaviour
     public static float[,] killTimer = new float[4, 4];       // プレイヤー同士の衝突を記録(プレイヤー1～4とプレイヤー1～4の衝突)
     Renderer[] chanceRespown1Rend = new Renderer[4];
     Renderer[] chanceRespown2Rend = new Renderer[4];
+    //無限モード
+    public static bool isGameOver;
     void Start()
     {   //基本
         for (int i = 0; i < GameStart.MaxPlayer; i++) //初期化処理
@@ -70,6 +72,7 @@ public class GameMode : MonoBehaviour
         TextCanvas.gameObject.SetActive(false);
         Finished = false;
         Goaled = false;
+        isGameOver = false;
         Goals = 0;
         // 通常ステージ
         if (GameStart.gameMode2 != "Arcade")
@@ -82,7 +85,7 @@ public class GameMode : MonoBehaviour
         }
 
         //バトルモード
-        if (GameStart.gameMode1 == "Multi"  && GameStart.gameMode2 == "Arcade")
+        if (GameStart.gameMode1 == "Multi" && GameStart.gameMode2 == "Arcade")
         {
             for (int i = 0; i < 4; i++)
             {
@@ -106,14 +109,14 @@ public class GameMode : MonoBehaviour
                 for (int i = 3; i >= GameStart.PlayerNumber; i--) { ffaFrame[i].gameObject.SetActive(false); pointTextGO[i].gameObject.SetActive(false); }
             }
             else
-            {            
+            {
                 for (int i = 0; i < GameStart.PlayerNumber; i++)
                 {
                     if (GameStart.teamSize[i] >= 1)
                     {
                         teamFrame[i].gameObject.SetActive(true);
                         pointTextGO[i].gameObject.SetActive(true);
-                    }       
+                    }
                 }
             }
             //チームタグ表示
@@ -126,7 +129,7 @@ public class GameMode : MonoBehaviour
                     teamTagText[i].color = teamColors[GameStart.playerTeam[i]];
                 }
             }
-            
+
         }
 
     }
@@ -147,6 +150,11 @@ public class GameMode : MonoBehaviour
             checkResult();
             ShowResult();
             LastChance();
+        }
+        // 無限モード
+        if (GameStart.gameMode1 == "Single" && GameStart.gameMode2 == "Arcade")
+        {
+            InfinityMode();
         }
     }
     private void FixedUpdate()
@@ -258,7 +266,7 @@ public class GameMode : MonoBehaviour
 
     void PointDisplay() //ポイント小数点以下切り捨て＆表示
     {
-        if(GameStart.teamMode == "FreeForAll")
+        if (GameStart.teamMode == "FreeForAll")
         {
             for (int i = 0; i < GameStart.PlayerNumber; i++)
             {
@@ -305,7 +313,7 @@ public class GameMode : MonoBehaviour
 
             if (count == 0)
             {
-                if(GameStart.teamMode == "FreeForAll")
+                if (GameStart.teamMode == "FreeForAll")
                 {
                     //ポイント並び替え
                     points.CopyTo(pointsInOrder, 0);
@@ -414,7 +422,19 @@ public class GameMode : MonoBehaviour
                     resultText[i].text = "#" + (i + 1) + "   " + plasement[i] + "   " + pointsInOrder[i] + "point";
                 }
             }
-               
+        }
+    }
+
+    void InfinityMode() 
+    {
+        if (isGameOver) 
+        {
+            GameSetting.Playable = false;
+            TextCanvas.gameObject.SetActive(true);
+            ResultPanel.gameObject.SetActive(true);
+            ResultPanelFront.gameObject.SetActive(true);
+            // 参加プレイヤー数分タイム表示
+            resultText[0].text = "Score: " + (int)GenerateStage.maxHeight + "m";
         }
     }
 

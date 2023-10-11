@@ -7,7 +7,7 @@ public class SetHighScore : MonoBehaviour
 {
     private void Update()
     {
-        if (GameMode.Finished || GameMode.Goaled)
+        if (GameMode.Finished || GameMode.Goaled || GameMode.isGameOver)
         {
             if (ControllerInput.jump[0] || Input.GetKeyDown(KeyCode.Return) )
             {
@@ -26,7 +26,8 @@ public class SetHighScore : MonoBehaviour
             }
             else
             {
-                ShowHighScore.singleArcadeHighScore[GameStart.Stage - 1] = Mathf.Min((int)(GameMode.clearTime[0]), (int)(ShowHighScore.singleArcadeHighScore[GameStart.Stage - 1]));
+                if (ShowHighScore.singleHighScore[GameStart.Stage - 1] == 0) { ShowHighScore.singleArcadeHighScore[GameStart.Stage - 1] = (int)(GenerateStage.maxHeight); }
+                ShowHighScore.singleArcadeHighScore[GameStart.Stage - 1] = Mathf.Max((int)(GenerateStage.maxHeight), (int)(ShowHighScore.singleArcadeHighScore[GameStart.Stage - 1]));
             }
         }
         else

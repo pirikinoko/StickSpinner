@@ -43,15 +43,18 @@ public class GameStart : MonoBehaviour
     //テキスト
     public Text difficultyText, blinkText;
     string[] difficultyStage = { "簡単", "普通", "難しい", "Easy", "Nomal", "Hard" };
+    string[] singleArcadeText = { "無限の塔", "InfinityTower",};
     public static string gameMode1 = "Single";
     public static string gameMode2 = "Nomal";
     public static int phase = 0;
     public static int PlayerNumber { get; set; } = 1;     // 参加プレイヤー数
     public static int Stage = 1;
-
+    public static int loadData = 0;
     void Start()
     {
+        Time.timeScale = 1;
         inDemoPlay = false;
+        GameSetting.Playable = false;
         Stage = 1;
         PlayerNumber = 1;
         teamMode = "FreeForAll";
@@ -83,6 +86,12 @@ public class GameStart : MonoBehaviour
         //phase 0～3
         phase = System.Math.Min(phase, 4);
         phase = System.Math.Max(phase, 0);
+
+
+
+        return;
+
+
         //タイトル動画再生
         if (Input.anyKeyDown)
         {
@@ -162,7 +171,9 @@ public class GameStart : MonoBehaviour
                 }
                 else
                 {
+                    stageNumberText.text = singleArcadeText[Settings.languageNum    ];
                     imageSprite = Resources.Load<Sprite>("SingleArcade" + Stage + "Img");
+                    difficultyText.text = "Hard";
                     //stageVideo.clip = singleArcadeVideo[Stage - 1];
                 }
                 break;
@@ -225,9 +236,6 @@ public class GameStart : MonoBehaviour
                         mainTitle.gameObject.SetActive(true);
                         break;
                     case 1:
-                        phase++;
-                        gameMode2 = "Nomal";
-                        return;
                         DisablePanel();
                         selectGameMode.gameObject.SetActive(true);
                         break;
@@ -375,8 +383,15 @@ public class GameStart : MonoBehaviour
 
     void SwichUI()
     {
-        //キーボードマウス用UIとコントローラー用UIの切り替え
+        //UI非表示設定時
+        if (Settings.guideMode == 1) 
+        {
+            for (int i = 0; i < controllerUI.Length; i++) { controllerUI[i].gameObject.SetActive(false); }
+            return;
+        }
 
+        //キーボードマウス用UIとコントローラー用UIの切り替え
+        
         //キーボード,マウスのとき
         if (!(ControllerInput.usingController))
         {

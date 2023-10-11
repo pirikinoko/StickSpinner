@@ -255,4 +255,20 @@ public class TitleButtonClick : MonoBehaviour　//クリック用ボタン
             SoundEffect.soundTrigger[3] = 1;
         }
     }
+    public void NextGuideMode()
+    {
+        if (Settings.guideMode < 1)
+        {
+            Settings.guideMode++;
+            SoundEffect.soundTrigger[3] = 1;
+        }
+    }
+    public void PrevGuideMode()
+    {
+        if (Settings.guideMode > 0)
+        {
+            Settings.guideMode--;
+            SoundEffect.soundTrigger[3] = 1;
+        }
+    }
 }

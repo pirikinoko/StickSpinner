@@ -35,20 +35,23 @@ public class CameraControl : MonoBehaviour
 
     private void Update()
     {
-        if (GameStart.gameMode1 != "Single" && GameStart.gameMode2 != "Arcade")
-            if (goalFlag == null) 
+        if (GameStart.gameMode1 == "Multi" || (GameStart.gameMode1 == "Single"  && GameStart.gameMode2 == "Nomal")) 
         {
-            goalFlag = GameObject.Find("GoalFlag");
-            cameraPos = goalFlag.transform.position;
+            if (goalFlag == null)
+            {
+                goalFlag = GameObject.Find("GoalFlag");
+                cameraPos = goalFlag.transform.position;
 
 
-            cameraPos.z = -10;
-            transform.position = cameraPos;
-            cameraSizeStart = 1;
-            cameraSpeedStart = 0.005f;
-            chasePlayers = false;
-            mainCamera.orthographicSize = cameraSizeStart;
+                cameraPos.z = -10;
+                transform.position = cameraPos;
+                cameraSizeStart = 1;
+                cameraSpeedStart = 0.005f;
+                chasePlayers = false;
+                mainCamera.orthographicSize = cameraSizeStart;
+            }
         }
+          
         Vector3 centerPoint = Vector3.zero;
         playerAlive = 0;
         for (int i = 0; i < 4; i++)
@@ -61,11 +64,11 @@ public class CameraControl : MonoBehaviour
         //一人プレイの時
         if (playerAlive == 1)
         {
-            if (GameSetting.startTime < 3) 
+            if (GameSetting.startTime < 3)
             {
                 mainCamera.orthographicSize = 3.0f;
             }
-           
+
             for (int i = 0; i < 4; i++)
             {
                 if (players[i].activeSelf)
@@ -119,7 +122,7 @@ public class CameraControl : MonoBehaviour
 
         if (chasePlayers == false)
         {
-            if(GameSetting.startTime < 4.3) 
+            if (GameSetting.startTime < 4.3)
             {
                 cameraSizeStart += 1.5f * Time.deltaTime;
                 cameraSizeStart = System.Math.Min(cameraSize, cameraSizeStart);
@@ -154,7 +157,7 @@ public class CameraControl : MonoBehaviour
             if (GameMode.goaledPlayer[goals] != null)
             {
                 int playerid = int.Parse(GameMode.goaledPlayer[goals].Substring(6)); // Playerの番号を取得
-                isGoaled[playerid - 1] =  true;
+                isGoaled[playerid - 1] = true;
                 goals++;
             }
         }

@@ -1,4 +1,4 @@
-using System.Collections;
+    using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -108,7 +108,7 @@ public class ButtonInGame : MonoBehaviour
                 Time.timeScale = 1;
             }
         }
-        if(GameMode.Goaled || GameMode.Finished) 
+        if(GameMode.Goaled || GameMode.Finished || GameMode.isGameOver) 
         {
             if (ControllerInput.jump[0] || Input.GetKeyDown(KeyCode.Return)) 
             {

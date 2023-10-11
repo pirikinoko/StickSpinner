@@ -179,7 +179,11 @@ public class Controller : MonoBehaviour
     // 死亡
     public void StartDead()
     {
-        isRespowing = true;
+        if(GameStart.gameMode1 == "Single" && GameStart.gameMode2 == "Arcade") 
+        {
+            return;
+        }
+            isRespowing = true;
         stickSprite.enabled = false;
         parentSprite.enabled = false;
         body.eyeActive = false;
@@ -237,13 +241,16 @@ public class Controller : MonoBehaviour
         isRespowing = false;
     }
 
-    float lastLStickY;
+    bool animActive;
     void selfDeath()
     {
-        bool noVerticalInput = ControllerInput.LstickX[id - 1] < 0.1f && ControllerInput.LstickX[id - 1] > -0.1f;
+        if (GameStart.gameMode1 == "Single" && GameStart.gameMode2 == "Arcade")
+        {
+            return;
+        }
         Vector2 animPos = this.transform.position;
         animPos.y += 1;
-        if (Input.GetKey(KeyDown) || (ControllerInput.LstickY[id - 1] < -0.9f && noVerticalInput))
+        if (Input.GetKey(KeyDown) || ControllerInput.backHold[id - 1])
         {
             selfDeathTimer -= Time.deltaTime;
         }
@@ -262,11 +269,13 @@ public class Controller : MonoBehaviour
             }
         }
         
-        if (Input.GetKeyDown(KeyDown) || (lastLStickY > -0.9f && (ControllerInput.LstickY[id - 1] < -0.9f && noVerticalInput)))
+        if (Input.GetKeyDown(KeyDown) || ControllerInput.back[id - 1])
         {
             GameObject animPrefab = (GameObject)Resources.Load("HoldDeathEffect");
             GameObject animObj = Instantiate(animPrefab, animPos, Quaternion.identity);
             animObj.name = "HoldAnim" + id.ToString();
+            animActive = true;
+            return;
         }
 
         GameObject targetObj = GameObject.Find("HoldAnim" + id.ToString());
@@ -275,15 +284,15 @@ public class Controller : MonoBehaviour
             targetObj.transform.position = animPos;
         }
 
-        if (Input.GetKeyUp(KeyDown) || (ControllerInput.usingController && (ControllerInput.LstickY[id - 1] > -0.9f)))
+        if (Input.GetKeyUp(KeyDown) || (animActive == true && ControllerInput.backHold[id - 1] == false))
         {
             GameObject objToDelete = GameObject.Find("HoldAnim" + id.ToString());
             if (objToDelete != null)
             {
                 Destroy(objToDelete);
             }
+            animActive = false;
         }
-        lastLStickY = ControllerInput.LstickY[id - 1];
 
     }
 

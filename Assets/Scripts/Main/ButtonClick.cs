@@ -28,6 +28,7 @@ public class ButtonClick : MonoBehaviour　//クリック用ボタン
             pauseButton.gameObject.SetActive(false);
             Settings.SettingPanelActive = true;
             Settings.inSetting = true;
+            Time.timeScale = 0;
         }
     }
 
@@ -57,6 +58,7 @@ public class ButtonClick : MonoBehaviour　//クリック用ボタン
         pauseButton.gameObject.SetActive(true);
         Settings.SettingPanelActive = false;
         Settings.inSetting = false;
+        Time.timeScale = 1;
     }
     //設定画面のボタン
     public void GainBGMVol()
@@ -109,6 +111,22 @@ public class ButtonClick : MonoBehaviour　//クリック用ボタン
         if (Settings.screenModeNum > 0)
         {
             Settings.screenModeNum--;
+            SoundEffect.soundTrigger[3] = 1;
+        }
+    }
+    public void NextGuideMode()
+    {
+        if (Settings.guideMode < 1)
+        {
+            Settings.guideMode++;
+            SoundEffect.soundTrigger[3] = 1;
+        }
+    }
+    public void PrevGuideMode()
+    {
+        if (Settings.guideMode > 0)
+        {
+            Settings.guideMode--;
             SoundEffect.soundTrigger[3] = 1;
         }
     }

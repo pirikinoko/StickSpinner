@@ -155,7 +155,7 @@ public class ControllerInput : MonoBehaviour
                 minus[i] = Input.GetButtonDown("Minus_" + (controllerNumber[i] + 1).ToString());
                 start[i] = Input.GetButtonDown("XStart_" + (controllerNumber[i] + 1).ToString());
                 nextHold[i] = Input.GetButton("Next_" + (controllerNumber[i] + 1).ToString());
-                backHold[i] = Input.GetButton("XBack_" + (controllerNumber[i] + 1).ToString());
+                backHold[i] = Input.GetButton("XAButton_" + (controllerNumber[i] + 1).ToString());
             }
 
             if (controller[i] == "PS")
@@ -171,7 +171,7 @@ public class ControllerInput : MonoBehaviour
                 minus[i] = Input.GetButtonDown("Minus_" + (controllerNumber[i] + 1).ToString());
                 start[i] = Input.GetButtonDown("PSStart_" + (controllerNumber[i] + 1).ToString());
                 nextHold[i] = Input.GetButton("Next_" + (controllerNumber[i] + 1).ToString());
-                backHold[i] = Input.GetButton("Logi/PSBack_" + (controllerNumber[i] + 1).ToString());
+                backHold[i] = Input.GetButton("XAButton_" + (controllerNumber[i] + 1).ToString());
             }
 
             if (controller[i] == "Logicool")
@@ -187,7 +187,7 @@ public class ControllerInput : MonoBehaviour
                 minus[i] = Input.GetButtonDown("Minus_" + (controllerNumber[i] + 1).ToString());
                 start[i] = Input.GetButtonDown("Logi/PSStart_" + (controllerNumber[i] + 1).ToString());
                 nextHold[i] = Input.GetButton("Next_" + (controllerNumber[i] + 1).ToString());
-                backHold[i] = Input.GetButton("Logi/PSBack_" + (controllerNumber[i] + 1).ToString());
+                backHold[i] = Input.GetButton("XAButton_" + (controllerNumber[i] + 1).ToString());
 
             }
         }

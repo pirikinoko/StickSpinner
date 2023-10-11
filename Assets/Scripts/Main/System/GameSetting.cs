@@ -41,17 +41,19 @@ public class GameSetting : MonoBehaviour
     public static Vector2[] respownPos = new Vector2[GameStart.MaxPlayer];
     GameObject[] defaultPlayerPos = new GameObject[GameStart.MaxPlayer];
 
-
+    SaveData data;
 
 
     void Start()
     {
+        data = GetComponent<DataManager>().data;
         canvas.gameObject.SetActive(true);
         frontCanvas.gameObject.SetActive(true);
         playTimeTx.color = new Color32(255, 255, 255, 255); // 例: 赤色
         Debug.Log("PlayerNumber: " + GameStart.PlayerNumber + " Stage: " + GameStart.Stage);
         countDown = GameObject.Find("CountDown").GetComponent<Text>();
         playTimeTx = GameObject.Find("TimeText").GetComponent<Text>();
+        playTimeTx.text = "";
         for (int i = 0; i < GameStart.MaxPlayer; i++) //初期化処理
         {
             nameTags[i] = GameObject.Find("P" + (i + 1).ToString() + "NameTag");
@@ -203,6 +205,10 @@ public class GameSetting : MonoBehaviour
     {
         SwichUI();
         StartTimer();
+        data.languageNum = Settings.languageNum;
+        data.BGM = BGM.BGMStage;
+        data.SE = SoundEffect.SEStage;
+
     }
 
 
@@ -297,6 +303,14 @@ public class GameSetting : MonoBehaviour
 
     void SwichUI()
     {
+        //UI非表示設定時
+        if (Settings.guideMode == 1)
+        {
+            for (int i = 0; i < controllerUI.Length; i++) { controllerUI[i].gameObject.SetActive(false); }
+            for (int i = 0; i < keyBoardMouseUI.Length; i++) { keyBoardMouseUI[i].gameObject.SetActive(false); }
+            return;
+        }
+
         //キーボードマウス用UIとコントローラー用UIの切り替え
 
         //キーボード,マウスのとき

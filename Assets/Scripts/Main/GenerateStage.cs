@@ -30,6 +30,7 @@ public class GenerateStage : MonoBehaviour
     void Start()
     {
         maxHeight = 0;
+
         startHeight = player.transform.position.y;
         surfacePos = surface.transform.position;
         thorns.gameObject.SetActive(false);
@@ -155,14 +156,10 @@ public class GenerateStage : MonoBehaviour
         playerPos = GameObject.Find("Player1").transform.position;
         leftWallPos.y = playerPos.y;
         rightWallPos.y = playerPos.y;
-        float surfacePosGoal = maxHeight - 10;
         if (playerPos.y > 2.5f) 
         {
             thorns.gameObject.SetActive(true);
-            if (surfacePos.y < surfacePosGoal)
-            {
-                surfacePos.y += 2 * Time.deltaTime;
-            }
+            surfacePos.y +=  0.6f * Time.deltaTime;
             surface.transform.position = surfacePos;
         }
         if (playerPos.y > 10)
@@ -171,8 +168,8 @@ public class GenerateStage : MonoBehaviour
             leftWall.transform.position = leftWallPos;
             rightWall.transform.position = rightWallPos;
         }
-        UnityEngine.Debug.Log(maxHeight);
-        if (playerPos.y > maxHeight) 
+        UnityEngine.Debug.Log("playerPos.y" + playerPos.y + "    MaxHeight - startHeight" + (maxHeight - startHeight));
+        if (GameMode.isGameOver == false && playerPos.y > maxHeight + startHeight) 
         {
             maxHeight = playerPos.y;
             maxHeight -= startHeight;
@@ -205,10 +202,10 @@ public class GenerateStage : MonoBehaviour
             switch (objectType[targetNum])
             {
                 case Floor: //床        
-                    xMin = 1.0f; xMax = 1.8f;
-                    yMin = 0.6f; yMax = 1.10f;
-                    xMin += 0.5f * eachLength[objectType[targetNum], objLengthPrev - 1];
-                    xMax += 0.5f * eachLength[objectType[targetNum], objLengthPrev - 1];
+                    xMin = 0.8f; xMax = 1.5f;
+                    yMin = 0.7f; yMax = 1.10f;
+                    xMin += 0.7f * eachLength[objectType[targetNum], objLength- 1];
+                    xMax += 0.7f * eachLength[objectType[targetNum], objLength - 1];
                     break;
             }
 
@@ -221,7 +218,7 @@ public class GenerateStage : MonoBehaviour
                 x = UnityEngine.Random.Range(xMin, xMax);
                 y = UnityEngine.Random.Range(yMin, yMax);
                 sum = x + y;
-            } while (sum > 2.8f ||  sum  < 2.6f);
+            } while (sum > (2.7f +  (objLength * 0.1f)) ||  sum  < 2.6f + (objLength * 0.1f));
             // 新しいオブジェクトの位置を計算
             Vector3 newObjPos = new Vector3();
             newObjPos.y = UnityEngine.Random.Range(objPos[prev].y + yMin, objPos[prev].y + yMax);
@@ -255,7 +252,7 @@ public class GenerateStage : MonoBehaviour
     void DeleteObject()
     {
         Vector3 playerPos = player.transform.position;
-        if (playerPos.y > 2.5f && playerPos.y - objPos[target].y > 4 && obj[target] != null)
+        if (playerPos.y > 2.5f && playerPos.y - objPos[target].y > 7 && obj[target] != null)
         {
             deadLine = objPos[target].y;
             deadLine -= 3;

@@ -56,6 +56,12 @@ public class Thorn : MonoBehaviour
             cnt.StartDead();
             int id = bdy.id;
             nameTags[id - 1].gameObject.SetActive(false);
+            if(GameStart.gameMode1 == "Single" && GameStart.gameMode2 == "Arcade") 
+            {
+                //無限モードゲームオーバー
+                GameMode.isGameOver = true;
+            }
+          
         }
     }
 }
