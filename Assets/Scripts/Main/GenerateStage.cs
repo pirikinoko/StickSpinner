@@ -7,7 +7,8 @@ using UnityEngine;
 
 public class GenerateStage : MonoBehaviour
 {
-    [SerializeField] GameObject player, checkLine, leftWall, rightWall, surface, thorns;
+    GameSetting gameSetting;
+    [SerializeField] GameObject  checkLine, leftWall, rightWall, surface, thorns;
     [SerializeField] GameObject[] frames;
     GameObject[] obj = new GameObject[objUnit];
     GameObject[] objForCheckLength;
@@ -29,9 +30,12 @@ public class GenerateStage : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        if(GameStart.gameMode1 != "Single") { return; }
+        if (GameStart.gameMode2 != "Arcade") { return; }
+        gameSetting = GameObject.Find("Scripts").GetComponent<GameSetting>();
         maxHeight = 0;
 
-        startHeight = player.transform.position.y;
+        startHeight = gameSetting.players[0].transform.position.y;
         surfacePos = surface.transform.position;
         thorns.gameObject.SetActive(false);
         leftWallPos = leftWall.transform.position;
@@ -86,7 +90,7 @@ public class GenerateStage : MonoBehaviour
             }
         }
 
-        playerYPrev = player.transform.position.y;;
+        playerYPrev = gameSetting.players[0].transform.position.y;;
         currentObj = 0;
         objectType[0] = 0;
         startCount = 0;
@@ -251,7 +255,7 @@ public class GenerateStage : MonoBehaviour
 
     void DeleteObject()
     {
-        Vector3 playerPos = player.transform.position;
+        Vector3 playerPos = gameSetting.players[0].transform.position;
         if (playerPos.y > 2.5f && playerPos.y - objPos[target].y > 7 && obj[target] != null)
         {
             deadLine = objPos[target].y;

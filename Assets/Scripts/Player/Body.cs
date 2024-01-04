@@ -16,7 +16,7 @@ public class Body : MonoBehaviour
 
     [SerializeField]
     GameObject leftEye, rightEye;
-
+    Collider2D ghostCollider;
     Vector2 leftPos, rightPos, leftPosGoal, rightPosGoal;
 
     SpriteRenderer leftEyeSprite, rightEyeSprite;
@@ -32,10 +32,24 @@ public class Body : MonoBehaviour
     // コリジョン
     private void OnCollisionStay2D(Collision2D other)
     {
-        if(other.gameObject.CompareTag("Surface")){ onSurface = true;}
-        if(other.gameObject.CompareTag("Player")){  onPlayer  = true;}
-        if(other.gameObject.CompareTag("Stick")){   onStick   = true;}
-        if(other.gameObject.CompareTag("Pinball")){ onPinball = true; }
+        ContactPoint2D contactPoint = other.GetContact(0); // 最初の接触点を取得
+        Vector2 contactPosition = contactPoint.point;
+        float distance = 0.2f;
+        int layer = 1 << LayerMask.NameToLayer("Default");
+        Vector2 rayOrigin = contactPosition;
+        rayOrigin.y -= 0.05f;
+        Vector2 rayDirectionDown = Vector2.down;
+        // Raycast の結果を格納する RaycastHit2D 変数
+        RaycastHit2D hitVertical = Physics2D.Raycast(rayOrigin, rayDirectionDown, distance, layer);
+
+        if (hitVertical.collider != null)
+        {
+            if (other.gameObject.CompareTag("Surface")) { onSurface = true; }
+            if (other.gameObject.CompareTag("Player")) { onPlayer = true; }
+            if (other.gameObject.CompareTag("Stick")) { onStick = true; }
+            if (other.gameObject.CompareTag("Pinball")) { onPinball = true; }
+        }
+   
     }
     private void OnCollisionExit2D(Collision2D other)
     {
@@ -47,6 +61,10 @@ public class Body : MonoBehaviour
     void Start() 
     {
         eyeActive = true;
+
+
+
+
     }
     void Update()
     {
@@ -63,6 +81,28 @@ public class Body : MonoBehaviour
             material.bounciness = 0;
         }
         EyePosition();
+
+        if(GameSetting.allJoin) 
+        {
+            BoxCollider2D thisCollider = this.GetComponent<BoxCollider2D>();
+
+            if (ghostCollider == null) 
+            {
+
+                GameObject ghostObject = GameObject.Find("Ghost");
+                ghostCollider = ghostObject != null ? ghostObject.GetComponent<Collider2D>() : null;
+                GameObject ghostStickObject = GameObject.Find("Stick5");
+                Collider2D ghostStickCollider = ghostStickObject != null ? ghostStickObject.GetComponent<Collider2D>() : null;
+                if ((GameStart.gameMode2 == "Nomal" && GameStart.Stage == 1) && thisCollider != null && ghostCollider != null)
+                {
+                    // IgnoreCollisionはCollider型を使用し、Physics2D.IgnoreCollisionを使用する
+                    Physics2D.IgnoreCollision(thisCollider, ghostCollider);
+                    Physics2D.IgnoreCollision(thisCollider, ghostStickCollider);
+                }
+            }
+          
+        }
+    
     }
 
     void EyePosition() 
@@ -95,6 +135,22 @@ public class Body : MonoBehaviour
         {
             leftEyeSprite.enabled = true;
             rightEyeSprite.enabled = true;
+        }
+    }
+
+    //ゴーストとプレイヤーの当たり判定を無視
+    void IgnoreCollisionByTag(string tag)
+    {
+        GameObject[] objectsToIgnore = GameObject.FindGameObjectsWithTag(tag);
+
+        foreach (var obj in objectsToIgnore)
+        {
+            Collider objCollider = obj.GetComponent<Collider>();
+
+            if (objCollider != null)
+            {
+                Physics.IgnoreCollision(GetComponent<Collider>(), objCollider);
+            }
         }
     }
 }

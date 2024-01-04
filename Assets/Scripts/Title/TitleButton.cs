@@ -5,7 +5,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
-public class TitleButton : MonoBehaviour
+using Photon.Pun;
+public class TitleButton : MonoBehaviourPunCallbacks
 {
     const int stage4 = 4, firstStage = 1, lastStage = 4;
     const float holdGoal = 0.85f;
@@ -19,7 +20,7 @@ public class TitleButton : MonoBehaviour
     //New
     [SerializeField] GameObject[] titleObj, gameModeObj, singleObj, multiObj;
     [SerializeField] GameObject titleFrame, modeFrame, singleFrame, MultiFrame;
-    [SerializeField] int singleStageNum, MultiStageNum, singleArcadeNum, MultiArcadeNum;
+    [SerializeField] int singleStageCount, MultiStageCount, singleArcadeCount, MultiArcadeCount;
     bool InputCrossX, InputCrossY;
     public int targetNum { get; set; }
     int lastPhase;
@@ -39,6 +40,7 @@ public class TitleButton : MonoBehaviour
         Selected();
         if (ControllerInput.back[0] || Input.GetKeyDown(KeyCode.Backspace))
         {
+            if (GameStart.gameMode1 == "Online") { return; }
             if(GameStart.gameMode1 == "Single" && GameStart.phase == 2) 
             {
                 GameStart.phase--;
@@ -173,12 +175,12 @@ public class TitleButton : MonoBehaviour
                     if (GameStart.gameMode2 == "Nomal")
                     {
                         min = 1;
-                        max = singleStageNum;
+                        max = singleStageCount;
                     }
                     else
                     {
                         min = 1;
-                        max = singleArcadeNum;
+                        max = singleArcadeCount;
                     }
                     GameStart.Stage = targetNum;
                     if (ControllerInput.jump[0] || Input.GetKeyDown(KeyCode.Return))
@@ -214,12 +216,12 @@ public class TitleButton : MonoBehaviour
                     if (GameStart.gameMode2 == "Nomal")
                     {
                         min = 1;
-                        max = MultiStageNum;
+                        max = MultiStageCount;
                     }
                     else
                     {
                         min = 1;
-                        max = MultiArcadeNum;
+                        max = MultiArcadeCount;
                     }
                     GameStart.Stage = targetNum;
 
@@ -236,6 +238,21 @@ public class TitleButton : MonoBehaviour
                             return;
                         }
                     }
+                }
+                if (GameStart.gameMode1 == "Online")
+                {
+                    if (GameStart.gameMode2 == "Nomal")
+                    {
+                        min = 1;
+                        max = MultiStageCount;
+                    }
+                    else
+                    {
+                        min = 1;
+                        max = MultiArcadeCount;
+                    }
+                    GameStart.Stage = targetNum;
+
                 }
                 break;
 
@@ -259,7 +276,7 @@ public class TitleButton : MonoBehaviour
                     GameStart.flagTimeLimit = System.Math.Max(40, GameStart.flagTimeLimit);
                 }
                 //チーム選択
-                for(int i = 0; i < GameStart.PlayerNumber; i++)
+                for (int i = 0; i < GameStart.PlayerNumber; i++)
                 {
                     /*ボタン選択（縦）*/
                     if (lastLstickX[i] > 0.1f || lastLstickX[i] < -0.1f || lastLstickY[i] > 0.1f || lastLstickY[i] < -0.1f) { return; }
@@ -286,7 +303,7 @@ public class TitleButton : MonoBehaviour
                             {
                                 GameStart.playerTeam[i] += 1;
                             }
-                        }  
+                        }
                     }
                     /*Lスティック横*/
 
@@ -340,7 +357,7 @@ public class TitleButton : MonoBehaviour
                         {
                             GameStart.playerTeam[0] -= 1;
                         }
-                    }                
+                    }
                 }
                 if (Input.GetKeyDown(KeyCode.A))
                 {
@@ -353,7 +370,7 @@ public class TitleButton : MonoBehaviour
                             GameStart.playerTeam[1] += 1;
                         }
                     }
-                  
+
                 }
                 else if (Input.GetKeyDown(KeyCode.D))
                 {
@@ -389,7 +406,7 @@ public class TitleButton : MonoBehaviour
                         {
                             GameStart.playerTeam[2] -= 1;
                         }
-                    }              
+                    }
                 }
                 if (Input.GetKeyDown(KeyCode.J))
                 {
@@ -414,18 +431,105 @@ public class TitleButton : MonoBehaviour
                             GameStart.playerTeam[3] -= 1;
                         }
                     }
-                   
+
                 }
                 /*キーボード*/
                 break;
+            case 5:
+                if (GameStart.gameMode1 == "Online" && NetWorkMain.netWorkId == NetWorkMain.leaderId)
+                {
+                    photonView.RPC(nameof(ArcadeTeamChange), RpcTarget.All);
+                }
+                break;
         }
+    }
 
+        [PunRPC]
+        void ArcadeTeamChange()
+        {
+            if (ControllerInput.jump[0] || Input.GetKeyDown(KeyCode.Return))
+            {
+                GameStart.phase = 5;
+            }
+
+            //制限時間増減
+            if (ControllerInput.plus[0])
+            {
+                GameStart.flagTimeLimit += 10;
+                GameStart.flagTimeLimit = System.Math.Min(GameStart.flagTimeLimit, 150);
+            }
+            if (ControllerInput.minus[0])
+            {
+                GameStart.flagTimeLimit -= 10;
+                GameStart.flagTimeLimit = System.Math.Max(40, GameStart.flagTimeLimit);
+            }
+            //チーム選択
+            for (int i = 0; i < GameStart.PlayerNumber; i++)
+            {
+                /*ボタン選択（縦）*/
+                if (lastLstickX[i] > 0.1f || lastLstickX[i] < -0.1f || lastLstickY[i] > 0.1f || lastLstickY[i] < -0.1f) { return; }
+                /*Lスティック横*/
+                if (ControllerInput.LstickX[i] > 0.5f)
+                {
+                    if (GameStart.playerTeam[i] < 3)
+                    {
+                        GameStart.playerTeam[i]++;
+                        SoundEffect.soundTrigger[3] = 1;
+                        if (GameStart.teamSize[GameStart.playerTeam[i]] > GameStart.PlayerNumber - 2)
+                        {
+                            GameStart.playerTeam[i] -= 1;
+                        }
+                    }
+                }
+                else if (ControllerInput.LstickX[i] < -0.5f)
+                {
+                    if (GameStart.playerTeam[i] > 0)
+                    {
+                        GameStart.playerTeam[i]--;
+                        SoundEffect.soundTrigger[3] = 1;
+                        if (GameStart.teamSize[GameStart.playerTeam[i]] > GameStart.PlayerNumber - 2)
+                        {
+                            GameStart.playerTeam[i] += 1;
+                        }
+                    }
+                }
+                /*Lスティック横*/
+
+                /*Lスティック縦*/
+                if (ControllerInput.LstickY[i] > 0.5f)
+                {
+                    if (GameStart.playerTeam[i] > 1)
+                    {
+                        GameStart.playerTeam[i] -= 2;
+                        SoundEffect.soundTrigger[3] = 1;
+                        if (GameStart.teamSize[GameStart.playerTeam[i]] > GameStart.PlayerNumber - 2)
+                        {
+                            GameStart.playerTeam[i] += 2;
+                        }
+                    }
+                }
+                else if (ControllerInput.LstickY[i] < -0.5f)
+                {
+                    if (GameStart.playerTeam[i] < 2)
+                    {
+                        GameStart.playerTeam[i] += 2;
+                        SoundEffect.soundTrigger[3] = 1;
+                        if (GameStart.teamSize[GameStart.playerTeam[i]] > GameStart.PlayerNumber - 2)
+                        {
+                            GameStart.playerTeam[i] -= 2;
+                        }
+                    }
+                }
+                /*Lスティック縦*/
+            }
         //毎回選択を１にリセット
         if (ControllerInput.jump[0] || Input.GetKeyDown(KeyCode.Return))
         {
             targetNum = 0;
         }
     }
+     
+    
 
 
 

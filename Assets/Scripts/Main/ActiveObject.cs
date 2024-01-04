@@ -5,9 +5,20 @@ using UnityEngine;
 public class ActiveObject : MonoBehaviour  //動く床などのオブジェクト制御用
 {
     //基本
-    public float speed = 1.3f;
+    bool start;
+    string direction = "Right";
+    public float speed = 1.3f, delay = 0;
     Rigidbody2D rbody2D;
     RigidbodyConstraints2D defaultConstraints;
+    public enum Direction
+    {
+        Right,
+        Left,
+    }
+    // Inspector上で選択できるようにする変数
+    public Direction selectedDirection;
+    private string[] optionStrings = { "Right", "Left" };
+
     //移動制限
     Vector2 StartPos;
     public float RightLimit = 1.0f, LeftLimit = 1.0f, UpLimit = 1.0f, DownLimit = 1.0f;
@@ -19,8 +30,19 @@ public class ActiveObject : MonoBehaviour  //動く床などのオブジェク�
     public float sizeMulti;
     //オブジェクト削除
     public float deleteTimer = 1.0f;
+    //透明度変更
+    float fadeSpeed = 1.4f;
+    private Material material;
+    private Color originalColor;
+
     void Start()
     {
+        start = false;
+        if (optionStrings[(int)selectedDirection] == "Left")
+        {
+            speed *= -1;
+        }
+
         rbody2D = GetComponent<Rigidbody2D>();
         if (rbody2D != null)
         {
@@ -34,10 +56,27 @@ public class ActiveObject : MonoBehaviour  //動く床などのオブジェク�
         {
             speed *= -1;
         }
+        //色取得
+        Renderer renderer = GetComponent<Renderer>();
+        if (renderer != null)
+        {
+            material = renderer.material;
+            originalColor = material.color;
+        }
     }
-
+    IEnumerator startDelay(float delaySec)
+    {
+        yield return new WaitForSeconds(delaySec);
+        start = true;
+    }
     void Update()
     {
+        if (!start)
+        {
+            StartCoroutine(startDelay(delay));
+            return;
+        }
+
 
         if (this.gameObject.name.Contains("Effect"))
         {
@@ -85,21 +124,16 @@ public class ActiveObject : MonoBehaviour  //動く床などのオブジェク�
             {
                 RotateObj();
             }
+            if (this.gameObject.name.Contains("Wave"))
+            {
+                WaveObj();
+            }
         }
 
 
 
     }
-    //または床、壁、他のCircleに当たったら反転
-    private void OnCollisionEnter2D(Collision2D other)
-    {
-        if (other.gameObject.CompareTag("Wall") || other.gameObject.CompareTag("Surface"))
-        {
-            speed *= -1;
-            reverse = false;
-        }
 
-    }
     private void OnCollisionStay2D(Collision2D other)
     {
         if (this.gameObject.name.Contains("ExtendFloor"))
@@ -180,7 +214,7 @@ public class ActiveObject : MonoBehaviour  //動く床などのオブジェク�
 
     }
 
-    void RotateObj() 
+    void RotateObj()
     {
         Transform myTransform = this.transform;
         Vector3 worldAngle = myTransform.eulerAngles;
@@ -188,4 +222,35 @@ public class ActiveObject : MonoBehaviour  //動く床などのオブジェク�
         myTransform.eulerAngles = worldAngle; // 回転角度を設定
     }
 
+    void WaveObj()
+    {
+        rbody2D.velocity = new Vector2(speed, 0f);
+        if (this.gameObject.transform.position.x > StartPos.x + RightLimit  || this.gameObject.transform.position.x < StartPos.x - LeftLimit )
+        {
+            StartCoroutine(DelaySpawn());
+        }
+        float fadeOutTime = 0.2f;
+        if (this.gameObject.transform.position.x > StartPos.x + RightLimit - fadeOutTime || this.gameObject.transform.position.x < StartPos.x - LeftLimit + fadeOutTime)
+        {
+            float timeToReachLimit;
+            if (speed > 0)
+            {
+                timeToReachLimit = ((StartPos.x + RightLimit) - this.gameObject.transform.position.x) / speed;
+            }
+            else 
+            {
+                timeToReachLimit = (this.gameObject.transform.position.x - (StartPos.x - LeftLimit) ) / Mathf.Abs(speed);
+            }
+            float newAlpha = Mathf.Clamp01(material.color.a - (1 / timeToReachLimit) * Time.deltaTime);
+            Color newColor = new Color(originalColor.r, originalColor.g, originalColor.b, newAlpha);
+            material.color = newColor;
+        }
+    }
+    IEnumerator DelaySpawn()
+    {
+        this.gameObject.transform.position = StartPos;
+        material.color = originalColor;
+        yield return new WaitForSeconds(1);
+    }
 }
+        

@@ -37,6 +37,7 @@ public class ShowHighScore : MonoBehaviour
         if(GameStart.loadData == 0) 
         {
             Settings.languageNum = data.languageNum;
+            Settings.screenModeNum = data.screenModeNum;
             BGM.BGMStage = data.BGM;
             SoundEffect.SEStage = data.SE;
         }
@@ -75,6 +76,7 @@ public class ShowHighScore : MonoBehaviour
             data.multiArcadeHighScore[i] = multiArcadeHighScore[i];
         }
         data.languageNum = Settings.languageNum;
+        data.screenModeNum = Settings.screenModeNum;
         data.BGM = BGM.BGMStage;
         data.SE = SoundEffect.SEStage;
     }

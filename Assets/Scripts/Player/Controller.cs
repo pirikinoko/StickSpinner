@@ -1,13 +1,14 @@
-  using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using UnityEditor;
+using Photon.Pun;
 
 
-public class Controller : MonoBehaviour
+public class Controller : MonoBehaviourPunCallbacks
 {
     [SerializeField]
     public int id;                                      // プレイヤー番号(1～4)
@@ -17,11 +18,8 @@ public class Controller : MonoBehaviour
     [SerializeField]
     float CoolTime_ = 0.2f;                             // ジャンプのクールタイム初期化用
     float coolTime = 0.2f;                              // ジャンプのクールタイム
-    [SerializeField]
-    public GameObject deadTimer;
-    [SerializeField]
     Text SensText;
-
+    GameSetting gameSetting;
     float stickRot = 0f;                                　　　// 棒の角度
     float jumpforce = 8.3f;                            　　　 // Y軸ジャンプ力
     bool onFloor, onSurface, onPlayer, onStick;   // 接触している時は true
@@ -41,28 +39,154 @@ public class Controller : MonoBehaviour
     private float saveCount = 0; 　　　　　　　　　　　　　　　　　   // ポーズ処理に使用
     private Body body;
     GameObject bodyObj;
-
-
+    int startTrigger= 0;
+    float coolDown = 0.1f;
+    //ゴースト
+    Vector2 ghostStartPos;
+    bool inCoroutine = false;
+    Collider2D ghostCollider;
     void Start()
     {
-        nameTag = GameObject.Find("P" + id.ToString() + "NameTag");
+
         // 親スプライト・スティックスプライトを得る
         parentSprite = transform.parent.gameObject.GetComponent<SpriteRenderer>();
         stickSprite = GetComponent<SpriteRenderer>();
         bodyObj = transform.parent.gameObject;
-
+        //ゴースト
+        ghostStartPos = bodyObj.transform.position;
         isRespowing = false;
         stickRot = 0f;
         coolTime = 0.0f;
+        startTrigger = 0;
         onSurface = false;
         onPlayer = false;
         onStick = false;
+        inCoroutine = false;
         stickRb = GetComponent<Rigidbody2D>();
+
+
+    }
+
+    void StartInUpdate() 
+    {
+        if (SceneManager.GetActiveScene().name == "Stage")
+        {
+            gameSetting = GameObject.Find("Scripts").GetComponent<GameSetting>();
+            nameTag = gameSetting.nameTags[id - 1];
+        }
+        for (int i = 0; i < GameStart.PlayerNumber; i++)
+        {
+            stickRb.MoveRotation(0);
+        }
+
+    }
+    void GhostJump()
+    {
+        float jumpDirection;
+        if (rotZ < 180) { jumpDirection = 6; }
+        else { jumpDirection = 18; }
+        jumpDirection = (jumpDirection - rotZ / 15) * 1.15f;
+        stickRb.velocity = new Vector2(jumpDirection, jumpforce);
+    }
+
+    IEnumerator GhostMove()
+    {
+        float speed = 320;
+        inCoroutine = true;
+        bodyObj.transform.position = ghostStartPos;
+        stickRot = 359;
+        while (stickRot > 120)
+        {
+            stickRot -= speed * Time.deltaTime;
+            yield return new WaitForSeconds(0.01f);
+        }
+        yield return new WaitForSeconds(1f);
+        GhostJump();
+        yield return new WaitForSeconds(0.2f);
+        while (stickRot < 230)
+        {
+            stickRot += speed * Time.deltaTime;
+            yield return new WaitForSeconds(0.01f);
+        }
+        yield return new WaitForSeconds(1f);
+        GhostJump();
+        yield return new WaitForSeconds(0.5f);
+        while (stickRot > 1)
+        {
+            stickRot -= speed * Time.deltaTime;
+            yield return new WaitForSeconds(0.01f);
+        }
+        yield return new WaitForSeconds(1f);
+        inCoroutine = false;
+    }
+    void MoveAnime() 
+    {
+        if(id == 5) 
+        {
+            if (!inCoroutine)
+            {
+                StartCoroutine(GhostMove());
+            }
+        }
+        if (id == 6 && PhotonNetwork.InRoom)
+        {
+            float speed = 120;
+            stickRot -= speed * Time.deltaTime;
+            if(this.transform.position.x > ghostStartPos.x + 4.5f) 
+            {
+                Vector2 newstartPos = ghostStartPos;
+                newstartPos.x -= 0.8f;
+                bodyObj.transform.position = newstartPos;
+                bodyObj.transform.GetChild(1).gameObject.transform.position = newstartPos;
+                bodyObj.transform.GetChild(1).gameObject.transform.position = newstartPos;
+            }
+        }
+        rotZ = transform.eulerAngles.z;
+        if (rotZ < 0) { rotZ += 360; }// 0 度未満なら正の値にする
+        if (rotZ > 180) { rotZ -= 180; }//上に向いているほうの棒の角度のみ取得
+        if (stickRot > 360) { stickRot -= 360; }
+        if (stickRot < 0) { stickRot += 360; }
+        stickRb.MoveRotation(stickRot);
     }
 
     // 入力は Update で行う
     void Update()
     {
+        if (GameSetting.allJoin)
+        {
+            BoxCollider2D thisCollider = this.GetComponent<BoxCollider2D>();
+
+            if (ghostCollider == null)
+            {
+
+                GameObject ghostObject = GameObject.Find("Ghost");
+                ghostCollider = ghostObject != null ? ghostObject.GetComponent<Collider2D>() : null;
+                GameObject ghostStickObject = GameObject.Find("Stick5");
+                Collider2D ghostStickCollider = ghostStickObject != null ? ghostStickObject.GetComponent<Collider2D>() : null;
+                if ((GameStart.gameMode2 == "Nomal" && GameStart.Stage == 1) && thisCollider != null && ghostCollider != null)
+                {
+                    // IgnoreCollisionはCollider型を使用し、Physics2D.IgnoreCollisionを使用する
+                    Physics2D.IgnoreCollision(thisCollider, ghostCollider);
+                    Physics2D.IgnoreCollision(thisCollider, ghostStickCollider);
+                }
+            }
+
+        }
+        if (nameTag == null) 
+        {
+            nameTag = GameObject.Find("P" + id.ToString() + "NameTag");
+        }
+        if(id > 4) 
+        {
+            MoveAnime();
+            return;
+        }
+
+        if (GameSetting.allJoin && startTrigger == 0)
+        {
+            StartInUpdate();
+            startTrigger = 1;
+        }
         //rotZの設定
         rotZ = transform.eulerAngles.z;
         if (rotZ < 0) { rotZ += 360; }// 0 度未満なら正の値にする
@@ -70,7 +194,7 @@ public class Controller : MonoBehaviour
 
         body = bodyObj.GetComponent<Body>();// 親から Body を取得する
         onFloor = onSurface | onPlayer | onStick | body.onSurface | body.onPlayer | body.onStick; // 何かに接触している時は true
-   
+
         if (!(isRespowing))
         {
             if (GameSetting.Playable && ButtonInGame.Paused != 1 || GameStart.inDemoPlay) //プレイヤー数選択画面でも操作可能
@@ -83,11 +207,29 @@ public class Controller : MonoBehaviour
 
         ChangeSensitivity();
         ExitDelay();
+
+
+        if (GameStart.gameMode1 == "Online" && GameSetting.allJoin)
+        {
+            if (photonView.IsMine)
+            {
+                {
+                    photonView.RPC(nameof(MoveStickRotation), RpcTarget.All, id, stickRot);
+                }
+            }
+
+        }
+        else
+        {
+            stickRb = GetComponent<Rigidbody2D>();
+            stickRb.MoveRotation(stickRot);            // 角度反映 これはポーズ時も行う
+        }
     }
 
     // 移動は FixedUpdateで行う※Inputの入力が入りにくくなる
     void FixedUpdate()
     {
+        if(GameStart.gameMode1 == "Online") { return; }
         // プレイヤー速度取得
         Playerspeed = ((transform.parent.gameObject.transform.position - latestPos) / Time.deltaTime);
         if (ButtonInGame.Paused == 1 && saveCount == 0)
@@ -100,7 +242,6 @@ public class Controller : MonoBehaviour
         {
             stickRb.velocity = new Vector2(0, 0);
             transform.parent.gameObject.transform.position = pausedPos;
-            stickRb.MoveRotation(stickRot);
         }
         if (ButtonInGame.Paused == 0 && saveCount == 1)
         {
@@ -109,9 +250,8 @@ public class Controller : MonoBehaviour
         }
         latestPos = transform.parent.gameObject.transform.position;
 
-        stickRb = GetComponent<Rigidbody2D>();
-        stickRb.MoveRotation(stickRot);            // 角度反映 これはポーズ時も行う
     }
+
 
 
     // ジャンプ
@@ -123,42 +263,103 @@ public class Controller : MonoBehaviour
             coolTime -= Time.deltaTime;
             return;   //処理中断
         }
-
-        // キー(あらかじめ左右のどちらかが押されていて、もう一方のキーが押された瞬間を調べる)
-        bool jumpKey = Input.GetKeyDown(KeyJump);
-
-
-        if (onFloor && (jumpKey || ControllerInput.jump[id - 1]))
+        if (GameSetting.Playable && ButtonInGame.Paused != 1) //プレイヤー数選択画面でも操作可能
         {
-
-            float jumpDirection;                        // 棒の回転値に合わせて飛ぶ方向を求める
-            if (rotZ < 180) { jumpDirection = 6; }
-            else { jumpDirection = 18; }
-            jumpDirection = (jumpDirection - rotZ / 15) * 1.15f;
-
-            //棒が真横を向いているときはジャンプできない
-            if (!(rotZ > 179) && !(rotZ < 1))
+            if (!NetWorkMain.isOnline)
             {
-                stickRb.velocity = new Vector2(jumpDirection, jumpforce);
-                onFloor = false; onPlayer = false; onStick = false; onSurface = false; body.onSurface = false; body.onPlayer = false; body.onStick = false;
-                //効果音鳴らす
-                SoundEffect.soundTrigger[5] = 1;
+                bool jumpKey = Input.GetKeyDown(KeyJump);
+                if (onFloor && (jumpKey || ControllerInput.jump[id - 1] ) )
+                {
+
+                    float jumpDirection;                        // 棒の回転値に合わせて飛ぶ方向を求める
+                    if (rotZ < 180) { jumpDirection = 6; }
+                    else { jumpDirection = 18; }
+                    jumpDirection = (jumpDirection - rotZ / 15) * 1.15f;
+
+                    //棒が真横を向いているときはジャンプできない
+                    if (!(rotZ > 179) && !(rotZ < 1))
+                    {
+                        stickRb.velocity = new Vector2(jumpDirection, jumpforce);
+                        onFloor = false; onPlayer = false; onStick = false; onSurface = false; body.onSurface = false; body.onPlayer = false; body.onStick = false; 
+                        //効果音鳴らす
+                        SoundEffect.soundTrigger[5] = 1;
+                    }
+
+                    // クールタイム(この時間は入力を受け付けない)
+                    coolTime = CoolTime_;
+
+                }
+            }
+            else if (NetWorkMain.isOnline)
+            {
+                if (photonView.IsMine)
+                {
+                    stickRb = GetComponent<Rigidbody2D>();
+                    bool jumpKey = Input.GetKeyDown(KeyCode.UpArrow);
+                    if (onFloor && (jumpKey || ControllerInput.jump[0]))
+                    {
+
+                        float jumpDirection;                        // 棒の回転値に合わせて飛ぶ方向を求める
+                        if (rotZ < 180) { jumpDirection = 6; }
+                        else { jumpDirection = 18; }
+                        jumpDirection = (jumpDirection - rotZ / 15) * 1.15f;
+
+                        //棒が真横を向いているときはジャンプできない
+                        if (!(rotZ > 179) && !(rotZ < 1))
+                        {
+                            stickRb.velocity = new Vector2(jumpDirection, jumpforce);
+                            onFloor = false; onPlayer = false; onStick = false; onSurface = false; body.onSurface = false; body.onPlayer = false; body.onStick = false;
+                            //効果音鳴らす
+                            SoundEffect.soundTrigger[5] = 1;
+                        }
+
+                        // クールタイム(この時間は入力を受け付けない)
+                        coolTime = CoolTime_;
+
+                    }
+                }
             }
 
-            // クールタイム(この時間は入力を受け付けない)
-            coolTime = CoolTime_;
-
         }
+       
     }
-
+    [PunRPC]
+    void MoveStickRotation(int id , float rot)
+    {
+        stickRb = GameObject.Find("Stick" + id).GetComponent<Rigidbody2D>();
+        stickRb.MoveRotation(rot);
+       // Debug.Log("Player" + id + "のStickRotsを" + rot);
+    }
     // 移動
     void Move()
     {
         rotSpeed = 120 + Settings.rotStage[id - 1] * 4;  //感度反映
-        if (GameSetting.Playable && ButtonInGame.Paused != 1 || GameStart.inDemoPlay) //プレイヤー数選択画面でも操作可能
+        if (GameSetting.Playable && ButtonInGame.Paused != 1) //プレイヤー数選択画面でも操作可能
         {
-            if (Input.GetKey(KeyRight) || ControllerInput.LstickX[id - 1] > 0) { stickRot -= rotSpeed * Time.deltaTime; }
-            if (Input.GetKey(KeyLeft) || ControllerInput.LstickX[id - 1] < 0) { stickRot += rotSpeed * Time.deltaTime; }
+            if (!NetWorkMain.isOnline)
+            {
+                if (Input.GetKey(KeyRight) || ControllerInput.LstickX[id - 1] > 0) { stickRot -= rotSpeed * Time.deltaTime; }
+                if (Input.GetKey(KeyLeft) || ControllerInput.LstickX[id - 1] < 0) { stickRot += rotSpeed * Time.deltaTime; }
+            }
+            else
+            {
+                if (photonView.IsMine)
+                {
+                    if (Input.GetKey(KeyCode.RightArrow) || ControllerInput.LstickX[0] > 0) { stickRot -= rotSpeed * Time.deltaTime; }
+                    if (Input.GetKey(KeyCode.LeftArrow) || ControllerInput.LstickX[0] < 0) { stickRot += rotSpeed * Time.deltaTime; }
+                            
+
+                    if (stickRot > 360)
+                    {
+                        stickRot -= 360;
+                    }
+                    if (stickRot < 0)
+                    {
+                        stickRot += 360;
+                    }
+                }
+            }
+
         }
     }
 
@@ -172,18 +373,18 @@ public class Controller : MonoBehaviour
             //十字ボタン(横)を一回倒すごとに感度を一段階変更
             if (ControllerInput.crossX[id - 1] >= 0.1f && inputCrossX == false) { Settings.rotStage[id - 1] += 1; inputCrossX = true; SoundEffect.soundTrigger[3] = 1; }
             if (ControllerInput.crossX[id - 1] <= -0.1f && inputCrossX == false) { Settings.rotStage[id - 1] -= 1; inputCrossX = true; SoundEffect.soundTrigger[3] = 1; }
-            SensText.text = Settings.rotStage[id - 1].ToString();
+           // SensText.text = Settings.rotStage[id - 1].ToString();
         }
     }
 
     // 死亡
     public void StartDead()
     {
-        if(GameStart.gameMode1 == "Single" && GameStart.gameMode2 == "Arcade") 
+        if (GameStart.gameMode1 == "Single" && GameStart.gameMode2 == "Arcade")
         {
             return;
         }
-            isRespowing = true;
+        isRespowing = true;
         stickSprite.enabled = false;
         parentSprite.enabled = false;
         body.eyeActive = false;
@@ -208,13 +409,13 @@ public class Controller : MonoBehaviour
         bodyRb2D.constraints = RigidbodyConstraints2D.FreezeAll;
 
         nameTag.SetActive(false);
-        deadTimer.SetActive(true);
-        deadTimer.transform.position = gameObject.transform.position + new Vector3(0, 0.5f, 0);
-        Text deadText = deadTimer.GetComponent<Text>();
+        gameSetting.deadTimer[id - 1].SetActive(true);
+        gameSetting.deadTimer[id - 1].transform.position = gameObject.transform.position + new Vector3(0, 0.5f, 0);
+        Text deadText = gameSetting.deadTimer[id - 1].GetComponent<Text>();
         float countdown = 3.0f; // 開始するカウントダウンの数
         while (countdown > 0)
         {
-            if (Mathf.Floor(countdown) < Mathf.Floor(countdown + Time.deltaTime)) 
+            if (Mathf.Floor(countdown) < Mathf.Floor(countdown + Time.deltaTime))
             {
                 SoundEffect.soundTrigger[3] = 1;
             }
@@ -259,7 +460,7 @@ public class Controller : MonoBehaviour
             selfDeathTimer = 1.0f;
         }
 
-        if(selfDeathTimer < 0)
+        if (selfDeathTimer < 0)
         {
             StartDead();
             GameObject objToDelete = GameObject.Find("HoldAnim" + id.ToString());
@@ -268,7 +469,7 @@ public class Controller : MonoBehaviour
                 Destroy(objToDelete);
             }
         }
-        
+
         if (Input.GetKeyDown(KeyDown) || ControllerInput.back[id - 1])
         {
             GameObject animPrefab = (GameObject)Resources.Load("HoldDeathEffect");
@@ -279,7 +480,7 @@ public class Controller : MonoBehaviour
         }
 
         GameObject targetObj = GameObject.Find("HoldAnim" + id.ToString());
-        if(targetObj != null)
+        if (targetObj != null)
         {
             targetObj.transform.position = animPos;
         }
@@ -300,17 +501,31 @@ public class Controller : MonoBehaviour
     // コリジョン
     private void OnCollisionEnter2D(Collision2D other)
     {
-        if (other.gameObject.CompareTag("Surface")) { SoundEffect.soundTrigger[0] = 1;}
+        if(id == 5) { return; }
+        if (other.gameObject.CompareTag("Surface")) { SoundEffect.soundTrigger[0] = 1; }
     }
     private void OnCollisionStay2D(Collision2D other)
     {
-        if (other.gameObject.CompareTag("Surface")) { onSurface = true; delay = 0.1f; delayFlag = false; }
-        if (other.gameObject.CompareTag("Player"))  { onPlayer = true; }
-        if (other.gameObject.CompareTag("Stick"))   { onStick = true; }
+        ContactPoint2D contactPoint = other.GetContact(0); // 最初の接触点を取得
+        Vector2 contactPosition = contactPoint.point;
+        float distance = 0.2f;
+        int layer = 1 << LayerMask.NameToLayer("Default");
+        Vector2 rayOrigin = contactPosition;
+        rayOrigin.y -= 0.05f;
+        Vector2 rayDirectionDown = Vector2.down;
+        // Raycast の結果を格納する RaycastHit2D 変数
+        RaycastHit2D hitVertical = Physics2D.Raycast(rayOrigin, rayDirectionDown, distance, layer);
+
+        if (hitVertical.collider != null)
+        {
+            if (other.gameObject.CompareTag("Surface")) { onSurface = true; delay = 0.1f; delayFlag = false; }
+            if (other.gameObject.CompareTag("Player")) { onPlayer = true; }
+            if (other.gameObject.CompareTag("Stick")) { onStick = true; }
+        }
     }
     private void OnCollisionExit2D(Collision2D other)
     {
-        if (other.gameObject.CompareTag("Surface")) { delay = 0.1f;  delayFlag = true; }
+        if (other.gameObject.CompareTag("Surface")) { delay = 0.1f; delayFlag = true; }
         if (other.gameObject.CompareTag("Player")) { onPlayer = false; }
         if (other.gameObject.CompareTag("Stick")) { onStick = false; }
     }
@@ -319,11 +534,26 @@ public class Controller : MonoBehaviour
         if (delayFlag)
         {
             delay -= Time.deltaTime;
-            if(delay < 0)
+            if (delay < 0)
             {
                 onSurface = false;
                 delay = 0.1f;
                 delayFlag = false;
+            }
+        }
+    }
+    //ゴーストとプレイヤーの当たり判定を無視
+    void IgnoreCollisionByTag(string tag)
+    {
+        GameObject[] objectsToIgnore = GameObject.FindGameObjectsWithTag(tag);
+
+        foreach (var obj in objectsToIgnore)
+        {
+            Collider objCollider = obj.GetComponent<Collider>();
+
+            if (objCollider != null)
+            {
+                Physics.IgnoreCollision(GetComponent<Collider>(), objCollider);
             }
         }
     }

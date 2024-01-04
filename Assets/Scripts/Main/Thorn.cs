@@ -31,11 +31,11 @@ public class Thorn : MonoBehaviour
             try {
                 stickrb[i]  = GameObject.Find("Stick"  + (i + 1).ToString()).GetComponent<Rigidbody2D>();
             } catch (System.NullReferenceException e) {
-                Debug.Log("Error:" + gameObject.name);
+                //Debug.Log("Error:" + gameObject.name);
             } catch (System.IndexOutOfRangeException e) {
                 //添字アクセス違反が発生した時の対処処理
                 //このサンプルコードではこちらが実行される。
-                Debug.Log("Error:" + gameObject.name);
+                //Debug.Log("Error:" + gameObject.name);
             } 
 		}
     }

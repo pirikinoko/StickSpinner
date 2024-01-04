@@ -2,8 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-
-public class ButtonClick : MonoBehaviour　//クリック用ボタン
+using UnityEngine.InputSystem;
+using Photon.Pun;
+public class ButtonClick : MonoBehaviourPunCallbacks　//クリック用ボタン
 {
     public GameObject pauseButton;
 
@@ -17,6 +18,11 @@ public class ButtonClick : MonoBehaviour　//クリック用ボタン
         GameStart.PlayerNumber = 1;
         Settings.SettingPanelActive = false;
         SceneManager.LoadScene("Title");
+        if (GameStart.gameMode1 == "Online" && MatchmakingView.gameModeQuick == "Quick")
+        {
+            PhotonNetwork.LeaveRoom();
+            PhotonNetwork.LeaveLobby();
+        }
     }
     public void PauseButton()
     {
@@ -30,9 +36,15 @@ public class ButtonClick : MonoBehaviour　//クリック用ボタン
             Settings.inSetting = true;
             Time.timeScale = 0;
         }
+        if (GameStart.gameMode1 == "Online")
+        {
+            GameSetting.startTime = -1;
+            Time.timeScale = 1;
+            GameSetting.Playable = true;
+        }
     }
 
-
+   
     //ゲーム終了ボタン
     public void ExitGame()
     {

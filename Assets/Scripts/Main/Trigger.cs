@@ -2,8 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Text.RegularExpressions;
+using Photon.Pun;
 
-public class Trigger : MonoBehaviour
+public class Trigger :MonoBehaviourPunCallbacks
 {
 
     float   pointTimer;
@@ -20,7 +21,7 @@ public class Trigger : MonoBehaviour
 		{   // Controller.cs
             playerId = cnt.id;
 		}
-        else
+        else if(this.name.Contains("Player"))
         {   // Body.cs
             Body bdy = GetComponent<Body>();
             playerId = bdy.id;
@@ -42,6 +43,14 @@ public class Trigger : MonoBehaviour
                 {
                     GameSetting.respownPos[playerId - 1] = other.gameObject.transform.position;
                     checkNum = tmp;
+                    //アイコン表示
+                    GameObject.Find("P" + playerId + "Icon").SetActive(true);
+                    GameObject.Find("P" + playerId + "Icon").GetComponent<SpriteRenderer>().enabled = true;
+                    Vector2 iconPos = other.gameObject.transform.position;
+                    iconPos.x -= 0.5f;
+                    iconPos.x += 0.2f * playerId;
+                    iconPos.y += 0.35f;
+                    GameObject.Find("P" + playerId + "Icon").transform.position = iconPos;
                     SoundEffect.soundTrigger[2] = 1;
                 }
 
@@ -67,16 +76,31 @@ public class Trigger : MonoBehaviour
         }
     }
 
+    [PunRPC]
+    private void GoalProcessRPC(int playerID)
+    {
+        gamemode.GoalProcess(playerID);
+    }
     void OnTriggerEnter2D(Collider2D other)
     {
         if (GameStart.gameMode2 != "Arcade")　　//対戦モードを除き
         {
             //自身がプレイヤーならゴール処理
-            if (this.gameObject.CompareTag("Player"))
+            if (this.gameObject.name == "GoalFlag") 
             {
-                if(other.gameObject.name  == "GoalFlag")
+                if(other.gameObject.CompareTag("Player"))
                 {
-                    gamemode.GoalProcess(playerId);
+                    int playerID = other.gameObject.GetComponent<Body>().id; ;
+                    if (GameStart.gameMode1 == "Online") 
+                    {
+                        // PhotonのRPCで全プレイヤーにGoalProcess関数を呼び出す
+                        photonView.RPC(nameof(GoalProcessRPC), RpcTarget.All, playerID);
+                    }
+                    else 
+                    {
+                        gamemode.GoalProcess(playerID);
+                    }
+                  
                 }
             }
         }
