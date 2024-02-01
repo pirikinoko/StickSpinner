@@ -61,10 +61,6 @@ public class Body : MonoBehaviour
     void Start() 
     {
         eyeActive = true;
-
-
-
-
     }
     void Update()
     {
@@ -153,4 +149,6 @@ public class Body : MonoBehaviour
             }
         }
     }
+
+
 }

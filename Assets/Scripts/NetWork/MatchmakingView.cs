@@ -38,9 +38,19 @@ public class MatchmakingView : MonoBehaviourPunCallbacks
         quickMatchButton.onClick.AddListener(OnQuickMatchButtonClick);
 
         playerCountQuick.text = "";
-        createRoomButton.interactable = false;
-        createRoomLockedButton.interactable = false;
-        joinRoomButton.interactable = false; 
+
+        if(roomNameInputField.text.Length > 0) 
+        {
+            createRoomButton.interactable = true;
+            createRoomLockedButton.interactable = true;
+            joinRoomButton.interactable = true;
+        }
+        else 
+        {
+            createRoomButton.interactable = false;
+            createRoomLockedButton.interactable = false;
+            joinRoomButton.interactable = false;
+        }
     }
     [PunRPC]
     void StartQuickGame(int stage, string gameMode)
@@ -113,6 +123,11 @@ public class MatchmakingView : MonoBehaviourPunCallbacks
     }
     private void OnCreateRoomButtonClick()
     {
+        if (InputName.TypedTextToString.Length == 0) 
+        {
+            ingameLog.GenerateIngameLog("–¼‘O‚ğ“ü—Í‚µ‚Ä‚­‚¾‚³‚¢");
+            return;
+        }
         mode = "Nomal";
         // ƒ‹[ƒ€ì¬ˆ—’†‚ÍA“ü—Í‚Å‚«‚È‚¢‚æ‚¤‚É‚·‚é
         canvasGroup.interactable = false;

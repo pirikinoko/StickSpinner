@@ -10,7 +10,7 @@ public class ButtonInGame : MonoBehaviourPunCallbacks
 {
     public GameObject PausePanel, pauseButton, TLFrame;
     public static int Paused = 0;
-
+    private GameSetting gameSetting = new GameSetting();
 
     //animation
     [SerializeField]
@@ -103,11 +103,20 @@ public class ButtonInGame : MonoBehaviourPunCallbacks
         GameStart.PlayerNumber = 1;
         Settings.SettingPanelActive = false;
         SceneManager.LoadScene("Title");
-        if (GameStart.gameMode1 == "Online" && MatchmakingView.gameModeQuick == "Quick")
+        if (GameStart.gameMode1 == "Online")
         {
-            PhotonNetwork.LeaveRoom();
-            PhotonNetwork.LeaveLobby();
+            photonView.RPC("DeleatPlayer", RpcTarget.All);
+            if (MatchmakingView.gameModeQuick == "Quick")
+            {
+                PhotonNetwork.LeaveRoom();
+                PhotonNetwork.LeaveLobby();
+            }
         }
+    }
+    [PunRPC]
+    void DeleatPlayer()
+    {
+        GameStart.PlayerNumber--;
     }
 }
 

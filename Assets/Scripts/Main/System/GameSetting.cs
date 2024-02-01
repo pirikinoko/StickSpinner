@@ -21,6 +21,8 @@ public class GameSetting : MonoBehaviourPunCallbacks
     Vector2[,] startPos = new Vector2[GameStart.MaxPlayer, GameStart.MaxPlayer];
     string[] startText = { "スタート", "Start" };
     public static bool Playable = false, allJoin = false;
+    public static bool[] playerLeft = new bool[4];
+    //タイム
     float elapsedTime;
     public static float playTime;
     public static float startTime = 6;
@@ -74,6 +76,7 @@ public class GameSetting : MonoBehaviourPunCallbacks
         allJoin = false;
         for (int i = 0; i < 4; i++)
         {
+            playerLeft[i] = false;
             nameTags[i] = GameObject.Find("P" + (i + 1).ToString() + "NameTag");
             if(nameTags[i] != null)
             {
@@ -352,7 +355,7 @@ public class GameSetting : MonoBehaviourPunCallbacks
             AfterAllJoin();
             startTrigger = 1;
         }
-
+        CheckPlayersLeft();
         SwichUI();
         StartTimer();
         // data.languageNum = Settings.languageNum;
@@ -435,17 +438,20 @@ public class GameSetting : MonoBehaviourPunCallbacks
             else
             {
                 playTimeTx.text = (int)GenerateStage.maxHeight + "m";
-
             }
         }
     }
     //他のプレイヤー切断時
     public override void OnPlayerLeftRoom(Photon.Realtime.Player otherPlayer)
     {
-        Debug.Log("Player left: " + otherPlayer.NickName);
-        GameStart.PlayerNumber--;
         int disconnectedId = otherPlayer.ActorNumber;
-        nameTags[disconnectedId - 1].gameObject.SetActive(false);
+        if (players[disconnectedId - 1] == true) 
+        {
+            Debug.Log("Player left: " + otherPlayer.NickName);
+            GameStart.PlayerNumber--;
+            players[disconnectedId - 1].SetActive(false);
+            nameTags[disconnectedId - 1].gameObject.SetActive(false);
+        }
     }
     void NameTag()
     {
@@ -500,5 +506,18 @@ public class GameSetting : MonoBehaviourPunCallbacks
         }
     }
 
-
+    void CheckPlayersLeft() 
+    {
+        for (int i = 0; i < GameStart.PlayerNumber; i++)
+        {
+            if(playerLeft[i] == true) 
+            {
+                Debug.Log("Player" + i + 1 + " has left");
+                GameStart.PlayerNumber--;
+                players[i].SetActive(false);
+                nameTags[i].gameObject.SetActive(false);
+                playerLeft[i] = false;
+            }
+        }
+    }
 }

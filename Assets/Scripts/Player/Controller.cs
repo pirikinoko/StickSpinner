@@ -91,7 +91,7 @@ public class Controller : MonoBehaviourPunCallbacks
 
     IEnumerator GhostMove()
     {
-        float speed = 320;
+        float speed = 600;
         inCoroutine = true;
         bodyObj.transform.position = ghostStartPos;
         stickRot = 359;
@@ -111,12 +111,13 @@ public class Controller : MonoBehaviourPunCallbacks
         yield return new WaitForSeconds(1f);
         GhostJump();
         yield return new WaitForSeconds(0.5f);
-        while (stickRot > 1)
+        while (stickRot > 3)
         {
             stickRot -= speed * Time.deltaTime;
             yield return new WaitForSeconds(0.01f);
+            Debug.Log("StickRot == " + stickRot);
         }
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.8f);
         inCoroutine = false;
     }
     void MoveAnime() 

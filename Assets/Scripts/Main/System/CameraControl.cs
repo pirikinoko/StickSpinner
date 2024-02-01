@@ -6,6 +6,8 @@ using System;
 public class CameraControl : MonoBehaviour
 {
     GameSetting gameSetting;
+    [SerializeField]
+    GameObject spectateUI;
     GameObject goalFlag;
     Vector2[] playerPos = new Vector2[4];
     public float minCameraSize = 3.5f;
@@ -36,6 +38,11 @@ public class CameraControl : MonoBehaviour
 
     private void Update()
     {
+        if (Input.GetMouseButtonDown(0))
+        {
+            Debug.Log("spectateTarget   " + spectateTarget + "PlayerNumber   " + GameStart.PlayerNumber);
+        }
+     
         if (!GameSetting.allJoin)
         {
             return;
@@ -87,10 +94,14 @@ public class CameraControl : MonoBehaviour
                         centerPoint = gameSetting.players[NetWorkMain.netWorkId - 1].transform.position;
                     }
                 }
-                else 
+                 if(gameSetting.players[NetWorkMain.netWorkId - 1].activeSelf == false)
                 {
                     OnlineSpectate();
-                    centerPoint = gameSetting.players[spectateTarget - 1].transform.position;
+                    if (gameSetting.players[spectateTarget - 1] == true)
+                    {
+                        centerPoint = gameSetting.players[spectateTarget - 1].transform.position;
+                    }
+                 
                 }
                
             }

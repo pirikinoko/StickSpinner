@@ -14,56 +14,68 @@ public class NetWorkMain : MonoBehaviourPunCallbacks
     public Text modeText, stageText;
     string[] gameMode = { "Nomal", "Arcade" };
     public bool isOffline = false;
-    int setCount = 0;
+    int setCount = 0, lastPlayerCount;
     private IngameLog ingameLog = new IngameLog();
     private void Start()
     {
-        ingameLog.GenerateIngameLog("leader id ==" + leaderId +"MyId=="+ netWorkId);
+        ingameLog.GenerateIngameLog("leader id ==" + leaderId + "MyId==" + netWorkId);
         setCount = 0;
         PhotonNetwork.ConnectUsingSettings();
     }
 
     void Update()
     {
+
         modeText.text = GameStart.gameMode2;
         stageText.text = "Stage" + GameStart.Stage;
-     
         if (GameStart.gameMode1 == "Online" && PhotonNetwork.InRoom)
         {
+            ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
+           // Debug.Log("NetWorkID == " + netWorkId);
             GameStart.PlayerNumber = PhotonNetwork.CurrentRoom.PlayerCount;
+            if (lastPlayerCount != GameStart.PlayerNumber)
+            {
+                ConfigActive();
+                Photon.Realtime.Player[] playerArray = PhotonNetwork.PlayerList;
+                int[] actorNumbers = new int[4];
+                int tmpId = 0;
+                bool isLeader = false;
+                if(leaderId == netWorkId) { isLeader = true; }
+                for (int i = 0; i < Mathf.Min(playerArray.Length, 4); i++)
+                {
+                    actorNumbers[i] = playerArray[i].ActorNumber;
+                    if (actorNumbers[i] == PhotonNetwork.LocalPlayer.ActorNumber)
+                    {
+                        tmpId = netWorkId;
+                        netWorkId = i + 1;
+                    }
+                }
+                //leaderId再設定
+                if (isLeader)
+                {                
+                    leaderId = netWorkId;
+                    UpdateLeader(leaderId);
+                }
+
+                ingameLog.GenerateIngameLog(tmpId + "→→ → → → "   + netWorkId);
+                // 配列の内容を表示
+                Debug.Log("ActorNumbers: " + string.Join(", ", actorNumbers));
+            }
+            lastPlayerCount = GameStart.PlayerNumber;
+
             isOnline = true;
             for (int i = 0; i < GameStart.PlayerNumber; i++)
             {
                 playerConfigs[i].gameObject.SetActive(true);
-                playerNameText[i].text = PhotonNetwork.PlayerList[i].NickName;  
-
-                Image image = leaderIcons[i].gameObject.GetComponent<Image>();
-                Color imageColor = image.color;
-                float newAlpha = 1;
-                if ((i + 1) == leaderId)
-                {
-                    newAlpha = 1f;
-                    imageColor.a = newAlpha;
-
-                }
-                else
-                {
-                    newAlpha = 0.2f;
-                    imageColor.a = newAlpha;
-                }
-                image.color = imageColor;
+                playerNameText[i].text = PhotonNetwork.PlayerList[i].NickName;
             }
-            if (setCount == 0)
+            if (setCount == 0) //一度のみ実行する項目
             {
-                foreach (var player in PhotonNetwork.PlayerList)
-                {
-                    netWorkId = player.ActorNumber;
-                }
                 Debug.Log("NetWorkID == " + netWorkId);
                 photonView.RPC("SetPlayerNumber", RpcTarget.All);
                 photonView.RPC("ConfigActive", RpcTarget.All);
 
-                ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
+             
                 if (customProps.ContainsKey("winnings"))
                 {
                     int[] winningsLocal = (int[])customProps["winnings"];
@@ -84,7 +96,7 @@ public class NetWorkMain : MonoBehaviourPunCallbacks
         {
             isOffline = false;
         }
-    
+
 
     }
     public void Connect()
@@ -134,13 +146,25 @@ public class NetWorkMain : MonoBehaviourPunCallbacks
         {
             PhotonNetwork.CurrentRoom.SetStartTime(PhotonNetwork.ServerTimestamp);
         }
-        int netWorkId = PhotonNetwork.LocalPlayer.ActorNumber;
+        Photon.Realtime.Player[] playerArray = PhotonNetwork.PlayerList;
+        int[] actorNumbers = new int[4];
+        int tmpId = 0;
+        for (int i = 0; i < Mathf.Min(playerArray.Length, 4); i++)
+        {
+            actorNumbers[i] = playerArray[i].ActorNumber;
+            if (actorNumbers[i] == PhotonNetwork.LocalPlayer.ActorNumber)
+            {
+                tmpId = netWorkId;
+                netWorkId = i + 1;
+            }
+        }
+        ingameLog.GenerateIngameLog(tmpId + "→→ → → → " + netWorkId);
         PhotonNetwork.NickName = InputName.TypedTextToString;
         Debug.Log(PhotonNetwork.NickName + "isConnected");
 
         var roomOptions = new RoomOptions();
 
-        ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties; 
+        ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
         if (customProps.ContainsKey("gameMode"))
         {
             GameStart.gameMode2 = customProps["gameMode"].ToString();
@@ -157,23 +181,28 @@ public class NetWorkMain : MonoBehaviourPunCallbacks
                 }
             }
 
-            int stageTmp = 0;
-            if (int.TryParse(customProps["stage"].ToString(), out stageTmp))
+            int tmpNum = 0;
+            if (int.TryParse(customProps["stage"].ToString(), out tmpNum))
             {
-                GameStart.Stage = stageTmp;
+                GameStart.Stage = tmpNum;
             }
+     
 
+            string[] userNameLocal = (string[])customProps["userName"];
+            userNameLocal[netWorkId - 1] = PhotonNetwork.NickName;
+            customProps["userName"] = userNameLocal;
         }
-        else 
+        else
         {
             customProps["leaderId"] = 1;
-            customProps["stage"] = 0;
+            customProps["stage"] = 1;
             customProps["gameMode"] = "Nomal";
             customProps["Password"] = "";
             customProps["isJoined"] = new bool[] { false, false, false, false };
             customProps["winnings"] = new int[] { 0, 0, 0, 0 };
+            customProps["userName"] = new string[] { "", "", "", "", };
         }
-  
+
 
         PhotonNetwork.CurrentRoom.SetCustomProperties(customProps);
 
@@ -182,7 +211,7 @@ public class NetWorkMain : MonoBehaviourPunCallbacks
     // Photonのサーバーから切断された時に呼ばれるコールバック
     public override void OnDisconnected(DisconnectCause cause)
     {
-        Debug.Log($"サーバーとの接続が切断されました: {cause.ToString()}");
+        photonView.RPC("ConfigActive", RpcTarget.All);
     }
 
     [PunRPC]
@@ -223,24 +252,6 @@ public class NetWorkMain : MonoBehaviourPunCallbacks
             if (int.TryParse(customProps["leaderId"].ToString(), out idTmp))
             {
                 leaderId = idTmp;
-            }
-            for (int i = 0; i < GameStart.PlayerNumber; i++)
-            {
-                Image image = leaderIcons[i].gameObject.GetComponent<Image>();
-                Color imageColor = image.color;
-                float newAlpha = 1;
-                if ((i + 1) == leaderId)
-                {
-                    newAlpha = 1f;
-                    imageColor.a = newAlpha;
-
-                }
-                else
-                {
-                    newAlpha = 0.2f;
-                    imageColor.a = newAlpha;
-                }
-                image.color = imageColor;
             }
         }
     }

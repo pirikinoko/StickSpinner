@@ -71,6 +71,10 @@ MonoBehaviour:
   - RPCSetTeam
   - AllJoin
   - StartQuickGame
+  - RPCNextPhase
+  - RPCSynctPhase
+  - RPCSyncPhase
+  - DeleatPlayer
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 0

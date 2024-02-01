@@ -7,7 +7,7 @@ using Photon.Pun;
 public class ButtonClick : MonoBehaviourPunCallbacks　//クリック用ボタン
 {
     public GameObject pauseButton;
-
+    private GameSetting gameSetting = new GameSetting(); 
     public void BackToTitle()
     {
         SoundEffect.soundTrigger[2] = 1;
@@ -17,12 +17,22 @@ public class ButtonClick : MonoBehaviourPunCallbacks　//クリック用ボタ�
         GameSetting.Playable = false;
         GameStart.PlayerNumber = 1;
         Settings.SettingPanelActive = false;
-        SceneManager.LoadScene("Title");
-        if (GameStart.gameMode1 == "Online" && MatchmakingView.gameModeQuick == "Quick")
+        
+        if (GameStart.gameMode1 == "Online")
         {
-            PhotonNetwork.LeaveRoom();
-            PhotonNetwork.LeaveLobby();
+            photonView.RPC("DeleatPlayer", RpcTarget.All, NetWorkMain.netWorkId);
+            if (MatchmakingView.gameModeQuick == "Quick") 
+            {
+                PhotonNetwork.LeaveRoom();
+                PhotonNetwork.LeaveLobby();
+            }
         }
+        SceneManager.LoadScene("Title");
+    }
+    [PunRPC]
+    void DeleatPlayer(int id)
+    {
+        GameSetting.playerLeft[id - 1] = true;
     }
     public void PauseButton()
     {
@@ -30,7 +40,6 @@ public class ButtonClick : MonoBehaviourPunCallbacks　//クリック用ボタ�
         {
             ButtonInGame.Paused = 1;
             GameSetting.Playable = false;
-            GameSetting.startTime = 0;
             pauseButton.gameObject.SetActive(false);
             Settings.SettingPanelActive = true;
             Settings.inSetting = true;
@@ -38,7 +47,6 @@ public class ButtonClick : MonoBehaviourPunCallbacks　//クリック用ボタ�
         }
         if (GameStart.gameMode1 == "Online")
         {
-            GameSetting.startTime = -1;
             Time.timeScale = 1;
             GameSetting.Playable = true;
         }

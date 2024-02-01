@@ -10,12 +10,12 @@ using Photon.Pun;
 
 public class GameStart : MonoBehaviourPunCallbacks
 {
-    public  int MaxStage;     // 総ステージ数
-    public const int MaxPlayer = 4;     // 総プレイヤー数
+    public  int maxStageNomal;     // 総ステージ数
+    public static int MaxPlayer = 4;     // 総プレイヤー数
     const int KeyboardMode = 5;
     const int ControllerMode = 6;
 
-    public GameObject mainTitle, startPanel, changePlayerNumber, stageSelect, selectGameMode, setArcadeGame, keyBoardMouseUI, selectOnlineLobby, onlineLobby;
+    public GameObject mainTitle, startPanel, changePlayerNumber, stageSelect, selectGameMode, setArcadeGame, keyBoardMouseUI, selectOnlineLobby, onlineLobby, loadScreen;
     public GameObject[] controllerUI, playerIcon, playerSlot;
     //チーム選択
     public Vector2[] playerIconPos { get; set; } = new Vector2[4];
@@ -50,11 +50,14 @@ public class GameStart : MonoBehaviourPunCallbacks
     public static int PlayerNumber { get; set; } = 1;     // 参加プレイヤー数
     public static int Stage = 1;
     public static int loadData = 0;
+    //ロード画面
+    bool reconnectable, joinedLobby = false;
     void Start()
     {
         Time.timeScale = 1;
         inDemoPlay = false;
         GameSetting.Playable = false;
+        reconnectable = false;
         Stage = 1;
         PlayerNumber = 1;
         teamMode = "FreeForAll";
@@ -74,18 +77,18 @@ public class GameStart : MonoBehaviourPunCallbacks
         }
         if (gameMode1 == "Online" && PhotonNetwork.InRoom)
         {
-            phase = 2;
+            phase = 3;
         }
     }
     void Update()
     {
-
+        Debug.Log(phase);
         SwichUI();
         SwichStageMaterial();
         playerNumberText.text = PlayerNumber.ToString();
         PhaseControll();
         //phase 0～3
-        phase = System.Math.Min(phase, 5);
+        phase = System.Math.Min(phase,8 );
         phase = System.Math.Max(phase, 0);
 
 
@@ -138,7 +141,6 @@ public class GameStart : MonoBehaviourPunCallbacks
 
     void SwichStageMaterial() //選択ステージ毎に情報切り替え
     {
-
         switch (gameMode1)
         {
             case "Single":
@@ -238,7 +240,6 @@ public class GameStart : MonoBehaviourPunCallbacks
                         case 4:
                             difficultyText.text = difficultyStage[1 + (Settings.languageNum * 3)];
                             break;
-
                     }
                 }
                 else
@@ -256,8 +257,6 @@ public class GameStart : MonoBehaviourPunCallbacks
                             difficultyText.text = "Nomal";
                             break;
                     }
-
-
                 }
                 break;
 
@@ -269,23 +268,24 @@ public class GameStart : MonoBehaviourPunCallbacks
     {
         if(lastPhase != phase) 
         {
+            DisablePanel();
             switch (gameMode1)
             {
                 case "Single":
                     switch (phase)
                     {
                         case 0:
-                            DisablePanel();
                             GameStart.PlayerNumber = 1;
                             mainTitle.gameObject.SetActive(true);
                             break;
                         case 1:
-                            DisablePanel();
                             selectGameMode.gameObject.SetActive(true);
                             break;
                         case 2:
-                            DisablePanel();
                             stageSelect.gameObject.SetActive(true);
+                            break;
+                        case 3:
+                            SceneManager.LoadScene("Stage");
                             break;
 
                     }
@@ -294,21 +294,17 @@ public class GameStart : MonoBehaviourPunCallbacks
                     switch (phase)
                     {
                         case 0:
-                            DisablePanel();
                             GameStart.PlayerNumber = 1;
                             mainTitle.gameObject.SetActive(true);
                             break;
                         case 1:
-                            DisablePanel();
                             changePlayerNumber.gameObject.SetActive(true);
                             break;
                         case 2:
-                            DisablePanel();
                             selectGameMode.gameObject.SetActive(true);
                             lastPlayerNum = PlayerNumber;
                             break;
                         case 3:
-                            DisablePanel();
                             stageSelect.gameObject.SetActive(true);
                             break;
                             if (!(gameMode2 == "Arcade") || !(Stage < 3))
@@ -316,9 +312,12 @@ public class GameStart : MonoBehaviourPunCallbacks
                                 return;
                             }
                         case 4:
-                            DisablePanel();
+                            if(gameMode2 == "Nomal") { phase++; return; }
                             setArcadeGame.gameObject.SetActive(true);
                             SetArcade();
+                            break;
+                        case 5:
+                            SceneManager.LoadScene("Stage");
                             break;
                     }
                     break;
@@ -326,28 +325,38 @@ public class GameStart : MonoBehaviourPunCallbacks
                     switch (phase)
                     {
                         case 0:
-                            DisablePanel();
                             mainTitle.gameObject.SetActive(true);
+                            reconnectable = true;
                             break;
                         case 1:
-                            DisablePanel();
-                            selectOnlineLobby.gameObject.SetActive(true);
+                            if(lastPhase > phase) { phase = 0; return; }
+                            loadScreen.gameObject.SetActive(true);
+                            StartCoroutine(Reconnect());
                             break;
                         case 2:
-                            DisablePanel();
-                            onlineLobby.gameObject.SetActive(true);
+                            selectOnlineLobby.gameObject.SetActive(true);
+                            joinedLobby = false;
                             break;
                         case 3:
-                            DisablePanel();
-                            stageSelect.gameObject.SetActive(true);
+                            onlineLobby.gameObject.SetActive(true);
                             break;
                         case 4:
-                            DisablePanel();
-                            phase = 2;
+                            phase = 3;
+                            return;
                             break;
                         case 5:
-                            DisablePanel();
+                            stageSelect.gameObject.SetActive(true);
+                            break;
+                        case 6:
+                            phase = 3;
+                            return;
+                            break;
+                        case 7:
                             setArcadeGame.gameObject.SetActive(true);
+                            break;
+                        case 8:
+                            phase = 3;
+                            return;
                             break;
                     }
                     break;
@@ -359,6 +368,43 @@ public class GameStart : MonoBehaviourPunCallbacks
             SetArcade();
         }
     }
+    IEnumerator Reconnect()
+    {
+        while (true)
+        {
+            if (reconnectable)
+            {
+                PhotonNetwork.JoinLobby();
+                reconnectable = false;
+                StartCoroutine(Loading());
+            }
+
+            yield return null; // 1フレーム待つ
+
+            if (PhotonNetwork.InLobby && !joinedLobby)
+            {
+                joinedLobby = true; // 重複して呼ばれないようにフラグを立てる
+                yield return new WaitForSeconds(2.0f); // 1フレーム待つ
+                PhotonNetwork.JoinLobby();
+                phase++;
+                break;
+            }
+
+        }
+    }
+
+    IEnumerator Loading() 
+    {
+        yield return new WaitForSeconds(2.0f);
+        reconnectable = true;
+    }
+
+    [PunRPC]
+    public void RPCSyncPhase(int phaseLocal)
+    {
+        phase = phaseLocal;
+    }
+
 
     void SetArcade() 
     {
@@ -462,6 +508,7 @@ public class GameStart : MonoBehaviourPunCallbacks
         setArcadeGame.gameObject.SetActive(false);
         selectOnlineLobby.gameObject.SetActive(false);
         onlineLobby.gameObject.SetActive(false);
+        loadScreen.gameObject.SetActive(false);
         inDemoPlay = false;
     }
 

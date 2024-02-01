@@ -17,6 +17,7 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
     public static int[] sensChange = new int[4];
     TitleButton titleButton;
     GameStart gameStart;
+    private IngameLog ingameLog = new IngameLog();
     void Start()
     {
         if(SceneManager.GetActiveScene().name == "Title")
@@ -59,28 +60,31 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
     //次の画面(マルチプレイ)
     public void NextPhase()
     {
-        if (GameStart.gameMode1 == "Online")
-        {
-            if(GameStart.phase != 0) { return;   }
-
-        }
-        if (GameStart.phase == 4)
-        {
-            SceneManager.LoadScene("Stage");
-        }
-        GameStart.gameMode1 = "Multi";
         SoundEffect.soundTrigger[2] = 1;
         GameStart.phase++;
         titleButton.targetNum = 0;
-      
     }
-
+  
+    public void SetModeMulti() 
+    {
+        GameStart.gameMode1 = "Multi";
+    }
     public void GoOnlineMode() 
     {
         GameStart.gameMode1 = "Online";
         SoundEffect.soundTrigger[2] = 1;
         GameStart.phase++;
         titleButton.targetNum = 0;
+    }
+    public void GoStageSelect()
+    {
+        SoundEffect.soundTrigger[2] = 1;
+        GameStart.phase = 5;
+    }
+    public void GoTeamSelect()
+    {
+        SoundEffect.soundTrigger[2] = 1;
+        GameStart.phase = 7;
     }
     public void NextPhaseOnline()
     {
@@ -96,10 +100,6 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
     //モード変更
     public void setNomalMode() 
     {
-        if (NetWorkMain.netWorkId != NetWorkMain.leaderId)
-        {
-            return; 
-        }
         GameStart.gameMode2 = "Nomal";
         NetWorkMain.UpdateRoomStats(1);
         photonView.RPC(nameof(SetCustomPropsStage), RpcTarget.All);
@@ -108,15 +108,27 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
     }
     public void setArcadeMode()
     {
-        if (NetWorkMain.netWorkId != NetWorkMain.leaderId)
-        {
-            return;
-        }
         GameStart.gameMode2 = "Arcade";
         NetWorkMain.UpdateRoomStats(1);
         photonView.RPC(nameof(SetCustomPropsStage), RpcTarget.All);
         NetWorkMain.UpdateGameMode("Arcade");
         photonView.RPC(nameof(SetCustomPropsGameMode), RpcTarget.All);
+    }
+
+    public void StartGame()
+    {
+        if(GameStart.gameMode1 == "Online") 
+        {
+            photonView.RPC(nameof(RPCStartGame), RpcTarget.All);
+            return;
+        }
+        Debug.Log("ゲームを開始します。");
+        SceneManager.LoadScene("Stage");
+    }
+    [PunRPC]
+    void RPCStartGame() 
+    {
+        SceneManager.LoadScene("Stage");
     }
     public void syncStage()
     {
@@ -143,19 +155,10 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
     }
     public void PrevPhase()
     {
-        if (GameStart.gameMode1 == "Single") { GameStart.phase--; }
-        else { GameStart.phase--; }
+        GameStart.phase--;
         SoundEffect.soundTrigger[2] = 1;
-       
     }
-    public void BackRoomLobby() 
-    {
-        if (PhotonNetwork.InRoom && NetWorkMain.leaderId != NetWorkMain.netWorkId)
-        {
-            return;
-        }
-        if (GameStart.gameMode1 == "Online") { GameStart.phase = 2; }
-    }
+    
     //部屋を抜ける
     public void LeaveRoom() 
     {
@@ -213,32 +216,7 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
     {
         gameStart.stageInfoActive = false;
     }
-    [PunRPC]
-    public void StartGame()
-    {
-        if(GameStart.gameMode1 == "Online" && GameStart.phase != 2 && GameStart.phase != 5) 
-        {
-            GameStart.phase = 2;
-            NetWorkMain.UpdateRoomStats(GameStart.Stage);
-            photonView.RPC(nameof(SetCustomPropsStage), RpcTarget.All);
-            return;
-        }
-        else if(GameStart.gameMode1 == "Online"  && GameStart.gameMode2 == "Arcade" && GameStart.phase != 5) 
-        {
-            GameStart.phase = 5;
-            return;
-        }
-        else 
-        {
-            if (GameStart.phase == 3 && GameStart.gameMode2 == "Arcade" && GameStart.Stage < 3)
-            {
-                GameStart.phase++;
-                return;
-            }
-            SceneManager.LoadScene("Stage");
-        }
-     
-    }
+  
     [PunRPC]
      void SetCustomPropsStage() 
     {
@@ -264,23 +242,7 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
             Debug.Log("GameModeを" + customProps["gameMode"].ToString() + "に設定しました");
         }
     }
-    //ルーム入室時
-    public override void OnJoinedRoom()
-    {
-        if(GameStart.PlayerNumber > 1) 
-        {
-            if (PhotonNetwork.CurrentRoom.CustomProperties.ContainsKey("stage"))
-            {
-                photonView.RPC(nameof(SetCustomPropsStage), RpcTarget.All);
-            }
-            if (PhotonNetwork.CurrentRoom.CustomProperties.ContainsKey("gameMode"))
-            {
-                photonView.RPC(nameof(SetCustomPropsGameMode), RpcTarget.All);
-            }
-        }
-      
 
-    }
     public void SetCustomPropsStageButton() 
     {
         if(GameStart.gameMode1 == "Online") 
@@ -446,17 +408,7 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
         }
     }
 
-
-    //RPCButton
-    [PunRPC]
-    public void RPCStartGame()
-    {
-        if (NetWorkMain.netWorkId != NetWorkMain.leaderId)
-        {
-            return;
-        }
-        photonView.RPC(nameof(StartGame), RpcTarget.All);
-    }
+   
     [PunRPC]
     public void RPCsyncLeader()
     {
