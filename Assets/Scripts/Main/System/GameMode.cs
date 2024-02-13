@@ -41,6 +41,8 @@ public class GameMode : MonoBehaviourPunCallbacks
     private Vector2[] particlePos = new Vector2[4];
     public static float[,] killTimer = new float[4, 4];       // プレイヤー同士の衝突を記録(プレイヤー1～4とプレイヤー1～4の衝突)
     Renderer[] chanceRespown1Rend = new Renderer[4];
+    //サッカーモード
+    Vector2 ballPosDefault = new Vector2(0, -4.5f);
     //無限モード
     public static bool isGameOver;
     int startTrigger = 0;
@@ -81,9 +83,24 @@ public class GameMode : MonoBehaviourPunCallbacks
             }
         }
 
-        //バトルモード
+
+
+
+
+        //アーケード
         if ((GameStart.gameMode1 == "Multi" || GameStart.gameMode1 == "Online")&& GameStart.gameMode2 == "Arcade")
         {
+            //チームタグ表示
+            for (int i = 0; i < GameStart.PlayerNumber; i++)
+            {
+                if (GameStart.teamMode != "FreeForAll")
+                {
+                    teamTag[i].gameObject.SetActive(true);
+                    teamTagText[i].text = teamTagName[GameStart.playerTeam[i]];
+                    teamTagText[i].color = teamColors[GameStart.playerTeam[i]];
+                }
+            }
+            //リセット等
             for (int i = 0; i < 4; i++)
             {
                 plasement[i] = null;
@@ -98,36 +115,39 @@ public class GameMode : MonoBehaviourPunCallbacks
             }
             count = 0;
             KillLogTimer = 0;
-
-
-            // 画面上部スコアプレイヤー数分表示
+            // 画面上部スコア表示リセット
             for (int i = 0; i < 4; i++) { teamFrame[i].gameObject.SetActive(false); pointTextGO[i].gameObject.SetActive(false); }
             for (int i = 0; i < 4; i++) { ffaFrame[i].gameObject.SetActive(false); pointTextGO[i].gameObject.SetActive(false); }
-            if (GameStart.teamMode == "FreeForAll")
-            {
-                for (int i = 0; i < GameStart.PlayerNumber; i++) { ffaFrame[i].gameObject.SetActive(true); pointTextGO[i].gameObject.SetActive(true); }
-                for (int i = 3; i >= GameStart.PlayerNumber; i--) { ffaFrame[i].gameObject.SetActive(false); pointTextGO[i].gameObject.SetActive(false); }
-            }
-            else
-            {
-                for (int i = 0; i < GameStart.PlayerNumber; i++)
+            //旗取りモード
+            if (GameStart.Stage == 1) 
+            { 
+                if (GameStart.teamMode == "FreeForAll")
                 {
-                    if (GameStart.teamSize[i] >= 1)
+                    for (int i = 0; i < GameStart.PlayerNumber; i++) { ffaFrame[i].gameObject.SetActive(true); pointTextGO[i].gameObject.SetActive(true); }
+                    for (int i = 3; i >= GameStart.PlayerNumber; i--) { ffaFrame[i].gameObject.SetActive(false); pointTextGO[i].gameObject.SetActive(false); }
+                }
+                else
+                {
+                    for (int i = 0; i < GameStart.PlayerNumber; i++)
                     {
-                        teamFrame[i].gameObject.SetActive(true);
-                        pointTextGO[i].gameObject.SetActive(true);
+                        if (GameStart.teamSize[i] >= 1)
+                        {
+                            teamFrame[i].gameObject.SetActive(true);
+                            pointTextGO[i].gameObject.SetActive(true);
+                        }
                     }
                 }
+
             }
-            //チームタグ表示
-            for (int i = 0; i < GameStart.PlayerNumber; i++)
+            //サッカーモード
+            if (GameStart.Stage == 2) 
             {
-                if (GameStart.teamMode != "FreeForAll")
-                {
-                    teamTag[i].gameObject.SetActive(true);
-                    teamTagText[i].text = teamTagName[GameStart.playerTeam[i]];
-                    teamTagText[i].color = teamColors[GameStart.playerTeam[i]];
-                }
+                //チームレフト
+                teamFrame[0].gameObject.SetActive(true);
+                pointTextGO[0].gameObject.SetActive(true);
+                //チームライト
+                teamFrame[1].gameObject.SetActive(true);
+                pointTextGO[1].gameObject.SetActive(true);
             }
 
         }
@@ -151,16 +171,26 @@ public class GameMode : MonoBehaviourPunCallbacks
         {
             CheckFinish();
         }
-        // バトルモード
+        //アーケード
         if ((GameStart.gameMode1 == "Multi" || GameStart.gameMode1 == "Online") && GameStart.gameMode2 == "Arcade")
-        {   
-            KillSystem();
-            PointDisplay();
-            PlayParticle();
-            checkResult();
-            ShowResult();
-            LastChance();
+        {
+            //旗取りモード
+            if (GameStart.Stage == 1) 
+            {
+                KillSystem();
+                PointDisplay();
+                PlayParticle();
+                checkResult();
+                ShowResult();
+                LastChance();
+            }
+            //サッカーモード
+            if (GameStart.Stage == 2)
+            {
+                PointDisplay();
+            }
         }
+
         // 無限モード
         if (GameStart.gameMode1 == "Single" && GameStart.gameMode2 == "Arcade")
         {
@@ -284,31 +314,39 @@ public class GameMode : MonoBehaviourPunCallbacks
 
     void PointDisplay() //ポイント小数点以下切り捨て＆表示
     {
-        if (GameStart.teamMode == "FreeForAll")
+        if (GameStart.Stage == 1) 
         {
-            for (int i = 0; i < GameStart.PlayerNumber; i++)
+            if (GameStart.teamMode == "FreeForAll")
             {
-                pointText[i].text = String.Format("{0:#}", points[i].ToString());
-            }
-        }
-        else
-        {
-            for (int i = 0; i < 4; i++)
-            {
-                teamPoints[i] = 0;
-            }
-            for (int i = 0; i < GameStart.PlayerNumber; i++)
-            {
-                teamPoints[GameStart.playerTeam[i]] += points[i];
-            }
-            for (int i = 0; i < GameStart.PlayerNumber; i++)
-            {
-                if (GameStart.teamSize[i] >= 1)
+                for (int i = 0; i < GameStart.PlayerNumber; i++)
                 {
-                    pointText[i].text = String.Format("{0:#}", teamPoints[i].ToString());
+                    pointText[i].text = String.Format("{0:#}", points[i].ToString());
                 }
             }
+            else
+            {
+                for (int i = 0; i < 4; i++)
+                {
+                    teamPoints[i] = 0;
+                }
+                for (int i = 0; i < GameStart.PlayerNumber; i++)
+                {
+                    teamPoints[GameStart.playerTeam[i]] += points[i];
+                }
+                for (int i = 0; i < GameStart.PlayerNumber; i++)
+                {
+                    if (GameStart.teamSize[i] >= 1)
+                    {
+                        pointText[i].text = String.Format("{0:#}", teamPoints[i].ToString());
+                    }
+                }
 
+            }
+        }
+       else if (GameStart.Stage == 2) 
+        {
+            pointText[0].text = String.Format("{0:#}", teamPoints[0].ToString());
+            pointText[1].text = String.Format("{0:#}", teamPoints[1].ToString());
         }
     }
 
@@ -468,6 +506,10 @@ public class GameMode : MonoBehaviourPunCallbacks
         }
     }
 
+    public void BallReset() 
+    {
+        GameObject.Find("Ball").transform.position = ballPosDefault;
+    }
 }
 
 

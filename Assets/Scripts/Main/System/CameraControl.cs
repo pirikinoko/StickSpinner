@@ -47,7 +47,8 @@ public class CameraControl : MonoBehaviour
         {
             return;
         }
-        if (GameStart.gameMode1 == "Multi" || (GameStart.gameMode1 == "Single" && GameStart.gameMode2 == "Nomal"))
+        //最初のカメラズームアウト演出
+        if ((GameStart.gameMode1 == "Multi" && GameStart.Stage == 1) || (GameStart.gameMode1 == "Single" && GameStart.gameMode2 == "Nomal"))
         {
             if (goalFlag == null)
             {
