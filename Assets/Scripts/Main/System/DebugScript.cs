@@ -8,6 +8,7 @@ public class DebugScript : MonoBehaviour　//デバッグ用スクリプト
     [SerializeField] int playerNumber;
     [SerializeField] string targetMode1;
     [SerializeField] string targetMode2;
+    [SerializeField] string teamMode;
     // Start is called before the first frame update
     void Start()
     {
@@ -15,6 +16,7 @@ public class DebugScript : MonoBehaviour　//デバッグ用スクリプト
         GameStart.gameMode2 = targetMode2;
         GameStart.Stage = targetStage;
         GameStart.PlayerNumber = playerNumber;
+        GameStart.teamMode = teamMode;
     }
 
 }

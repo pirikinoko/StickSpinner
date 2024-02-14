@@ -35,13 +35,13 @@ public class Ball : MonoBehaviour
         {
             GameMode.teamPoints[0]++;
             SoundEffect.soundTrigger[2] = 1;
-            gameMode.BallReset();
+            StartCoroutine(gameMode.BallReset());
         }
         if (col.gameObject.name == "GoalZoneRight")
         {
             GameMode.teamPoints[1]++;
             SoundEffect.soundTrigger[2] = 1;
-            gameMode.BallReset();
+            StartCoroutine(gameMode.BallReset());
         }
     }
 }

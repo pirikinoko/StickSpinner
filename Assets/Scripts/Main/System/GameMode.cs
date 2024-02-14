@@ -30,19 +30,24 @@ public class GameMode : MonoBehaviourPunCallbacks
     public static bool[] isDead = { false, false, false, false };
     public static float[] points = new float[4], pointsInOrder = new float[4], teamPoints = new float[4];
     public static float topPoint, KillLogTimer;
-    float p1Points, p2Points, p3Points, p4Points;
     public static string[] plasement = new string[4];
     Text[] pointText = new Text[4];
     public static string killer, died;
     public Text KillLogText = null;
     public static byte[] playParticle = new byte[4];
+    Vector2[] teamFramePos = new Vector2[4];
     public static bool Finished;
     byte count = 0;
+    int frameSpace = 14;
     private Vector2[] particlePos = new Vector2[4];
     public static float[,] killTimer = new float[4, 4];       // プレイヤー同士の衝突を記録(プレイヤー1～4とプレイヤー1～4の衝突)
     Renderer[] chanceRespown1Rend = new Renderer[4];
     //サッカーモード
-    Vector2 ballPosDefault = new Vector2(0, -4.5f);
+    [SerializeField]
+    GameObject ball;
+    [SerializeField]
+    Text ballCountText;
+    Vector2 ballPosDefault = new Vector2(0, -2f);
     //無限モード
     public static bool isGameOver;
     int startTrigger = 0;
@@ -69,6 +74,8 @@ public class GameMode : MonoBehaviourPunCallbacks
         ResultPanel.gameObject.SetActive(false);
         ResultPanelFront.gameObject.SetActive(false);
         TextCanvas.gameObject.SetActive(false);
+        ballCountText = GameObject.Find("BallSpownCount").GetComponent<Text>();
+        ballCountText.text = null;
         Finished = false;
         Goaled = false;
         isGameOver = false;
@@ -97,7 +104,11 @@ public class GameMode : MonoBehaviourPunCallbacks
                 {
                     teamTag[i].gameObject.SetActive(true);
                     teamTagText[i].text = teamTagName[GameStart.playerTeam[i]];
-                    teamTagText[i].color = teamColors[GameStart.playerTeam[i]];
+                    //チームフレーム位置設定
+                    teamFramePos[i] = teamFrame[i].transform.position;
+                    teamFramePos[i].x += i * frameSpace / GameStart.PlayerNumber;
+                    teamFrame[i].transform.position = teamFramePos[i];
+                    Debug.Log(teamFrame[i].transform.position);
                 }
             }
             //リセット等
@@ -506,9 +517,38 @@ public class GameMode : MonoBehaviourPunCallbacks
         }
     }
 
-    public void BallReset() 
+    public IEnumerator BallReset()
     {
-        GameObject.Find("Ball").transform.position = ballPosDefault;
+        ball.transform.position = ballPosDefault;
+        Rigidbody2D ballRb = ball.GetComponent<Rigidbody2D>();
+        ballRb.velocity = Vector2.zero;
+        ballRb.angularVelocity = 0;
+        ballRb.constraints = RigidbodyConstraints2D.FreezeAll;
+        ball.GetComponent<CircleCollider2D>().enabled = false;
+
+        Vector2 textPos = ballPosDefault;
+        ballCountText.transform.position = textPos;
+        float countdown = 3.0f; // 開始するカウントダウンの数
+        while (countdown > 0)
+        {
+            if (Mathf.Floor(countdown) < Mathf.Floor(countdown + Time.deltaTime))
+            {
+                SoundEffect.soundTrigger[3] = 1;
+            }
+            ballCountText.text = Mathf.Ceil(countdown).ToString(); // カウントダウンの整数部分を表示
+            countdown -= Time.deltaTime; // Time.deltaTime を使用して時間を減少させる
+            yield return null; // 次のフレームまで待機
+        }
+        ballCountText.text = null;
+        ball.GetComponent<CircleCollider2D>().enabled = true;
+        ballRb.constraints = RigidbodyConstraints2D.None;
+        ballRb.constraints = RigidbodyConstraints2D.FreezeRotation;
+        ballRb.AddForce(new Vector2(0, -0.1f)); 
+    }
+
+    void AdjustTeamFramePos()
+    {
+
     }
 }
 
