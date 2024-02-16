@@ -548,14 +548,29 @@ public class GameMode : MonoBehaviourPunCallbacks
 
     void AdjustTeamFramePos()
     {
-        for (int i = 0; i < teamFrame.Length; i++)
+        if(GameStart.Stage == 1)
         {
-            //チームフレーム位置設定
-            //初期位置に設定
-            teamFramePos[i] = teamFrame[0].transform.position;
-            //右にずらす
-            teamFramePos[i].x += (i * (frameSpace / (-1 + (float)GameStart.PlayerNumber)));
-            teamFrame[i].transform.position = teamFramePos[i];
+            for (int i = 0; i < teamFrame.Length; i++)
+            {
+                //チームフレーム位置設定
+                //初期位置に設定
+                teamFramePos[i] = teamFrame[0].transform.position;
+                //右にずらす
+                teamFramePos[i].x += (i * (frameSpace / (-1 + (float)GameStart.PlayerNumber)));
+                teamFrame[i].transform.position = teamFramePos[i];
+            }
+        }
+        if (GameStart.Stage == 2)
+        {
+            for (int i = 0; i < 2; i++)
+            {
+                //チームフレーム位置設定
+                //初期位置に設定
+                teamFramePos[i] = teamFrame[0].transform.position;
+                //右にずらす
+                teamFramePos[i].x += frameSpace * i;
+                teamFrame[i].transform.position = teamFramePos[i];
+            }
         }
     }
 }

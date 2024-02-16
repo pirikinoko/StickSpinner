@@ -38,6 +38,7 @@ public class TitleButton : MonoBehaviourPunCallbacks
         OpenSetting();
         SelectButton();
         Selected();
+        ChangeFrameSize();  
         if (ControllerInput.back[0] || Input.GetKeyDown(KeyCode.Backspace))
         {
             if (GameStart.gameMode1 == "Online") { return; }
@@ -548,6 +549,15 @@ public class TitleButton : MonoBehaviourPunCallbacks
         /*キーボード*/
     }
 
+    void ChangeFrameSize() 
+    {
+        RectTransform titleFrameRectTransform = titleFrame.GetComponent<RectTransform>();
+        RectTransform targetRectTransform = titleObj[targetNum].GetComponent<RectTransform>();
+
+        // SetSizeWithCurrentAnchorsメソッドを使用してwidthを設定
+        titleFrameRectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, targetRectTransform.rect.width);
+        titleFrameRectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, targetRectTransform.rect.height);
+    }
     void OpenSetting()　//設定表示
     {
         if ((ControllerInput.start[0] || Input.GetKeyDown(KeyCode.Escape)) && Settings.exitPanelActive == false)
