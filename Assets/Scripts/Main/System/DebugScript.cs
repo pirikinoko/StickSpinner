@@ -6,6 +6,7 @@ public class DebugScript : MonoBehaviour　//デバッグ用スクリプト
 {
     [SerializeField] int targetStage;
     [SerializeField] int playerNumber;
+    [SerializeField] int[] teamSize;
     [SerializeField] string targetMode1;
     [SerializeField] string targetMode2;
     [SerializeField] string teamMode;
@@ -17,6 +18,7 @@ public class DebugScript : MonoBehaviour　//デバッグ用スクリプト
         GameStart.Stage = targetStage;
         GameStart.PlayerNumber = playerNumber;
         GameStart.teamMode = teamMode;
+        GameStart.teamSize = teamSize;
     }
 
 }

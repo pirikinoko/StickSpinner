@@ -38,7 +38,7 @@ public class GameMode : MonoBehaviourPunCallbacks
     Vector2[] teamFramePos = new Vector2[4];
     public static bool Finished;
     byte count = 0;
-    int frameSpace = 14;
+    float frameSpace = 10;
     private Vector2[] particlePos = new Vector2[4];
     public static float[,] killTimer = new float[4, 4];       // プレイヤー同士の衝突を記録(プレイヤー1～4とプレイヤー1～4の衝突)
     Renderer[] chanceRespown1Rend = new Renderer[4];
@@ -104,13 +104,9 @@ public class GameMode : MonoBehaviourPunCallbacks
                 {
                     teamTag[i].gameObject.SetActive(true);
                     teamTagText[i].text = teamTagName[GameStart.playerTeam[i]];
-                    //チームフレーム位置設定
-                    teamFramePos[i] = teamFrame[i].transform.position;
-                    teamFramePos[i].x += i * frameSpace / GameStart.PlayerNumber;
-                    teamFrame[i].transform.position = teamFramePos[i];
-                    Debug.Log(teamFrame[i].transform.position);
                 }
             }
+            AdjustTeamFramePos();
             //リセット等
             for (int i = 0; i < 4; i++)
             {
@@ -210,6 +206,10 @@ public class GameMode : MonoBehaviourPunCallbacks
     }
     private void FixedUpdate()
     {
+        if (!GameSetting.allJoin)
+        {
+            return;
+        }
         ShowTeamTag();
     }
     //通常ステージ
@@ -548,7 +548,15 @@ public class GameMode : MonoBehaviourPunCallbacks
 
     void AdjustTeamFramePos()
     {
-
+        for (int i = 0; i < teamFrame.Length; i++)
+        {
+            //チームフレーム位置設定
+            //初期位置に設定
+            teamFramePos[i] = teamFrame[0].transform.position;
+            //右にずらす
+            teamFramePos[i].x += (i * (frameSpace / (-1 + (float)GameStart.PlayerNumber)));
+            teamFrame[i].transform.position = teamFramePos[i];
+        }
     }
 }
 
