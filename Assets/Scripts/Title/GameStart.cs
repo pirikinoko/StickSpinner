@@ -82,7 +82,6 @@ public class GameStart : MonoBehaviourPunCallbacks
     }
     void Update()
     {
-        Debug.Log(phase);
         SwichUI();
         SwichStageMaterial();
         playerNumberText.text = PlayerNumber.ToString();

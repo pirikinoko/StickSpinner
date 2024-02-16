@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
 using Photon.Pun;
+using System.Linq;
 public class TitleButton : MonoBehaviourPunCallbacks
 {
     const int stage4 = 4, firstStage = 1, lastStage = 4;
@@ -27,6 +28,12 @@ public class TitleButton : MonoBehaviourPunCallbacks
     int min = 0, max;
     float[] lastLstickX = new float[4],  lastLstickY = new float[4];
     GameStart gameStart;
+
+    private Button[] activeButtons;
+    GameObject[] buttonsInTheScene = new GameObject[5];
+    Vector2[] buttonPositions = new Vector2[5];
+    int targetButton = 0;
+
     void Start()
     {
         lastPhase = GameStart.phase;
@@ -35,10 +42,11 @@ public class TitleButton : MonoBehaviourPunCallbacks
     }
     void Update()
     {
+        FindAllButtons();
         OpenSetting();
-        SelectButton();
-        Selected();
-        ChangeFrameSize();  
+        //SelectButton();
+        //Selected();
+        //ChangeFrameSize();  
         if (ControllerInput.back[0] || Input.GetKeyDown(KeyCode.Backspace))
         {
             if (GameStart.gameMode1 == "Online") { return; }
@@ -62,6 +70,86 @@ public class TitleButton : MonoBehaviourPunCallbacks
             targetNum = 0;
             lastPhase = GameStart.phase;
         }
+    }
+
+
+
+    void FindAllButtons()
+    {
+        activeButtons = FindObjectsOfType<Button>().Where(button => button.gameObject.activeSelf).ToArray();
+        for (int i = 0; i < activeButtons.Length; i++)
+        {
+            buttonsInTheScene[i] = activeButtons[i].gameObject;
+            buttonPositions[i] = buttonsInTheScene[i].transform.position;
+            titleFrame.transform.position = buttonPositions[targetButton];
+            Debug.Log("Button" + i +  '='+ buttonsInTheScene[i].name);
+        }
+        Vector2 basePos = buttonPositions[targetButton];
+        float buttonDistance = 9999;
+
+        /*矢印キー横*/
+        if (Input.GetKeyDown(KeyCode.RightArrow)) 
+        {
+            for (int i = 0; i < activeButtons.Length; i++)
+            {
+                if (buttonPositions[i].x > buttonPositions[targetButton].x) 
+                {
+                    if(Vector2.Distance(buttonPositions[targetButton], buttonPositions[i]) < buttonDistance)
+                    {
+                        targetButton = i;
+                        buttonDistance = Vector2.Distance(buttonPositions[targetButton], buttonPositions[i]);
+                    }
+                }
+            }
+            SoundEffect.soundTrigger[3] = 1;
+        }
+        if (Input.GetKeyDown(KeyCode.LeftArrow))
+        {
+            for (int i = 0; i < buttonsInTheScene.Length; i++)
+            {
+                if (buttonPositions[i].x < buttonPositions[targetButton].x)
+                {
+                    if (Vector2.Distance(buttonPositions[targetButton], buttonPositions[i]) < buttonDistance)
+                    {
+                        targetButton = i;
+                        buttonDistance = Vector2.Distance(buttonPositions[targetButton], buttonPositions[i]);
+                    }
+                }
+            }
+            SoundEffect.soundTrigger[3] = 1;
+        }
+        if (Input.GetKeyDown(KeyCode.UpArrow))
+        {
+            for (int i = 0; i < buttonsInTheScene.Length; i++)
+            {
+                if (buttonPositions[i].y > buttonPositions[targetButton].y)
+                {
+                    if (Vector2.Distance(buttonPositions[targetButton], buttonPositions[i]) < buttonDistance)
+                    {
+                        targetButton = i;
+                        buttonDistance = Vector2.Distance(buttonPositions[targetButton], buttonPositions[i]);
+                    }
+                }
+            }
+            SoundEffect.soundTrigger[3] = 1;
+        }
+        if (Input.GetKeyDown(KeyCode.DownArrow))
+        {
+            for (int i = 0; i < buttonsInTheScene.Length; i++)
+            {
+                if (buttonPositions[i].y < buttonPositions[targetButton].y)
+                {
+                    if (Vector2.Distance(buttonPositions[targetButton], buttonPositions[i]) < buttonDistance)
+                    {
+                        targetButton = i;
+                        buttonDistance = Vector2.Distance(buttonPositions[targetButton], buttonPositions[i]);
+                    }
+                }
+            }
+            SoundEffect.soundTrigger[3] = 1;
+        }
+        Debug.Log("TargetButton=" + targetButton);
+        //Debug.Log("tarGetButton" + buttonsInTheScene[targetButton].name);
     }
 
     void SelectButton()
