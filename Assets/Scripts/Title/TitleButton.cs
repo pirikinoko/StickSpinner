@@ -18,9 +18,9 @@ public class TitleButton : MonoBehaviourPunCallbacks
     [SerializeField]
     private Animator YButtonAnim;
     public GameObject YButtonGO;
-    //New
+    //タイトル画面操作
     [SerializeField] GameObject[] titleObj, gameModeObj, singleObj, multiObj;
-    [SerializeField] GameObject titleFrame, modeFrame, singleFrame, MultiFrame;
+    [SerializeField] GameObject cursor, modeFrame, singleFrame, MultiFrame;
     [SerializeField] int singleStageCount, MultiStageCount, singleArcadeCount, MultiArcadeCount;
     bool InputCrossX, InputCrossY;
     public int targetNum { get; set; }
@@ -88,9 +88,17 @@ public class TitleButton : MonoBehaviourPunCallbacks
         {
             buttonsInTheScene[i] = activeButtons[i].gameObject;
             buttonPositions[i] = buttonsInTheScene[i].transform.position;
-            titleFrame.transform.position = buttonPositions[targetButton];
             //Debug.Log("ButtonName"+ i + activeButtons[i].name);
         }
+        //カーソル位置
+        RectTransform titleFrameRectTransform = cursor.GetComponent<RectTransform>();
+        Vector2 cursorPos = buttonPositions[targetButton];
+        cursorPos.x += titleFrameRectTransform.rect.width / 25;
+        cursorPos.y -= titleFrameRectTransform.rect.height / 25;
+        cursor.transform.position = cursorPos;
+
+
+
         Vector2 basePos = buttonPositions[targetButton];
         float buttonDistance = 9999;
 
@@ -233,7 +241,7 @@ public class TitleButton : MonoBehaviourPunCallbacks
                 for (int i = 0; i < titleObj.Length; i++)
                 {
                     Vector2 framePos = titleObj[targetNum].transform.position;
-                    titleFrame.transform.position = framePos;
+                    cursor.transform.position = framePos;
                 }
                 if (ControllerInput.jump[0] || Input.GetKeyDown(KeyCode.Return))
                 {
@@ -654,7 +662,7 @@ public class TitleButton : MonoBehaviourPunCallbacks
 
     void ChangeFrameSize() 
     {
-        RectTransform titleFrameRectTransform = titleFrame.GetComponent<RectTransform>();
+        RectTransform titleFrameRectTransform = cursor.GetComponent<RectTransform>();
         RectTransform targetRectTransform = titleObj[targetNum].GetComponent<RectTransform>();
 
         // SetSizeWithCurrentAnchorsメソッドを使用してwidthを設定
