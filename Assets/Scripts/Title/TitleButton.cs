@@ -46,7 +46,14 @@ public class TitleButton : MonoBehaviourPunCallbacks
         OpenSetting();
         //SelectButton();
         //Selected();
-        //ChangeFrameSize();  
+        //ChangeFrameSize();
+        //次に進むボタン
+        if (ControllerInput.jump[0] || Input.GetKeyDown(KeyCode.Return))
+        {
+            activeButtons[targetButton].onClick.Invoke();
+        }
+
+        //戻るボタン
         if (ControllerInput.back[0] || Input.GetKeyDown(KeyCode.Backspace))
         {
             if (GameStart.gameMode1 == "Online") { return; }
@@ -82,74 +89,82 @@ public class TitleButton : MonoBehaviourPunCallbacks
             buttonsInTheScene[i] = activeButtons[i].gameObject;
             buttonPositions[i] = buttonsInTheScene[i].transform.position;
             titleFrame.transform.position = buttonPositions[targetButton];
-            Debug.Log("Button" + i +  '='+ buttonsInTheScene[i].name);
+            //Debug.Log("ButtonName"+ i + activeButtons[i].name);
         }
         Vector2 basePos = buttonPositions[targetButton];
         float buttonDistance = 9999;
 
+        int newTarget = 0;
         /*矢印キー横*/
         if (Input.GetKeyDown(KeyCode.RightArrow)) 
         {
+
             for (int i = 0; i < activeButtons.Length; i++)
             {
                 if (buttonPositions[i].x > buttonPositions[targetButton].x) 
                 {
-                    if(Vector2.Distance(buttonPositions[targetButton], buttonPositions[i]) < buttonDistance)
+                   
+                    Debug.Log(buttonsInTheScene[i].name + "と" + buttonsInTheScene[targetButton].name + "の距離は" + Vector2.Distance(buttonPositions[targetButton], buttonPositions[i]) );
+                    if (Vector2.Distance(buttonPositions[targetButton], buttonPositions[i]) < buttonDistance)
                     {
-                        targetButton = i;
+                        newTarget = i;
                         buttonDistance = Vector2.Distance(buttonPositions[targetButton], buttonPositions[i]);
                     }
                 }
             }
+            targetButton = newTarget;
             SoundEffect.soundTrigger[3] = 1;
         }
         if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
-            for (int i = 0; i < buttonsInTheScene.Length; i++)
+            for (int i = 0; i < activeButtons.Length; i++)
             {
                 if (buttonPositions[i].x < buttonPositions[targetButton].x)
                 {
                     if (Vector2.Distance(buttonPositions[targetButton], buttonPositions[i]) < buttonDistance)
                     {
-                        targetButton = i;
+                        newTarget = i;
                         buttonDistance = Vector2.Distance(buttonPositions[targetButton], buttonPositions[i]);
                     }
                 }
             }
+            targetButton = newTarget;
             SoundEffect.soundTrigger[3] = 1;
         }
         if (Input.GetKeyDown(KeyCode.UpArrow))
         {
-            for (int i = 0; i < buttonsInTheScene.Length; i++)
+            for (int i = 0; i < activeButtons.Length; i++)
             {
                 if (buttonPositions[i].y > buttonPositions[targetButton].y)
                 {
                     if (Vector2.Distance(buttonPositions[targetButton], buttonPositions[i]) < buttonDistance)
                     {
-                        targetButton = i;
+                        newTarget = i;
                         buttonDistance = Vector2.Distance(buttonPositions[targetButton], buttonPositions[i]);
                     }
                 }
             }
+            targetButton = newTarget;
             SoundEffect.soundTrigger[3] = 1;
         }
         if (Input.GetKeyDown(KeyCode.DownArrow))
         {
-            for (int i = 0; i < buttonsInTheScene.Length; i++)
+            for (int i = 0; i < activeButtons.Length; i++)
             {
                 if (buttonPositions[i].y < buttonPositions[targetButton].y)
                 {
                     if (Vector2.Distance(buttonPositions[targetButton], buttonPositions[i]) < buttonDistance)
                     {
-                        targetButton = i;
+                        newTarget = i;
                         buttonDistance = Vector2.Distance(buttonPositions[targetButton], buttonPositions[i]);
                     }
                 }
             }
+            targetButton = newTarget;
             SoundEffect.soundTrigger[3] = 1;
         }
-        Debug.Log("TargetButton=" + targetButton);
         //Debug.Log("tarGetButton" + buttonsInTheScene[targetButton].name);
+         Debug.Log("tarGetButton" + targetButton);
     }
 
     void SelectButton()
