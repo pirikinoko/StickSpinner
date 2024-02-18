@@ -30,8 +30,9 @@ public class TitleButton : MonoBehaviourPunCallbacks
     GameStart gameStart;
 
     private Button[] activeButtons;
-    GameObject[] buttonsInTheScene = new GameObject[5];
-    Vector2[] buttonPositions = new Vector2[5];
+    const int maxButtonCount = 20;
+    GameObject[] buttonsInTheScene = new GameObject[maxButtonCount];
+    Vector2[] buttonPositions = new Vector2[maxButtonCount];
     int targetButton = 0;
 
     void Start()
@@ -83,20 +84,31 @@ public class TitleButton : MonoBehaviourPunCallbacks
 
     void FindAllButtons()
     {
+        int pauseButtonNum = 0;
         activeButtons = FindObjectsOfType<Button>().Where(button => button.gameObject.activeSelf).ToArray();
         for (int i = 0; i < activeButtons.Length; i++)
         {
             buttonsInTheScene[i] = activeButtons[i].gameObject;
             buttonPositions[i] = buttonsInTheScene[i].transform.position;
+            if (buttonsInTheScene[i].name.Contains("Pause") || buttonsInTheScene[i].name.Contains("Resume"))
+            {
+                pauseButtonNum = i;
+            }
             //Debug.Log("ButtonName"+ i + activeButtons[i].name);
         }
+
+        if (Settings.SettingPanelActive)
+        {
+            targetButton = pauseButtonNum;
+            return;
+        }
+
         //カーソル位置
         RectTransform titleFrameRectTransform = cursor.GetComponent<RectTransform>();
         Vector2 cursorPos = buttonPositions[targetButton];
         cursorPos.x += titleFrameRectTransform.rect.width / 25;
         cursorPos.y -= titleFrameRectTransform.rect.height / 25;
         cursor.transform.position = cursorPos;
-
 
 
         Vector2 basePos = buttonPositions[targetButton];
