@@ -18,33 +18,189 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
     TitleButton titleButton;
     GameStart gameStart;
     private IngameLog ingameLog = new IngameLog();
+    //コントローラー対応
+    bool input;
+    string controllerButton;
+    bool inputCrossXPlus, inputCrossXMinus, inputCrossYPlus, inputCrossYMinus, inputLstickXPlus,  inputLstickXMinus, inputLstickYPlus, inputLstickYMinus;
+    float lastLstickX, lastLstickY;
+    // 選択肢のEnumを定義
+    public enum ControllerButtons
+    {
+        False,
+        LstickXPlus,
+        LstickXMinus,
+        LStickYPlus,
+        LStickYMinus,
+        crossXPlus,
+        crossXMinus,
+        crossYPlus,
+        crossYMinus,
+        jump,
+        next,
+        back,
+        plus,
+        minus,
+        start
+    }
+
+    // インスペクターから選択したいEnumのフィールド
+    [SerializeField]
+    private ControllerButtons selectedButton;
+
     void Start()
     {
-        if(SceneManager.GetActiveScene().name == "Title")
+        controllerButton = selectedButton.ToString();
+        if (SceneManager.GetActiveScene().name == "Title")
         {
             gameStart = GameObject.Find("Systems").GetComponent<GameStart>();
             titleButton = GameObject.Find("Systems").GetComponent<TitleButton>();
         }
-   
+
     }
-   
-    void Update() 
+
+    void Update()
     {
+        controllerPushButton();
+    }
+    void controllerPushButton()
+    {
+        if (inputCrossXPlus == false && inputCrossXMinus == false)
+        {
+            if (ControllerInput.crossX[0] >= 0.1f) {  inputCrossXPlus = true;  }
+            else if (ControllerInput.crossX[0] <= -0.1f) { inputCrossXMinus = true;  }
+        }
 
+        if (inputCrossYPlus == false && inputCrossYMinus == false)
+        {
+            if (ControllerInput.crossY[0] >= 0.1f) { inputCrossYPlus = true; }
+            else if (ControllerInput.crossY[0] <= -0.1f) { inputCrossYMinus = true;  }
+        }
+
+
+        if (ControllerInput.LstickX[0] > 0.5f) { inputLstickXPlus = true; }
+        else if (ControllerInput.LstickX[0] < -0.5f) { inputLstickXMinus = true; }
+
+
+        if (ControllerInput.LstickY[0] > 0.5f) { inputLstickYPlus = true; }
+        else if (ControllerInput.LstickY[0] < -0.5f) { inputLstickYMinus = true; }
+        //入力リセット
+        if (lastLstickX> 0.1f || lastLstickY < -0.1f ) 
+        {
+            inputLstickXPlus = false;
+            inputLstickXMinus = false;
+        }
+        if (lastLstickY > 0.1f || lastLstickY < -0.1f)
+        {
+            inputLstickYPlus = false;
+            inputLstickYMinus = false;
+        }
+        if (ControllerInput.crossX[0] == 0) 
+        { 
+            inputCrossXPlus = false;
+            inputCrossXMinus = false;
+        }
+        if (ControllerInput.crossY[0] == 0) 
+        {
+            inputCrossYPlus = false;
+            inputCrossYMinus = false;
+        }
+
+
+
+
+        switch (selectedButton) 
+        {
+            case ControllerButtons.False:
+                input = false;
+                break;
+            case ControllerButtons.LstickXPlus:
+                input = inputLstickXPlus;
+                break;
+
+            case ControllerButtons.LstickXMinus:
+                input = inputLstickXMinus;
+                break;
+
+            case ControllerButtons.LStickYPlus:
+                input = inputLstickYPlus;
+                break;
+
+            case ControllerButtons.LStickYMinus:
+                input = inputLstickYMinus;
+                break;
+
+            case ControllerButtons.crossXPlus:
+                input = inputCrossXPlus;
+                break;
+
+            case ControllerButtons.crossXMinus:
+                input = inputCrossXMinus;
+                break;
+
+            case ControllerButtons.crossYPlus:
+                input = inputCrossYPlus;
+                break;
+
+            case ControllerButtons.crossYMinus:
+                input = inputCrossYMinus;
+                break;
+
+            case ControllerButtons.jump:
+                input = ControllerInput.jump[0];
+                break;
+
+            case ControllerButtons.next:
+                input = ControllerInput.next[0];
+                break;
+
+            case ControllerButtons.back:
+                input = ControllerInput.back[0];
+                break;
+
+            case ControllerButtons.plus:
+                input = ControllerInput.plus[0];
+                break;
+
+            case ControllerButtons.minus:
+                input = ControllerInput.minus[0];
+                break;
+
+            case ControllerButtons.start:
+                input = ControllerInput.start[0];
+                break;
+        }
+        //ボタンをクリックしたことに
+        if (input) 
+        {
+            this.GetComponent<Button>().onClick.Invoke();
+        }
+
+        lastLstickX = ControllerInput.LstickX[0];
+        lastLstickY = ControllerInput.LstickY[0];
+
+            inputLstickXPlus = false;
+            inputLstickXMinus = false;
+            inputLstickYPlus = false;
+            inputLstickYMinus = false;
+            inputCrossXPlus = false;
+            inputCrossXMinus = false;
+            inputCrossYPlus = false;
+            inputCrossYMinus = false;
+  
     }
 
-        //ゲーム終了ボタン
-        public void ExitGame()
+    //ゲーム終了ボタン
+    public void ExitGame()
     {
         Settings.exitPanelActive = true;
     }
     public void yesExit()
     {
-        #if UNITY_EDITOR
+#if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;//ゲームプレイ終了
-        #else
+#else
         Application.Quit();//ゲームプレイ終了
-        #endif
+#endif
     }
     public void noBack()
     {
@@ -62,19 +218,17 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
     {
         SoundEffect.soundTrigger[2] = 1;
         GameStart.phase++;
-        titleButton.targetNum = 0;
     }
-  
-    public void SetModeMulti() 
+
+    public void SetModeMulti()
     {
         GameStart.gameMode1 = "Multi";
     }
-    public void GoOnlineMode() 
+    public void GoOnlineMode()
     {
         GameStart.gameMode1 = "Online";
         SoundEffect.soundTrigger[2] = 1;
         GameStart.phase++;
-        titleButton.targetNum = 0;
     }
     public void GoStageSelect()
     {
@@ -95,10 +249,9 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
         }
         SoundEffect.soundTrigger[2] = 1;
         GameStart.phase++;
-        titleButton.targetNum = 0;
     }
     //モード変更
-    public void setNomalMode() 
+    public void setNomalMode()
     {
         GameStart.gameMode2 = "Nomal";
         NetWorkMain.UpdateRoomStats(1);
@@ -117,7 +270,7 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
 
     public void StartGame()
     {
-        if(GameStart.gameMode1 == "Online") 
+        if (GameStart.gameMode1 == "Online")
         {
             photonView.RPC(nameof(RPCStartGame), RpcTarget.All);
             return;
@@ -126,7 +279,7 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
         SceneManager.LoadScene("Stage");
     }
     [PunRPC]
-    void RPCStartGame() 
+    void RPCStartGame()
     {
         SceneManager.LoadScene("Stage");
     }
@@ -158,9 +311,9 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
         GameStart.phase--;
         SoundEffect.soundTrigger[2] = 1;
     }
-    
+
     //部屋を抜ける
-    public void LeaveRoom() 
+    public void LeaveRoom()
     {
         PhotonNetwork.LeaveRoom();
     }
@@ -169,12 +322,10 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
     //ステージ変更
     public void NextStage()
     {
-        titleButton.targetNum++;
         SoundEffect.soundTrigger[3] = 1;
     }
     public void PrevStage()
     {
-        titleButton.targetNum--;
         SoundEffect.soundTrigger[3] = 1;
     }
 
@@ -183,7 +334,6 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
     {
         if (GameStart.PlayerNumber < 4)
         {
-            titleButton.targetNum++;
             SoundEffect.soundTrigger[3] = 1;
         }
     }
@@ -203,7 +353,6 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
         }
         if (bProcessed)
         {
-            titleButton.targetNum--;
             SoundEffect.soundTrigger[3] = 1;
         }
     }
@@ -216,9 +365,9 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
     {
         gameStart.stageInfoActive = false;
     }
-  
+
     [PunRPC]
-     void SetCustomPropsStage() 
+    void SetCustomPropsStage()
     {
         ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
         if (customProps.ContainsKey("stage"))
@@ -238,19 +387,19 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
         ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
         if (customProps.ContainsKey("gameMode"))
         {
-                GameStart.gameMode2 = customProps["gameMode"].ToString();
+            GameStart.gameMode2 = customProps["gameMode"].ToString();
             Debug.Log("GameModeを" + customProps["gameMode"].ToString() + "に設定しました");
         }
     }
 
-    public void SetCustomPropsStageButton() 
+    public void SetCustomPropsStageButton()
     {
-        if(GameStart.gameMode1 == "Online") 
+        if (GameStart.gameMode1 == "Online")
         {
             NetWorkMain.UpdateRoomStats(GameStart.Stage);
             photonView.RPC(nameof(SetCustomPropsStage), RpcTarget.All);
         }
-      
+
     }
     public void OpenSetting()    //設定画面の表示
     {
@@ -266,7 +415,7 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
             photonView.RPC(nameof(RPCPlusFlagTime), RpcTarget.All);
             return;
         }
-       
+
         GameStart.flagTimeLimit += 10;
         GameStart.flagTimeLimit = System.Math.Min(GameStart.flagTimeLimit, 150);
     }
@@ -278,13 +427,13 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
             photonView.RPC(nameof(RPCMinusFlagTime), RpcTarget.All);
             return;
         }
-    
+
         GameStart.flagTimeLimit -= 10;
         GameStart.flagTimeLimit = System.Math.Max(40, GameStart.flagTimeLimit);
 
     }
     [PunRPC]
-    void RPCPlusFlagTime() 
+    void RPCPlusFlagTime()
     {
         GameStart.flagTimeLimit += 10;
         GameStart.flagTimeLimit = System.Math.Min(GameStart.flagTimeLimit, 150);
@@ -361,14 +510,14 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
     }
     public void NextLanguage()
     {
-        if (Settings.languageNum < 1) 
+        if (Settings.languageNum < 1)
         {
             Settings.languageNum++;
             SoundEffect.soundTrigger[3] = 1;
         }
     }
     public void PrevLanguage()
-    {    
+    {
         if (Settings.languageNum > 0)
         {
             Settings.languageNum--;
@@ -408,7 +557,7 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
         }
     }
 
-   
+
     [PunRPC]
     public void RPCsyncLeader()
     {
@@ -467,13 +616,13 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
         GameStart.playerTeam[netWorkID - 1] = newTeamNum;
     }
     //再接続
-    public void ReconnectToLobby() 
+    public void ReconnectToLobby()
     {
         if (PhotonNetwork.InRoom)
         {
             PhotonNetwork.LeaveRoom();
         }
-        else 
+        else
         {
             PhotonNetwork.JoinLobby();
         }
@@ -481,5 +630,12 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
     public void DisconnectLobby()
     {
         PhotonNetwork.LeaveLobby();
+    }
+
+
+    //コントローラー入力対応
+    void supportControllerInput() 
+    {
+        
     }
 }

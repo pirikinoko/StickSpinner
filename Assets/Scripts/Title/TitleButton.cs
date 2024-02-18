@@ -9,26 +9,18 @@ using Photon.Pun;
 using System.Linq;
 public class TitleButton : MonoBehaviourPunCallbacks
 {
-    const int stage4 = 4, firstStage = 1, lastStage = 4;
     const float holdGoal = 0.85f;
     float holdTime = 0;
-    int minPlayer = 1;
-    int maxPlayer = 4;
     // ボタンの長押し時間
     [SerializeField]
     private Animator YButtonAnim;
     public GameObject YButtonGO;
     //タイトル画面操作
-    [SerializeField] GameObject[] titleObj, gameModeObj, singleObj, multiObj;
-    [SerializeField] GameObject cursor, modeFrame, singleFrame, MultiFrame;
-    [SerializeField] int singleStageCount, MultiStageCount, singleArcadeCount, MultiArcadeCount;
+    [SerializeField] GameObject cursor;
     bool InputCrossX, InputCrossY;
-    public int targetNum { get; set; }
-    int lastPhase;
-    int min = 0, max;
-    float[] lastLstickX = new float[4],  lastLstickY = new float[4];
-    GameStart gameStart;
-
+    bool inputCrossXPlus, inputCrossXMinus, inputCrossYPlus, inputCrossYMinus, inputLstickXPlus, inputLstickXMinus, inputLstickYPlus, inputLstickYMinus;
+    float[] lastLstickX = new float[4], lastLstickY = new float[4];
+    float lastCrossX, lastCrossY; 
     private Button[] activeButtons;
     const int maxButtonCount = 20;
     GameObject[] buttonsInTheScene = new GameObject[maxButtonCount];
@@ -37,17 +29,14 @@ public class TitleButton : MonoBehaviourPunCallbacks
 
     void Start()
     {
-        lastPhase = GameStart.phase;
-        targetNum = 0;
-        gameStart = GameObject.Find("Systems").GetComponent<GameStart>();
+
+
     }
     void Update()
     {
         FindAllButtons();
         OpenSetting();
-        //SelectButton();
-        //Selected();
-        //ChangeFrameSize();
+
         //次に進むボタン
         if (ControllerInput.jump[0] || Input.GetKeyDown(KeyCode.Return))
         {
@@ -57,14 +46,7 @@ public class TitleButton : MonoBehaviourPunCallbacks
         //戻るボタン
         if (ControllerInput.back[0] || Input.GetKeyDown(KeyCode.Backspace))
         {
-            if (GameStart.gameMode1 == "Online") { return; }
-            if(GameStart.gameMode1 == "Single" && GameStart.phase == 2) 
-            {
-                GameStart.phase--;
-            }
-            GameStart.phase--;
-            targetNum = 0;
-            min = 0;
+
         }
         for (int i = 0; i < 4; i++)
         {
@@ -72,12 +54,6 @@ public class TitleButton : MonoBehaviourPunCallbacks
             lastLstickY[i] = ControllerInput.LstickY[i];
         }
 
-        //フェーズごとに選択を１にリセット
-        if(GameStart.phase != lastPhase)
-        {
-            targetNum = 0;
-            lastPhase = GameStart.phase;
-        }
     }
 
 
@@ -115,10 +91,43 @@ public class TitleButton : MonoBehaviourPunCallbacks
         float buttonDistance = 9999;
 
         int newTarget = 0;
-        /*矢印キー横*/
-        if (Input.GetKeyDown(KeyCode.RightArrow)) 
-        {
 
+        //コントローラー入力設定
+        if (ControllerInput.crossX[0] >= 0.1f) { inputCrossXPlus = true; }
+        else if (ControllerInput.crossX[0] <= -0.1f) { inputCrossXMinus = true; }
+        else if (ControllerInput.crossY[0] >= 0.1f) { inputCrossYPlus = true; }
+        else if (ControllerInput.crossY[0] <= -0.1f) { inputCrossYMinus = true; }
+
+        if (ControllerInput.LstickX[0] > 0.5f) { inputLstickXPlus = true; }
+        else if (ControllerInput.LstickX[0] < -0.5f) { inputLstickXMinus = true; }
+        else if (ControllerInput.LstickY[0] > 0.5f) { inputLstickYPlus = true; }
+        else if (ControllerInput.LstickY[0] < -0.5f) { inputLstickYMinus = true; }
+        //入力リセット
+        if (lastLstickX[0] != 0)
+        {
+            inputLstickXPlus = false;
+            inputLstickXMinus = false;
+        }
+        if (lastLstickY[0] != 0)
+        {
+            inputLstickYPlus = false;
+            inputLstickYMinus = false;
+        }
+        if (lastCrossX != 0)
+        {
+            inputCrossXPlus = false;
+            inputCrossXMinus = false;
+        }
+        if (lastCrossY != 0)
+        {
+            inputCrossYPlus = false;
+            inputCrossYMinus = false;
+        }
+
+
+        /*矢印キー横*/
+        if (Input.GetKeyDown(KeyCode.RightArrow) || inputCrossXPlus ||  inputLstickXPlus) 
+        {
             for (int i = 0; i < activeButtons.Length; i++)
             {
                 if (buttonPositions[i].x > buttonPositions[targetButton].x) 
@@ -135,7 +144,7 @@ public class TitleButton : MonoBehaviourPunCallbacks
             targetButton = newTarget;
             SoundEffect.soundTrigger[3] = 1;
         }
-        if (Input.GetKeyDown(KeyCode.LeftArrow))
+        if (Input.GetKeyDown(KeyCode.LeftArrow) || inputCrossXMinus || inputLstickXMinus)
         {
             for (int i = 0; i < activeButtons.Length; i++)
             {
@@ -151,7 +160,7 @@ public class TitleButton : MonoBehaviourPunCallbacks
             targetButton = newTarget;
             SoundEffect.soundTrigger[3] = 1;
         }
-        if (Input.GetKeyDown(KeyCode.UpArrow))
+        if (Input.GetKeyDown(KeyCode.UpArrow) || inputCrossYPlus || inputLstickYPlus)
         {
             for (int i = 0; i < activeButtons.Length; i++)
             {
@@ -167,7 +176,7 @@ public class TitleButton : MonoBehaviourPunCallbacks
             targetButton = newTarget;
             SoundEffect.soundTrigger[3] = 1;
         }
-        if (Input.GetKeyDown(KeyCode.DownArrow))
+        if (Input.GetKeyDown(KeyCode.DownArrow) || inputCrossYMinus || inputLstickYMinus)
         {
             for (int i = 0; i < activeButtons.Length; i++)
             {
@@ -185,226 +194,14 @@ public class TitleButton : MonoBehaviourPunCallbacks
         }
         //Debug.Log("tarGetButton" + buttonsInTheScene[targetButton].name);
          Debug.Log("tarGetButton" + targetButton);
+
+        lastCrossX = ControllerInput.crossX[0];
+        lastCrossY = ControllerInput.crossY[0];
     }
-
-    void SelectButton()
-    {
-        if (ControllerInput.crossX[0] == 0) { InputCrossX = false; }
-        if (ControllerInput.crossY[0] == 0) { InputCrossY = false; }
+  
 
 
-        /*ボタン選択（横）*/
-        if (InputCrossX == false)
-        {
-            if (ControllerInput.crossX[0] >= 0.1f) { targetNum++; InputCrossX = true; SoundEffect.soundTrigger[3] = 1; }
-            else if (ControllerInput.crossX[0] <= -0.1f) { targetNum--; InputCrossX = true; SoundEffect.soundTrigger[3] = 1; }
-        }
-        /*ボタン選択（縦）*/
-        if (InputCrossY == false)
-        {
-            if (ControllerInput.crossY[0] >= 0.1f) { targetNum += 4; InputCrossY = true; SoundEffect.soundTrigger[3] = 1; }
-            else if (ControllerInput.crossY[0] <= -0.1f) { targetNum -= 4; InputCrossY = true; SoundEffect.soundTrigger[3] = 1; }
-        }
-        /*ボタン選択（横）*/
-        //上限下限の設定
-        targetNum = Mathf.Clamp(targetNum, min, max);
-
-        /*ボタン選択（縦）*/
-        if (lastLstickX[0] > 0.1f || lastLstickX[0] < -0.1f || lastLstickY[0] > 0.1f || lastLstickY[0] < -0.1f) { return; }
-
-        /*Lスティック横*/
-        if (ControllerInput.LstickX[0] > 0.5f) { targetNum++; SoundEffect.soundTrigger[3] = 1; }
-        else if (ControllerInput.LstickX[0] < -0.5f) { targetNum--; SoundEffect.soundTrigger[3] = 1; }
-        /*Lスティック横*/
-
-        /*Lスティック縦*/
-        if (ControllerInput.LstickY[0] > 0.5f) { targetNum -= 4; SoundEffect.soundTrigger[3] = 1; }
-        else if (ControllerInput.LstickY[0] < -0.5f) { targetNum += 4; SoundEffect.soundTrigger[3] = 1; }
-        /*Lスティック縦*/
-
-        /*矢印キー横*/
-        if (Input.GetKeyDown(KeyCode.RightArrow)) { targetNum++; SoundEffect.soundTrigger[3] = 1; }
-        else if (Input.GetKeyDown(KeyCode.LeftArrow)) { targetNum--; SoundEffect.soundTrigger[3] = 1; }
-        /*矢印キー横*/
-
-        /*矢印キー縦*/
-        if (Input.GetKeyDown(KeyCode.UpArrow)) { targetNum -= 4; SoundEffect.soundTrigger[3] = 1; }
-        else if (Input.GetKeyDown(KeyCode.DownArrow)) { targetNum += 4; SoundEffect.soundTrigger[3] = 1; }
-        /*矢印キー縦*/
-        //上限下限の設定
-        targetNum = Mathf.Clamp(targetNum, min, max);
-
-    }
-
-    void Selected()
-    {
-        switch (GameStart.phase)
-        {
-            //タイトル（シングルorマルチ選択）
-            case 0:
-                //フェーズごとに選択を１にリセット
-                if (GameStart.phase != lastPhase)
-                {
-                    targetNum = 0;
-                    lastPhase = GameStart.phase;
-                }
-                min = 0;
-                max = 1;
-                for (int i = 0; i < titleObj.Length; i++)
-                {
-                    Vector2 framePos = titleObj[targetNum].transform.position;
-                    cursor.transform.position = framePos;
-                }
-                if (ControllerInput.jump[0] || Input.GetKeyDown(KeyCode.Return))
-                {
-                    ExecuteEvents.Execute(titleObj[targetNum], new PointerEventData(EventSystem.current), ExecuteEvents.pointerClickHandler);
-                    return;
-                }
-                break;
-
-            case 1:
-                //ゲームモード選択
-                if (GameStart.gameMode1 == "Single")
-                {
-                    min = 0;
-                    max = 1;
-                    for (int i = 0; i < gameModeObj.Length; i++)
-                    {
-                        Vector2 framePos = gameModeObj[targetNum].transform.position;
-                        modeFrame.transform.position = framePos;
-                    }
-                    if (ControllerInput.jump[0] || Input.GetKeyDown(KeyCode.Return))
-                    {
-                        ExecuteEvents.Execute(gameModeObj[targetNum], new PointerEventData(EventSystem.current), ExecuteEvents.pointerClickHandler);
-                        return;
-                    }
-                }
-                //人数選択
-                if (GameStart.gameMode1 == "Multi")
-                {
-                    min = 2; max = 4;
-                    GameStart.PlayerNumber = targetNum;
-                    if (ControllerInput.jump[0] || Input.GetKeyDown(KeyCode.Return))
-                    {
-                        GameStart.phase++;
-                        return;
-                    }
-
-                }
-                break;
-            case 2:
-                //ステージ選択
-                if (GameStart.gameMode1 == "Single")
-                {
-                    if (GameStart.gameMode2 == "Nomal")
-                    {
-                        min = 1;
-                        max = singleStageCount;
-                    }
-                    else
-                    {
-                        min = 1;
-                        max = singleArcadeCount;
-                    }
-                    GameStart.Stage = targetNum;
-                    if (ControllerInput.jump[0] || Input.GetKeyDown(KeyCode.Return))
-                    {
-                        //ゲーム開始処理
-                        SceneManager.LoadScene("Stage");
-                    }
-                }
-                //ゲームモード選択
-                if (GameStart.gameMode1 == "Multi")
-                {
-                    min = 0;
-                    max = 1;
-                    targetNum = Mathf.Clamp(targetNum, min, max);
-                    for (int i = 0; i < gameModeObj.Length; i++)
-                    {
-                        Vector2 framePos = gameModeObj[targetNum].transform.position;
-                        modeFrame.transform.position = framePos;
-                    }
-                    if (ControllerInput.jump[0] || Input.GetKeyDown(KeyCode.Return))
-                    {
-                        ExecuteEvents.Execute(gameModeObj[targetNum], new PointerEventData(EventSystem.current), ExecuteEvents.pointerClickHandler);
-                        return;
-                    }
-
-                }
-                break;
-
-            case 3:
-                //ステージ選択
-                if (GameStart.gameMode1 == "Multi")
-                {
-                    if (GameStart.gameMode2 == "Nomal")
-                    {
-                        min = 1;
-                        max = MultiStageCount;
-                    }
-                    else
-                    {
-                        min = 1;
-                        max = MultiArcadeCount;
-                    }
-                    GameStart.Stage = targetNum;
-
-                    if (ControllerInput.jump[0] || Input.GetKeyDown(KeyCode.Return))
-                    {
-                        if (GameStart.gameMode2 == "Nomal")
-                        {
-                            //ゲーム開始処理
-                            SceneManager.LoadScene("Stage");
-                        }
-                        else
-                        {
-                            GameStart.phase++;
-                            return;
-                        }
-                    }
-                }
-                if (GameStart.gameMode1 == "Online")
-                {
-                    //オンラインロビーのコントローラー処理を書く
-                }
-                break;
-
-            case 4:
-       
-                break;
-            case 5:
-                if (GameStart.gameMode1 == "Online")
-                {
-                    if (GameStart.gameMode2 == "Nomal")
-                    {
-                        min = 1;
-                        max = MultiStageCount;
-                    }
-                    else
-                    {
-                        min = 1;
-                        max = MultiArcadeCount;
-                    }
-                    GameStart.Stage = targetNum;
-                }
-                else
-                {
-                    ArcadeCotroll();
-                }
-                break;
-            case 6:
-            
-                break;
-            case 7:
-                if (GameStart.gameMode1 == "Online" && NetWorkMain.netWorkId == NetWorkMain.leaderId)
-                {
-                    photonView.RPC(nameof(ArcadeTeamChange), RpcTarget.All);
-                }
-                break;
-        }
-    }
-
-        [PunRPC]
+    [PunRPC]
         void ArcadeTeamChange()
         {
             if (ControllerInput.jump[0] || Input.GetKeyDown(KeyCode.Return))
@@ -482,11 +279,6 @@ public class TitleButton : MonoBehaviourPunCallbacks
                 }
                 /*Lスティック縦*/
             }
-        //毎回選択を１にリセット
-        if (ControllerInput.jump[0] || Input.GetKeyDown(KeyCode.Return))
-        {
-            targetNum = 0;
-        }
     }
      
     
@@ -672,15 +464,6 @@ public class TitleButton : MonoBehaviourPunCallbacks
         /*キーボード*/
     }
 
-    void ChangeFrameSize() 
-    {
-        RectTransform titleFrameRectTransform = cursor.GetComponent<RectTransform>();
-        RectTransform targetRectTransform = titleObj[targetNum].GetComponent<RectTransform>();
-
-        // SetSizeWithCurrentAnchorsメソッドを使用してwidthを設定
-        titleFrameRectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, targetRectTransform.rect.width);
-        titleFrameRectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, targetRectTransform.rect.height);
-    }
     void OpenSetting()　//設定表示
     {
         if ((ControllerInput.start[0] || Input.GetKeyDown(KeyCode.Escape)) && Settings.exitPanelActive == false)
