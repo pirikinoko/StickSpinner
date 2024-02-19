@@ -60,8 +60,25 @@ public class TitleButton : MonoBehaviourPunCallbacks
 
     void FindAllButtons()
     {
+        cursor.gameObject.SetActive(true);
         int pauseButtonNum = 0;
-        activeButtons = FindObjectsOfType<Button>().Where(button => button.gameObject.activeSelf).ToArray();
+        //特定のボタンを除外してシーン上のアクティブなボタンを取得
+          activeButtons = FindObjectsOfType<Button>()
+            .Where(button => button.gameObject.activeSelf &&
+                             !button.gameObject.name.Contains("Pause") &&
+                             !button.gameObject.name.Contains("Resume") &&
+                             !button.gameObject.name.Contains("Next") &&
+                             !button.gameObject.name.Contains("Back") &&
+                             !button.gameObject.name.Contains("Prev")&&
+                             !button.gameObject.name.Contains("Plus") &&
+                             !button.gameObject.name.Contains("Minus") )
+            .ToArray();
+        if (activeButtons.Length == 0)
+        {
+            Debug.Log("ボタンが見つかりませんでした。");
+            cursor.gameObject.SetActive(false); 
+            return;
+        }
         for (int i = 0; i < activeButtons.Length; i++)
         {
             buttonsInTheScene[i] = activeButtons[i].gameObject;
