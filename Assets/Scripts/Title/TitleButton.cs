@@ -40,6 +40,7 @@ public class TitleButton : MonoBehaviourPunCallbacks
         //次に進むボタン
         if (ControllerInput.jump[0] || Input.GetKeyDown(KeyCode.Return))
         {
+            if (Settings.inSetting) { return; }
             activeButtons[targetButton].onClick.Invoke();
         }
 
@@ -209,8 +210,6 @@ public class TitleButton : MonoBehaviourPunCallbacks
             targetButton = newTarget;
             SoundEffect.soundTrigger[3] = 1;
         }
-        //Debug.Log("tarGetButton" + buttonsInTheScene[targetButton].name);
-         Debug.Log("tarGetButton" + targetButton);
 
         lastCrossX = ControllerInput.crossX[0];
         lastCrossY = ControllerInput.crossY[0];

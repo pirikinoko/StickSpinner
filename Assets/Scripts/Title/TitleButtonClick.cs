@@ -170,8 +170,9 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
                 break;
         }
         //ボタンをクリックしたことに
-        if (input) 
+        if (input)  
         {
+            if (Settings.inSetting) { return; }
             this.GetComponent<Button>().onClick.Invoke();
         }
 

@@ -4,13 +4,11 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using CI.QuickSave;
-
+using System.Linq;
 public class Settings : MonoBehaviour
 {
     public GameObject SettingPanel, TLFrame, exitPanel;
-    public Text[] targetText;
     public Text languageText, screenText, guideText;
-    public GameObject[] targetObject;
     public static bool SettingPanelActive = false, inSetting = false;
     bool InputCrossX, InputCrossY;
     int Selected = 0;
@@ -27,6 +25,7 @@ public class Settings : MonoBehaviour
     public static float[] rotStage = { 10, 10, 10, 10 }; //感度を保存しておく
     float lastLstickX, lastLstickY;
     Controller controller;
+    private Button[] activeButtons;
     //OnExitPanel
     public static bool exitPanelActive = false;
     [SerializeField] Text confirmText, yesText, noText;
@@ -82,13 +81,6 @@ public class Settings : MonoBehaviour
     void SettingControl()
     {
 
-        //設定項目の割り当て
-        settingStages[0] = BGM.BGMStage;
-        settingStages[1] = SoundEffect.SEStage;
-        settingStages[2] = languageNum;
-        settingStages[3] = screenModeNum;
-        settingStages[4] = guideMode;
-        max = item.Length - 1;
         for (int i = 0; i < item.Length; i++)
         {
             itemPos[i] = item[i].transform.position;
@@ -132,35 +124,38 @@ public class Settings : MonoBehaviour
                     }
                     /*設定項目の選択*/
 
-                    /*数値変更*/
-                    if (InputCrossX == false && Selected <= settingStages.Length)
+                    activeButtons = FindObjectsOfType<Button>()
+            .Where(button => button.gameObject.activeSelf &&
+                             !button.gameObject.name.Contains("Pause") &&
+                             !button.gameObject.name.Contains("Resume"))
+            .ToArray();
+                    if (InputCrossX == false)
                     {
-                        /*十字ボタン横*/
-                        if (ControllerInput.crossX[0] >= 0.1f) { settingStages[Selected]++; InputCrossX = true; SoundEffect.soundTrigger[3] = 1; }
-                        else if (ControllerInput.crossX[0] <= -0.1f) { settingStages[Selected]--; InputCrossX = true; SoundEffect.soundTrigger[3] = 1; }
-                        /*十字ボタン横*/
+                        //十字ボタン横
+                        if (ControllerInput.crossX[0] >= 0.1f) { ClickSelectedButton("Right"); InputCrossX = true; SoundEffect.soundTrigger[3] = 1; }
+                        else if (ControllerInput.crossX[0] <= -0.1f) { ClickSelectedButton("Left"); InputCrossX = true; SoundEffect.soundTrigger[3] = 1; }
+                        //十字ボタン横
 
 
-                        /*Lスティック横*/
-                        if (ControllerInput.LstickX[0] > 0.5f) { settingStages[Selected]++; SoundEffect.soundTrigger[3] = 1; }
-                        else if (ControllerInput.LstickX[0] < -0.5f) { settingStages[Selected]--; SoundEffect.soundTrigger[3] = 1; }
+                        //Lスティック横
+                        if (ControllerInput.LstickX[0] > 0.5f) { ClickSelectedButton("Right"); SoundEffect.soundTrigger[3] = 1; }
+                        else if (ControllerInput.LstickX[0] < -0.5f) { ClickSelectedButton("Left"); SoundEffect.soundTrigger[3] = 1; }
 
 
-                        /*矢印キー横*/
-                        if (Input.GetKeyDown(KeyCode.RightArrow)) { settingStages[Selected]++; SoundEffect.soundTrigger[3] = 1; }
-                        else if (Input.GetKeyDown(KeyCode.LeftArrow)) { settingStages[Selected]--; SoundEffect.soundTrigger[3] = 1; }
-                        /*矢印キー横*/
+                        //矢印キー横
+                        if (Input.GetKeyDown(KeyCode.RightArrow)) { ClickSelectedButton("Right"); SoundEffect.soundTrigger[3] = 1; }
+                        else if (Input.GetKeyDown(KeyCode.LeftArrow)) { ClickSelectedButton("Left"); SoundEffect.soundTrigger[3] = 1; }
+                        //矢印キー横
 
                     }
-                    /*数値変更*/
                 }
 
                 /*ゲーム終了*/
-                if (ControllerInput.back[0] || Input.GetKeyDown(KeyCode.Q))
+                if (ControllerInput.jump[0] || Input.GetKeyDown(KeyCode.Return))
                 {
                     if (GameSetting.Playable == false && ButtonInGame.Paused == 0 && !(exitPanelActive))
                     {
-                        exitPanelActive = true;
+                        ClickSelectedButton("Item");
                         return;
                     }
                 }
@@ -231,15 +226,7 @@ public class Settings : MonoBehaviour
             rotStage[i] = System.Math.Max(rotStage[i], 1);
         }
 
-        //変更した数値を各スクリプトに反映
-        BGM.BGMStage = settingStages[0];
-        SoundEffect.SEStage = settingStages[1];
-        languageNum = (int)settingStages[2];
-        screenModeNum = (int)settingStages[3];
-        guideMode = (int)settingStages[4];
-        languageNum = Mathf.Clamp(languageNum, 0, 1);
-        screenModeNum = Mathf.Clamp(screenModeNum, 0, 1);
-        guideMode = Mathf.Clamp(guideMode, 0, 1);
+
         TLFramePos.y = itemPos[Selected].y;
         TLFrameTransform.position = TLFramePos;
 
@@ -271,47 +258,41 @@ public class Settings : MonoBehaviour
 
     void SelectEffect()
     {
-        for (int i = 0; i < targetText.Length; i++)
+        Text[] stageText = FindObjectsOfType<Text>()
+            .Where(text => text.gameObject.activeSelf &&
+                             text.gameObject.name.Contains("Stage"))
+            .ToArray();
+        Text[] itemText = FindObjectsOfType<Text>()
+           .Where(item => item.gameObject.activeSelf &&
+                            item.gameObject.name.Contains("Item"))
+           .ToArray();
+        max = stageText.Length;
+        for (int i = 0; i < itemText.Length; i++)
         {
-            targetText[i].color = Color.white;
+            itemText[i].color = Color.white;
+            if (itemText[i].name.Contains((Selected + 1).ToString()))
+            {
+                itemText[i].color = Color.yellow;
+            }
         }
-        switch (Selected)
+        for (int i = 0; i < stageText.Length; i++)
         {
-            case 0:
-                targetText[0].color = Color.yellow;
-                targetText[1].color = Color.yellow;
-                break;
-            case 1:
-                targetText[2].color = Color.yellow;
-                targetText[3].color = Color.yellow;
-                break;
-            case 2:
-                targetText[4].color = Color.yellow;
-                targetText[5].color = Color.yellow;
-                break;
-            case 3:
-                targetText[6].color = Color.yellow;
-                targetText[7].color = Color.yellow;
-                break;
-            case 4:
-                targetText[8].color = Color.yellow;
-                targetText[9].color = Color.yellow;
-                break;
-            case 5:
-                targetText[10].color = Color.yellow;
-                if (ControllerInput.jump[0] || Input.GetKey(KeyCode.Return))
-                {
-                    SoundEffect.soundTrigger[2] = 1;
-                    GameStart.phase = 0;
-                    GameStart.inDemoPlay = false;
-                    GameSetting.Playable = false;
-                    GameStart.PlayerNumber = 1;
-                    ButtonInGame.Paused = 0;
-                    SettingPanelActive = false;
-                    SceneManager.LoadScene("Title");
+            stageText[i].color = Color.white;
+            if (stageText[i].name.Contains((Selected + 1).ToString()))
+            {
+                stageText[i].color = Color.yellow;
+            }
+        }
+    }
 
-                }
-                break;
+    void ClickSelectedButton(string buttonName) 
+    {
+        for (int i = 0; i < activeButtons.Length; i++)
+        {
+            if (activeButtons[i].name.Contains(buttonName) && activeButtons[i].name.Contains((Selected + 1).ToString())) 
+            {
+                activeButtons[i].onClick.Invoke();
+            }    
         }
     }
 }
