@@ -18,7 +18,7 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
     TitleButton titleButton;
     GameStart gameStart;
     private IngameLog ingameLog = new IngameLog();
-    //コントローラー対応
+    //コントローラー対応 
     bool input;
     string controllerButton;
     bool inputCrossXPlus, inputCrossXMinus, inputCrossYPlus, inputCrossYMinus, inputLstickXPlus,  inputLstickXMinus, inputLstickYPlus, inputLstickYMinus;
@@ -189,6 +189,30 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
   
     }
 
+    //対応するボタンを表示
+    void ShowTriggerButton(GameObject targetButtom, string buttonName, string direction, float space)
+    {
+        Transform rootTransform = transform.root;
+        Vector2 generatePos = targetButtom.transform.position;
+        if(direction == "UP")
+        {
+            generatePos.y += space;
+        }
+        else if(direction == "DOWN")
+        {
+            generatePos.y -= space;
+        }
+        else if (direction == "LEFT")
+        {
+            generatePos.x -= space;
+        }
+        else if (direction == "RIGHT")
+        {
+            generatePos.x += space;
+        }
+        GameObject imageObj = (GameObject)Resources.Load(buttonName);
+        Instantiate(imageObj, generatePos, Quaternion.identity, rootTransform);
+    }
     //ゲーム終了ボタン
     public void ExitGame()
     {
