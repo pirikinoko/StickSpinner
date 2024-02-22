@@ -19,11 +19,12 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
     GameStart gameStart;
     private IngameLog ingameLog = new IngameLog();
     //コントローラー対応 
-    bool input;
+    bool inputButton;
+    [SerializeField] KeyCode keyBind;
     string controllerButton;
     bool inputCrossXPlus, inputCrossXMinus, inputCrossYPlus, inputCrossYMinus, inputLstickXPlus,  inputLstickXMinus, inputLstickYPlus, inputLstickYMinus;
     float lastLstickX, lastLstickY;
-    // 選択肢のEnumを定義
+    //対応するコントローラーボタンの選択肢
     public enum ControllerButtons
     {
         False,
@@ -111,66 +112,66 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
         switch (selectedButton) 
         {
             case ControllerButtons.False:
-                input = false;
+                inputButton = false;
                 break;
             case ControllerButtons.LstickXPlus:
-                input = inputLstickXPlus;
+                inputButton = inputLstickXPlus;
                 break;
 
             case ControllerButtons.LstickXMinus:
-                input = inputLstickXMinus;
+                inputButton = inputLstickXMinus;
                 break;
 
             case ControllerButtons.LStickYPlus:
-                input = inputLstickYPlus;
+                inputButton = inputLstickYPlus;
                 break;
 
             case ControllerButtons.LStickYMinus:
-                input = inputLstickYMinus;
+                inputButton = inputLstickYMinus;
                 break;
 
             case ControllerButtons.crossXPlus:
-                input = inputCrossXPlus;
+                inputButton = inputCrossXPlus;
                 break;
 
             case ControllerButtons.crossXMinus:
-                input = inputCrossXMinus;
+                inputButton = inputCrossXMinus;
                 break;
 
             case ControllerButtons.crossYPlus:
-                input = inputCrossYPlus;
+                inputButton = inputCrossYPlus;
                 break;
 
             case ControllerButtons.crossYMinus:
-                input = inputCrossYMinus;
+                inputButton = inputCrossYMinus;
                 break;
 
             case ControllerButtons.jump:
-                input = ControllerInput.jump[0];
+                inputButton = ControllerInput.jump[0];
                 break;
 
             case ControllerButtons.next:
-                input = ControllerInput.next[0];
+                inputButton = ControllerInput.next[0];
                 break;
 
             case ControllerButtons.back:
-                input = ControllerInput.back[0];
+                inputButton = ControllerInput.back[0];
                 break;
 
             case ControllerButtons.plus:
-                input = ControllerInput.plus[0];
+                inputButton = ControllerInput.plus[0];
                 break;
 
             case ControllerButtons.minus:
-                input = ControllerInput.minus[0];
+                inputButton = ControllerInput.minus[0];
                 break;
 
             case ControllerButtons.start:
-                input = ControllerInput.start[0];
+                inputButton = ControllerInput.start[0];
                 break;
         }
         //ボタンをクリックしたことに
-        if (input)  
+        if (inputButton || Input.GetKeyDown(keyBind))  
         {
             if (Settings.inSetting) { return; }
             this.GetComponent<Button>().onClick.Invoke();
@@ -357,30 +358,21 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
     //プレイヤー数増減
     public void PlusButton()
     {
-        if (GameStart.PlayerNumber < 4)
+        if (GameStart.PlayerNumber < GameStart.maxPlayer)
         {
+            GameStart.PlayerNumber++;
             SoundEffect.soundTrigger[3] = 1;
         }
     }
     public void MinusButton()
     {
-        bool bProcessed = false;
-
-        //ステージ4
-        if (GameStart.Stage == Stage4 && GameStart.PlayerNumber > 2)
+        if (GameStart.PlayerNumber > GameStart.minPlayer)
         {
-            bProcessed = true;
-        }
-        //ステージ4以外
-        else if (GameStart.Stage != Stage4 && GameStart.PlayerNumber > 1)
-        {
-            bProcessed = true;
-        }
-        if (bProcessed)
-        {
+            GameStart.PlayerNumber--;
             SoundEffect.soundTrigger[3] = 1;
         }
     }
+
     public void OpenInfo()
     {
         gameStart.stageInfoActive = true;

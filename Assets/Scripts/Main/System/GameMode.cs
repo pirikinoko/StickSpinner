@@ -11,14 +11,14 @@ public class GameMode : MonoBehaviourPunCallbacks
 {
     //基本
     GameSetting gameSetting;
-    public static string[] goaledPlayer { get; set; } = new string[GameStart.MaxPlayer];
-    [SerializeField] GameObject[] resultTextGO = new GameObject[GameStart.MaxPlayer];
+    public static string[] goaledPlayer { get; set; } = new string[GameStart.maxPlayer];
+    [SerializeField] GameObject[] resultTextGO = new GameObject[GameStart.maxPlayer];
     // GameObject[] icons = new GameObject[GameStart.MaxPlayer];
-    Text[] resultText = new Text[GameStart.MaxPlayer];
+    Text[] resultText = new Text[GameStart.maxPlayer];
     [SerializeField] GameObject ResultPanel, ResultPanelFront, TextCanvas;
     //通常ステージ
     public static byte Goals = 0;
-    public static float[] clearTime = new float[GameStart.MaxPlayer];
+    public static float[] clearTime = new float[GameStart.maxPlayer];
     public static bool Goaled;
     //バトルモード
     public GameObject KillLogBack, Plus1, Plus5;
@@ -59,7 +59,7 @@ public class GameMode : MonoBehaviourPunCallbacks
     }
     void StartInUpdate()
     {   //基本
-        for (int i = 0; i < GameStart.MaxPlayer; i++) //初期化処理
+        for (int i = 0; i < GameStart.maxPlayer; i++) //初期化処理
         {
             resultText[i] = resultTextGO[i].GetComponent<Text>();
             teamTag[i].gameObject.SetActive(false);
@@ -83,7 +83,7 @@ public class GameMode : MonoBehaviourPunCallbacks
         // 通常ステージ
         if (GameStart.gameMode2 != "Arcade")
         {
-            for (int i = 0; i < GameStart.MaxPlayer; i++) //初期化処理
+            for (int i = 0; i < GameStart.maxPlayer; i++) //初期化処理
             {
                 clearTime[i] = 0;
                 goaledPlayer[i] = null;
@@ -289,7 +289,7 @@ public class GameMode : MonoBehaviourPunCallbacks
     {
         if (GameSetting.playTime < 30)
         {
-            for (int i = 0; i < GameStart.MaxPlayer; i++)
+            for (int i = 0; i < GameStart.maxPlayer; i++)
             {
                 GameSetting.respownPos[i] = chanceRespown[i].gameObject.transform.position;
             }

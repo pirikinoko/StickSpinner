@@ -41,7 +41,10 @@ public class TitleButton : MonoBehaviourPunCallbacks
         if (ControllerInput.jump[0] || Input.GetKeyDown(KeyCode.Return))
         {
             if (Settings.inSetting) { return; }
-            activeButtons[targetButton].onClick.Invoke();
+            if (activeButtons.Length != 0)
+            {
+                activeButtons[targetButton].onClick.Invoke();
+            }
         }
 
         //戻るボタン

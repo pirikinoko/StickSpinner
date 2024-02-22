@@ -231,6 +231,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15c59912ca0ed2b4f9facae9210b1a63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  keyBind: 0
   selectedButton: 0
 --- !u!114 &690047
 MonoBehaviour:
@@ -965,6 +966,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15c59912ca0ed2b4f9facae9210b1a63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  keyBind: 0
   selectedButton: 0
 --- !u!114 &98474467
 MonoBehaviour:
@@ -1990,6 +1992,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15c59912ca0ed2b4f9facae9210b1a63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  keyBind: 0
   selectedButton: 0
 --- !u!222 &165977897
 CanvasRenderer:
@@ -2603,6 +2606,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15c59912ca0ed2b4f9facae9210b1a63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  keyBind: 0
   selectedButton: 0
 --- !u!222 &200493536
 CanvasRenderer:
@@ -3202,6 +3206,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15c59912ca0ed2b4f9facae9210b1a63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  keyBind: 0
   selectedButton: 0
 --- !u!1 &230784610
 GameObject:
@@ -4395,6 +4400,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15c59912ca0ed2b4f9facae9210b1a63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  keyBind: 0
   selectedButton: 0
 --- !u!114 &362053037
 MonoBehaviour:
@@ -6000,6 +6006,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15c59912ca0ed2b4f9facae9210b1a63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  keyBind: 0
   selectedButton: 0
 --- !u!114 &459480492
 MonoBehaviour:
@@ -6351,6 +6358,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15c59912ca0ed2b4f9facae9210b1a63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  keyBind: 0
   selectedButton: 0
 --- !u!61 &477718528
 BoxCollider2D:
@@ -6724,6 +6732,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15c59912ca0ed2b4f9facae9210b1a63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  keyBind: 0
   selectedButton: 0
 --- !u!114 &493224040
 MonoBehaviour:
@@ -7868,6 +7877,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15c59912ca0ed2b4f9facae9210b1a63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  keyBind: 0
   selectedButton: 0
 --- !u!114 &623072317
 MonoBehaviour:
@@ -8042,6 +8052,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15c59912ca0ed2b4f9facae9210b1a63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  keyBind: 0
   selectedButton: 0
 --- !u!114 &688513375
 MonoBehaviour:
@@ -8251,6 +8262,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15c59912ca0ed2b4f9facae9210b1a63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  keyBind: 0
   selectedButton: 0
 --- !u!114 &709708064
 MonoBehaviour:
@@ -8673,6 +8685,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15c59912ca0ed2b4f9facae9210b1a63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  keyBind: 0
   selectedButton: 0
 --- !u!114 &732273642
 MonoBehaviour:
@@ -9207,6 +9220,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15c59912ca0ed2b4f9facae9210b1a63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  keyBind: 0
   selectedButton: 0
 --- !u!114 &783716808
 MonoBehaviour:
@@ -9438,6 +9452,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15c59912ca0ed2b4f9facae9210b1a63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  keyBind: 0
   selectedButton: 0
 --- !u!114 &785510394
 MonoBehaviour:
@@ -9929,6 +9944,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15c59912ca0ed2b4f9facae9210b1a63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  keyBind: 0
   selectedButton: 0
 --- !u!1 &802839687
 GameObject:
@@ -10392,6 +10408,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15c59912ca0ed2b4f9facae9210b1a63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  keyBind: 0
   selectedButton: 0
 --- !u!1 &825677604
 GameObject:
@@ -10813,7 +10830,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &848770240
 RectTransform:
   m_ObjectHideFlags: 0
@@ -11189,6 +11206,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15c59912ca0ed2b4f9facae9210b1a63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  keyBind: 0
   selectedButton: 0
 --- !u!222 &864738017
 CanvasRenderer:
@@ -11335,7 +11353,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &865219301
 RectTransform:
   m_ObjectHideFlags: 0
@@ -12125,7 +12143,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &904825457
 RectTransform:
   m_ObjectHideFlags: 0
@@ -12520,6 +12538,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15c59912ca0ed2b4f9facae9210b1a63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  keyBind: 0
   selectedButton: 0
 --- !u!95 &912310244
 Animator:
@@ -12668,6 +12687,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15c59912ca0ed2b4f9facae9210b1a63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  keyBind: 0
   selectedButton: 0
 --- !u!114 &928442391
 MonoBehaviour:
@@ -12900,6 +12920,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15c59912ca0ed2b4f9facae9210b1a63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  keyBind: 0
   selectedButton: 0
 --- !u!114 &936991233
 MonoBehaviour:
@@ -13232,6 +13253,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15c59912ca0ed2b4f9facae9210b1a63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  keyBind: 0
   selectedButton: 0
 --- !u!114 &992278378
 MonoBehaviour:
@@ -13532,6 +13554,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15c59912ca0ed2b4f9facae9210b1a63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  keyBind: 0
   selectedButton: 0
 --- !u!114 &1015988231
 MonoBehaviour:
@@ -13872,6 +13895,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15c59912ca0ed2b4f9facae9210b1a63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  keyBind: 0
   selectedButton: 0
 --- !u!114 &1041007858
 MonoBehaviour:
@@ -14511,6 +14535,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15c59912ca0ed2b4f9facae9210b1a63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  keyBind: 0
   selectedButton: 0
 --- !u!1 &1082610004
 GameObject:
@@ -15827,7 +15852,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15c59912ca0ed2b4f9facae9210b1a63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  selectedButton: 0
+  keyBind: 8
+  selectedButton: 11
 --- !u!61 &1228085910
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -17013,6 +17039,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15c59912ca0ed2b4f9facae9210b1a63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  keyBind: 0
   selectedButton: 0
 --- !u!114 &1292644480
 MonoBehaviour:
@@ -17237,6 +17264,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15c59912ca0ed2b4f9facae9210b1a63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  keyBind: 0
   selectedButton: 0
 --- !u!1 &1300184778
 GameObject:
@@ -17289,7 +17317,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15c59912ca0ed2b4f9facae9210b1a63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  selectedButton: 0
+  keyBind: 13
+  selectedButton: 9
 --- !u!114 &1300184781
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18027,6 +18056,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15c59912ca0ed2b4f9facae9210b1a63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  keyBind: 0
   selectedButton: 0
 --- !u!1 &1409100230
 GameObject:
@@ -18558,7 +18588,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15c59912ca0ed2b4f9facae9210b1a63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  selectedButton: 0
+  keyBind: 276
+  selectedButton: 13
 --- !u!1 &1447386694
 GameObject:
   m_ObjectHideFlags: 0
@@ -19445,6 +19476,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15c59912ca0ed2b4f9facae9210b1a63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  keyBind: 0
   selectedButton: 0
 --- !u!114 &1579971350
 MonoBehaviour:
@@ -20527,6 +20559,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15c59912ca0ed2b4f9facae9210b1a63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  keyBind: 0
   selectedButton: 0
 --- !u!61 &1710276554
 BoxCollider2D:
@@ -20700,6 +20733,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15c59912ca0ed2b4f9facae9210b1a63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  keyBind: 0
   selectedButton: 0
 --- !u!222 &1710892398
 CanvasRenderer:
@@ -20871,6 +20905,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15c59912ca0ed2b4f9facae9210b1a63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  keyBind: 0
   selectedButton: 0
 --- !u!61 &1715212749
 BoxCollider2D:
@@ -21051,6 +21086,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15c59912ca0ed2b4f9facae9210b1a63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  keyBind: 0
   selectedButton: 0
 --- !u!1 &1741810759
 GameObject:
@@ -21782,6 +21818,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15c59912ca0ed2b4f9facae9210b1a63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  keyBind: 0
   selectedButton: 0
 --- !u!114 &1799460308
 MonoBehaviour:
@@ -22187,6 +22224,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15c59912ca0ed2b4f9facae9210b1a63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  keyBind: 0
   selectedButton: 0
 --- !u!114 &1863869092
 MonoBehaviour:
@@ -22872,7 +22910,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15c59912ca0ed2b4f9facae9210b1a63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  selectedButton: 0
+  keyBind: 275
+  selectedButton: 12
 --- !u!1 &1934778623
 GameObject:
   m_ObjectHideFlags: 0
@@ -23121,6 +23160,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15c59912ca0ed2b4f9facae9210b1a63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  keyBind: 0
   selectedButton: 0
 --- !u!114 &1978132738
 MonoBehaviour:
@@ -23305,6 +23345,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15c59912ca0ed2b4f9facae9210b1a63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  keyBind: 0
   selectedButton: 0
 --- !u!114 &1983929221
 MonoBehaviour:
@@ -24056,6 +24097,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15c59912ca0ed2b4f9facae9210b1a63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  keyBind: 0
   selectedButton: 0
 --- !u!114 &2038893178
 MonoBehaviour:
@@ -24343,6 +24385,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15c59912ca0ed2b4f9facae9210b1a63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  keyBind: 0
   selectedButton: 0
 --- !u!61 &2046841032
 BoxCollider2D:

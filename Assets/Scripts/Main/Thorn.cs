@@ -12,18 +12,18 @@ public class Thorn : MonoBehaviour
 {
 
     Vector2 CheckPos;
-    public static byte[] triggerCheckPos{ get; set;} = new byte[GameStart.MaxPlayer];
-    public static bool[] respownTrigger{  get; set;} = new bool[GameStart.MaxPlayer];
+    public static byte[] triggerCheckPos{ get; set;} = new byte[GameStart.maxPlayer];
+    public static bool[] respownTrigger{  get; set;} = new bool[GameStart.maxPlayer];
 
-    GameObject[] players  = new GameObject[GameStart.MaxPlayer];
-    GameObject[] nameTags = new GameObject[GameStart.MaxPlayer];
-    Rigidbody2D[] stickrb = new Rigidbody2D[GameStart.MaxPlayer];
+    GameObject[] players  = new GameObject[GameStart.maxPlayer];
+    GameObject[] nameTags = new GameObject[GameStart.maxPlayer];
+    Rigidbody2D[] stickrb = new Rigidbody2D[GameStart.maxPlayer];
    
 
     void Start()
     {
         // 配列に代入
-        for (int i = 0; i < GameStart.MaxPlayer; i++)
+        for (int i = 0; i < GameStart.maxPlayer; i++)
         {
             players[ i] = GameObject.Find("Player" + (i + 1).ToString());
             nameTags[i] = GameObject.Find("P" + (i + 1).ToString() + "NameTag");

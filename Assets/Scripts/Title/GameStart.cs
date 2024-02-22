@@ -11,7 +11,7 @@ using Photon.Pun;
 public class GameStart : MonoBehaviourPunCallbacks
 {
     public  int maxStageNomal;     // 総ステージ数
-    public static int MaxPlayer = 4;     // 総プレイヤー数
+    public static int maxPlayer = 4, minPlayer;     // 総プレイヤー数
     const int KeyboardMode = 5;
     const int ControllerMode = 6;
 
@@ -69,7 +69,6 @@ public class GameStart : MonoBehaviourPunCallbacks
         idleTimer = 0;
         flagTimeLimit = 90;
         SetTextAlpha(1.0f);
-        //titleVideo.gameObject.SetActive(false);
         for (int i = 0; i < 4; i++)
         {
             playerIconPos[i] = slot1Pos[i];
@@ -89,51 +88,6 @@ public class GameStart : MonoBehaviourPunCallbacks
         //phase 0～3
         phase = System.Math.Min(phase,8 );
         phase = System.Math.Max(phase, 0);
-
-
-
-        return;
-
-
-        //タイトル動画再生
-        if (Input.anyKeyDown)
-        {
-            HideVideo();
-        }
-
-        // 一定時間放置したら動画再生
-        if (!isVideoPlaying)
-        {
-            idleTimer += Time.deltaTime;
-            if (idleTimer >= 15f)
-            {
-                PlayVideo();
-            }
-        }
-        //テキスト点滅
-        // テキストの透明度を変化させる
-        float alpha = blinkText.color.a;
-
-        if (isFadingOut)
-        {
-            alpha -= blinkSpeed * Time.deltaTime;
-            if (alpha <= 0.0f)
-            {
-                alpha = 0.0f;
-                isFadingOut = false;
-            }
-        }
-        else
-        {
-            alpha += blinkSpeed * Time.deltaTime;
-            if (alpha >= 1.0f)
-            {
-                alpha = 1.0f;
-                isFadingOut = true;
-            }
-        }
-
-        SetTextAlpha(alpha);
     }
 
 
@@ -271,13 +225,14 @@ public class GameStart : MonoBehaviourPunCallbacks
             switch (gameMode1)
             {
                 case "Single":
+                    minPlayer = 1;
                     switch (phase)
                     {
                         case 0:
-                            GameStart.PlayerNumber = 1;
                             mainTitle.gameObject.SetActive(true);
                             break;
                         case 1:
+                            GameStart.PlayerNumber = 1;
                             selectGameMode.gameObject.SetActive(true);
                             break;
                         case 2:
@@ -290,13 +245,14 @@ public class GameStart : MonoBehaviourPunCallbacks
                     }
                     break;
                 case "Multi":
+                    minPlayer = 2;
                     switch (phase)
                     {
                         case 0:
-                            GameStart.PlayerNumber = 1;
                             mainTitle.gameObject.SetActive(true);
                             break;
                         case 1:
+                            GameStart.PlayerNumber = 2;
                             changePlayerNumber.gameObject.SetActive(true);
                             break;
                         case 2:

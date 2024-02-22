@@ -13,12 +13,12 @@ public class GameSetting : MonoBehaviourPunCallbacks
     [SerializeField] Text[] nameTagTexts ;
     [SerializeField] float timeLimit;
     [SerializeField] GameObject canvas, frontCanvas;
-    [HideInInspector] public GameObject[] players = new GameObject[GameStart.MaxPlayer];
-    [HideInInspector] public GameObject[] sticks = new GameObject[GameStart.MaxPlayer];
-    [HideInInspector] public GameObject[] nameTags = new GameObject[GameStart.MaxPlayer];
-    [HideInInspector] public GameObject[] deadTimer = new GameObject[GameStart.MaxPlayer];
-    Vector2[] nameTagPos = new Vector2[GameStart.MaxPlayer];
-    Vector2[,] startPos = new Vector2[GameStart.MaxPlayer, GameStart.MaxPlayer];
+    [HideInInspector] public GameObject[] players = new GameObject[GameStart.maxPlayer];
+    [HideInInspector] public GameObject[] sticks = new GameObject[GameStart.maxPlayer];
+    [HideInInspector] public GameObject[] nameTags = new GameObject[GameStart.maxPlayer];
+    [HideInInspector] public GameObject[] deadTimer = new GameObject[GameStart.maxPlayer];
+    Vector2[] nameTagPos = new Vector2[GameStart.maxPlayer];
+    Vector2[,] startPos = new Vector2[GameStart.maxPlayer, GameStart.maxPlayer];
     string[] startText = { "スタート", "Start" };
     public static bool Playable = false, allJoin = false;
     public static bool[] playerLeft = new bool[4];
@@ -40,8 +40,8 @@ public class GameSetting : MonoBehaviourPunCallbacks
     const int KeyboardMode = 5;
     const int ControllerMode = 6;
 
-    public static Vector2[] respownPos = new Vector2[GameStart.MaxPlayer];
-    GameObject[] defaultPlayerPos = new GameObject[GameStart.MaxPlayer];
+    public static Vector2[] respownPos = new Vector2[GameStart.maxPlayer];
+    GameObject[] defaultPlayerPos = new GameObject[GameStart.maxPlayer];
 
     SaveData data;
     private IngameLog ingameLog = new IngameLog();
@@ -172,7 +172,7 @@ public class GameSetting : MonoBehaviourPunCallbacks
                 }
             }
                 
-                for (int i = 0; i < GameStart.MaxPlayer; i++)
+                for (int i = 0; i < GameStart.maxPlayer; i++)
                 {
                     defaultPlayerPos[i] = GameObject.Find("DefaultPlayerPos" + (i + 1).ToString());
                     respownPos[i] = defaultPlayerPos[i].gameObject.transform.position;
@@ -207,7 +207,7 @@ public class GameSetting : MonoBehaviourPunCallbacks
             countDown = GameObject.Find("CountDown").GetComponent<Text>();
             playTimeTx = GameObject.Find("TimeText").GetComponent<Text>();
             playTimeTx.text = "";
-        for (int i = 0; i < GameStart.MaxPlayer; i++) //初期化処理
+        for (int i = 0; i < GameStart.maxPlayer; i++) //初期化処理
         {
             nameTags[i].gameObject.SetActive(false);
             sticks[i] = GameObject.Find("Stick" + (i + 1).ToString());
@@ -227,7 +227,7 @@ public class GameSetting : MonoBehaviourPunCallbacks
         // リスポーン位置
         if (GameStart.gameMode1 == "Multi")
         {
-            for (int i = 0; i < GameStart.MaxPlayer; i++)
+            for (int i = 0; i < GameStart.maxPlayer; i++)
             {
                 defaultPlayerPos[i] = GameObject.Find("DefaultPlayerPos" + (i + 1).ToString());
                 respownPos[i] = defaultPlayerPos[i].gameObject.transform.position;
