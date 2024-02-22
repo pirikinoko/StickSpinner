@@ -35,9 +35,8 @@ public class TitleButton : MonoBehaviourPunCallbacks
     void Update()
     {
         FindAllButtons();
-        OpenSetting();
 
-        //次に進むボタン
+        //選択中のボタンをクリック
         if (ControllerInput.jump[0] || Input.GetKeyDown(KeyCode.Return))
         {
             if (Settings.inSetting) { return; }
@@ -47,11 +46,6 @@ public class TitleButton : MonoBehaviourPunCallbacks
             }
         }
 
-        //戻るボタン
-        if (ControllerInput.back[0] || Input.GetKeyDown(KeyCode.Backspace))
-        {
-
-        }
         for (int i = 0; i < 4; i++)
         {
             lastLstickX[i] = ControllerInput.LstickX[i];
@@ -482,16 +476,6 @@ public class TitleButton : MonoBehaviourPunCallbacks
         }
         /*キーボード*/
     }
-
-    void OpenSetting()　//設定表示
-    {
-        if ((ControllerInput.start[0] || Input.GetKeyDown(KeyCode.Escape)) && Settings.exitPanelActive == false)
-        {
-            Settings.SettingPanelActive = !(Settings.SettingPanelActive);
-            Settings.inSetting = !(Settings.inSetting);
-        }
-    }
-
 
 
 

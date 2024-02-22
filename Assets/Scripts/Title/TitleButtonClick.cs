@@ -170,12 +170,28 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
                 inputButton = ControllerInput.start[0];
                 break;
         }
+        //設定画面オンオフ
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (Settings.inSetting && this.name.Contains("Resume"))
+            {
+                SettingPanelTrigger();
+            }
+            else if (!Settings.inSetting && this.name.Contains("Pause"))
+            {
+                SettingPanelTrigger();
+            }
+            return;
+        }
         //ボタンをクリックしたことに
         if (inputButton || Input.GetKeyDown(keyBind))  
         {
             if (Settings.inSetting) { return; }
             this.GetComponent<Button>().onClick.Invoke();
         }
+
+
+      
 
         lastLstickX = ControllerInput.LstickX[0];
         lastLstickY = ControllerInput.LstickY[0];
@@ -418,7 +434,7 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
         }
 
     }
-    public void OpenSetting()    //設定画面の表示
+    public void SettingPanelTrigger()    //設定画面の表示
     {
         Settings.SettingPanelActive = !(Settings.SettingPanelActive);
         Settings.inSetting = !(Settings.inSetting);
