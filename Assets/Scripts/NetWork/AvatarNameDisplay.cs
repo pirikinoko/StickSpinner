@@ -2,15 +2,15 @@ using Photon.Pun;
 using TMPro;
 using UnityEngine.UI;
 
-// MonoBehaviourPunCallbacksを継承して、photonViewプロパティを使えるようにする
+// MonoBehaviourPunCallbacks繧堤ｶ呎価縺励※縲｝hotonView繝励Ο繝代ユ繧｣繧剃ｽｿ縺医ｋ繧医≧縺ｫ縺吶ｋ
 public class AvatarNameDisplay : MonoBehaviourPunCallbacks
 {
     private void Start()
     {
         var nameLabel = GetComponent<TextMeshPro>();
-        // プレイヤー名とプレイヤーIDを表示する
+        // 繝励Ξ繧､繝､繝ｼ蜷阪→繝励Ξ繧､繝､繝ｼID繧定｡ｨ遉ｺ縺吶ｋ
         nameLabel.text = $"{photonView.Owner.NickName}({photonView.OwnerActorNr})";
-        // プレイヤー名とプレイヤーIDとプレイヤーのランクを表示する
+        // 繝励Ξ繧､繝､繝ｼ蜷阪→繝励Ξ繧､繝､繝ｼID縺ｨ繝励Ξ繧､繝､繝ｼ縺ｮ繝ｩ繝ｳ繧ｯ繧定｡ｨ遉ｺ縺吶ｋ
         var nickName = photonView.Owner.NickName;
         var id = photonView.OwnerActorNr;
         var rank = photonView.Owner.GetRank();

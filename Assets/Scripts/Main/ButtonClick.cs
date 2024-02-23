@@ -1,13 +1,216 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using UnityEngine.InputSystem;
 using Photon.Pun;
 public class ButtonClick : MonoBehaviourPunCallbacks　//クリック用ボタン
 {
     public GameObject pauseButton;
-    private GameSetting gameSetting = new GameSetting(); 
+    private GameSetting gameSetting = new GameSetting();
+
+    bool inputButton;
+    [SerializeField] KeyCode keyBind;
+    string controllerButton;
+    bool inputCrossXPlus, inputCrossXMinus, inputCrossYPlus, inputCrossYMinus, inputLstickXPlus, inputLstickXMinus, inputLstickYPlus, inputLstickYMinus;
+    float lastLstickX, lastLstickY;
+    //対応するコントローラーボタンの選択肢
+    public enum ControllerButtons
+    {
+        False,
+        LstickXPlus,
+        LstickXMinus,
+        LStickYPlus,
+        LStickYMinus,
+        crossXPlus,
+        crossXMinus,
+        crossYPlus,
+        crossYMinus,
+        jump,
+        next,
+        back,
+        plus,
+        minus,
+        start
+    }
+
+    // インスペクターから選択したいEnumのフィールド
+    [SerializeField]
+    private ControllerButtons selectedButton;
+
+    void Start()
+    {
+        controllerButton = selectedButton.ToString();
+    }
+
+    void Update()
+    {
+        controllerPushButton();
+    }
+    void controllerPushButton()
+    {
+        if (inputCrossXPlus == false && inputCrossXMinus == false)
+        {
+            if (ControllerInput.crossX[0] >= 0.1f) { inputCrossXPlus = true; }
+            else if (ControllerInput.crossX[0] <= -0.1f) { inputCrossXMinus = true; }
+        }
+
+        if (inputCrossYPlus == false && inputCrossYMinus == false)
+        {
+            if (ControllerInput.crossY[0] >= 0.1f) { inputCrossYPlus = true; }
+            else if (ControllerInput.crossY[0] <= -0.1f) { inputCrossYMinus = true; }
+        }
+
+
+        if (ControllerInput.LstickX[0] > 0.5f) { inputLstickXPlus = true; }
+        else if (ControllerInput.LstickX[0] < -0.5f) { inputLstickXMinus = true; }
+
+
+        if (ControllerInput.LstickY[0] > 0.5f) { inputLstickYPlus = true; }
+        else if (ControllerInput.LstickY[0] < -0.5f) { inputLstickYMinus = true; }
+        //入力リセット
+        if (lastLstickX > 0.1f || lastLstickY < -0.1f)
+        {
+            inputLstickXPlus = false;
+            inputLstickXMinus = false;
+        }
+        if (lastLstickY > 0.1f || lastLstickY < -0.1f)
+        {
+            inputLstickYPlus = false;
+            inputLstickYMinus = false;
+        }
+        if (ControllerInput.crossX[0] == 0)
+        {
+            inputCrossXPlus = false;
+            inputCrossXMinus = false;
+        }
+        if (ControllerInput.crossY[0] == 0)
+        {
+            inputCrossYPlus = false;
+            inputCrossYMinus = false;
+        }
+
+
+
+
+        switch (selectedButton)
+        {
+            case ControllerButtons.False:
+                inputButton = false;
+                break;
+            case ControllerButtons.LstickXPlus:
+                inputButton = inputLstickXPlus;
+                break;
+
+            case ControllerButtons.LstickXMinus:
+                inputButton = inputLstickXMinus;
+                break;
+
+            case ControllerButtons.LStickYPlus:
+                inputButton = inputLstickYPlus;
+                break;
+
+            case ControllerButtons.LStickYMinus:
+                inputButton = inputLstickYMinus;
+                break;
+
+            case ControllerButtons.crossXPlus:
+                inputButton = inputCrossXPlus;
+                break;
+
+            case ControllerButtons.crossXMinus:
+                inputButton = inputCrossXMinus;
+                break;
+
+            case ControllerButtons.crossYPlus:
+                inputButton = inputCrossYPlus;
+                break;
+
+            case ControllerButtons.crossYMinus:
+                inputButton = inputCrossYMinus;
+                break;
+
+            case ControllerButtons.jump:
+                inputButton = ControllerInput.jump[0];
+                break;
+
+            case ControllerButtons.next:
+                inputButton = ControllerInput.next[0];
+                break;
+
+            case ControllerButtons.back:
+                inputButton = ControllerInput.back[0];
+                break;
+
+            case ControllerButtons.plus:
+                inputButton = ControllerInput.plus[0];
+                break;
+
+            case ControllerButtons.minus:
+                inputButton = ControllerInput.minus[0];
+                break;
+
+            case ControllerButtons.start:
+                inputButton = ControllerInput.start[0];
+                break;
+        }
+        //設定画面オンオフ
+        if (Input.GetKeyDown(KeyCode.Escape) || ControllerInput.start[0])
+        {
+            if (Settings.inSetting && this.name.Contains("Resume"))
+            {   
+                RestartButton();    
+            }
+            else if (!Settings.inSetting && this.name.Contains("Pause"))
+            {
+                SettingPanelTrigger();
+                Debug.Log("ポーズします");
+            }
+            return;
+        }
+        //ボタンをクリックしたことに
+        if (inputButton || Input.GetKeyDown(keyBind))
+        {
+            if (Settings.inSetting) { return; }
+            this.GetComponent<Button>().onClick.Invoke();
+        }
+
+
+
+
+        lastLstickX = ControllerInput.LstickX[0];
+        lastLstickY = ControllerInput.LstickY[0];
+
+        inputLstickXPlus = false;
+        inputLstickXMinus = false;
+        inputLstickYPlus = false;
+        inputLstickYMinus = false;
+        inputCrossXPlus = false;
+        inputCrossXMinus = false;
+        inputCrossYPlus = false;
+        inputCrossYMinus = false;
+
+    }
+
+    public void SettingPanelTrigger()    //設定画面の表示
+    {
+        if (GameSetting.startTime < 0 && GameMode.Finished == false && GameMode.Goaled == false)
+        {
+            ButtonInGame.Paused = 1;
+            GameSetting.Playable = false;
+            pauseButton.gameObject.SetActive(false);
+            Settings.SettingPanelActive = true;
+            Settings.inSetting = true;
+            Time.timeScale = 0;
+        }
+        if (GameStart.gameMode1 == "Online")
+        {
+            Time.timeScale = 1;
+            GameSetting.Playable = true;
+        }
+    }
+
     public void BackToTitle()
     {
         SoundEffect.soundTrigger[2] = 1;
@@ -34,25 +237,7 @@ public class ButtonClick : MonoBehaviourPunCallbacks　//クリック用ボタ�
     {
         GameSetting.playerLeft[id - 1] = true;
     }
-    public void PauseButton()
-    {
-        if (GameSetting.startTime < 0 && GameMode.Finished == false && GameMode.Goaled == false)
-        {
-            ButtonInGame.Paused = 1;
-            GameSetting.Playable = false;
-            pauseButton.gameObject.SetActive(false);
-            Settings.SettingPanelActive = true;
-            Settings.inSetting = true;
-            Time.timeScale = 0;
-        }
-        if (GameStart.gameMode1 == "Online")
-        {
-            Time.timeScale = 1;
-            GameSetting.Playable = true;
-        }
-    }
 
-   
     //ゲーム終了ボタン
     public void ExitGame()
     {

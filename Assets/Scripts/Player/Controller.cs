@@ -266,7 +266,7 @@ public class Controller : MonoBehaviourPunCallbacks
         }
         if (GameSetting.Playable && ButtonInGame.Paused != 1) //プレイヤー数選択画面でも操作可能
         {
-            if (!NetWorkMain.isOnline)
+            if (!NetWorkMain.isOnline || (NetWorkMain.isOnline && photonView.IsMine))
             {
                 bool jumpKey = Input.GetKeyDown(KeyJump);
                 if (onFloor && (jumpKey || ControllerInput.jump[id - 1] ) )
@@ -291,36 +291,7 @@ public class Controller : MonoBehaviourPunCallbacks
 
                 }
             }
-            else if (NetWorkMain.isOnline)
-            {
-                if (photonView.IsMine)
-                {
-                    stickRb = GetComponent<Rigidbody2D>();
-                    bool jumpKey = Input.GetKeyDown(KeyCode.UpArrow);
-                    if (onFloor && (jumpKey || ControllerInput.jump[0]))
-                    {
-
-                        float jumpDirection;                        // 棒の回転値に合わせて飛ぶ方向を求める
-                        if (rotZ < 180) { jumpDirection = 6; }
-                        else { jumpDirection = 18; }
-                        jumpDirection = (jumpDirection - rotZ / 15) * 1.15f;
-
-                        //棒が真横を向いているときはジャンプできない
-                        if (!(rotZ > 179) && !(rotZ < 1))
-                        {
-                            stickRb.velocity = new Vector2(jumpDirection, jumpforce);
-                            onFloor = false; onPlayer = false; onStick = false; onSurface = false; body.onSurface = false; body.onPlayer = false; body.onStick = false;
-                            //効果音鳴らす
-                            SoundEffect.soundTrigger[5] = 1;
-                        }
-
-                        // クールタイム(この時間は入力を受け付けない)
-                        coolTime = CoolTime_;
-
-                    }
-                }
-            }
-
+        
         }
        
     }

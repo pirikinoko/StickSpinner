@@ -7,7 +7,7 @@ using CI.QuickSave;
 using System.Linq;
 public class Settings : MonoBehaviour
 {
-    public GameObject SettingPanel, TLFrame, exitPanel;
+    public GameObject SettingPanel, exitPanel;
     public Text languageText, screenText, guideText;
     public static bool SettingPanelActive = false, inSetting = false;
     bool InputCrossX, InputCrossY;
@@ -86,8 +86,6 @@ public class Settings : MonoBehaviour
             itemPos[i] = item[i].transform.position;
         }
 
-        Transform TLFrameTransform = TLFrame.transform;
-        Vector2 TLFramePos = TLFrameTransform.position;
         for (int i = 0; i < GameStart.PlayerNumber; i++)
         {
             if (inSetting)
@@ -153,7 +151,7 @@ public class Settings : MonoBehaviour
                 /*ゲーム終了*/
                 if (ControllerInput.jump[0] || Input.GetKeyDown(KeyCode.Return))
                 {
-                    if (GameSetting.Playable == false && ButtonInGame.Paused == 0 && !(exitPanelActive))
+                    if (GameSetting.Playable == false && !(exitPanelActive))
                     {
                         ClickSelectedButton("Item");
                         return;
@@ -225,10 +223,6 @@ public class Settings : MonoBehaviour
             rotStage[i] = System.Math.Min(rotStage[i], 20);
             rotStage[i] = System.Math.Max(rotStage[i], 1);
         }
-
-
-        TLFramePos.y = itemPos[Selected].y;
-        TLFrameTransform.position = TLFramePos;
 
         if(lastScreenNum != screenModeNum)
         {

@@ -27,7 +27,7 @@ public class AvatarFireBullet : MonoBehaviourPunCallbacks
     private void FireBullet(int id, float angle, PhotonMessageInfo info)
     {
         var bullet = Instantiate(bulletPrefab);
-        // ’e‚ğ”­Ë‚µ‚½‚É50ms‚ÌƒfƒBƒŒƒC‚ğ‚©‚¯‚é
+        // å¼¾ã‚’ç™ºå°„ã—ãŸæ™‚åˆ»ã«50msã®ãƒ‡ã‚£ãƒ¬ã‚¤ã‚’ã‹ã‘ã‚‹
         int timestamp = unchecked(info.SentServerTimestamp + 50);
         bullet.Init(id, photonView.OwnerActorNr, transform.position, angle, timestamp);
     }

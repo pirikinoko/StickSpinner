@@ -13,12 +13,12 @@ public class GameRoomTimeDisplay : MonoBehaviour
 
     private void Update()
     {
-        // ‚Ü‚¾ƒ‹[ƒ€‚ÉQ‰Á‚µ‚Ä‚¢‚È‚¢ê‡‚ÍXV‚µ‚È‚¢
+        // ã¾ã ãƒ«ãƒ¼ãƒ ã«å‚åŠ ã—ã¦ã„ãªã„å ´åˆã¯æ›´æ–°ã—ãªã„
         if (!PhotonNetwork.InRoom) { return; }
-        // ‚Ü‚¾ƒQ[ƒ€‚ÌŠJn‚ªİ’è‚³‚ê‚Ä‚¢‚È‚¢ê‡‚ÍXV‚µ‚È‚¢
+        // ã¾ã ã‚²ãƒ¼ãƒ ã®é–‹å§‹æ™‚åˆ»ãŒè¨­å®šã•ã‚Œã¦ã„ãªã„å ´åˆã¯æ›´æ–°ã—ãªã„
         if (!PhotonNetwork.CurrentRoom.TryGetStartTime(out int timestamp)) { return; }
 
-        // ƒQ[ƒ€‚ÌŒo‰ßŠÔ‚ğ‹‚ß‚ÄA¬”‘æˆêˆÊ‚Ü‚Å•\¦‚·‚é
+        // ã‚²ãƒ¼ãƒ ã®çµŒéæ™‚é–“ã‚’æ±‚ã‚ã¦ã€å°æ•°ç¬¬ä¸€ä½ã¾ã§è¡¨ç¤ºã™ã‚‹
         float elapsedTime = Mathf.Max(0f, unchecked(PhotonNetwork.ServerTimestamp - timestamp) / 1000f);
         timeLabel.text = elapsedTime.ToString("f1");
     }

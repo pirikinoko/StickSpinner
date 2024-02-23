@@ -26,7 +26,7 @@ public class AvatarHitBullet : MonoBehaviourPunCallbacks
         {
             if (bullet.Equals(id, ownerId))
             {
-                // ©g‚ª”­Ë‚µ‚½’e‚ª“–‚½‚Á‚½ê‡‚É‚ÍA©g‚ÌƒXƒRƒA‚ğ‘‚â‚·
+                // è‡ªèº«ãŒç™ºå°„ã—ãŸå¼¾ãŒå½“ãŸã£ãŸå ´åˆã«ã¯ã€è‡ªèº«ã®ã‚¹ã‚³ã‚¢ã‚’å¢—ã‚„ã™
                 if (ownerId == PhotonNetwork.LocalPlayer.ActorNumber)
                 {
                     PhotonNetwork.LocalPlayer.AddScore(10);

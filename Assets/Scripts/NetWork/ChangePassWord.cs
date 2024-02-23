@@ -30,14 +30,14 @@ public class ChangePassWord : MonoBehaviourPunCallbacks
         if (customProps.ContainsKey("Password"))
         {
             customProps["Password"] = passwordInputField.text;
-            Debug.Log("Password" + passwordInputField.text + "‚Éİ’è‚µ‚Ü‚µ‚½");
-            ingameLog.GenerateIngameLog("Password‚ğu" + passwordInputField.text + "v‚Éİ’è‚µ‚Ü‚µ‚½");
+            Debug.Log("Password" + passwordInputField.text + "ã«è¨­å®šã—ã¾ã—ãŸ");
+            ingameLog.GenerateIngameLog("Passwordã‚’ã€Œ" + passwordInputField.text + "ã€ã«è¨­å®šã—ã¾ã—ãŸ");
         }
         PhotonNetwork.CurrentRoom.SetCustomProperties(customProps);
 
         if (PhotonNetwork.CurrentRoom.CustomProperties.ContainsKey("leaderId"))
         {
-            Debug.Log("leaderId‚ÌƒJƒXƒ^ƒ€ƒvƒƒpƒeƒB‚ª‘¶İ‚µ‚Ü‚·");
+            Debug.Log("leaderIdã®ã‚«ã‚¹ã‚¿ãƒ ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ãŒå­˜åœ¨ã—ã¾ã™");
         }
     }
 

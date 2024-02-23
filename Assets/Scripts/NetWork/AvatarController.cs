@@ -1,12 +1,12 @@
 using Photon.Pun;
 using UnityEngine;
 
-// MonoBehaviourPunCallbacksを継承して、photonViewプロパティを使えるようにする
+// MonoBehaviourPunCallbacks繧堤ｶ呎価縺励※縲｝hotonView繝励Ο繝代ユ繧｣繧剃ｽｿ縺医ｋ繧医≧縺ｫ縺吶ｋ
 public class AvatarController : MonoBehaviourPunCallbacks
 {
     private void Update()
     {
-        // 自身が生成したオブジェクトだけに移動処理を行う
+        // 閾ｪ霄ｫ縺檎函謌舌＠縺溘が繝悶ず繧ｧ繧ｯ繝医□縺代↓遘ｻ蜍募�ｦ逅�繧定｡後≧
         if (photonView.IsMine)
         {
             var input = new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"), 0f);

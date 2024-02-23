@@ -18,7 +18,6 @@ public class NetWorkMain : MonoBehaviourPunCallbacks
     private IngameLog ingameLog = new IngameLog();
     private void Start()
     {
-        ingameLog.GenerateIngameLog("leader id ==" + leaderId + "MyId==" + netWorkId);
         setCount = 0;
         PhotonNetwork.ConnectUsingSettings();
     }
@@ -50,15 +49,14 @@ public class NetWorkMain : MonoBehaviourPunCallbacks
                         netWorkId = i + 1;
                     }
                 }
-                //leaderIdÄİ’è
+                //leaderIdå†è¨­å®š
                 if (isLeader)
                 {                
                     leaderId = netWorkId;
                     UpdateLeader(leaderId);
                 }
 
-                ingameLog.GenerateIngameLog(tmpId + "¨¨ ¨ ¨ ¨ "   + netWorkId);
-                // ”z—ñ‚Ì“à—e‚ğ•\¦
+                // é…åˆ—ã®å†…å®¹ã‚’è¡¨ç¤º
                 Debug.Log("ActorNumbers: " + string.Join(", ", actorNumbers));
             }
             lastPlayerCount = GameStart.PlayerNumber;
@@ -69,7 +67,7 @@ public class NetWorkMain : MonoBehaviourPunCallbacks
                 playerConfigs[i].gameObject.SetActive(true);
                 playerNameText[i].text = PhotonNetwork.PlayerList[i].NickName;
             }
-            if (setCount == 0) //ˆê“x‚Ì‚İÀs‚·‚é€–Ú
+            if (setCount == 0) //ä¸€åº¦ã®ã¿å®Ÿè¡Œã™ã‚‹é …ç›®
             {
                 Debug.Log("NetWorkID == " + netWorkId);
                 photonView.RPC("SetPlayerNumber", RpcTarget.All);
@@ -132,7 +130,7 @@ public class NetWorkMain : MonoBehaviourPunCallbacks
     {
         setCount = 0;
         PhotonNetwork.JoinLobby();
-        Debug.Log("ƒ}ƒXƒ^[ƒT[ƒo[‚ÉÚ‘±‚µ‚Ü‚µ‚½");
+        Debug.Log("ãƒã‚¹ã‚¿ãƒ¼ã‚µãƒ¼ãƒãƒ¼ã«æ¥ç¶šã—ã¾ã—ãŸ");
     }
 
 
@@ -158,7 +156,7 @@ public class NetWorkMain : MonoBehaviourPunCallbacks
                 netWorkId = i + 1;
             }
         }
-        ingameLog.GenerateIngameLog(tmpId + "¨¨ ¨ ¨ ¨ " + netWorkId);
+        ingameLog.GenerateIngameLog(tmpId + "â†’â†’ â†’ â†’ â†’ " + netWorkId);
         PhotonNetwork.NickName = InputName.TypedTextToString;
         Debug.Log(PhotonNetwork.NickName + "isConnected");
 
@@ -168,7 +166,7 @@ public class NetWorkMain : MonoBehaviourPunCallbacks
         if (customProps.ContainsKey("gameMode"))
         {
             GameStart.gameMode2 = customProps["gameMode"].ToString();
-            Debug.Log("GameMode‚ğ" + customProps["gameMode"].ToString() + "‚Éİ’è‚µ‚Ü‚µ‚½");
+            Debug.Log("GameModeã‚’" + customProps["gameMode"].ToString() + "ã«è¨­å®šã—ã¾ã—ãŸ");
         }
         if (customProps.ContainsKey("winnings"))
         {
@@ -208,7 +206,7 @@ public class NetWorkMain : MonoBehaviourPunCallbacks
 
     }
 
-    // Photon‚ÌƒT[ƒo[‚©‚çØ’f‚³‚ê‚½‚ÉŒÄ‚Î‚ê‚éƒR[ƒ‹ƒoƒbƒN
+    // Photonã®ã‚µãƒ¼ãƒãƒ¼ã‹ã‚‰åˆ‡æ–­ã•ã‚ŒãŸæ™‚ã«å‘¼ã°ã‚Œã‚‹ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯
     public override void OnDisconnected(DisconnectCause cause)
     {
         photonView.RPC("ConfigActive", RpcTarget.All);
@@ -218,7 +216,7 @@ public class NetWorkMain : MonoBehaviourPunCallbacks
     private void SetPlayerNumber()
     {
         GameStart.PlayerNumber = PhotonNetwork.CurrentRoom.PlayerCount;
-        Debug.Log(PhotonNetwork.CurrentRoom.PlayerCount + "–¼‚ªƒ‹[ƒ€‚É‘¶İ‚µ‚Ü‚·");
+        Debug.Log(PhotonNetwork.CurrentRoom.PlayerCount + "åãŒãƒ«ãƒ¼ãƒ ã«å­˜åœ¨ã—ã¾ã™");
     }
     [PunRPC]
     private void ConfigActive()
@@ -256,7 +254,7 @@ public class NetWorkMain : MonoBehaviourPunCallbacks
         }
     }
 
-    // ƒ‹[ƒ€‚Å’l‚ğ‹¤—L‚·‚é
+    // ãƒ«ãƒ¼ãƒ ã§å€¤ã‚’å…±æœ‰ã™ã‚‹
     public static void UpdateRoomStats(int updatedStage)
     {
         ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
@@ -271,7 +269,7 @@ public class NetWorkMain : MonoBehaviourPunCallbacks
         PhotonNetwork.CurrentRoom.SetCustomProperties(customProps);
     }
 
-    // ƒ‹[ƒ€‚Å’l‚ğ‹¤—L‚·‚é
+    // ãƒ«ãƒ¼ãƒ ã§å€¤ã‚’å…±æœ‰ã™ã‚‹
     public static void UpdateGameMode(string updatedMode)
     {
         ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
@@ -282,7 +280,7 @@ public class NetWorkMain : MonoBehaviourPunCallbacks
         }
         PhotonNetwork.CurrentRoom.SetCustomProperties(customProps);
     }
-    // ƒ‹[ƒ€‚Å’l‚ğ‹¤—L‚·‚é
+    // ãƒ«ãƒ¼ãƒ ã§å€¤ã‚’å…±æœ‰ã™ã‚‹
     public static void UpdateLeader(int updatedId)
     {
         ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;

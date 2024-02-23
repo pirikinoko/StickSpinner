@@ -20,10 +20,10 @@ public class Leaderboard : MonoBehaviour
 
     private void Update()
     {
-        // ‚Ü‚¾ƒ‹[ƒ€‚ÉŽQ‰Á‚µ‚Ä‚¢‚È‚¢ê‡‚ÍXV‚µ‚È‚¢
+        // ã¾ã ãƒ«ãƒ¼ãƒ ã«å‚åŠ ã—ã¦ã„ãªã„å ´åˆã¯æ›´æ–°ã—ãªã„
         if (!PhotonNetwork.InRoom) { return; }
 
-        // 0.1•b–ˆ‚ÉƒeƒLƒXƒg‚ðXV‚·‚é
+        // 0.1ç§’æ¯Žã«ãƒ†ã‚­ã‚¹ãƒˆã‚’æ›´æ–°ã™ã‚‹
         elapsedTime += Time.deltaTime;
         if (elapsedTime > 0.1f)
         {
@@ -39,13 +39,13 @@ public class Leaderboard : MonoBehaviour
             players,
             (p1, p2) =>
             {
-                // ƒXƒRƒA‚ª‘½‚¢‡‚Éƒ\[ƒg‚·‚é
+                // ã‚¹ã‚³ã‚¢ãŒå¤šã„é †ã«ã‚½ãƒ¼ãƒˆã™ã‚‹
                 int diff = p2.GetScore() - p1.GetScore();
                 if (diff != 0)
                 {
                     return diff;
                 }
-                // ƒXƒRƒA‚ª“¯‚¶‚¾‚Á‚½ê‡‚ÍAID‚ª¬‚³‚¢‡‚Éƒ\[ƒg‚·‚é
+                // ã‚¹ã‚³ã‚¢ãŒåŒã˜ã ã£ãŸå ´åˆã¯ã€IDãŒå°ã•ã„é †ã«ã‚½ãƒ¼ãƒˆã™ã‚‹
                 return p1.ActorNumber - p2.ActorNumber;
             }
         );

@@ -24,13 +24,17 @@ public class GenerateStage : MonoBehaviour
     Vector2 checkLinePos;
     public float deadLine { get; set; }
     int[] objectType = new int[objUnit];
-    int currentObj = 0, prev, prev2, count = 0, target = 0, objLength, objLengthPrev ,objDirection = 0, enemyCount = 0, startCount;
+    int currentObj = 0, prev, prev2, count = 0, target = 0, objLength, objLengthPrev, objDirection = 0, enemyCount = 0, startCount, startTrigger;
     public static float[] collisionPos = new float[30];
 
     // Start is called before the first frame update
     void Start()
     {
-        if(GameStart.gameMode1 != "Single") { return; }
+        startTrigger = 0;
+    }
+    void AfterAllJoin() 
+    {
+        if (GameStart.gameMode1 != "Single") { return; }
         if (GameStart.gameMode2 != "Arcade") { return; }
         gameSetting = GameObject.Find("Scripts").GetComponent<GameSetting>();
         maxHeight = 0;
@@ -41,8 +45,8 @@ public class GenerateStage : MonoBehaviour
         leftWallPos = leftWall.transform.position;
         rightWallPos = rightWall.transform.position;
         //ステージの端
-        leftLimit =  leftWall.transform.position.x;
-        rightLimit = rightWall.transform.position.x;    
+        leftLimit = leftWall.transform.position.x;
+        rightLimit = rightWall.transform.position.x;
 
         //生成するオブジェクトの長さを測る
         int length1 = objNames.GetLength(0);
@@ -90,7 +94,7 @@ public class GenerateStage : MonoBehaviour
             }
         }
 
-        playerYPrev = gameSetting.players[0].transform.position.y;;
+        playerYPrev = gameSetting.players[0].transform.position.y; ;
         currentObj = 0;
         objectType[0] = 0;
         startCount = 0;
@@ -103,13 +107,17 @@ public class GenerateStage : MonoBehaviour
             objActive[i] = false;
         }
     }
-
     // Update is called once per frame
     void Update()
     {
         if (GameStart.gameMode1 != "Single" || GameStart.gameMode2 != "Arcade")
         {
             return;
+        }
+        if(GameSetting.allJoin && startTrigger == 0) 
+        {
+                AfterAllJoin();
+                startTrigger = 1;
         }
         //長さを計測
         if (GameSetting.startTime > 0)
@@ -172,7 +180,6 @@ public class GenerateStage : MonoBehaviour
             leftWall.transform.position = leftWallPos;
             rightWall.transform.position = rightWallPos;
         }
-        UnityEngine.Debug.Log("playerPos.y" + playerPos.y + "    MaxHeight - startHeight" + (maxHeight - startHeight));
         if (GameMode.isGameOver == false && playerPos.y > maxHeight + startHeight) 
         {
             maxHeight = playerPos.y;

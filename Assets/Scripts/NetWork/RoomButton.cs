@@ -29,14 +29,14 @@ public class RoomButton : MonoBehaviourPunCallbacks
 
     private void OnButtonClick()
     {
-        // ƒ‹[ƒ€Q‰Áˆ—’†‚ÍA‘S‚Ä‚ÌQ‰Áƒ{ƒ^ƒ“‚ğ‰Ÿ‚¹‚È‚¢‚æ‚¤‚É‚·‚é
+        // ãƒ«ãƒ¼ãƒ å‚åŠ å‡¦ç†ä¸­ã¯ã€å…¨ã¦ã®å‚åŠ ãƒœã‚¿ãƒ³ã‚’æŠ¼ã›ãªã„ã‚ˆã†ã«ã™ã‚‹
         matchmakingView.OnJoiningRoom();
 
-        // ƒ{ƒ^ƒ“‚É‘Î‰‚µ‚½ƒ‹[ƒ€–¼‚Ìƒ‹[ƒ€‚ÉQ‰Á‚·‚éiƒ‹[ƒ€‚ª‘¶İ‚µ‚È‚¯‚ê‚Îì¬‚µ‚Ä‚©‚çQ‰Á‚·‚éj
+        // ãƒœã‚¿ãƒ³ã«å¯¾å¿œã—ãŸãƒ«ãƒ¼ãƒ åã®ãƒ«ãƒ¼ãƒ ã«å‚åŠ ã™ã‚‹ï¼ˆãƒ«ãƒ¼ãƒ ãŒå­˜åœ¨ã—ãªã‘ã‚Œã°ä½œæˆã—ã¦ã‹ã‚‰å‚åŠ ã™ã‚‹ï¼‰
         var roomOptions = new RoomOptions();
         roomOptions.MaxPlayers = MaxPlayers;
 
-        // ƒJƒXƒ^ƒ€ƒvƒƒpƒeƒB‚ğŠÜ‚ŞHashtable‚ğì¬
+        // ã‚«ã‚¹ã‚¿ãƒ ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã‚’å«ã‚€Hashtableã‚’ä½œæˆ
         Hashtable customRoomProperties = new Hashtable();
         customRoomProperties.Add("stage", 0);
         customRoomProperties.Add("leaderId", 1);
@@ -57,7 +57,7 @@ public class RoomButton : MonoBehaviourPunCallbacks
 /*    public void SetPlayerCount(int playerCount)
     {
         label.text = $"{RoomName}\n{playerCount} / {MaxPlayers}";
-        // ƒ‹[ƒ€‚ª–ˆõ‚Å‚È‚¢‚Ì‚İAƒ‹[ƒ€Q‰Áƒ{ƒ^ƒ“‚ğ‰Ÿ‚¹‚é‚æ‚¤‚É‚·‚é
+        // ãƒ«ãƒ¼ãƒ ãŒæº€å“¡ã§ãªã„æ™‚ã®ã¿ã€ãƒ«ãƒ¼ãƒ å‚åŠ ãƒœã‚¿ãƒ³ã‚’æŠ¼ã›ã‚‹ã‚ˆã†ã«ã™ã‚‹
         button.interactable = (playerCount < MaxPlayers);
     }*/
 

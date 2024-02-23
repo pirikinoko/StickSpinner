@@ -4760,6 +4760,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pauseButton: {fileID: 0}
+  keyBind: 0
+  selectedButton: 0
 --- !u!114 &378244903
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5473,6 +5475,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pauseButton: {fileID: 0}
+  keyBind: 0
+  selectedButton: 0
 --- !u!114 &431949550
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5859,6 +5863,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pauseButton: {fileID: 0}
+  keyBind: 0
+  selectedButton: 0
 --- !u!114 &450875373
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8130,7 +8136,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: a68f3e87215644d9b974f05aec99891b, type: 3}
+  m_Sprite: {fileID: 21300000, guid: d0fbca55e3f69f34c82d773c72817843, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -11060,6 +11066,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pauseButton: {fileID: 0}
+  keyBind: 0
+  selectedButton: 0
 --- !u!114 &860801065
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11990,7 +11998,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SettingPanel: {fileID: 848770239}
-  TLFrame: {fileID: 871368038}
   exitPanel: {fileID: 235322366}
   languageText: {fileID: 328939288}
   screenText: {fileID: 1934778625}
@@ -12245,6 +12252,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pauseButton: {fileID: 0}
+  keyBind: 0
+  selectedButton: 0
 --- !u!114 &905844757
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14762,6 +14771,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pauseButton: {fileID: 0}
+  keyBind: 0
+  selectedButton: 0
 --- !u!114 &1115091899
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16077,6 +16088,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pauseButton: {fileID: 0}
+  keyBind: 0
+  selectedButton: 0
 --- !u!114 &1233950200
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16603,7 +16616,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1263605394
 RectTransform:
   m_ObjectHideFlags: 0
@@ -18099,6 +18112,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pauseButton: {fileID: 0}
+  keyBind: 0
+  selectedButton: 0
 --- !u!114 &1409100233
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19025,6 +19040,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pauseButton: {fileID: 0}
+  keyBind: 0
+  selectedButton: 0
 --- !u!114 &1507050015
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -21225,6 +21242,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pauseButton: {fileID: 0}
+  keyBind: 0
+  selectedButton: 0
 --- !u!114 &1749815840
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -23654,6 +23673,7 @@ GameObject:
   - component: {fileID: 2016677110}
   - component: {fileID: 2016677112}
   - component: {fileID: 2016677111}
+  - component: {fileID: 2016677113}
   m_Layer: 5
   m_Name: ConfirmText
   m_TagString: Untagged
@@ -23722,6 +23742,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2016677109}
   m_CullTransparentMesh: 1
+--- !u!114 &2016677113
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2016677109}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b42443ea42c347f2be469db89235ae8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  texts:
+  - "\u7D42\u4E86\u3057\u307E\u3059\u304B\uFF1F"
+  - Quit Game?
+  fontSize: 7800000078000000
 --- !u!1 &2024655759
 GameObject:
   m_ObjectHideFlags: 0

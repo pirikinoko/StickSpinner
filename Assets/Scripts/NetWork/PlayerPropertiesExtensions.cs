@@ -7,13 +7,13 @@ public static class PlayerPropertiesExtensions
 
     private static readonly Hashtable propsToSet = new Hashtable();
 
-    // ƒvƒŒƒCƒ„[‚ÌƒXƒRƒA‚ğæ“¾‚·‚é
+    // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ã‚¹ã‚³ã‚¢ã‚’å–å¾—ã™ã‚‹
     public static int GetScore(this Player player)
     {
         return (player.CustomProperties[ScoreKey] is int score) ? score : 0;
     }
 
-    // ƒvƒŒƒCƒ„[‚ÌƒXƒRƒA‚ğ‰ÁZ‚·‚é
+    // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ã‚¹ã‚³ã‚¢ã‚’åŠ ç®—ã™ã‚‹
     public static void AddScore(this Player player, int value)
     {
         propsToSet[ScoreKey] = player.GetScore() + value;
@@ -25,10 +25,10 @@ public static class PlayerPropertiesExtensions
 
     private const string RankKey = "Rank";
 
-    // ƒvƒŒƒCƒ„[‚Ìƒ‰ƒ“ƒN‚Ì”z—ñ
+    // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ãƒ©ãƒ³ã‚¯ã®é…åˆ—
     private static readonly string[] ranks = { "A", "B", "C" };
 
-    // ƒvƒŒƒCƒ„[‚Ìƒ‰ƒ“ƒN‚ğæ“¾‚·‚é
+    // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ãƒ©ãƒ³ã‚¯ã‚’å–å¾—ã™ã‚‹
     public static string GetRank(this Player player)
     {
         if (player.CustomProperties[RankKey] is string rank)
@@ -41,7 +41,7 @@ public static class PlayerPropertiesExtensions
         }
     }
 
-    // ƒvƒŒƒCƒ„[‚Ìƒ‰ƒ“ƒN‚ğƒ‰ƒ“ƒ_ƒ€‚Éİ’è‚·‚é
+    // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ãƒ©ãƒ³ã‚¯ã‚’ãƒ©ãƒ³ãƒ€ãƒ ã«è¨­å®šã™ã‚‹
     public static void SetRandomRank(this Player player)
     {
         propsToSet[RankKey] = ranks[Random.Range(0, ranks.Length)];

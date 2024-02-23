@@ -3,9 +3,9 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
-   private Vector3 origin; // ’e‚ğ”­Ë‚µ‚½‚ÌÀ•W
+   private Vector3 origin; // å¼¾ã‚’ç™ºå°„ã—ãŸæ™‚åˆ»ã®åº§æ¨™
     private Vector3 velocity;
-    private int timestamp; // ’e‚ğ”­Ë‚µ‚½
+    private int timestamp; // å¼¾ã‚’ç™ºå°„ã—ãŸæ™‚åˆ»
 
     public int Id { get; private set; }
     public int OwnerId { get; private set; }
@@ -19,15 +19,15 @@ public class Bullet : MonoBehaviour
         velocity = 9f * new Vector3(Mathf.Cos(angle), Mathf.Sin(angle));
         this.timestamp = timestamp;
 
-                // ˆê“x‚¾‚¯’¼ÚUpdate()‚ğŒÄ‚ñ‚ÅAtransform.position‚Ì‰Šú’l‚ğŒˆ‚ß‚é
+                // ä¸€åº¦ã ã‘ç›´æ¥Update()ã‚’å‘¼ã‚“ã§ã€transform.positionã®åˆæœŸå€¤ã‚’æ±ºã‚ã‚‹
         Update();
     }
 
     private void Update()
     {
-                // ’e‚ğ”­Ë‚µ‚½‚©‚çŒ»İ‚Ü‚Å‚ÌŒo‰ßŠÔ‚ğ‹‚ß‚é
+                // å¼¾ã‚’ç™ºå°„ã—ãŸæ™‚åˆ»ã‹ã‚‰ç¾åœ¨æ™‚åˆ»ã¾ã§ã®çµŒéæ™‚é–“ã‚’æ±‚ã‚ã‚‹
         float elapsedTime = Mathf.Max(0f, unchecked(PhotonNetwork.ServerTimestamp - timestamp) / 1000f);
-               // ’e‚ğ”­Ë‚µ‚½‚Å‚ÌÀ•WE‘¬“xEŒo‰ßŠÔ‚©‚çŒ»İ‚ÌÀ•W‚ğ‹‚ß‚é
+               // å¼¾ã‚’ç™ºå°„ã—ãŸæ™‚åˆ»ã§ã®åº§æ¨™ãƒ»é€Ÿåº¦ãƒ»çµŒéæ™‚é–“ã‹ã‚‰ç¾åœ¨ã®åº§æ¨™ã‚’æ±‚ã‚ã‚‹
         transform.position = origin + velocity * elapsedTime;
     }
 

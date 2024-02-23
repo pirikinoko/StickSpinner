@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Photon.Realtime;
 using UnityEngine;
 using UnityEngine.UI;
-// IEnumerable<RoomInfo>ƒCƒ“ƒ^[ƒtƒF[ƒX‚ğÀ‘•‚µ‚ÄAforeach‚Åƒ‹[ƒ€î•ñ‚ğ—ñ‹“‚Å‚«‚é‚æ‚¤‚É‚·‚é
+// IEnumerable<RoomInfo>ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ãƒ¼ã‚¹ã‚’å®Ÿè£…ã—ã¦ã€foreachã§ãƒ«ãƒ¼ãƒ æƒ…å ±ã‚’åˆ—æŒ™ã§ãã‚‹ã‚ˆã†ã«ã™ã‚‹
 public class RoomList : IEnumerable<RoomInfo>
 {
     private Dictionary<string, RoomInfo> dictionary = new Dictionary<string, RoomInfo>();
@@ -28,7 +28,7 @@ public class RoomList : IEnumerable<RoomInfo>
         dictionary.Clear();
     }
 
-    // w’è‚µ‚½ƒ‹[ƒ€–¼‚Ìƒ‹[ƒ€î•ñ‚ª‚ ‚ê‚Îæ“¾‚·‚é
+    // æŒ‡å®šã—ãŸãƒ«ãƒ¼ãƒ åã®ãƒ«ãƒ¼ãƒ æƒ…å ±ãŒã‚ã‚Œã°å–å¾—ã™ã‚‹
     public bool TryGetRoomInfo(string roomName, out RoomInfo roomInfo)
     {
         return dictionary.TryGetValue(roomName, out roomInfo);

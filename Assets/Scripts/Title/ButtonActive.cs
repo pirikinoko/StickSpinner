@@ -24,7 +24,7 @@ public class ButtonActive : MonoBehaviourPunCallbacks
         {
             int starID = int.Parse(Regex.Replace(this.gameObject.name, @"[^0-9]", ""));
 
-            // ƒIƒŠƒWƒiƒ‹‚Ìƒ}ƒeƒŠƒAƒ‹‚ğƒRƒs[
+            // ã‚ªãƒªã‚¸ãƒŠãƒ«ã®ãƒãƒ†ãƒªã‚¢ãƒ«ã‚’ã‚³ãƒ”ãƒ¼
             Material iconMat = new Material(this.GetComponent<Image>().material);
 
             Color color = iconMat.color;
@@ -37,7 +37,7 @@ public class ButtonActive : MonoBehaviourPunCallbacks
 
             iconMat.color = color;
 
-            // V‚µ‚¢ƒ}ƒeƒŠƒAƒ‹‚ğImageƒRƒ“ƒ|[ƒlƒ“ƒg‚Éİ’è
+            // æ–°ã—ã„ãƒãƒ†ãƒªã‚¢ãƒ«ã‚’Imageã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆã«è¨­å®š
             this.GetComponent<Image>().material = iconMat;
         }
         else 
@@ -54,7 +54,7 @@ public class ButtonActive : MonoBehaviourPunCallbacks
         }
 
 
-        //ƒ`[ƒ€ƒZƒŒƒNƒgƒ{ƒ^ƒ“‚ÌƒAƒNƒeƒBƒu
+        //ãƒãƒ¼ãƒ ã‚»ãƒ¬ã‚¯ãƒˆãƒœã‚¿ãƒ³ã®ã‚¢ã‚¯ãƒ†ã‚£ãƒ–
         if (this.name.Contains("TeamSelect")) 
         {
             if(GameStart.gameMode2 == "Arcade") 

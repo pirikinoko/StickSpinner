@@ -33,16 +33,16 @@ public class LogMotion : MonoBehaviour
 
     IEnumerator Motion()
     {
-        // ƒtƒF[ƒhƒCƒ“
+        // ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¤ãƒ³
         yield return Fade(0f, 1f, 1f);
 
-        // ‘Ò‹@
+        // å¾…æ©Ÿ
         yield return new WaitForSeconds(3);
 
-        // ƒtƒF[ƒhƒAƒEƒg
+        // ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¢ã‚¦ãƒˆ
         yield return Fade(1f, 0f, 1f); 
 
-        // ƒIƒuƒWƒFƒNƒg‚Ì”jŠü
+        // ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ç ´æ£„
         Destroy(gameObject);
     }
 
@@ -69,7 +69,7 @@ public class LogMotion : MonoBehaviour
         float scaleX = rectTransform.localScale.x;
         if (rectTransform != null)
         {
-            // •¶š”‚É‰‚¶‚Ä‰¡•‚ğ’²®
+            // æ–‡å­—æ•°ã«å¿œã˜ã¦æ¨ªå¹…ã‚’èª¿æ•´
             float textScaleX = logTxRectTransform.localScale.x;
             float scaleDiff =  textScaleX / scaleX;
             float newFrameWidth = CalculateTextWidth() * scaleDiff / 3.8f;
@@ -88,7 +88,7 @@ public class LogMotion : MonoBehaviour
         TextGenerator textGenerator = new TextGenerator();
         TextGenerationSettings generationSettings = logText.GetGenerationSettings(Vector2.zero);
 
-        // ƒeƒLƒXƒg‚Ì•‚ğŒvZ
+        // ãƒ†ã‚­ã‚¹ãƒˆã®å¹…ã‚’è¨ˆç®—
         float textWidth = textGenerator.GetPreferredWidth(logText.text, generationSettings);
 
         return textWidth;

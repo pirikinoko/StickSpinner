@@ -20,7 +20,7 @@ public class RoomListView : MonoBehaviourPunCallbacks
     {
         scrollRect = GetComponent<ScrollRect>();
 
-        // ƒ‹[ƒ€ƒŠƒXƒg—v‘fiƒ‹[ƒ€Q‰Áƒ{ƒ^ƒ“j‚ğ¶¬‚µ‚Ä‰Šú‰»‚·‚é
+        // ãƒ«ãƒ¼ãƒ ãƒªã‚¹ãƒˆè¦ç´ ï¼ˆãƒ«ãƒ¼ãƒ å‚åŠ ãƒœã‚¿ãƒ³ï¼‰ã‚’ç”Ÿæˆã—ã¦åˆæœŸåŒ–ã™ã‚‹
         for (int i = 0; i < MaxElements; i++)
         {
             var element = Instantiate(elementPrefab, scrollRect.content);
@@ -35,7 +35,7 @@ public class RoomListView : MonoBehaviourPunCallbacks
        // ingameLog.GenerateIngameLog("OnRoomListUpdate is Triggered");
         roomList.Update(changedRoomList);
 
-        // ‘¶İ‚·‚éƒ‹[ƒ€‚Ì”‚¾‚¯ƒ‹[ƒ€ƒŠƒXƒg—v‘f‚ğ•\¦‚·‚é
+        // å­˜åœ¨ã™ã‚‹ãƒ«ãƒ¼ãƒ ã®æ•°ã ã‘ãƒ«ãƒ¼ãƒ ãƒªã‚¹ãƒˆè¦ç´ ã‚’è¡¨ç¤ºã™ã‚‹
         int index = 0;
         quickRoomCount = 0;
         foreach (var roomInfo in roomList)
@@ -51,8 +51,8 @@ public class RoomListView : MonoBehaviourPunCallbacks
             }
 
         }
-        Debug.Log("ƒNƒCƒbƒNƒ}ƒbƒ`ƒ‹[ƒ€‚Ì”‚Í" + quickRoomCount + "ŒÂ‚Å‚·B");
-        // c‚è‚Ìƒ‹[ƒ€ƒŠƒXƒg—v‘f‚ğ”ñ•\¦‚É‚·‚é
+        Debug.Log("ã‚¯ã‚¤ãƒƒã‚¯ãƒãƒƒãƒãƒ«ãƒ¼ãƒ ã®æ•°ã¯" + quickRoomCount + "å€‹ã§ã™ã€‚");
+        // æ®‹ã‚Šã®ãƒ«ãƒ¼ãƒ ãƒªã‚¹ãƒˆè¦ç´ ã‚’éè¡¨ç¤ºã«ã™ã‚‹
         for (int i = index; i < MaxElements; i++)
         {
             elementList[i].Hide();

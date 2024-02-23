@@ -5,13 +5,13 @@ public static class RoomPropertiesExtensions
 {
     private const string RankKey = "Rank";
 
-    // Hashtable‚ÉƒvƒŒƒCƒ„[‚Ìƒ‰ƒ“ƒN‚ğİ’è‚·‚é
+    // Hashtableã«ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ãƒ©ãƒ³ã‚¯ã‚’è¨­å®šã™ã‚‹
     public static void SetPlayerRank(this Hashtable hashtable, Player player)
     {
         hashtable[RankKey] = player.GetRank();
     }
 
-    // ƒƒr[‚©‚çæ“¾‚Å‚«‚éƒJƒXƒ^ƒ€ƒvƒƒpƒeƒB‚ÌƒL[‚Ì”z—ñ‚ğ•Ô‚·
+    // ãƒ­ãƒ“ãƒ¼ã‹ã‚‰å–å¾—ã§ãã‚‹ã‚«ã‚¹ã‚¿ãƒ ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã®ã‚­ãƒ¼ã®é…åˆ—ã‚’è¿”ã™
     public static string[] KeysForLobby(this Hashtable hashtable)
     {
         return new[] { RankKey };

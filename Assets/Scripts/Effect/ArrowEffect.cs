@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ArrowEffect : MonoBehaviour
 {
-    //Šî–{
+    //åŸºæœ¬
     bool start;
     string direction = "Right";
     public float speed = 1.3f, delay = 0;
@@ -15,16 +15,16 @@ public class ArrowEffect : MonoBehaviour
         Right,
         Left,
     }
-    // Inspectorã‚Å‘I‘ğ‚Å‚«‚é‚æ‚¤‚É‚·‚é•Ï”
+    // Inspectorä¸Šã§é¸æŠã§ãã‚‹ã‚ˆã†ã«ã™ã‚‹å¤‰æ•°
     public Direction selectedDirection;
     private string[] optionStrings = { "Right", "Left" };
 
-    //ˆÚ“®§ŒÀ
+    //ç§»å‹•åˆ¶é™
     Vector2 StartPos;
     public float RightLimit = 1.0f, LeftLimit = 1.0f;
     float tmpSpeed = 0;
 
-    //“§–¾“x•ÏX
+    //é€æ˜åº¦å¤‰æ›´
     float fadeSpeed = 1.4f;
     private Material material;
     private Color originalColor;
@@ -49,11 +49,11 @@ public class ArrowEffect : MonoBehaviour
         }
 
         StartPos = this.gameObject.transform.position;
-        if (this.gameObject.CompareTag("Reverse"))    //”½“]ƒ^ƒO‚Åis•ûŒü”½“]
+        if (this.gameObject.CompareTag("Reverse"))    //åè»¢ã‚¿ã‚°ã§é€²è¡Œæ–¹å‘åè»¢
         {
             speed *= -1;
         }
-        //Fæ“¾
+        //è‰²å–å¾—
         Renderer renderer = GetComponent<Renderer>();
         if (renderer != null)
         {

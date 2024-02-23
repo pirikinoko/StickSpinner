@@ -32,7 +32,7 @@ public class InputName : MonoBehaviour
             inputMode = false;
         }
     }
-    void KeyInput()//Šî–{‚ÌƒL[“ü—Í
+    void KeyInput()//åŸºæœ¬ã®ã‚­ãƒ¼å…¥åŠ›
     {
         if (inputMode) 
         {
@@ -74,7 +74,7 @@ public class InputName : MonoBehaviour
         }
       
 
-        //ƒ^ƒCƒv‚µ‚½ƒeƒLƒXƒg‚ğ•\¦
+        //ã‚¿ã‚¤ãƒ—ã—ãŸãƒ†ã‚­ã‚¹ãƒˆã‚’è¡¨ç¤º
         Typedtext.text = TypedText;
         TypedTextToString = Typedtext.text.ToString();
 

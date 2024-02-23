@@ -7,7 +7,7 @@ public static class GameRoomProperty
 
     private static readonly Hashtable propsToSet = new Hashtable();
 
-    // ƒQ[ƒ€‚ÌŠJn‚ªİ’è‚³‚ê‚Ä‚¢‚ê‚Îæ“¾‚·‚é
+    // ã‚²ãƒ¼ãƒ ã®é–‹å§‹æ™‚åˆ»ãŒè¨­å®šã•ã‚Œã¦ã„ã‚Œã°å–å¾—ã™ã‚‹
     public static bool TryGetStartTime(this Room room, out int timestamp)
     {
         if (room.CustomProperties[KeyStartTime] is int value)
@@ -22,7 +22,7 @@ public static class GameRoomProperty
         }
     }
 
-    // ƒQ[ƒ€‚ÌŠJn‚ğİ’è‚·‚é
+    // ã‚²ãƒ¼ãƒ ã®é–‹å§‹æ™‚åˆ»ã‚’è¨­å®šã™ã‚‹
     public static void SetStartTime(this Room room, int timestamp)
     {
         propsToSet[KeyStartTime] = timestamp;

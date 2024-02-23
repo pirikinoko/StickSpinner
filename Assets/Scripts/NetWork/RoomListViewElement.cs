@@ -31,7 +31,7 @@ public class RoomListViewElement : MonoBehaviourPunCallbacks
             isOpen = true;  
             if (room.CustomProperties.TryGetValue("Password", out object passwordObj) && passwordObj is string correctPassword)
             {
-                // �p�X���[�h���ݒ肳��Ă���ꍇ��isOpen = false
+                // パスワードが設定されている場合はisOpen = false
                 if (correctPassword != "")
                 {
                     isOpen = false;
@@ -59,7 +59,7 @@ public class RoomListViewElement : MonoBehaviourPunCallbacks
         nameLabel.text = roomInfo.Name;
         playerCounter.SetText("{0} / {1}", roomInfo.PlayerCount, roomInfo.MaxPlayers);
 
-        // ���[���������łȂ����̂݁A�Q���{�^����������悤�ɂ���
+        // ルームが満員でない時のみ、参加ボタンを押せるようにする
         button.interactable = (roomInfo.PlayerCount < roomInfo.MaxPlayers);
 
         gameObject.SetActive(true);

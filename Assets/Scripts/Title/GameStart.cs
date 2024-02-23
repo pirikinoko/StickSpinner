@@ -34,6 +34,7 @@ public class GameStart : MonoBehaviourPunCallbacks
     private Sprite imageSprite;
     //テキスト
     string[] singleArcadeText = { "無限の塔", "InfinityTower",};
+    string[] MultiArcadeText = { "旗取りバトル", "FlagBattle", "サッカー", "FootBall", };
     public static string gameMode1 = "Single";
     public static string gameMode2 = "Nomal";
     public static int phase = 0;
@@ -73,9 +74,14 @@ public class GameStart : MonoBehaviourPunCallbacks
         //上限下限の設定
         phase = System.Math.Min(phase, 8);
         phase = System.Math.Max(phase, 0);
-        if(gameMode1 == "Single")
+        if(gameMode1 == "Single" &&  gameMode2 == "Nomal")
         {
-            Stage = System.Math.Min(Stage, 5);
+            Stage = System.Math.Min(Stage, 7);
+            Stage = System.Math.Max(Stage, 1);
+        }
+        else if (gameMode1 == "Single" && gameMode2 == "Arcade")
+        {
+            Stage = System.Math.Min(Stage, 1);
             Stage = System.Math.Max(Stage, 1);
         }
         else if ((gameMode1 == "Multi" || gameMode1 == "Online") && gameMode2 == "Nomal")
@@ -114,7 +120,7 @@ public class GameStart : MonoBehaviourPunCallbacks
                 }
                 else
                 {
-                    if (Stage < 3) { stageNumberText.text = "FlagMode" + Stage.ToString(); }
+                    stageNumberText.text =MultiArcadeText[Stage +(2 * Settings.languageNum)];
                 }
                 break;
             case "Online":

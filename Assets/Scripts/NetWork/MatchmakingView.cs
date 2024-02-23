@@ -22,13 +22,13 @@ public class MatchmakingView : MonoBehaviourPunCallbacks
     private void Start()
     {
         canvasGroup = GetComponent<CanvasGroup>();
-        // ���r�[�ɎQ������܂ł́A���͂ł��Ȃ��悤�ɂ���
+        // ロビーに参加するまでは、入力できないようにする
         if (!PhotonNetwork.InLobby) 
         {
             canvasGroup.interactable = false;
         }
 
-        // ���[�����X�g�\��������������
+        // ルームリスト表示を初期化する
         roomListView.Init(this);
 
         roomNameInputField.onValueChanged.AddListener(OnRoomNameInputFieldValueChanged);
@@ -92,14 +92,14 @@ public class MatchmakingView : MonoBehaviourPunCallbacks
     }
     public override void OnJoinedLobby()
     {
-        // ���r�[�ɎQ��������A���͂ł���悤�ɂ���
+        // ロビーに参加したら、入力できるようにする
         canvasGroup.interactable = true;
         this.gameObject.SetActive(true);
     }
 
     private void OnRoomNameInputFieldValueChanged(string value)
     {
-        // ���[������1�����ȏ���͂���Ă��鎞�̂݁A���[���쐬�{�^����������悤�ɂ���
+        // ルーム名が1文字以上入力されている時のみ、ルーム作成ボタンを押せるようにする
         createRoomButton.interactable = (value.Length > 0);
         createRoomLockedButton.interactable = (value.Length > 0);
         joinRoomButton.interactable = (value.Length > 0);
@@ -112,10 +112,10 @@ public class MatchmakingView : MonoBehaviourPunCallbacks
     private void OnCreateRoomLockedButtonClick()
     {
         string roomName = roomNameInputField.text + "!Locked!";
-        // ���[���쐬�������́A���͂ł��Ȃ��悤�ɂ���
+        // ルーム作成処理中は、入力できないようにする
         canvasGroup.interactable = false;
 
-        // ���̓t�B�[���h�ɓ��͂������[�����̃��[�����쐬����
+        // 入力フィールドに入力したルーム名のルームを作成する
         var roomOptions = new RoomOptions();
         roomOptions.MaxPlayers = 4;
         PhotonNetwork.CreateRoom(roomName, roomOptions);
@@ -125,14 +125,14 @@ public class MatchmakingView : MonoBehaviourPunCallbacks
     {
         if (InputName.TypedTextToString.Length == 0) 
         {
-            ingameLog.GenerateIngameLog("���O����͂��Ă�������");
+            ingameLog.GenerateIngameLog("名前を入力してください");
             return;
         }
         mode = "Nomal";
-        // ���[���쐬�������́A���͂ł��Ȃ��悤�ɂ���
+        // ルーム作成処理中は、入力できないようにする
         canvasGroup.interactable = false;
 
-        // ���̓t�B�[���h�ɓ��͂������[�����̃��[�����쐬����
+        // 入力フィールドに入力したルーム名のルームを作成する
         var roomOptions = new RoomOptions();
         roomOptions.MaxPlayers = 4;
         PhotonNetwork.CreateRoom(roomNameInputField.text, roomOptions);
@@ -141,7 +141,7 @@ public class MatchmakingView : MonoBehaviourPunCallbacks
 
     public override void OnCreateRoomFailed(short returnCode, string message)
     {
-        // ���[���̍쐬�����s������A�Ăѓ��͂ł���悤�ɂ���
+        // ルームの作成が失敗したら、再び入力できるようにする
         roomNameInputField.text = string.Empty;
         canvasGroup.interactable = true;
     }
@@ -165,7 +165,7 @@ public class MatchmakingView : MonoBehaviourPunCallbacks
     }
     public void OnJoiningRoom()
     {
-        // ���[���Q���������́A���͂ł��Ȃ��悤�ɂ���
+        // ルーム参加処理中は、入力できないようにする
         canvasGroup.interactable = false;
     }
 
@@ -189,7 +189,7 @@ public class MatchmakingView : MonoBehaviourPunCallbacks
             PhotonNetwork.CreateRoom(roomName, roomOptions);
             int randomMode = Random.Range(0, 2);
 
-            // 0�܂���1�̂����ꂩ�ɑΉ����鏈�����s��
+            // 0または1のいずれかに対応する処理を行う
             if (randomMode == 0)
             {
                 gameModeQuick = "Nomal";
@@ -203,7 +203,7 @@ public class MatchmakingView : MonoBehaviourPunCallbacks
             stageQuick = 1;
             gameModeQuick = "Arcade";
         }
-        // ���[���ւ̎Q�������s������A�Ăѓ��͂ł���悤�ɂ���
+        // ルームへの参加が失敗したら、再び入力できるようにする
         canvasGroup.interactable = true;
     }
 }

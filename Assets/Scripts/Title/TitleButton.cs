@@ -107,8 +107,8 @@ public class TitleButton : MonoBehaviourPunCallbacks
         //コントローラー入力設定
         if (ControllerInput.crossX[0] >= 0.1f) { inputCrossXPlus = true; }
         else if (ControllerInput.crossX[0] <= -0.1f) { inputCrossXMinus = true; }
-        else if (ControllerInput.crossY[0] >= 0.1f) { inputCrossYPlus = true; }
-        else if (ControllerInput.crossY[0] <= -0.1f) { inputCrossYMinus = true; }
+        else if (ControllerInput.crossY[0] <= -0.1f) { inputCrossYPlus = true; }
+        else if (ControllerInput.crossY[0] >= 0.1f) { inputCrossYMinus = true; }
 
         if (ControllerInput.LstickX[0] > 0.5f) { inputLstickXPlus = true; }
         else if (ControllerInput.LstickX[0] < -0.5f) { inputLstickXMinus = true; }

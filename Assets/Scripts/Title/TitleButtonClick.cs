@@ -44,6 +44,7 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
         start
     }
 
+
     // インスペクターから選択したいEnumのフィールド
     [SerializeField]
     private ControllerButtons selectedButton;
@@ -170,8 +171,9 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
                 inputButton = ControllerInput.start[0];
                 break;
         }
+  
         //設定画面オンオフ
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.Escape) || ControllerInput.start[0])
         {
             if (Settings.inSetting && this.name.Contains("Resume"))
             {
