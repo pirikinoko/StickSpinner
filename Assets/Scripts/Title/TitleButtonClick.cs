@@ -364,10 +364,12 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
     //ステージ変更
     public void NextStage()
     {
+        GameStart.Stage++;
         SoundEffect.soundTrigger[3] = 1;
     }
     public void PrevStage()
     {
+        GameStart.Stage--;
         SoundEffect.soundTrigger[3] = 1;
     }
 

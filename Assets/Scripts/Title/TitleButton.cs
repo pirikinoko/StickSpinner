@@ -9,15 +9,12 @@ using Photon.Pun;
 using System.Linq;
 public class TitleButton : MonoBehaviourPunCallbacks
 {
-    const float holdGoal = 0.85f;
-    float holdTime = 0;
     // ボタンの長押し時間
     [SerializeField]
     private Animator YButtonAnim;
     public GameObject YButtonGO;
     //タイトル画面操作
     [SerializeField] GameObject cursor;
-    bool InputCrossX, InputCrossY;
     bool inputCrossXPlus, inputCrossXMinus, inputCrossYPlus, inputCrossYMinus, inputLstickXPlus, inputLstickXMinus, inputLstickYPlus, inputLstickYMinus;
     float[] lastLstickX = new float[4], lastLstickY = new float[4];
     float lastCrossX, lastCrossY; 
@@ -25,7 +22,7 @@ public class TitleButton : MonoBehaviourPunCallbacks
     const int maxButtonCount = 20;
     GameObject[] buttonsInTheScene = new GameObject[maxButtonCount];
     Vector2[] buttonPositions = new Vector2[maxButtonCount];
-    int targetButton = 0;
+    int targetButton = 0, lastPhase;
 
     void Start()
     {
@@ -93,7 +90,7 @@ public class TitleButton : MonoBehaviourPunCallbacks
             targetButton = pauseButtonNum;
             return;
         }
-
+        
         //カーソル位置
         RectTransform titleFrameRectTransform = cursor.GetComponent<RectTransform>();
         Vector2 cursorPos = buttonPositions[targetButton];
@@ -141,7 +138,7 @@ public class TitleButton : MonoBehaviourPunCallbacks
 
 
         /*矢印キー横*/
-        if (Input.GetKeyDown(KeyCode.RightArrow) || inputCrossXPlus ||  inputLstickXPlus) 
+        if (Input.GetKeyDown(KeyCode.RightArrow) || inputCrossXPlus || inputLstickXPlus || lastPhase != GameStart.phase) 
         {
             for (int i = 0; i < activeButtons.Length; i++)
             {
@@ -210,6 +207,7 @@ public class TitleButton : MonoBehaviourPunCallbacks
 
         lastCrossX = ControllerInput.crossX[0];
         lastCrossY = ControllerInput.crossY[0];
+        lastPhase = GameStart.phase;
     }
   
 
@@ -217,22 +215,6 @@ public class TitleButton : MonoBehaviourPunCallbacks
     [PunRPC]
         void ArcadeTeamChange()
         {
-            if (ControllerInput.jump[0] || Input.GetKeyDown(KeyCode.Return))
-            {
-                GameStart.phase = 5;
-            }
-
-            //制限時間増減
-            if (ControllerInput.plus[0])
-            {
-                GameStart.flagTimeLimit += 10;
-                GameStart.flagTimeLimit = System.Math.Min(GameStart.flagTimeLimit, 150);
-            }
-            if (ControllerInput.minus[0])
-            {
-                GameStart.flagTimeLimit -= 10;
-                GameStart.flagTimeLimit = System.Math.Max(40, GameStart.flagTimeLimit);
-            }
             //チーム選択
             for (int i = 0; i < GameStart.PlayerNumber; i++)
             {
@@ -296,33 +278,15 @@ public class TitleButton : MonoBehaviourPunCallbacks
      
     
 
-    void ArcadeCotroll() 
+    void ArcadeControll() 
     {
-        //アーケードモードゲーム設定
-        if (ControllerInput.jump[0] || Input.GetKeyDown(KeyCode.Return))
-        {
-            //ゲーム開始処理
-            SceneManager.LoadScene("Stage");
-        }
-
-        //制限時間増減
-        if (ControllerInput.plus[0])
-        {
-            GameStart.flagTimeLimit += 10;
-            GameStart.flagTimeLimit = System.Math.Min(GameStart.flagTimeLimit, 150);
-        }
-        if (ControllerInput.minus[0])
-        {
-            GameStart.flagTimeLimit -= 10;
-            GameStart.flagTimeLimit = System.Math.Max(40, GameStart.flagTimeLimit);
-        }
         //チーム選択
         for (int i = 0; i < GameStart.PlayerNumber; i++)
         {
             /*ボタン選択（縦）*/
             if (lastLstickX[i] > 0.1f || lastLstickX[i] < -0.1f || lastLstickY[i] > 0.1f || lastLstickY[i] < -0.1f) { return; }
             /*Lスティック横*/
-            if (ControllerInput.LstickX[i] > 0.5f)
+            if (ControllerInput.LstickX[i] > 0.5f || Input.GetKeyDown(KeyCode.RightArrow))
             {
                 if (GameStart.playerTeam[i] < 3)
                 {
@@ -334,7 +298,7 @@ public class TitleButton : MonoBehaviourPunCallbacks
                     }
                 }
             }
-            else if (ControllerInput.LstickX[i] < -0.5f)
+            else if (ControllerInput.LstickX[i] < -0.5f || Input.GetKeyDown(KeyCode.LeftArrow))
             {
                 if (GameStart.playerTeam[i] > 0)
                 {
@@ -375,106 +339,7 @@ public class TitleButton : MonoBehaviourPunCallbacks
             }
             /*Lスティック縦*/
         }
-        /*キーボード*/
-        if (Input.GetKeyDown(KeyCode.LeftArrow))
-        {
-            if (GameStart.playerTeam[0] > 0)
-            {
-                GameStart.playerTeam[0] -= 1;
-                SoundEffect.soundTrigger[3] = 1;
-                if (GameStart.teamSize[GameStart.playerTeam[0]] > GameStart.PlayerNumber - 2)
-                {
-                    GameStart.playerTeam[0] += 1;
-                }
-            }
-        }
-        else if (Input.GetKeyDown(KeyCode.RightArrow))
-        {
-            if (GameStart.playerTeam[0] < 3)
-            {
-                GameStart.playerTeam[0] += 1;
-                SoundEffect.soundTrigger[3] = 1;
-                if (GameStart.teamSize[GameStart.playerTeam[0]] > GameStart.PlayerNumber - 1)
-                {
-                    GameStart.playerTeam[0] -= 1;
-                }
-            }
-        }
-        if (Input.GetKeyDown(KeyCode.A))
-        {
-            if (GameStart.playerTeam[1] > 0)
-            {
-                GameStart.playerTeam[1] -= 1;
-                SoundEffect.soundTrigger[3] = 1;
-                if (GameStart.teamSize[GameStart.playerTeam[1]] > GameStart.PlayerNumber - 2)
-                {
-                    GameStart.playerTeam[1] += 1;
-                }
-            }
 
-        }
-        else if (Input.GetKeyDown(KeyCode.D))
-        {
-            if (GameStart.playerTeam[1] < 3)
-            {
-                GameStart.playerTeam[1] += 1;
-                SoundEffect.soundTrigger[3] = 1;
-                if (GameStart.teamSize[GameStart.playerTeam[1]] > GameStart.PlayerNumber - 2)
-                {
-                    GameStart.playerTeam[1] -= 1;
-                }
-            }
-        }
-        if (Input.GetKeyDown(KeyCode.F))
-        {
-            if (GameStart.playerTeam[2] > 0)
-            {
-                GameStart.playerTeam[2] -= 1;
-                SoundEffect.soundTrigger[3] = 1;
-                if (GameStart.teamSize[GameStart.playerTeam[2]] > GameStart.PlayerNumber - 2)
-                {
-                    GameStart.playerTeam[2] += 1;
-                }
-            }
-        }
-        else if (Input.GetKeyDown(KeyCode.H))
-        {
-            if (GameStart.playerTeam[2] < 3)
-            {
-                GameStart.playerTeam[2] += 1;
-                SoundEffect.soundTrigger[3] = 1;
-                if (GameStart.teamSize[GameStart.playerTeam[2]] > GameStart.PlayerNumber - 2)
-                {
-                    GameStart.playerTeam[2] -= 1;
-                }
-            }
-        }
-        if (Input.GetKeyDown(KeyCode.J))
-        {
-            if (GameStart.playerTeam[3] > 0)
-            {
-                GameStart.playerTeam[3] -= 1;
-                SoundEffect.soundTrigger[3] = 1;
-                if (GameStart.teamSize[GameStart.playerTeam[3]] > GameStart.PlayerNumber - 2)
-                {
-                    GameStart.playerTeam[3] += 1;
-                }
-            }
-        }
-        else if (Input.GetKeyDown(KeyCode.L))
-        {
-            if (GameStart.playerTeam[3] < 3)
-            {
-                GameStart.playerTeam[3] += 1;
-                SoundEffect.soundTrigger[3] = 1;
-                if (GameStart.teamSize[GameStart.playerTeam[3]] > GameStart.PlayerNumber - 2)
-                {
-                    GameStart.playerTeam[3] -= 1;
-                }
-            }
-
-        }
-        /*キーボード*/
     }
 
 

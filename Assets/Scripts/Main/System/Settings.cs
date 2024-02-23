@@ -266,7 +266,7 @@ public class Settings : MonoBehaviour
            .Where(item => item.gameObject.activeSelf &&
                             item.gameObject.name.Contains("Item"))
            .ToArray();
-        max = stageText.Length;
+        max = stageText.Length　-1;
         for (int i = 0; i < itemText.Length; i++)
         {
             itemText[i].color = Color.white;
