@@ -353,6 +353,7 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
     public void PrevPhase()
     {
         GameStart.phase--;
+        StopAllCoroutines();
         SoundEffect.soundTrigger[2] = 1;
     }
 

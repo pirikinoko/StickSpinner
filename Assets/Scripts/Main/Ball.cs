@@ -33,13 +33,13 @@ public class Ball : MonoBehaviour
     {
          if(col.gameObject.name == "GoalZoneLeft")
         {
-            GameMode.teamPoints[0]++;
+            GameMode.teamPoints[1]++;
             SoundEffect.soundTrigger[2] = 1;
             StartCoroutine(gameMode.BallReset());
         }
         if (col.gameObject.name == "GoalZoneRight")
         {
-            GameMode.teamPoints[1]++;
+            GameMode.teamPoints[0]++;
             SoundEffect.soundTrigger[2] = 1;
             StartCoroutine(gameMode.BallReset());
         }

@@ -10,7 +10,7 @@ using Photon.Pun;
 
 public class GameStart : MonoBehaviourPunCallbacks
 {
-    public  int maxStageNomal;     // 総ステージ数
+    public int maxStageNomal;     // 総ステージ数
     public static int maxPlayer = 4, minPlayer;     // 総プレイヤー数
     const int KeyboardMode = 5;
     const int ControllerMode = 6;
@@ -21,7 +21,7 @@ public class GameStart : MonoBehaviourPunCallbacks
     public Vector2[] playerIconPos { get; set; } = new Vector2[4];
     public Vector2[] slot1Pos = new Vector2[4];
     public static int[] playerTeam { get; set; } = { 0, 1, 2, 3 }; // {p1, p2, p3, p4}が TeamA, TeamB, TeamC, TeamDにいることを示す。ex..a = 1, c =3
-    public static int[] teamSize { get; set; } = { 0, 0, 0, 0 }; // チーム　A, B, C, Dにいるプレイヤーの人数
+    public static int[] teamSize = new int[4]; // チーム　A, B, C, Dにいるプレイヤーの人数
     public static int teamCount = 0; //チームの数
     public static string teamMode = "FreeForAll"; //対戦チーム分け 
     public bool stageInfoActive { get; set; } = false;
@@ -33,7 +33,7 @@ public class GameStart : MonoBehaviourPunCallbacks
     public Image stageImage;
     private Sprite imageSprite;
     //テキスト
-    string[] singleArcadeText = { "無限の塔", "InfinityTower",};
+    string[] singleArcadeText = { "無限の塔", "InfinityTower", };
     string[] MultiArcadeText = { "旗取りバトル", "FlagBattle", "サッカー", "FootBall", };
     public static string gameMode1 = "Single";
     public static string gameMode2 = "Nomal";
@@ -59,6 +59,7 @@ public class GameStart : MonoBehaviourPunCallbacks
         {
             playerIconPos[i] = slot1Pos[i];
             playerTeam[i] = i;
+            teamSize[i] = 0;
         }
         if (gameMode1 == "Online" && PhotonNetwork.InRoom)
         {
@@ -74,7 +75,7 @@ public class GameStart : MonoBehaviourPunCallbacks
         //上限下限の設定
         phase = System.Math.Min(phase, 8);
         phase = System.Math.Max(phase, 0);
-        if(gameMode1 == "Single" &&  gameMode2 == "Nomal")
+        if (gameMode1 == "Single" && gameMode2 == "Nomal")
         {
             Stage = System.Math.Min(Stage, 7);
             Stage = System.Math.Max(Stage, 1);
@@ -110,7 +111,7 @@ public class GameStart : MonoBehaviourPunCallbacks
                 }
                 else
                 {
-                    stageNumberText.text = singleArcadeText[Settings.languageNum    ];
+                    stageNumberText.text = singleArcadeText[Settings.languageNum];
                 }
                 break;
             case "Multi":
@@ -120,7 +121,7 @@ public class GameStart : MonoBehaviourPunCallbacks
                 }
                 else
                 {
-                    stageNumberText.text =MultiArcadeText[Stage +(2 * Settings.languageNum)];
+                    stageNumberText.text = MultiArcadeText[Stage + (2 * Settings.languageNum)];
                 }
                 break;
             case "Online":
@@ -135,13 +136,13 @@ public class GameStart : MonoBehaviourPunCallbacks
                 break;
 
         }
-        imageSprite = Resources.Load<Sprite>(gameMode1+ gameMode2 + Stage);
+        imageSprite = Resources.Load<Sprite>(gameMode1 + gameMode2 + Stage);
         stageImage.sprite = imageSprite;
     }
 
     void PhaseControll()　　　//タイトル画面のフェーズごとの処理
     {
-        if(lastPhase != phase) 
+        if (lastPhase != phase)
         {
             DisablePanel();
             switch (gameMode1)
@@ -184,12 +185,8 @@ public class GameStart : MonoBehaviourPunCallbacks
                         case 3:
                             stageSelect.gameObject.SetActive(true);
                             break;
-                            if (!(gameMode2 == "Arcade") || !(Stage < 3))
-                            {
-                                return;
-                            }
                         case 4:
-                            if(gameMode2 == "Nomal") { phase++; return; }
+                            if (gameMode2 == "Nomal") { phase++; return; }
                             setArcadeGame.gameObject.SetActive(true);
                             SetArcade();
                             break;
@@ -206,7 +203,7 @@ public class GameStart : MonoBehaviourPunCallbacks
                             reconnectable = true;
                             break;
                         case 1:
-                            if(lastPhase > phase) { phase = 0; return; }
+                            if (lastPhase > phase) { phase = 0; return; }
                             loadScreen.gameObject.SetActive(true);
                             StartCoroutine(Reconnect());
                             break;
@@ -228,6 +225,7 @@ public class GameStart : MonoBehaviourPunCallbacks
                             break;
                         case 7:
                             setArcadeGame.gameObject.SetActive(true);
+                            SetArcade();
                             break;
                         case 8:
                             phase = 3;
@@ -237,9 +235,10 @@ public class GameStart : MonoBehaviourPunCallbacks
             }
             lastPhase = phase;
         }
-        if (setArcadeGame.gameObject.activeSelf) 
+        if (setArcadeGame.gameObject.activeSelf)
         {
-            SetArcade();
+
+            TeamSelect();
         }
     }
     IEnumerator Reconnect()
@@ -267,7 +266,7 @@ public class GameStart : MonoBehaviourPunCallbacks
         }
     }
 
-    IEnumerator Loading() 
+    IEnumerator Loading()
     {
         yield return new WaitForSeconds(2.0f);
         reconnectable = true;
@@ -280,10 +279,9 @@ public class GameStart : MonoBehaviourPunCallbacks
     }
 
 
-    void SetArcade() 
+    void SetArcade()
     {
-        flagTimeLimitTx.text = flagTimeLimit.ToString();
-        if(Stage == 1)
+        if (Stage == 1)
         {
             for (int i = 0; i < 4; i++)
             {
@@ -296,13 +294,13 @@ public class GameStart : MonoBehaviourPunCallbacks
                 playerSlot[i].gameObject.SetActive(true);
             }
         }
-        if(Stage == 2)
+        if (Stage == 2)
         {
             for (int i = 0; i < 4; i++)
             {
                 playerIcon[i].gameObject.SetActive(false);
                 playerSlot[i].gameObject.SetActive(false);
-                if(i % 2 == 0)
+                if (i % 2 == 0)
                 {
                     playerTeam[i] = 1;
                 }
@@ -321,15 +319,17 @@ public class GameStart : MonoBehaviourPunCallbacks
         }
         TeamSelect();
 
-        for (int i = 0; i < PlayerNumber; i++)
-        {
-            playerIcon[i].transform.position = playerIconPos[i];
-        }
+
     }
     void TeamSelect()
     {
+        flagTimeLimitTx.text = flagTimeLimit.ToString();
+
+
         for (int i = 0; i < PlayerNumber; i++)
         {
+            playerIcon[i].transform.position = playerIconPos[i];
+
             for (int j = 0; j < PlayerNumber; j++)
             {
                 if (playerTeam[i] == j)
@@ -395,6 +395,11 @@ public class GameStart : MonoBehaviourPunCallbacks
                 teamMode = "2vs2";
             }
             else { teamMode = "1vs1vs2"; }
+
+            if (Stage == 2)
+            {
+                teamMode = "2vs2"; ;
+            }
         }
     }
 
@@ -415,14 +420,14 @@ public class GameStart : MonoBehaviourPunCallbacks
     void SwichUI()
     {
         //UI非表示設定時
-        if (Settings.guideMode == 1) 
+        if (Settings.guideMode == 1)
         {
             for (int i = 0; i < controllerUI.Length; i++) { controllerUI[i].gameObject.SetActive(false); }
             return;
         }
 
         //キーボードマウス用UIとコントローラー用UIの切り替え
-        
+
         //キーボード,マウスのとき
         if (!(ControllerInput.usingController))
         {
@@ -437,5 +442,5 @@ public class GameStart : MonoBehaviourPunCallbacks
             //keyBoardMouseUI.gameObject.SetActive(false);
         }
     }
-  
+
 }
