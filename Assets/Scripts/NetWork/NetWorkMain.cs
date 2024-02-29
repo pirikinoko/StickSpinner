@@ -178,30 +178,39 @@ public class NetWorkMain : MonoBehaviourPunCallbacks
                     winningsText[i].text = "Win:" + winningsLocal[i].ToString();
                 }
             }
-
-            int tmpNum = 0;
-            if (int.TryParse(customProps["stage"].ToString(), out tmpNum))
+            if (customProps.ContainsKey("playerTeam"))
             {
-                GameStart.Stage = tmpNum;
+                int[] playerTeamLocal = (int[])customProps["playerTeam"];
+                for (int i = 0; i < playerTeamLocal.Length; i++)
+                {
+                    GameStart.playerTeam[i] = playerTeamLocal[i];
+                }
             }
-     
+            int tmpNum = 0;
+                if (int.TryParse(customProps["stage"].ToString(), out tmpNum))
+                {
+                    GameStart.Stage = tmpNum;
+                }
 
-            string[] userNameLocal = (string[])customProps["userName"];
-            userNameLocal[netWorkId - 1] = PhotonNetwork.NickName;
-            customProps["userName"] = userNameLocal;
+
+                string[] userNameLocal = (string[])customProps["userName"];
+                userNameLocal[netWorkId - 1] = PhotonNetwork.NickName;
+                customProps["userName"] = userNameLocal;
+
         }
         else
         {
             customProps["leaderId"] = 1;
             customProps["stage"] = 1;
-            customProps["gameMode"] = "Nomal";
+            customProps["gameMode"] = GameStart.gameMode2;
             customProps["Password"] = "";
             customProps["isJoined"] = new bool[] { false, false, false, false };
             customProps["winnings"] = new int[] { 0, 0, 0, 0 };
+            customProps["playerTeam"] = new int[] { 0, 1, 2, 3 };
             customProps["userName"] = new string[] { "", "", "", "", };
         }
 
-
+        
         PhotonNetwork.CurrentRoom.SetCustomProperties(customProps);
 
     }
@@ -290,5 +299,19 @@ public class NetWorkMain : MonoBehaviourPunCallbacks
             customProps["leaderId"] = updatedId;
         }
         PhotonNetwork.CurrentRoom.SetCustomProperties(customProps);
+    }
+    [PunRPC]
+    void SetCustomPropsStage()
+    {
+        ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
+        if (customProps.ContainsKey("stage"))
+        {
+            int stageTmp;
+            if (int.TryParse(customProps["stage"].ToString(), out stageTmp))
+            {
+                GameStart.Stage = stageTmp;
+                Debug.Log("GameStart.Stageを" + stageTmp + "に設定しました");
+            }
+        }
     }
 }

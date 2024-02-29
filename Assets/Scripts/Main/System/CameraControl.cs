@@ -138,6 +138,31 @@ public class CameraControl : MonoBehaviour
                     float distance = Vector3.Distance(gameSetting.players[i].transform.position, gameSetting.players[j].transform.position);
                     float distanceX = (float)Math.Sqrt(Math.Pow(playerPos[i].x - playerPos[j].x, 2));
                     float distanceY = (float)Math.Sqrt(Math.Pow(playerPos[i].y - playerPos[j].y, 2));
+
+                    //サッカーボールもカメラに含める
+                    if(GameStart.gameMode1 != "Single" && GameStart.gameMode2 == "Arcade" && GameStart.Stage == 2) 
+                    {
+                        Vector2 ballPos = GameObject.Find("Ball").transform.position;
+                        float ballDistance = Vector3.Distance(gameSetting.players[i].transform.position, ballPos);
+                        float ballDistanceX = (float)Math.Sqrt(Math.Pow(playerPos[i].x - ballPos.x, 2));
+                        float ballDistanceY = (float)Math.Sqrt(Math.Pow(playerPos[i].y - ballPos.y, 2));
+
+                        if (ballDistance > maxDistance)
+                        {
+                            maxDistance = ballDistance;
+                        }
+                        if (ballDistanceX > maxDistanceX)
+                        {
+                            maxDistanceX = ballDistanceX;
+                            centerPoint.x = (playerPos[i].x + ballPos.x) / 2;
+                        }
+                        if (ballDistanceY > maxDistanceY)
+                        {
+                            maxDistanceY = ballDistanceY;
+                            centerPoint.y = (playerPos[i].y + ballPos.y) / 2;
+                            yIsZero = false;
+                        }
+                    }
                     if (distance > maxDistance)
                     {
                         maxDistance = distance;

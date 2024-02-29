@@ -76,6 +76,9 @@ MonoBehaviour:
   - RPCSyncPhase
   - DeleatPlayer
   - TeamChange
+  - SyncStage
+  - SyncPlayerTeam
+  - SyncPhase
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 0

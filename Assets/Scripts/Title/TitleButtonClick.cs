@@ -277,12 +277,12 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
     public void GoStageSelect()
     {
         SoundEffect.soundTrigger[2] = 1;
-        GameStart.phase = 5;
+        GameStart.phase = 6;
     }
     public void GoTeamSelect()
     {
         SoundEffect.soundTrigger[2] = 1;
-        GameStart.phase = 7;
+        GameStart.phase = 8;
     }
     public void NextPhaseOnline()
     {
@@ -312,30 +312,23 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
         photonView.RPC(nameof(SetCustomPropsGameMode), RpcTarget.All);
     }
 
-    public void StartGame()
-    {
-        if (GameStart.gameMode1 == "Online")
-        {
-            photonView.RPC(nameof(RPCStartGame), RpcTarget.All);
-            return;
-        }
-        Debug.Log("ゲームを開始します。");
-        SceneManager.LoadScene("Stage");
-    }
+
     [PunRPC]
-    void RPCStartGame()
+    void SetCustomPropsStage()
     {
-        SceneManager.LoadScene("Stage");
-    }
-    public void syncStage()
-    {
-        if (NetWorkMain.netWorkId != NetWorkMain.leaderId)
+        ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
+        if (customProps.ContainsKey("stage"))
         {
-            return;
+            int stageTmp;
+            if (int.TryParse(customProps["stage"].ToString(), out stageTmp))
+            {
+                GameStart.Stage = stageTmp;
+                Debug.Log("GameStart.Stageを" + stageTmp + "に設定しました");
+            }
         }
-        NetWorkMain.UpdateRoomStats(GameStart.Stage);
-        photonView.RPC(nameof(SetCustomPropsStage), RpcTarget.All);
     }
+
+
     //次の画面(通常モード)
     public void NextPhaseNomal()
     {
@@ -404,20 +397,6 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
         gameStart.stageInfoActive = false;
     }
 
-    [PunRPC]
-    void SetCustomPropsStage()
-    {
-        ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
-        if (customProps.ContainsKey("stage"))
-        {
-            int stageTmp;
-            if (int.TryParse(customProps["stage"].ToString(), out stageTmp))
-            {
-                GameStart.Stage = stageTmp;
-                Debug.Log("GameStart.Stageを" + stageTmp + "に設定しました");
-            }
-        }
-    }
 
     [PunRPC]
     void SetCustomPropsGameMode()
@@ -430,15 +409,7 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
         }
     }
 
-    public void SetCustomPropsStageButton()
-    {
-        if (GameStart.gameMode1 == "Online")
-        {
-            NetWorkMain.UpdateRoomStats(GameStart.Stage);
-            photonView.RPC(nameof(SetCustomPropsStage), RpcTarget.All);
-        }
-
-    }
+    
     public void SettingPanelTrigger()    //設定画面の表示
     {
         Settings.SettingPanelActive = !(Settings.SettingPanelActive);
@@ -664,6 +635,13 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
         {
             PhotonNetwork.JoinLobby();
         }
+    }
+    public void DisconnectRoom()
+    {
+        if (PhotonNetwork.InRoom)
+        {
+            PhotonNetwork.LeaveRoom();
+        }   
     }
     public void DisconnectLobby()
     {

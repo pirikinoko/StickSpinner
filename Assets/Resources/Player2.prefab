@@ -160,10 +160,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   id: 2
-  KeyLeft: 97
-  KeyRight: 100
-  KeyJump: 119
-  KeyDown: 115
+  KeyLeft: 276
+  KeyRight: 275
+  KeyJump: 273
+  KeyDown: 274
   CoolTime_: 0.2
 --- !u!61 &4178208876806263263
 BoxCollider2D:

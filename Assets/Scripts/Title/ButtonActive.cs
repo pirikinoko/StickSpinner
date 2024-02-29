@@ -57,7 +57,7 @@ public class ButtonActive : MonoBehaviourPunCallbacks
         //チームセレクトボタンのアクティブ
         if (this.name.Contains("TeamSelect")) 
         {
-            if(GameStart.gameMode2 == "Arcade") 
+            if(GameStart.gameMode2 == "Arcade" && GameStart.PlayerNumber > 1) 
             {
                 button.interactable = true;
             }

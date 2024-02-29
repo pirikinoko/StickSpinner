@@ -15,7 +15,7 @@ public class GetFirstName : MonoBehaviour
     {
         if(GameStart.Stage == 4)
         {
-            GameMode.plasement[0] = inputField.text;
+            GameMode.playerNameByRank[0] = inputField.text;
         }
         else
         {

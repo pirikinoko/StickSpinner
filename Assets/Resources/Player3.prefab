@@ -437,10 +437,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   id: 3
-  KeyLeft: 102
-  KeyRight: 104
-  KeyJump: 116
-  KeyDown: 103
+  KeyLeft: 276
+  KeyRight: 275
+  KeyJump: 273
+  KeyDown: 274
   CoolTime_: 0.2
 --- !u!114 &5129737071418227189
 MonoBehaviour:

@@ -17,6 +17,7 @@ public class GameStart : MonoBehaviourPunCallbacks
     float difficulty;
     public GameObject mainTitle, startPanel, changePlayerNumber, stageSelect, selectGameMode, setArcadeGame, keyBoardMouseUI, selectOnlineLobby, onlineLobby, loadScreen;
     public GameObject[] controllerUI, playerIcon, playerSlot;
+    private IngameLog ingameLog = new IngameLog();
     //チーム選択
     public Vector2[] playerIconPos { get; set; } = new Vector2[4];
     public Vector2[] slot1Pos = new Vector2[4];
@@ -51,7 +52,7 @@ public class GameStart : MonoBehaviourPunCallbacks
         reconnectable = false;
         Stage = 1;
         PlayerNumber = 1;
-        teamMode = "FreeForAll";
+        teamMode = "FFA";
         phase = 0;
         lastPhase = -1;
         flagTimeLimit = 90;
@@ -68,6 +69,7 @@ public class GameStart : MonoBehaviourPunCallbacks
     }
     void Update()
     {
+        //Debug.Log(phase);
         SwichUI();
         SwichStageMaterial();
         playerNumberText.text = PlayerNumber.ToString();
@@ -113,6 +115,7 @@ public class GameStart : MonoBehaviourPunCallbacks
                 {
                     stageNumberText.text = singleArcadeText[Settings.languageNum];
                 }
+                imageSprite = Resources.Load<Sprite>(gameMode1 + gameMode2 + Stage);
                 break;
             case "Multi":
                 if (gameMode2 == "Nomal")
@@ -123,6 +126,7 @@ public class GameStart : MonoBehaviourPunCallbacks
                 {
                     stageNumberText.text = MultiArcadeText[Stage + (2 * Settings.languageNum)];
                 }
+                imageSprite = Resources.Load<Sprite>(gameMode1 + gameMode2 + Stage);
                 break;
             case "Online":
                 if (gameMode2 == "Nomal")
@@ -131,12 +135,13 @@ public class GameStart : MonoBehaviourPunCallbacks
                 }
                 else
                 {
-                    if (Stage < 3) { stageNumberText.text = "FlagMode" + Stage.ToString(); }
+                    stageNumberText.text = MultiArcadeText[Stage + (2 * Settings.languageNum)];
                 }
+                imageSprite = Resources.Load<Sprite>("Multi" + gameMode2 + Stage);
                 break;
 
         }
-        imageSprite = Resources.Load<Sprite>(gameMode1 + gameMode2 + Stage);
+     
         stageImage.sprite = imageSprite;
     }
 
@@ -213,22 +218,37 @@ public class GameStart : MonoBehaviourPunCallbacks
                             break;
                         case 3:
                             onlineLobby.gameObject.SetActive(true);
+                            if (NetWorkMain.netWorkId == NetWorkMain.leaderId)
+                            {
+                                NetWorkMain.UpdateRoomStats(GameStart.Stage);
+                                photonView.RPC(nameof(SyncStage), RpcTarget.All);
+                                photonView.RPC(nameof(SyncPhase), RpcTarget.All, phase);
+                            }
                             break;
                         case 4:
+                            photonView.RPC(nameof(RPCStartGame), RpcTarget.All);
                             phase = 3;
+                            onlineLobby.gameObject.SetActive(true);
                             break;
                         case 5:
-                            stageSelect.gameObject.SetActive(true);
+                            phase = 3;
+                            return;
                             break;
                         case 6:
-                            phase = 3;
+                            stageSelect.gameObject.SetActive(true);
                             break;
                         case 7:
-                            setArcadeGame.gameObject.SetActive(true);
-                            SetArcade();
+                            phase = 3;
+                            return;
                             break;
                         case 8:
+                            setArcadeGame.gameObject.SetActive(true);
+                            photonView.RPC(nameof(SyncPhase), RpcTarget.All, phase);
+                            SetArcade();
+                            break;
+                        case 9:
                             phase = 3;
+                            return;
                             break;
                     }
                     break;
@@ -237,7 +257,6 @@ public class GameStart : MonoBehaviourPunCallbacks
         }
         if (setArcadeGame.gameObject.activeSelf)
         {
-
             TeamSelect();
         }
     }
@@ -273,11 +292,39 @@ public class GameStart : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    public void RPCSyncPhase(int phaseLocal)
+    void SyncStage()
+    {
+        ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
+        if (customProps.ContainsKey("stage"))
+        {
+            int stageTmp;
+            if (int.TryParse(customProps["stage"].ToString(), out stageTmp))
+            {
+                GameStart.Stage = stageTmp;
+                Debug.Log("GameStart.Stageを" + stageTmp + "に設定しました");
+            }
+        }
+    }
+    [PunRPC]
+    public void SyncPhase(int phaseLocal)
     {
         phase = phaseLocal;
     }
 
+    [PunRPC]
+    void RPCStartGame()
+    {
+        SceneManager.LoadScene("Stage");
+        if (GameStart.PlayerNumber > 1)
+        {
+            
+        }
+        else
+        {
+            ingameLog.GenerateIngameLog("プレイヤー数が足りていません");
+            phase--;
+        }
+    }
 
     void SetArcade()
     {
@@ -360,11 +407,11 @@ public class GameStart : MonoBehaviourPunCallbacks
 
         if (allOtherTeam)
         {
-            teamMode = "FreeForAll";
+            teamMode = "FFA";
         }
         else
         {
-            bool oneVSThree = false;
+            teamMode = "Team";
             teamCount = 0;
             for (int i = 0; i < PlayerNumber; i++)
             {
@@ -376,29 +423,6 @@ public class GameStart : MonoBehaviourPunCallbacks
                 {
                     teamCount++;
                 }
-                if (teamSize[j] == 3)
-                {
-                    oneVSThree = true;
-                }
-            }
-
-            if (teamCount == 2 && PlayerNumber == 3)
-            {
-                teamMode = "1vs2";
-            }
-            else if (teamCount == 2 && PlayerNumber == 4 && oneVSThree)
-            {
-                teamMode = "1vs3";
-            }
-            else if (teamCount == 2 && PlayerNumber == 4)
-            {
-                teamMode = "2vs2";
-            }
-            else { teamMode = "1vs1vs2"; }
-
-            if (Stage == 2)
-            {
-                teamMode = "2vs2"; ;
             }
         }
     }

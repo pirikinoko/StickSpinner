@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using Photon.Pun;
 public class Ball : MonoBehaviour
 {
     GameMode gameMode;
@@ -10,6 +10,10 @@ public class Ball : MonoBehaviour
     void Start()
     {
         gameMode = GameObject.Find("Scripts").GetComponent<GameMode>();
+        if(GameStart.gameMode1 == "Online") 
+        {
+            this.GetComponent<PhotonTransformView>().enabled = false;
+        }
     }
 
     // Update is called once per frame
@@ -33,13 +37,27 @@ public class Ball : MonoBehaviour
     {
          if(col.gameObject.name == "GoalZoneLeft")
         {
-            GameMode.teamPoints[1]++;
+            if(GameStart.teamMode == "FFA") 
+            {
+                GameMode.points[1]++;
+            }
+            else 
+            {
+                GameMode.teamPoints[1]++;
+            }
             SoundEffect.soundTrigger[2] = 1;
             StartCoroutine(gameMode.BallReset());
         }
         if (col.gameObject.name == "GoalZoneRight")
         {
-            GameMode.teamPoints[0]++;
+            if (GameStart.teamMode == "FFA")
+            {
+                GameMode.points[0]++;
+            }
+            else
+            {
+                GameMode.teamPoints[0]++;
+            }
             SoundEffect.soundTrigger[2] = 1;
             StartCoroutine(gameMode.BallReset());
         }

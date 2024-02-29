@@ -73,7 +73,6 @@ public class TitleButton : MonoBehaviourPunCallbacks
             .ToArray();
         if (activeButtons.Length == 0)
         {
-            Debug.Log("ボタンが見つかりませんでした。");
             cursor.gameObject.SetActive(false); 
             return;
         }
@@ -85,7 +84,6 @@ public class TitleButton : MonoBehaviourPunCallbacks
             {
                 pauseButtonNum = i;
             }
-            Debug.Log("ButtonName"+ i + activeButtons[i].name);
         }
 
         if (Settings.SettingPanelActive)

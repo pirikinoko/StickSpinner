@@ -39,7 +39,7 @@ public class SetHighScore : MonoBehaviour
             }
             else
             {
-                ShowHighScore.multiArcadeHighScore[GameStart.Stage - 1] = Mathf.Max((int)(GameMode.topPoint), (int)(ShowHighScore.multiHighScore[GameStart.Stage - 1]));
+                ShowHighScore.multiArcadeHighScore[GameStart.Stage - 1] = Mathf.Max((int)(GameMode.pointsInOrder[0]), (int)(ShowHighScore.multiHighScore[GameStart.Stage - 1]));
             }
         }
     }
