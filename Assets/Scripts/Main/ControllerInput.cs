@@ -10,7 +10,7 @@ public class ControllerInput : MonoBehaviour
     int[] controllerNumber = new int[4];
     int connected = 0;                             //接続されているコントローラーの数
     string[] joystickNames;
-    public static bool usingController = true;
+    public static bool usingController = false;
     //入力 ４台まで
     public static float[] LstickX = new float[4];
     public static float[] LstickY = new float[4];

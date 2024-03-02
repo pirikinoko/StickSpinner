@@ -20,7 +20,7 @@ public class GameSetting : MonoBehaviourPunCallbacks
     Vector2[] nameTagPos = new Vector2[GameStart.maxPlayer];
     Vector2[,] startPos = new Vector2[GameStart.maxPlayer, GameStart.maxPlayer];
     string[] startText = { "スタート", "Start" };
-    public static bool Playable = false, allJoin = false;
+    public static bool Playable = false, allJoin = false, setupEnded = false;
     public static bool[] playerLeft = new bool[4];
     //タイム
     float elapsedTime;
@@ -44,7 +44,7 @@ public class GameSetting : MonoBehaviourPunCallbacks
     GameObject[] defaultPosGO = new GameObject[GameStart.maxPlayer];
 
     SaveData data;
-    private IngameLog ingameLog = new IngameLog();
+    private IngameLog ingameLog;
 
     [PunRPC]
     private void RPCSetStickPos()
@@ -74,6 +74,8 @@ public class GameSetting : MonoBehaviourPunCallbacks
         Debug.Log("Pnum == " + GameStart.PlayerNumber);
         startTrigger = 0;
         allJoin = false;
+        setupEnded = false;
+        ingameLog = GameObject.Find("Systems").GetComponent<IngameLog>();
         for (int i = 0; i < 4; i++)
         {
             playerLeft[i] = false;
@@ -286,7 +288,7 @@ public class GameSetting : MonoBehaviourPunCallbacks
             }
             photonView.RPC(nameof(GetPlayers), RpcTarget.All, NetWorkMain.netWorkId);
         }
-
+        setupEnded = true;
     }
     [PunRPC]
     void GetPlayers(int id)

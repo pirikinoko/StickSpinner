@@ -8,9 +8,10 @@ public class ChangePassWord : MonoBehaviourPunCallbacks
      InputField passwordInputField;
     [SerializeField]
     Button updatePasswordButton, switchButton;
-    private IngameLog ingameLog = new IngameLog();
+    IngameLog ingameLog;
     void Start()
     {
+        ingameLog = GameObject.Find("Systems").GetComponent<IngameLog>();
         updatePasswordButton.onClick.AddListener(UpdatePassword);
         switchButton.onClick.AddListener(ToggleInputMode);
         passwordInputField = this.GetComponent<InputField>();
@@ -31,7 +32,7 @@ public class ChangePassWord : MonoBehaviourPunCallbacks
         {
             customProps["Password"] = passwordInputField.text;
             Debug.Log("Password" + passwordInputField.text + "に設定しました");
-            ingameLog.GenerateIngameLog("Passwordを「" + passwordInputField.text + "」に設定しました");
+            IngameLog.GenerateIngameLog("Passwordを「" + passwordInputField.text + "」に設定しました");
         }
         PhotonNetwork.CurrentRoom.SetCustomProperties(customProps);
 

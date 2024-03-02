@@ -8,13 +8,14 @@ using Photon.Pun;
 public class ButtonClick : MonoBehaviourPunCallbacks　//クリック用ボタン
 {
     public GameObject pauseButton;
-    private GameSetting gameSetting = new GameSetting();
+    private GameSetting gameSetting;
 
     bool inputButton;
     [SerializeField] KeyCode keyBind;
     string controllerButton;
     bool inputCrossXPlus, inputCrossXMinus, inputCrossYPlus, inputCrossYMinus, inputLstickXPlus, inputLstickXMinus, inputLstickYPlus, inputLstickYMinus;
     float lastLstickX, lastLstickY;
+
     //対応するコントローラーボタンの選択肢
     public enum ControllerButtons
     {
@@ -41,6 +42,7 @@ public class ButtonClick : MonoBehaviourPunCallbacks　//クリック用ボタ�
 
     void Start()
     {
+        gameSetting = GameObject.Find("Systems").GetComponent<GameSetting>();
         controllerButton = selectedButton.ToString();
     }
 

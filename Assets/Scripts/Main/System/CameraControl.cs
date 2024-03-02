@@ -43,7 +43,7 @@ public class CameraControl : MonoBehaviour
             Debug.Log("spectateTarget   " + spectateTarget + "PlayerNumber   " + GameStart.PlayerNumber);
         }
      
-        if (!GameSetting.allJoin)
+        if (!GameSetting.setupEnded)
         {
             return;
         }

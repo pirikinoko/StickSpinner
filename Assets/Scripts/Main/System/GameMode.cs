@@ -43,8 +43,7 @@ public class GameMode : MonoBehaviourPunCallbacks
     public static float[,] killTimer = new float[4, 4];       // プレイヤー同士の衝突を記録(プレイヤー1～4とプレイヤー1～4の衝突)
 
     //サッカーモード
-    [SerializeField]
-    GameObject ball;
+   
     [SerializeField]
     Text ballCountText;
     Vector2 ballPosDefault = new Vector2(0, -2f);
@@ -530,7 +529,7 @@ public class GameMode : MonoBehaviourPunCallbacks
         }
     }
 
-    public IEnumerator BallReset()
+    public IEnumerator BallReset(GameObject ball)
     {
         ball.transform.position = ballPosDefault;
         Rigidbody2D ballRb = ball.GetComponent<Rigidbody2D>();

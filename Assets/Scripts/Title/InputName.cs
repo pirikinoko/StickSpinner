@@ -14,19 +14,20 @@ public class InputName : MonoBehaviour
     public Text Typedtext;
     const int maxLetters = 10;
     [SerializeField]
-    Button inputFrame;
+    //Button inputFrame;
     // Start is called before the first frame update
     void Start()
     {
         inputMode = false;
         clickVoid = false;
-        inputFrame.onClick.AddListener(ToggleInputMode);
+        //inputFrame.onClick.AddListener(ToggleInputMode);
     }
 
     // Update is called once per frame
     void Update()
     {
-        KeyInput();
+        TypedTextToString = Typedtext.text;
+        //KeyInput();
         if (Input.GetMouseButton(0))
         {
             inputMode = false;

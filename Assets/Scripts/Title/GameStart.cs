@@ -17,7 +17,7 @@ public class GameStart : MonoBehaviourPunCallbacks
     float difficulty;
     public GameObject mainTitle, startPanel, changePlayerNumber, stageSelect, selectGameMode, setArcadeGame, keyBoardMouseUI, selectOnlineLobby, onlineLobby, loadScreen;
     public GameObject[] controllerUI, playerIcon, playerSlot;
-    private IngameLog ingameLog = new IngameLog();
+    IngameLog ingameLog;
     //チーム選択
     public Vector2[] playerIconPos { get; set; } = new Vector2[4];
     public Vector2[] slot1Pos = new Vector2[4];
@@ -46,6 +46,7 @@ public class GameStart : MonoBehaviourPunCallbacks
     bool reconnectable, joinedLobby = false;
     void Start()
     {
+        ingameLog = GameObject.Find("Systems").GetComponent<IngameLog>();
         Time.timeScale = 1;
         inDemoPlay = false;
         GameSetting.Playable = false;
@@ -321,7 +322,7 @@ public class GameStart : MonoBehaviourPunCallbacks
         }
         else
         {
-            ingameLog.GenerateIngameLog("プレイヤー数が足りていません");
+            IngameLog.GenerateIngameLog("プレイヤー数が足りていません");
             phase--;
         }
     }

@@ -9,18 +9,20 @@ public class MatchmakingView : MonoBehaviourPunCallbacks
     [SerializeField]
     private RoomListView roomListView = default;
     [SerializeField]
-    private TMP_InputField roomNameInputField = default;
+    private InputField roomNameInputField = default;
     [SerializeField]
     private Button createRoomButton = default, createRoomLockedButton = default,joinRoomButton = default, quickMatchButton = default;
     [SerializeField]
     Text playerCountQuick, playButtonText;
     private CanvasGroup canvasGroup;
-    private IngameLog ingameLog = new IngameLog();
+    IngameLog ingameLog;
     string mode;
     int stageQuick = 0;
     public static string gameModeQuick = "Nomal";
+    public int ccuLimit = 80;
     private void Start()
     {
+        ingameLog = GameObject.Find("Systems").GetComponent<IngameLog>();
         canvasGroup = GetComponent<CanvasGroup>();
         // ロビーに参加するまでは、入力できないようにする
         if (!PhotonNetwork.InLobby) 
@@ -106,11 +108,21 @@ public class MatchmakingView : MonoBehaviourPunCallbacks
     }
     private void OnJoinRoomButtonClick()
     {
+        if (CheckCCULimit() == false)
+        {
+            IngameLog.GenerateIngameLog("現在サーバーが混雑しています");
+            return;
+        }
         PhotonNetwork.JoinRoom(roomNameInputField.text);
         mode = "Nomal";
     }
     private void OnCreateRoomLockedButtonClick()
     {
+        if (CheckCCULimit() == false)
+        {
+            IngameLog.GenerateIngameLog("現在サーバーが混雑しています");
+            return;
+        }
         string roomName = roomNameInputField.text + "!Locked!";
         // ルーム作成処理中は、入力できないようにする
         canvasGroup.interactable = false;
@@ -123,9 +135,14 @@ public class MatchmakingView : MonoBehaviourPunCallbacks
     }
     private void OnCreateRoomButtonClick()
     {
+        if(CheckCCULimit() == false) 
+        {
+            IngameLog.GenerateIngameLog("現在サーバーが混雑しています");
+            return;
+        }
         if (InputName.TypedTextToString.Length == 0) 
         {
-            ingameLog.GenerateIngameLog("名前を入力してください");
+            IngameLog.GenerateIngameLog("名前を入力してください");
             return;
         }
         mode = "Nomal";
@@ -157,6 +174,11 @@ public class MatchmakingView : MonoBehaviourPunCallbacks
                 joinRoomButton.interactable = true;
             }
      
+            return;
+        }
+        if (CheckCCULimit() == false)
+        {
+            IngameLog.GenerateIngameLog("現在サーバーが混雑しています");
             return;
         }
         string roomName = "!Quick!" + roomListView.quickRoomCount;
@@ -205,5 +227,19 @@ public class MatchmakingView : MonoBehaviourPunCallbacks
         }
         // ルームへの参加が失敗したら、再び入力できるようにする
         canvasGroup.interactable = true;
+    }
+    private bool CheckCCULimit()
+    {
+        // 現在の同時接続数を取得
+        int currentCCU = PhotonNetwork.CountOfPlayers;
+
+        Debug.Log($"CCU Limit: {ccuLimit}, Current CCU: {currentCCU}");
+
+        // 接続制限に達している場合は接続を試みない
+        if (currentCCU >= ccuLimit)
+        {         
+            return false;   
+        }
+        else { return true; }
     }
 }

@@ -15,7 +15,11 @@ public class RoomListView : MonoBehaviourPunCallbacks
     private List<RoomListViewElement> elementList = new List<RoomListViewElement>(MaxElements);
     private ScrollRect scrollRect;
     public int quickRoomCount = 0;
-    private IngameLog ingameLog = new IngameLog();
+    IngameLog ingameLog;
+    void Start() 
+    {
+        ingameLog = GameObject.Find("Systems").GetComponent<IngameLog>();
+    }
     public void Init(MatchmakingView parentView)
     {
         scrollRect = GetComponent<ScrollRect>();

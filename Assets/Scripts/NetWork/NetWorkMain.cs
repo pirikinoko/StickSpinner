@@ -15,9 +15,10 @@ public class NetWorkMain : MonoBehaviourPunCallbacks
     string[] gameMode = { "Nomal", "Arcade" };
     public bool isOffline = false;
     int setCount = 0, lastPlayerCount;
-    private IngameLog ingameLog = new IngameLog();
+    IngameLog ingameLog;
     private void Start()
     {
+        ingameLog = GameObject.Find("Systems").GetComponent<IngameLog>();
         setCount = 0;
         PhotonNetwork.ConnectUsingSettings();
     }
@@ -156,7 +157,6 @@ public class NetWorkMain : MonoBehaviourPunCallbacks
                 netWorkId = i + 1;
             }
         }
-        ingameLog.GenerateIngameLog(tmpId + "→→ → → → " + netWorkId);
         PhotonNetwork.NickName = InputName.TypedTextToString;
         Debug.Log(PhotonNetwork.NickName + "isConnected");
 

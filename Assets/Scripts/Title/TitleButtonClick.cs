@@ -17,7 +17,6 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
     public static int[] sensChange = new int[4];
     TitleButton titleButton;
     GameStart gameStart;
-    private IngameLog ingameLog = new IngameLog();
     //コントローラー対応 
     bool inputButton;
     [SerializeField] KeyCode keyBind;
@@ -648,10 +647,4 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
         PhotonNetwork.LeaveLobby();
     }
 
-
-    //コントローラー入力対応
-    void supportControllerInput() 
-    {
-        
-    }
 }

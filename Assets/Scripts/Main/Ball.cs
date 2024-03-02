@@ -9,8 +9,8 @@ public class Ball : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        gameMode = GameObject.Find("Scripts").GetComponent<GameMode>();
-        if(GameStart.gameMode1 == "Online") 
+        
+        if(GameStart.gameMode1 != "Online") 
         {
             this.GetComponent<PhotonTransformView>().enabled = false;
         }
@@ -19,7 +19,10 @@ public class Ball : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if(gameMode == null) 
+        {
+            gameMode = GameObject.Find("Scripts").GetComponent<GameMode>();
+        }
     }
 
     private void OnCollisionStay2D(Collision2D col) 
@@ -46,7 +49,7 @@ public class Ball : MonoBehaviour
                 GameMode.teamPoints[1]++;
             }
             SoundEffect.soundTrigger[2] = 1;
-            StartCoroutine(gameMode.BallReset());
+            StartCoroutine(GameObject.Find("Scripts").GetComponent<GameMode>().BallReset(this.gameObject));
         }
         if (col.gameObject.name == "GoalZoneRight")
         {
@@ -59,7 +62,7 @@ public class Ball : MonoBehaviour
                 GameMode.teamPoints[0]++;
             }
             SoundEffect.soundTrigger[2] = 1;
-            StartCoroutine(gameMode.BallReset());
+            StartCoroutine(GameObject.Find("Scripts").GetComponent<GameMode>().BallReset(this.gameObject));
         }
     }
 }

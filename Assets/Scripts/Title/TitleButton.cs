@@ -31,6 +31,7 @@ public class TitleButton : MonoBehaviourPunCallbacks
     }
     void Update()
     {
+        if (!(ControllerInput.usingController)) { return; }
         FindAllButtons();
 
         //選択中のボタンをクリック
