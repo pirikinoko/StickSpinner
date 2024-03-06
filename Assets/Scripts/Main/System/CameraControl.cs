@@ -42,7 +42,7 @@ public class CameraControl : MonoBehaviour
         {
             Debug.Log("spectateTarget   " + spectateTarget + "PlayerNumber   " + GameStart.PlayerNumber);
         }
-     
+
         if (!GameSetting.setupEnded)
         {
             return;
@@ -88,23 +88,23 @@ public class CameraControl : MonoBehaviour
 
             if (NetWorkMain.isOnline)
             {
-                if (!GameMode.Goaled) 
+                if (!GameMode.Goaled)
                 {
                     if (gameSetting.players[NetWorkMain.netWorkId - 1] != null && gameSetting.players[NetWorkMain.netWorkId - 1].activeSelf)
                     {
                         centerPoint = gameSetting.players[NetWorkMain.netWorkId - 1].transform.position;
                     }
                 }
-                 if(gameSetting.players[NetWorkMain.netWorkId - 1].activeSelf == false)
+                if (gameSetting.players[NetWorkMain.netWorkId - 1].activeSelf == false)
                 {
                     OnlineSpectate();
                     if (gameSetting.players[spectateTarget - 1] == true)
                     {
                         centerPoint = gameSetting.players[spectateTarget - 1].transform.position;
                     }
-                 
+
                 }
-               
+
             }
             else
             {
@@ -124,61 +124,68 @@ public class CameraControl : MonoBehaviour
         float maxDistanceX = 0f;
         float maxDistanceY = 0f;
         bool yIsZero = true;
-        if (!NetWorkMain.isOnline) 
+        if (!NetWorkMain.isOnline || (GameStart.gameMode1 == "Online" && GameStart.gameMode2== "Arcade" && GameStart.Stage == 2 )) 
         {
             for (int i = 0; i < GameStart.PlayerNumber - 1; i++)
             {
-                playerPos[i] = gameSetting.players[i].transform.position;
-                if (isGoaled[i]) { continue; }
-                for (int j = i + 1; j < GameStart.PlayerNumber; j++)
+                if (gameSetting.players[i] != null) 
                 {
-                    playerPos[j] = gameSetting.players[j].transform.position;
-
-                    if (isGoaled[j]) { continue; }
-                    float distance = Vector3.Distance(gameSetting.players[i].transform.position, gameSetting.players[j].transform.position);
-                    float distanceX = (float)Math.Sqrt(Math.Pow(playerPos[i].x - playerPos[j].x, 2));
-                    float distanceY = (float)Math.Sqrt(Math.Pow(playerPos[i].y - playerPos[j].y, 2));
-
-                    //サッカーボールもカメラに含める
-                    if(GameStart.gameMode1 != "Single" && GameStart.gameMode2 == "Arcade" && GameStart.Stage == 2) 
+                    playerPos[i] = gameSetting.players[i].transform.position;
+                    if (isGoaled[i]) { continue; }
+                    for (int j = i + 1; j < GameStart.PlayerNumber; j++)
                     {
-                        Vector2 ballPos = GameObject.Find("Ball").transform.position;
-                        float ballDistance = Vector3.Distance(gameSetting.players[i].transform.position, ballPos);
-                        float ballDistanceX = (float)Math.Sqrt(Math.Pow(playerPos[i].x - ballPos.x, 2));
-                        float ballDistanceY = (float)Math.Sqrt(Math.Pow(playerPos[i].y - ballPos.y, 2));
+                        playerPos[j] = gameSetting.players[j].transform.position;
 
-                        if (ballDistance > maxDistance)
+                        if (isGoaled[j]) { continue; }
+                        float distance = Vector3.Distance(gameSetting.players[i].transform.position, gameSetting.players[j].transform.position);
+                        float distanceX = (float)Math.Sqrt(Math.Pow(playerPos[i].x - playerPos[j].x, 2));
+                        float distanceY = (float)Math.Sqrt(Math.Pow(playerPos[i].y - playerPos[j].y, 2));
+
+                        //サッカーボールもカメラに含める
+                        if (GameStart.gameMode1 != "Single" && GameStart.gameMode2 == "Arcade" && GameStart.Stage == 2)
                         {
-                            maxDistance = ballDistance;
+                            GameObject ballObj = Utility.FindObjectWithContainingName("SoccerBall");
+
+
+                            Vector2 ballPos = ballObj.transform.position;
+                            float ballDistance = Vector3.Distance(gameSetting.players[i].transform.position, ballPos);
+                            float ballDistanceX = (float)Math.Sqrt(Math.Pow(playerPos[i].x - ballPos.x, 2));
+                            float ballDistanceY = (float)Math.Sqrt(Math.Pow(playerPos[i].y - ballPos.y, 2));
+
+                            if (ballDistance > maxDistance)
+                            {
+                                maxDistance = ballDistance;
+                            }
+                            if (ballDistanceX > maxDistanceX)
+                            {
+                                maxDistanceX = ballDistanceX;
+                                centerPoint.x = (playerPos[i].x + ballPos.x) / 2;
+                            }
+                            if (ballDistanceY > maxDistanceY)
+                            {
+                                maxDistanceY = ballDistanceY;
+                                centerPoint.y = (playerPos[i].y + ballPos.y) / 2;
+                                yIsZero = false;
+                            }
                         }
-                        if (ballDistanceX > maxDistanceX)
+                        if (distance > maxDistance)
                         {
-                            maxDistanceX = ballDistanceX;
-                            centerPoint.x = (playerPos[i].x + ballPos.x) / 2;
+                            maxDistance = distance;
                         }
-                        if (ballDistanceY > maxDistanceY)
+                        if (distanceX > maxDistanceX)
                         {
-                            maxDistanceY = ballDistanceY;
-                            centerPoint.y = (playerPos[i].y + ballPos.y) / 2;
+                            maxDistanceX = distanceX;
+                            centerPoint.x = (playerPos[i].x + playerPos[j].x) / 2;
+                        }
+                        if (distanceY > maxDistanceY)
+                        {
+                            maxDistanceY = distanceY;
+                            centerPoint.y = (playerPos[i].y + playerPos[j].y) / 2;
                             yIsZero = false;
                         }
+                        else if (distanceY == 0 && yIsZero) { centerPoint.y = (playerPos[i].y + playerPos[j].y) / 2; } //スタート時はdistanceYが0のための処理
+
                     }
-                    if (distance > maxDistance)
-                    {
-                        maxDistance = distance;
-                    }
-                    if (distanceX > maxDistanceX)
-                    {
-                        maxDistanceX = distanceX;
-                        centerPoint.x = (playerPos[i].x + playerPos[j].x) / 2;
-                    }
-                    if (distanceY > maxDistanceY)
-                    {
-                        maxDistanceY = distanceY;
-                        centerPoint.y = (playerPos[i].y + playerPos[j].y) / 2;
-                        yIsZero = false;
-                    }
-                    else if (distanceY == 0 && yIsZero) { centerPoint.y = (playerPos[i].y + playerPos[j].y) / 2; } //スタート時はdistanceYが0のための処理
 
                 }
             }

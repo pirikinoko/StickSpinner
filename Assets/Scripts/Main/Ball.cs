@@ -12,7 +12,7 @@ public class Ball : MonoBehaviour
         
         if(GameStart.gameMode1 != "Online") 
         {
-            this.GetComponent<PhotonTransformView>().enabled = false;
+            this.GetComponent<PhotonRigidbody2DView>().enabled = false;
         }
     }
 

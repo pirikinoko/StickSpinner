@@ -15,10 +15,10 @@ public class Settings : MonoBehaviour
     public static int languageNum = 0, guideMode = 0;
     string[] languages = { "JP", "EN" };
     public static int screenModeNum = 0;
-    string[] screenMode = { "フルスクリーン", "ウィンドウ", "FullScreen", "Window" };
+    string[] screenMode = { "ウィンドウ", "フルスクリーン", "Window", "FullScreen" };
     string[] guide = { "On", "Off" };
     float[] settingStages = new float[5]; //設定項目の数
-    int changeCount = 0, lastScreenNum;
+    int lastScreenNum;
     int max, min = 0;
     public GameObject[] item = new GameObject[3];
     Vector2[] itemPos = new Vector2[10];
@@ -34,18 +34,20 @@ public class Settings : MonoBehaviour
 
     void Start()
     {
+        
         Selected = 0;
-        changeCount = 0;
         Time.timeScale = 1;
         SettingPanelActive = false;
         inSetting = false;
         exitPanelActive = false;
+        lastScreenNum = screenModeNum;
+        SetScreenMode();
+        Debug.Log(languageNum);
     }
 
     void Update()
     {
 
-        SetScreenMode();
         if (SettingPanelActive)
         {
             SettingPanel.gameObject.SetActive(true);
@@ -226,7 +228,7 @@ public class Settings : MonoBehaviour
 
         if(lastScreenNum != screenModeNum)
         {
-            changeCount = 0;
+            SetScreenMode();
         }
         lastScreenNum = screenModeNum;
         
@@ -234,20 +236,16 @@ public class Settings : MonoBehaviour
 
     private void SetScreenMode()
     {
-        if(changeCount == 0)
+        // 0のときはフルスクリーン
+        if (screenModeNum == 0)
         {
-            // ウィンドウモード、フルスクリーンモード、擬似フルスクリーンモードの設定
-            if (screenModeNum == 0)
-            {
-                Screen.SetResolution(Screen.currentResolution.width, Screen.currentResolution.height, FullScreenMode.FullScreenWindow);
-            }
-            else
-            {
-                Screen.SetResolution(1280, 720, FullScreenMode.Windowed);
-            }
-            changeCount = 1;
+            Screen.SetResolution(1280, 720, FullScreenMode.Windowed);
         }
-    
+        // 1のときはウィンドウモード
+        else
+        {
+            Screen.SetResolution(Screen.currentResolution.width, Screen.currentResolution.height, FullScreenMode.FullScreenWindow);
+        }
     }
 
     void SelectEffect()

@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using Photon.Pun;
 using Photon.Realtime;
 using TMPro;
@@ -14,6 +16,8 @@ public class MatchmakingView : MonoBehaviourPunCallbacks
     private Button createRoomButton = default, createRoomLockedButton = default,joinRoomButton = default, quickMatchButton = default;
     [SerializeField]
     Text playerCountQuick, playButtonText;
+    [SerializeField]
+    GameObject quickStartingPanel;
     private CanvasGroup canvasGroup;
     IngameLog ingameLog;
     string mode;
@@ -22,6 +26,7 @@ public class MatchmakingView : MonoBehaviourPunCallbacks
     public int ccuLimit = 80;
     private void Start()
     {
+        quickStartingPanel.SetActive(false);    
         ingameLog = GameObject.Find("Systems").GetComponent<IngameLog>();
         canvasGroup = GetComponent<CanvasGroup>();
         // ロビーに参加するまでは、入力できないようにする
@@ -63,6 +68,28 @@ public class MatchmakingView : MonoBehaviourPunCallbacks
         playerCountQuick.text = "";
     }
 
+    IEnumerator OpenQuickPanel() 
+    {
+        quickStartingPanel.SetActive(true);
+        GameObject[] iconObjects = new GameObject[4];
+        Text[] playerNameTexts = new Text[4];
+        for (int i = 0; i < iconObjects.Length; i++) 
+        {
+            iconObjects[i] = quickStartingPanel.transform.GetChild(i).gameObject;
+            playerNameTexts[i] = iconObjects[i].transform.GetChild(0).gameObject.GetComponent<Text>();
+            playerNameTexts[i].text = PhotonNetwork.PlayerList[i].NickName;
+        }
+        GameObject imageFrame = quickStartingPanel.transform.GetChild(4).gameObject;
+        Image stageImg = imageFrame.transform.GetChild(0).gameObject.GetComponent<Image>();
+        stageImg.sprite = Resources.Load<Sprite>("Multi" + GameStart.gameMode2 + GameStart.Stage);
+        imageFrame.transform.GetChild(1).gameObject.GetComponent<TextSwicher>().num =  GameStart.Stage;
+        imageFrame.transform.GetChild(2).gameObject.GetComponent<TextSwicher>().num = GameStart.Stage;
+        yield return new WaitForSeconds(3.0f);
+        if (NetWorkMain.netWorkId == NetWorkMain.leaderId)
+        {
+            photonView.RPC(nameof(StartQuickGame), RpcTarget.All, stageQuick, gameModeQuick);
+        }
+    }
     void Update()
     {
         if (PhotonNetwork.InRoom && mode == "Quick")
@@ -72,11 +99,7 @@ public class MatchmakingView : MonoBehaviourPunCallbacks
             playButtonText.text = "Cancel";
             if (PhotonNetwork.CurrentRoom.PlayerCount == maxPlayers)
             {
-                if (NetWorkMain.netWorkId == NetWorkMain.leaderId)
-                {
-                    photonView.RPC(nameof(StartQuickGame), RpcTarget.All, stageQuick, gameModeQuick);
-                }
-
+                StartCoroutine(OpenQuickPanel());
             }
         }
         else

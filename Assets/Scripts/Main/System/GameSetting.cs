@@ -12,7 +12,7 @@ public class GameSetting : MonoBehaviourPunCallbacks
     [SerializeField] Text countDown, playTimeTx;
     [SerializeField] Text[] nameTagTexts;
     [SerializeField] float timeLimit;
-    [SerializeField] GameObject canvas, frontCanvas;
+    [SerializeField] GameObject canvas, frontCanvas, quickStartingPanel;
     [HideInInspector] public GameObject[] players = new GameObject[GameStart.maxPlayer];
     [HideInInspector] public GameObject[] sticks = new GameObject[GameStart.maxPlayer];
     [HideInInspector] public GameObject[] nameTags = new GameObject[GameStart.maxPlayer];
@@ -27,7 +27,7 @@ public class GameSetting : MonoBehaviourPunCallbacks
     public static float playTime;
     public static float startTime = 6;
     float SoundTime = 1f;
-    bool StartFlag;
+    bool StartFlag, coroutineEnded;
     int startTrigger = 0;
     //ステージ切り替え用
     [SerializeField] GameObject[] stageObjectSingle, stageObjectSingleArcade, stageObjectMulti, stageObjectMultiArcade;
@@ -61,11 +61,6 @@ public class GameSetting : MonoBehaviourPunCallbacks
 
     }
 
-    [PunRPC]
-    private void AllJoin()
-    {
-        allJoin = true;
-    }
 
 
 
@@ -75,7 +70,8 @@ public class GameSetting : MonoBehaviourPunCallbacks
         startTrigger = 0;
         allJoin = false;
         setupEnded = false;
-        ingameLog = GameObject.Find("Systems").GetComponent<IngameLog>();
+        coroutineEnded = false;
+        ingameLog = GameObject.Find("Scripts").GetComponent<IngameLog>();
         for (int i = 0; i < 4; i++)
         {
             playerLeft[i] = false;
@@ -100,6 +96,7 @@ public class GameSetting : MonoBehaviourPunCallbacks
         }
         if (GameStart.gameMode1 == "Single")
         {
+            quickStartingPanel.SetActive(false);
             switch (GameStart.gameMode2)
             {
                 case "Nomal":
@@ -215,8 +212,9 @@ public class GameSetting : MonoBehaviourPunCallbacks
             if(GameStart.gameMode2 == "Arcade" && GameStart.Stage == 2 && NetWorkMain.netWorkId == NetWorkMain.leaderId)
             {
                 Transform parentTrans = GameObject.Find("Soccer").GetComponent<Transform>().transform;
-                PhotonNetwork.Instantiate("Ball", new Vector2(0, -2f), Quaternion.identity);
-                GameObject.Find("Soccer").GetComponent<Transform>().transform.SetParent(parentTrans);
+                GameObject ballObj = PhotonNetwork.Instantiate("SoccerBall", new Vector2(0, -2f), Quaternion.identity);
+                ballObj.GetComponent<Transform>().transform.SetParent(parentTrans);
+                ballObj.name = "SoccerBall";
             }
         }
         else //オフライン
@@ -229,6 +227,15 @@ public class GameSetting : MonoBehaviourPunCallbacks
                 players[i] = GameObject.Find("Player" + PlayerId + "(Clone)");
                 players[i].name = "Player" + PlayerId;
             }
+            if (GameStart.gameMode1 == "Multi" && GameStart.gameMode2 == "Arcade" && GameStart.Stage == 2) 
+            {
+                Transform parentTrans = GameObject.Find("Soccer").GetComponent<Transform>().transform;
+                GameObject ballObj = Instantiate(Resources.Load("SoccerBall") as GameObject, new Vector2(0, -2f), Quaternion.identity);
+                ballObj.GetComponent<Transform>().transform.SetParent(parentTrans);
+                ballObj.name = "SoccerBall";
+            }
+
+          
         }
 
 
@@ -353,6 +360,7 @@ public class GameSetting : MonoBehaviourPunCallbacks
                     allJoin = false;
                     Debug.Log("isJoinedNotFound");
                 }
+                StartCoroutine(OpenQuickPanel());
             }
             else
             {
@@ -368,7 +376,14 @@ public class GameSetting : MonoBehaviourPunCallbacks
         }
         if (startTrigger == 0)
         {
-            if (GameStart.gameMode1 == "Online") { photonView.RPC(nameof(AllJoin), RpcTarget.All); }
+            if (GameStart.gameMode1 == "Online")
+            {
+                if (!coroutineEnded) 
+                {
+                    return;
+                }
+            }
+            quickStartingPanel.gameObject.SetActive(false);
             Debug.Log("StartInUpdateTriggered");
             AfterAllJoin();
             startTrigger = 1;
@@ -538,5 +553,43 @@ public class GameSetting : MonoBehaviourPunCallbacks
             }
         }
     }
-
+    IEnumerator OpenQuickPanel()
+    {
+        quickStartingPanel.SetActive(true);
+        GameObject[] iconObjects = new GameObject[4];
+        Text[] playerNameTexts = new Text[4];
+        for (int i = 0; i < iconObjects.Length; i++)
+        {
+            iconObjects[i] = quickStartingPanel.transform.GetChild(i).gameObject;
+            playerNameTexts[i] = iconObjects[i].transform.GetChild(0).gameObject.GetComponent<Text>();
+            if(i < GameStart.PlayerNumber) 
+            {
+                playerNameTexts[i].text = PhotonNetwork.PlayerList[i].NickName;
+            }
+            else { playerNameTexts[i].text = ""; }
+            if (i > GameStart.PlayerNumber)
+            {
+                iconObjects[i].gameObject.SetActive(false);
+            }
+        }
+        GameObject imageFrame = quickStartingPanel.transform.GetChild(4).gameObject;
+        Image stageImg = imageFrame.transform.GetChild(0).gameObject.GetComponent<Image>();
+        stageImg.sprite = Resources.Load<Sprite>("Multi" + GameStart.gameMode2 + GameStart.Stage);
+        imageFrame.transform.GetChild(1).gameObject.GetComponent<TextSwicher>().num = GameStart.Stage;
+        imageFrame.transform.GetChild(2).gameObject.GetComponent<TextSwicher>().num = GameStart.Stage;
+        string[] texts1 = { "プレイヤーを待っています", "Waiting For Players" };
+        quickStartingPanel.transform.GetChild(5).gameObject.GetComponent<Text>().text = texts1[Settings.languageNum];
+        while (true)
+        {
+            if (allJoin)
+            {
+                break;
+            }
+            yield return new WaitForSeconds(0.5f);
+        }
+        string[] texts2 = { "ゲームを開始します", "Starting" };
+        quickStartingPanel.transform.GetChild(5).gameObject.GetComponent<Text>().text = texts2[Settings.languageNum];
+        yield return new WaitForSeconds(1.0f);
+        coroutineEnded = true;
+    }
 }

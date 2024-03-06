@@ -47,7 +47,10 @@ public class Controller : MonoBehaviourPunCallbacks
     Collider2D ghostCollider;
     void Start()
     {
-
+        if (GameStart.gameMode1 != "Online")
+        {
+            this.GetComponent<PhotonRigidbody2DView>().enabled = false;
+        }
         // 親スプライト・スティックスプライトを得る
         parentSprite = transform.parent.gameObject.GetComponent<SpriteRenderer>();
         stickSprite = GetComponent<SpriteRenderer>();

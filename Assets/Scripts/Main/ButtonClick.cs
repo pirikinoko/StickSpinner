@@ -42,7 +42,7 @@ public class ButtonClick : MonoBehaviourPunCallbacks　//クリック用ボタ�
 
     void Start()
     {
-        gameSetting = GameObject.Find("Systems").GetComponent<GameSetting>();
+        gameSetting = GameObject.Find("Scripts").GetComponent<GameSetting>();
         controllerButton = selectedButton.ToString();
     }
 

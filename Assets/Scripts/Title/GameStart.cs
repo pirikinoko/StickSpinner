@@ -15,7 +15,7 @@ public class GameStart : MonoBehaviourPunCallbacks
     const int KeyboardMode = 5;
     const int ControllerMode = 6;
     float difficulty;
-    public GameObject mainTitle, startPanel, changePlayerNumber, stageSelect, selectGameMode, setArcadeGame, keyBoardMouseUI, selectOnlineLobby, onlineLobby, loadScreen;
+    public GameObject mainTitle, startPanel, changePlayerNumber, stageSelect, selectGameMode, setArcadeGame, keyBoardMouseUI, selectOnlineLobby, onlineLobby, loadScreen, cursor;
     public GameObject[] controllerUI, playerIcon, playerSlot;
     IngameLog ingameLog;
     //チーム選択
@@ -267,7 +267,7 @@ public class GameStart : MonoBehaviourPunCallbacks
         {
             if (reconnectable)
             {
-                PhotonNetwork.JoinLobby();
+                if (PhotonNetwork.IsConnected) { PhotonNetwork.JoinLobby(); }
                 reconnectable = false;
                 StartCoroutine(Loading());
             }
@@ -315,10 +315,9 @@ public class GameStart : MonoBehaviourPunCallbacks
     [PunRPC]
     void RPCStartGame()
     {
-        SceneManager.LoadScene("Stage");
         if (GameStart.PlayerNumber > 1)
         {
-            
+            SceneManager.LoadScene("Stage");
         }
         else
         {
@@ -348,7 +347,7 @@ public class GameStart : MonoBehaviourPunCallbacks
             {
                 playerIcon[i].gameObject.SetActive(false);
                 playerSlot[i].gameObject.SetActive(false);
-                if (i % 2 == 0)
+                if ((i + 1) % 2 == 0)
                 {
                     playerTeam[i] = 1;
                 }
@@ -458,12 +457,14 @@ public class GameStart : MonoBehaviourPunCallbacks
         {
             //keyBoardMouseUI.gameObject.SetActive(true);
             for (int i = 0; i < controllerUI.Length; i++) { controllerUI[i].gameObject.SetActive(false); }
+            cursor.gameObject.SetActive(false);
         }
         //コントローラーのとき
         else if (ControllerInput.usingController)
         {
 
             for (int i = 0; i < controllerUI.Length; i++) { controllerUI[i].gameObject.SetActive(true); }
+            cursor.gameObject.SetActive(true);
             //keyBoardMouseUI.gameObject.SetActive(false);
         }
     }
