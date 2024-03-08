@@ -5,6 +5,7 @@ using Photon.Pun;
 public class Ball : MonoBehaviour
 {
     GameMode gameMode;
+    GameSetting gameSetting;
     int lastColId;
     // Start is called before the first frame update
     void Start()
@@ -50,6 +51,7 @@ public class Ball : MonoBehaviour
             }
             SoundEffect.soundTrigger[2] = 1;
             StartCoroutine(GameObject.Find("Scripts").GetComponent<GameMode>().BallReset(this.gameObject));
+            PlayPaperCanon(1);
         }
         if (col.gameObject.name == "GoalZoneRight")
         {
@@ -63,6 +65,23 @@ public class Ball : MonoBehaviour
             }
             SoundEffect.soundTrigger[2] = 1;
             StartCoroutine(GameObject.Find("Scripts").GetComponent<GameMode>().BallReset(this.gameObject));
+            PlayPaperCanon(0);
+        }
+    }
+
+    void PlayPaperCanon(int goalTeam) 
+    {
+        gameSetting = GameObject.Find("Scripts").GetComponent<GameSetting>();
+        //パーティクル再生
+        for (int i = 0; i < GameStart.PlayerNumber; i++)
+        {
+            Vector2[] particlePos = new Vector2[4];
+             particlePos[i] = gameSetting.players[i].gameObject.transform.position;
+            if(GameStart.playerTeam[i] == goalTeam) 
+            {
+                GameObject particleObj = (GameObject)Resources.Load("PaperCanon2");
+                Instantiate(particleObj, particlePos[i], Quaternion.identity); //パーティクル用ゲームオブジェクト生成
+            }
         }
     }
 }

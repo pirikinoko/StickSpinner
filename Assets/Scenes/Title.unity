@@ -27615,6 +27615,7 @@ GameObject:
   - component: {fileID: 338176856439188560}
   - component: {fileID: 338176856439188574}
   - component: {fileID: 338176856439188573}
+  - component: {fileID: 338176856439188575}
   m_Layer: 0
   m_Name: PlayerAnime
   m_TagString: Player
@@ -27701,6 +27702,22 @@ MonoBehaviour:
   id: 1
   leftEye: {fileID: 338176856782406658}
   rightEye: {fileID: 338176857260844426}
+--- !u!114 &338176856439188575
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 338176856439188570}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e7cb724808c322458aa4d15f5035fa9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizeVelocity: 1
+  m_SynchronizeAngularVelocity: 0
+  m_TeleportEnabled: 0
+  m_TeleportIfDistanceGreaterThan: 3
 --- !u!1 &338176856782406658
 GameObject:
   m_ObjectHideFlags: 0
@@ -27883,6 +27900,7 @@ GameObject:
   - component: {fileID: 338176857625670412}
   - component: {fileID: 338176857625670415}
   - component: {fileID: 338176857625670411}
+  - component: {fileID: 338176857625670416}
   m_Layer: 0
   m_Name: Stick1
   m_TagString: Stick
@@ -28044,6 +28062,22 @@ MonoBehaviour:
   KeyJump: 273
   KeyDown: 274
   CoolTime_: 0.2
+--- !u!114 &338176857625670416
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 338176857625670409}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e7cb724808c322458aa4d15f5035fa9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizeVelocity: 1
+  m_SynchronizeAngularVelocity: 0
+  m_TeleportEnabled: 0
+  m_TeleportIfDistanceGreaterThan: 3
 --- !u!114 &3638995376982736374
 MonoBehaviour:
   m_ObjectHideFlags: 0
