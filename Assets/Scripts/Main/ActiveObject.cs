@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using Photon.Pun;
 public class ActiveObject : MonoBehaviour  //動く床などのオブジェクト制御用
 {
     //基本
@@ -37,6 +37,7 @@ public class ActiveObject : MonoBehaviour  //動く床などのオブジェク�
 
     void Start()
     {
+
         start = false;
         if (optionStrings[(int)selectedDirection] == "Left")
         {
@@ -71,6 +72,10 @@ public class ActiveObject : MonoBehaviour  //動く床などのオブジェク�
     }
     void Update()
     {
+        if (GameStart.gameMode1 == "Online")
+        {
+            if (!GameSetting.setupEnded) { return; }
+        }
         if (!start)
         {
             StartCoroutine(startDelay(delay));

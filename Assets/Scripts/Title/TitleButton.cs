@@ -17,7 +17,7 @@ public class TitleButton : MonoBehaviourPunCallbacks
     [SerializeField] GameObject cursor;
     bool inputCrossXPlus, inputCrossXMinus, inputCrossYPlus, inputCrossYMinus, inputLstickXPlus, inputLstickXMinus, inputLstickYPlus, inputLstickYMinus;
     float[] lastLstickX = new float[4], lastLstickY = new float[4];
-    float lastCrossX, lastCrossY; 
+    float lastCrossX, lastCrossY, cdClick, cdSet = 0.5f; 
     private Button[] activeButtons;
     const int maxButtonCount = 20;
     GameObject[] buttonsInTheScene = new GameObject[maxButtonCount];
@@ -27,29 +27,21 @@ public class TitleButton : MonoBehaviourPunCallbacks
     void Start()
     {
 
-
+        cdClick = cdSet;
     }
     void Update()
     {
         if (!(ControllerInput.usingController)) { return; }
         FindAllButtons();
 
-        //選択中のボタンをクリック
-        if (ControllerInput.jump[0] || Input.GetKeyDown(KeyCode.Return))
-        {
-            if (Settings.inSetting) { return; }
-            if (activeButtons.Length != 0)
-            {
-                activeButtons[targetButton].onClick.Invoke();
-            }
-        }
+    
 
         for (int i = 0; i < 4; i++)
         {
             lastLstickX[i] = ControllerInput.LstickX[i];
             lastLstickY[i] = ControllerInput.LstickY[i];
         }
-
+        cdClick -= Time.deltaTime;
     }
 
 
@@ -207,8 +199,19 @@ public class TitleButton : MonoBehaviourPunCallbacks
             SoundEffect.soundTrigger[3] = 1;
         }
 
+        //選択中のボタンをクリック
+        if (ControllerInput.jump[0] || Input.GetKeyDown(KeyCode.Return))
+        {
+            if (Settings.inSetting) { return; }
+            if (activeButtons.Length != 0)
+            {
+                activeButtons[targetButton].onClick.Invoke();
+            }
+        }
+
         lastCrossX = ControllerInput.crossX[0];
         lastCrossY = ControllerInput.crossY[0];
+        
         lastPhase = GameStart.phase;
     }
  

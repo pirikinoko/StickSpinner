@@ -79,6 +79,9 @@ MonoBehaviour:
   - SyncStage
   - SyncPlayerTeam
   - SyncPhase
+  - OtherPlayerMoveRot
+  - MoveStickRotation2
+  - SyncArcadeTime
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 0

@@ -262,6 +262,7 @@ public class Settings : MonoBehaviour
         for (int i = 0; i < itemText.Length; i++)
         {
             itemText[i].color = Color.white;
+
             if (itemText[i].name.Contains((Selected + 1).ToString()))
             {
                 itemText[i].color = Color.yellow;

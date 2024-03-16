@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
-public class Ball : MonoBehaviour
+public class Ball : MonoBehaviourPunCallbacks
 {
     GameMode gameMode;
     GameSetting gameSetting;
@@ -41,15 +41,36 @@ public class Ball : MonoBehaviour
     {
          if(col.gameObject.name == "GoalZoneLeft")
         {
+
             if(GameStart.teamMode == "FFA") 
             {
-                GameMode.points[1]++;
+                if (GameStart.gameMode1 != "Online")
+                {
+                    GameMode.points[1]++;
+                }
+                else
+                {
+                    if (lastColId == NetWorkMain.netWorkId)
+                    {
+                        photonView.RPC("GoalProcess", RpcTarget.All, 1);
+                    }
+                }
             }
             else 
             {
-                GameMode.teamPoints[1]++;
+                if (GameStart.gameMode1 != "Online")
+                {
+                    GameMode.teamPoints[1]++;
+                }
+                else
+                {
+                    if (lastColId == NetWorkMain.netWorkId)
+                    {
+                        photonView.RPC("GoalProcess", RpcTarget.All, 1);
+                    }
+                }
             }
-            SoundEffect.soundTrigger[2] = 1;
+            SoundEffect.soundTrigger[8] = 1;
             StartCoroutine(GameObject.Find("Scripts").GetComponent<GameMode>().BallReset(this.gameObject));
             PlayPaperCanon(1);
         }
@@ -57,15 +78,40 @@ public class Ball : MonoBehaviour
         {
             if (GameStart.teamMode == "FFA")
             {
-                GameMode.points[0]++;
+                if (GameStart.gameMode1 != "Online")
+                {
+                    GameMode.points[0]++;
+                }
+                else 
+                {
+                    if (lastColId == NetWorkMain.netWorkId)
+                    {
+                        photonView.RPC("GoalProcess", RpcTarget.All, 0);
+                    }
+                }
             }
             else
             {
-                GameMode.teamPoints[0]++;
+                if (GameStart.gameMode1 != "Online")
+                {
+                    GameMode.teamPoints[0]++;
+                }
+
+                else 
+                {
+                    if(lastColId == NetWorkMain.netWorkId) 
+                    {
+                        photonView.RPC("GoalProcess", RpcTarget.All, 0);
+                    }
+                }
             }
-            SoundEffect.soundTrigger[2] = 1;
-            StartCoroutine(GameObject.Find("Scripts").GetComponent<GameMode>().BallReset(this.gameObject));
-            PlayPaperCanon(0);
+            if (GameStart.gameMode1 != "Online")
+            {
+                SoundEffect.soundTrigger[8] = 1;
+                StartCoroutine(GameObject.Find("Scripts").GetComponent<GameMode>().BallReset(this.gameObject));
+                PlayPaperCanon(0);
+            }
+
         }
     }
 
@@ -83,5 +129,20 @@ public class Ball : MonoBehaviour
                 Instantiate(particleObj, particlePos[i], Quaternion.identity); //パーティクル用ゲームオブジェクト生成
             }
         }
+    }
+    [PunRPC] 
+    void GoalProcess(int targetTeam) 
+    {
+        if (GameStart.teamMode == "FFA")
+        {
+                GameMode.points[targetTeam]++;
+        }
+        else 
+        {
+            GameMode.teamPoints[targetTeam]++;
+        }  
+        PlayPaperCanon(targetTeam);
+        SoundEffect.soundTrigger[8] = 1;
+        StartCoroutine(GameObject.Find("Scripts").GetComponent<GameMode>().BallReset(this.gameObject));
     }
 }

@@ -21,6 +21,25 @@ public class NetWorkMain : MonoBehaviourPunCallbacks
         ingameLog = GameObject.Find("Systems").GetComponent<IngameLog>();
         setCount = 0;
         PhotonNetwork.ConnectUsingSettings();
+        if (PhotonNetwork.InRoom) 
+        {
+            if (PhotonNetwork.CurrentRoom.CustomProperties.ContainsKey("gameMode"))
+            {
+                GameStart.gameMode2 = PhotonNetwork.CurrentRoom.CustomProperties["gameMode"].ToString();
+                int tmpNum = 0;
+                if (int.TryParse(PhotonNetwork.CurrentRoom.CustomProperties["stage"].ToString(), out tmpNum))
+                {
+                    GameStart.Stage = tmpNum;
+                }
+                int[] playerTeamLocal = (int[])PhotonNetwork.CurrentRoom.CustomProperties["playerTeam"];
+                for (int i = 0; i < playerTeamLocal.Length; i++)
+                {
+                    GameStart.playerTeam[i] = playerTeamLocal[i];
+                }
+
+            }
+        }
+     
     }
 
     void Update()

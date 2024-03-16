@@ -29,11 +29,6 @@ public class MatchmakingView : MonoBehaviourPunCallbacks
         quickStartingPanel.SetActive(false);    
         ingameLog = GameObject.Find("Systems").GetComponent<IngameLog>();
         canvasGroup = GetComponent<CanvasGroup>();
-        // ロビーに参加するまでは、入力できないようにする
-        if (!PhotonNetwork.InLobby) 
-        {
-            canvasGroup.interactable = false;
-        }
 
         // ルームリスト表示を初期化する
         roomListView.Init(this);
@@ -113,7 +108,18 @@ public class MatchmakingView : MonoBehaviourPunCallbacks
             createRoomLockedButton.interactable = false;
             joinRoomButton.interactable = false;
         }
-        
+
+        // ロビーに参加するまでは、入力できないようにする
+        if (!PhotonNetwork.InLobby)
+        {
+            canvasGroup.interactable = false;
+        }
+        else 
+        {
+            canvasGroup.interactable = true;
+        }
+
+
     }
     public override void OnJoinedLobby()
     {

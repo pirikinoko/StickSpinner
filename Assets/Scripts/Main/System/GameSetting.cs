@@ -66,6 +66,10 @@ public class GameSetting : MonoBehaviourPunCallbacks
 
     void Start()
     {
+        if (GameStart.gameMode1 == "Online")
+        {
+            PhotonNetwork.IsMessageQueueRunning = true;
+        }
         Debug.Log("Pnum == " + GameStart.PlayerNumber);
         startTrigger = 0;
         allJoin = false;
@@ -321,26 +325,25 @@ public class GameSetting : MonoBehaviourPunCallbacks
 
     void Update()
     {
+        if (GameStart.gameMode1 == "Online") 
+        {
+            ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
+            if (customProps.ContainsKey("isJoined"))
+            {
+                bool[] isJoinedLocal = (bool[])PhotonNetwork.CurrentRoom.CustomProperties["isJoined"];
+                isJoinedLocal[NetWorkMain.netWorkId - 1] = true;
+                customProps["isJoined"] = isJoinedLocal;
+            }
+            PhotonNetwork.CurrentRoom.SetCustomProperties(customProps);
+
+        }
+
         if (!allJoin)
         {
             if (GameStart.gameMode1 == "Online")
             {
                 ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
-                if (customProps.ContainsKey("isJoined"))
-                {
-                    bool[] isJoinedLocal = (bool[])PhotonNetwork.CurrentRoom.CustomProperties["isJoined"];
-                    if (isJoinedLocal[NetWorkMain.netWorkId - 1] == false)
-                    {
-                        isJoinedLocal[NetWorkMain.netWorkId - 1] = true;
-                        customProps["isJoined"] = isJoinedLocal;
-                        Debug.Log("Player" + NetWorkMain.netWorkId + "が接続しました");
-                    }
-                }
-                PhotonNetwork.CurrentRoom.SetCustomProperties(customProps);
-
-
                 allJoin = true;
-
                 if (customProps.ContainsKey("isJoined"))
                 {
                     for (int i = 0; i < GameStart.PlayerNumber; i++)
@@ -442,7 +445,11 @@ public class GameSetting : MonoBehaviourPunCallbacks
         if (startTime < 0 && (ButtonInGame.Paused != 1 || GameStart.gameMode1 == "Online")) //ゲーム開始
         {
 
-            Playable = true;
+            if(!GameMode.Finished && !GameMode.Goaled) 
+            {
+                Playable = true;
+            }
+
             if (playTime > 99)
             {
                 playTime = elapsedTime;
@@ -468,10 +475,11 @@ public class GameSetting : MonoBehaviourPunCallbacks
                 elapsedTime += Time.deltaTime;
                 playTimeTx.text = (playTime.ToString());
             }
-            else
+            else if(GameStart.gameMode2 == "Single")
             {
                 playTimeTx.text = (int)GenerateStage.maxHeight + "m";
             }
+            else { playTimeTx.text = "--"; }
         }
     }
     //他のプレイヤー切断時
@@ -567,7 +575,7 @@ public class GameSetting : MonoBehaviourPunCallbacks
                 playerNameTexts[i].text = PhotonNetwork.PlayerList[i].NickName;
             }
             else { playerNameTexts[i].text = ""; }
-            if (i > GameStart.PlayerNumber)
+            if (i >= GameStart.PlayerNumber)
             {
                 iconObjects[i].gameObject.SetActive(false);
             }

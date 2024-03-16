@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Photon.Pun;
-
+using UnityEngine.SceneManagement;
 
 
 
@@ -61,9 +61,9 @@ public class Body : MonoBehaviour
     }
     void Start() 
     {
-        if (GameStart.gameMode1 != "Online")
+        if (GameStart.gameMode1 == "Online" && SceneManager.GetActiveScene().name != "Title")
         {
-            this.GetComponent<PhotonRigidbody2DView>().enabled = false;
+            this.GetComponent<PhotonRigidbody2DView>().enabled = true;
         }
         eyeActive = true;
     }

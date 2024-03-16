@@ -14,7 +14,7 @@ public class GameStart : MonoBehaviourPunCallbacks
     public static int maxPlayer = 4, minPlayer;     // 総プレイヤー数
     const int KeyboardMode = 5;
     const int ControllerMode = 6;
-    float difficulty;
+    float difficulty, timeFromLastAction, cycle = 0.3f;
     public GameObject mainTitle, startPanel, changePlayerNumber, stageSelect, selectGameMode, setArcadeGame, keyBoardMouseUI, selectOnlineLobby, onlineLobby, loadScreen, cursor;
     public GameObject[] controllerUI, playerIcon, playerSlot;
     IngameLog ingameLog;
@@ -46,6 +46,7 @@ public class GameStart : MonoBehaviourPunCallbacks
     bool reconnectable, joinedLobby = false;
     void Start()
     {
+
         ingameLog = GameObject.Find("Systems").GetComponent<IngameLog>();
         Time.timeScale = 1;
         inDemoPlay = false;
@@ -74,7 +75,12 @@ public class GameStart : MonoBehaviourPunCallbacks
         SwichUI();
         SwichStageMaterial();
         playerNumberText.text = PlayerNumber.ToString();
-        PhaseControll();
+        if(timeFromLastAction > cycle) 
+        {
+            PhaseControll();
+            timeFromLastAction = 0;
+        }
+        //PhaseControll();
         //上限下限の設定
         phase = System.Math.Min(phase, 8);
         phase = System.Math.Max(phase, 0);
@@ -98,7 +104,7 @@ public class GameStart : MonoBehaviourPunCallbacks
             Stage = System.Math.Min(Stage, 2);
             Stage = System.Math.Max(Stage, 1);
         }
-
+        timeFromLastAction += Time.deltaTime;
     }
 
 
@@ -227,6 +233,7 @@ public class GameStart : MonoBehaviourPunCallbacks
                             }
                             break;
                         case 4:
+                            photonView.RPC(nameof(SyncArcadeTime), RpcTarget.All, flagTimeLimit);
                             photonView.RPC(nameof(RPCStartGame), RpcTarget.All);
                             phase = 3;
                             onlineLobby.gameObject.SetActive(true);
@@ -254,6 +261,7 @@ public class GameStart : MonoBehaviourPunCallbacks
                     }
                     break;
             }
+
             lastPhase = phase;
         }
         if (setArcadeGame.gameObject.activeSelf)
@@ -307,6 +315,11 @@ public class GameStart : MonoBehaviourPunCallbacks
         }
     }
     [PunRPC]
+    void SyncArcadeTime(int timeLimit)
+    {
+        flagTimeLimit = timeLimit;
+    }
+    [PunRPC]
     public void SyncPhase(int phaseLocal)
     {
         phase = phaseLocal;
@@ -317,12 +330,12 @@ public class GameStart : MonoBehaviourPunCallbacks
     {
         if (GameStart.PlayerNumber > 1)
         {
+            PhotonNetwork.IsMessageQueueRunning = false;
             SceneManager.LoadScene("Stage");
         }
         else
         {
             IngameLog.GenerateIngameLog("プレイヤー数が足りていません");
-            phase--;
         }
     }
 
@@ -443,12 +456,7 @@ public class GameStart : MonoBehaviourPunCallbacks
 
     void SwichUI()
     {
-        //UI非表示設定時
-        if (Settings.guideMode == 1)
-        {
-            for (int i = 0; i < controllerUI.Length; i++) { controllerUI[i].gameObject.SetActive(false); }
-            return;
-        }
+
 
         //キーボードマウス用UIとコントローラー用UIの切り替え
 
@@ -466,6 +474,12 @@ public class GameStart : MonoBehaviourPunCallbacks
             for (int i = 0; i < controllerUI.Length; i++) { controllerUI[i].gameObject.SetActive(true); }
             cursor.gameObject.SetActive(true);
             //keyBoardMouseUI.gameObject.SetActive(false);
+        }
+
+        //UI非表示設定時
+        if (Settings.guideMode == 1)
+        {
+            for (int i = 0; i < controllerUI.Length; i++) { controllerUI[i].gameObject.SetActive(false); }
         }
     }
 

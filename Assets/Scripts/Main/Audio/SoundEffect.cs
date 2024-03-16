@@ -5,13 +5,15 @@ using UnityEngine.UI;
 
 public class SoundEffect : MonoBehaviour　//効果音呼び出しスクリプト
 {
-    public static byte[] soundTrigger = new byte[8];
+
     public AudioClip[] sounds;
     public static float SEStage =  10;
     public Text SEText;
     AudioSource audioSource;
-    float[] coolTime = new float[8];
-    bool[] isReady = new bool[8];
+    const int SECount = 9;
+    public static byte[] soundTrigger = new byte[SECount];
+    float[] coolTime = new float[SECount];
+    bool[] isReady = new bool[SECount];
     // Start is called before the first frame update
     void Start()
     {

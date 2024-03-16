@@ -47,10 +47,14 @@ public class Controller : MonoBehaviourPunCallbacks
     Collider2D ghostCollider;
     void Start()
     {
-        if (GameStart.gameMode1 != "Online")
+        if (GameStart.gameMode1 == "Online" && SceneManager.GetActiveScene().name != "Title")
         {
-            this.GetComponent<PhotonRigidbody2DView>().enabled = false;
+            KeyLeft = KeyCode.LeftArrow;
+            KeyRight = KeyCode.RightArrow;
+            KeyJump = KeyCode.UpArrow;
+            KeyDown = KeyCode.DownArrow;
         }
+
         // 親スプライト・スティックスプライトを得る
         parentSprite = transform.parent.gameObject.GetComponent<SpriteRenderer>();
         stickSprite = GetComponent<SpriteRenderer>();
@@ -213,27 +217,26 @@ public class Controller : MonoBehaviourPunCallbacks
         ExitDelay();
 
 
-        if (GameStart.gameMode1 == "Online" && GameSetting.allJoin)
+  
+    }
+
+    // 移動は FixedUpdateで行う※Inputの入力が入りにくくなる
+    void FixedUpdate()
+    {
+        if (GameStart.gameMode1 == "Online" && GameSetting.setupEnded)
         {
             if (photonView.IsMine)
             {
-                {
                     photonView.RPC(nameof(MoveStickRotation), RpcTarget.All, id, stickRot);
-                }
-            }
 
+            }
         }
         else
         {
             stickRb = GetComponent<Rigidbody2D>();
             stickRb.MoveRotation(stickRot);            // 角度反映 これはポーズ時も行う
         }
-    }
-
-    // 移動は FixedUpdateで行う※Inputの入力が入りにくくなる
-    void FixedUpdate()
-    {
-        if(GameStart.gameMode1 == "Online") { return; }
+        if (GameStart.gameMode1 == "Online") { return; }
         // プレイヤー速度取得
         Playerspeed = ((transform.parent.gameObject.transform.position - latestPos) / Time.deltaTime);
         if (ButtonInGame.Paused == 1 && saveCount == 0)
@@ -305,6 +308,8 @@ public class Controller : MonoBehaviourPunCallbacks
         stickRb.MoveRotation(rot);
        // Debug.Log("Player" + id + "のStickRotsを" + rot);
     }
+
+
     // 移動
     void Move()
     {

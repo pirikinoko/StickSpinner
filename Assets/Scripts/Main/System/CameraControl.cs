@@ -134,6 +134,10 @@ public class CameraControl : MonoBehaviour
                     if (isGoaled[i]) { continue; }
                     for (int j = i + 1; j < GameStart.PlayerNumber; j++)
                     {
+                        if (gameSetting.players[j] == null) 
+                        {
+                            return;
+                        }
                         playerPos[j] = gameSetting.players[j].transform.position;
 
                         if (isGoaled[j]) { continue; }

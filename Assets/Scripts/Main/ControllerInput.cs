@@ -59,15 +59,6 @@ public class ControllerInput : MonoBehaviour
         getControllerType();
         InputControllerButton();
         CheckControllerState();
-        if(GameSetting.Playable == false) 
-        {
-            //SelectButton();
-        }
-     
-        if (jump[0]) 
-        {
-            ExecuteEvents.Execute(buttonObject, new PointerEventData(EventSystem.current), ExecuteEvents.pointerClickHandler);
-        }
     
         lastLstickX = LstickX[0];
         lastLstickY = LstickY[0];
