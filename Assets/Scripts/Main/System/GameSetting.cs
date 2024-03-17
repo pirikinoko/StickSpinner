@@ -470,14 +470,14 @@ public class GameSetting : MonoBehaviourPunCallbacks
                 }
                 playTimeTx.text = (playTime.ToString());
             }
+            else if (GameStart.gameMode2 == "Arcade") 
+            {
+                playTimeTx.text = (int)GenerateStage.maxHeight + "m";
+            }
             else if (GameStart.gameMode2 != "Arcade")
             {
                 elapsedTime += Time.deltaTime;
                 playTimeTx.text = (playTime.ToString());
-            }
-            else if(GameStart.gameMode2 == "Single")
-            {
-                playTimeTx.text = (int)GenerateStage.maxHeight + "m";
             }
             else { playTimeTx.text = "--"; }
         }

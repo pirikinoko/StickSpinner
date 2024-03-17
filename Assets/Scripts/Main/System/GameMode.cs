@@ -40,6 +40,7 @@ public class GameMode : MonoBehaviourPunCallbacks
     Vector2[] framePos = new Vector2[4];
     public static bool Finished;
     byte count = 0;
+    bool isDraw = false;
     float frameSpace = 10;
     private Vector2[] particlePos = new Vector2[4];
     public static float[,] killTimer = new float[4, 4];       // プレイヤー同士の衝突を記録(プレイヤー1～4とプレイヤー1～4の衝突)
@@ -60,6 +61,7 @@ public class GameMode : MonoBehaviourPunCallbacks
         backTitleButton.gameObject.SetActive(false);
         //ResultPanelArcade.gameObject.SetActive(false);
         showResultTriggerd = false;
+        isDraw = false;
     }
     void StartInUpdate()
     {   //基本
@@ -453,7 +455,6 @@ public class GameMode : MonoBehaviourPunCallbacks
                                     }
                                  
                                 }
-
                             }
                         }
 
@@ -499,18 +500,24 @@ public class GameMode : MonoBehaviourPunCallbacks
                                                 if (GameStart.playerTeam[l] == i)
                                                 {
                                                     playerRank[l] = j;
+                                                    Debug.Log("Player" + (l + 1).ToString() + "の順位を" + (j + 1).ToString() + "に");
                                                 }
                                             }
+                                            ignore[j] = true;
+                                            j = 999;
                                             count++;
                                         }
+     
                                     }
-                                    ignore[j] = true;
-                                    j = 999;
 
                                 }
                             }
 
                         }
+                    }
+                    if(GameStart.teamCount == 2 && teamPoints[0] == teamPoints[1])
+                    {
+                        isDraw = true;
                     }
                 }
                 count = 1;
@@ -518,7 +525,7 @@ public class GameMode : MonoBehaviourPunCallbacks
             for (int i = 0; i < GameStart.PlayerNumber; i++)
             {
                 //王冠表示
-                if (playerRank[i] < 3)
+                if (playerRank[i] < 3 && !isDraw)
                 {          
                     GameObject crownPrefab = (GameObject)Resources.Load("Crown" + (playerRank[i] + 1).ToString());
                     Vector2 crownPos = gameSetting.players[i].transform.position;
@@ -530,7 +537,7 @@ public class GameMode : MonoBehaviourPunCallbacks
                 }
             }
         }
-        if (count == 1)
+        if (count == 1 && !isDraw)
         {
             for (int i = 0; i < GameStart.PlayerNumber; i++)
             {
