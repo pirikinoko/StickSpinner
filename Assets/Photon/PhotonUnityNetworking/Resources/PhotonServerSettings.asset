@@ -82,6 +82,9 @@ MonoBehaviour:
   - OtherPlayerMoveRot
   - MoveStickRotation2
   - SyncArcadeTime
+  - RPCStartDead
+  - RPCAddFlagPoints
+  - RPCAddKillPoints
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 0

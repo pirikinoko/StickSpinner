@@ -40,6 +40,24 @@ public class ButtonActive : MonoBehaviourPunCallbacks
             // 新しいマテリアルをImageコンポーネントに設定
             this.GetComponent<Image>().material = iconMat;
         }
+        else if (this.gameObject.name.Contains("Ready")) 
+        {
+            ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
+            int myId = int.Parse(Regex.Replace(this.gameObject.name, @"[^0-9]", ""));
+            if (customProps.ContainsKey("isReady"))
+            {
+                bool[] isReadyLocal = (bool[])PhotonNetwork.CurrentRoom.CustomProperties["isReady"];
+                Material iconMat = new Material(this.GetComponent<Image>().material);
+                Color color = iconMat.color;
+                color.a = 0.2f;
+                if (isReadyLocal[myId - 1] == true) 
+                {
+                    color.a = 1;
+                }
+                iconMat.color = color;
+                this.GetComponent<Image>().material = iconMat;
+            }
+        }
         else 
         {
             if (GameStart.gameMode1 == "Online" && this.gameObject.activeSelf)

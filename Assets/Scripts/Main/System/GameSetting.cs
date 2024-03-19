@@ -470,7 +470,7 @@ public class GameSetting : MonoBehaviourPunCallbacks
                 }
                 playTimeTx.text = (playTime.ToString());
             }
-            else if (GameStart.gameMode2 == "Arcade") 
+            else if (GameStart.gameMode1 == "Single" && GameStart.gameMode2 == "Arcade") 
             {
                 playTimeTx.text = (int)GenerateStage.maxHeight + "m";
             }

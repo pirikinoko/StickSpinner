@@ -185,9 +185,10 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
             return;
         }
         //ボタンをクリックしたことに
-        if (inputButton || Input.GetKeyDown(keyBind))  
+        if ((inputButton || Input.GetKeyDown(keyBind)) && GameStart.buttonPushable)  
         {
             if (Settings.inSetting) { return; }
+            GameStart.buttonPushable = false;
             this.GetComponent<Button>().onClick.Invoke();
         }
 
@@ -616,6 +617,27 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
             }
         }
         PhotonNetwork.CurrentRoom.SetCustomProperties(customProps);
+    }
+    public void ReadyButton()
+    {
+        int targetId = int.Parse(Regex.Replace(this.gameObject.name, @"[^0-9]", ""));
+        if(NetWorkMain.netWorkId != targetId) { return; }
+        ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
+        if (customProps.ContainsKey("isReady"))
+        {
+            bool[] isReadyLocal = (bool[])PhotonNetwork.CurrentRoom.CustomProperties["isReady"];
+            isReadyLocal[targetId - 1] = !isReadyLocal[targetId - 1];
+            customProps["isReady"] = isReadyLocal;
+            PhotonNetwork.CurrentRoom.SetCustomProperties(customProps);
+            if(isReadyLocal[targetId - 1] == true) 
+            {
+                SoundEffect.soundTrigger[10] = 1;
+            }
+            else 
+            {
+                SoundEffect.soundTrigger[9] = 1;
+            }
+        }
     }
     [PunRPC]
     void SetTeam(int netWorkID)

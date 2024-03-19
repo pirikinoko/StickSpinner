@@ -21,6 +21,7 @@ public class Controller : MonoBehaviourPunCallbacks
     Text SensText;
     GameSetting gameSetting;
     float stickRot = 0f;                                　　　// 棒の角度
+    float[] stickRots = new float[GameStart.maxPlayer];
     float jumpforce = 8.3f;                            　　　 // Y軸ジャンプ力
     bool onFloor, onSurface, onPlayer, onStick;   // 接触している時は true
     bool inputCrossX;                               　　　 　// 十字ボタンの入力があるときはtrue
@@ -205,15 +206,13 @@ public class Controller : MonoBehaviourPunCallbacks
 
         if (!(isRespowing))
         {
-            if (GameSetting.Playable && ButtonInGame.Paused != 1 || GameStart.inDemoPlay) //プレイヤー数選択画面でも操作可能
+            if (GameSetting.Playable && ButtonInGame.Paused != 1)
             {
                 selfDeath();
                 Jump();
             }
             Move();
-        }
-
-        ChangeSensitivity();
+        }   
         ExitDelay();
 
 
@@ -223,12 +222,19 @@ public class Controller : MonoBehaviourPunCallbacks
     // 移動は FixedUpdateで行う※Inputの入力が入りにくくなる
     void FixedUpdate()
     {
-        if (GameStart.gameMode1 == "Online" && GameSetting.setupEnded)
+        if (GameStart.gameMode1 == "Online" && GameSetting.setupEnded && SceneManager.GetActiveScene().name != "Title")
         {
             if (photonView.IsMine)
             {
+                if (!isRespowing) 
+                {
                     photonView.RPC(nameof(MoveStickRotation), RpcTarget.All, id, stickRot);
-
+                }
+            }
+            else 
+            {
+                stickRb = GetComponent<Rigidbody2D>();
+                stickRb.MoveRotation(stickRots[id - 1]);            // 角度反映 これはポーズ時も行う
             }
         }
         else
@@ -306,6 +312,7 @@ public class Controller : MonoBehaviourPunCallbacks
     {
         stickRb = GameObject.Find("Stick" + id).GetComponent<Rigidbody2D>();
         stickRb.MoveRotation(rot);
+        stickRots[id - 1] = rot;    
        // Debug.Log("Player" + id + "のStickRotsを" + rot);
     }
 
@@ -320,6 +327,7 @@ public class Controller : MonoBehaviourPunCallbacks
             {
                 if (Input.GetKey(KeyRight) || ControllerInput.LstickX[id - 1] > 0) { stickRot -= rotSpeed * Time.deltaTime; }
                 if (Input.GetKey(KeyLeft) || ControllerInput.LstickX[id - 1] < 0) { stickRot += rotSpeed * Time.deltaTime; }
+
             }
             else
             {
@@ -327,7 +335,6 @@ public class Controller : MonoBehaviourPunCallbacks
                 {
                     if (Input.GetKey(KeyCode.RightArrow) || ControllerInput.LstickX[0] > 0) { stickRot -= rotSpeed * Time.deltaTime; }
                     if (Input.GetKey(KeyCode.LeftArrow) || ControllerInput.LstickX[0] < 0) { stickRot += rotSpeed * Time.deltaTime; }
-                            
 
                     if (stickRot > 360)
                     {
@@ -344,18 +351,6 @@ public class Controller : MonoBehaviourPunCallbacks
     }
 
 
-    // 感度調整
-    void ChangeSensitivity()
-    {
-        if (GameStart.inDemoPlay) //プレイヤー数選択画面でのみ操作可能
-        {
-            if (ControllerInput.crossX[id - 1] == 0) { inputCrossX = false; }
-            //十字ボタン(横)を一回倒すごとに感度を一段階変更
-            if (ControllerInput.crossX[id - 1] >= 0.1f && inputCrossX == false) { Settings.rotStage[id - 1] += 1; inputCrossX = true; SoundEffect.soundTrigger[3] = 1; }
-            if (ControllerInput.crossX[id - 1] <= -0.1f && inputCrossX == false) { Settings.rotStage[id - 1] -= 1; inputCrossX = true; SoundEffect.soundTrigger[3] = 1; }
-           // SensText.text = Settings.rotStage[id - 1].ToString();
-        }
-    }
 
     // 死亡
     public void StartDead()
@@ -364,11 +359,40 @@ public class Controller : MonoBehaviourPunCallbacks
         {
             return;
         }
+        if (GameStart.gameMode1 == "Online")
+        {
+            if (photonView.IsMine)
+            {
+                photonView.RPC(nameof(RPCStartDead), RpcTarget.All);
+                photonView.RPC(nameof(MoveStickRotation), RpcTarget.All, id, 0);
+            }
+        }
+        else 
+        {
+            isRespowing = true;
+            stickSprite.enabled = false;
+            parentSprite.enabled = false;
+            body.eyeActive = false;
+            GameMode.isDead[id - 1] = true;
+            stickRot = 0f;
+            //効果音
+            SoundEffect.soundTrigger[1] = 1;
+            //エフェクト
+            Vector2 effPos = this.transform.position;
+            GameObject effectPrefab = (GameObject)Resources.Load("DeathEffect1");
+            GameObject effectObj = Instantiate(effectPrefab, effPos, Quaternion.identity);
+            StartCoroutine(Respown());
+        }
+  
+    }
+    [PunRPC] void RPCStartDead() 
+    {
         isRespowing = true;
         stickSprite.enabled = false;
         parentSprite.enabled = false;
         body.eyeActive = false;
         GameMode.isDead[id - 1] = true;
+        stickRot = 0f;
         //効果音
         SoundEffect.soundTrigger[1] = 1;
         //エフェクト
@@ -377,7 +401,6 @@ public class Controller : MonoBehaviourPunCallbacks
         GameObject effectObj = Instantiate(effectPrefab, effPos, Quaternion.identity);
         StartCoroutine(Respown());
     }
-
     // リスポーン
     IEnumerator Respown()
     {
@@ -465,7 +488,7 @@ public class Controller : MonoBehaviourPunCallbacks
             targetObj.transform.position = animPos;
         }
 
-        if (Input.GetKeyUp(KeyDown) || (animActive == true && ControllerInput.backHold[id - 1] == false))
+        if (Input.GetKeyUp(KeyDown) || (ControllerInput.usingController && animActive == true && ControllerInput.backHold[id - 1] == false))
         {
             GameObject objToDelete = GameObject.Find("HoldAnim" + id.ToString());
             if (objToDelete != null)

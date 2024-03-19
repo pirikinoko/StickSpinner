@@ -1,4 +1,4 @@
-using System.Collections;
+    using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,7 +10,7 @@ public class SoundEffect : MonoBehaviour　//効果音呼び出しスクリプ�
     public static float SEStage =  10;
     public Text SEText;
     AudioSource audioSource;
-    const int SECount = 9;
+    const int SECount = 11;
     public static byte[] soundTrigger = new byte[SECount];
     float[] coolTime = new float[SECount];
     bool[] isReady = new bool[SECount];

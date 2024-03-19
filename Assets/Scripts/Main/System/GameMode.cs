@@ -22,7 +22,7 @@ public class GameMode : MonoBehaviourPunCallbacks
     public static float[] clearTime = new float[GameStart.maxPlayer];
     public static bool Goaled;
     //バトルモード
-    public GameObject KillLogBack, Plus1, Plus5;
+    public GameObject KillLogBack, Plus1, Plus5,drawTextGO;
     GameObject[] pointTextGO = new GameObject[4], pointFrame = new GameObject[4], crownObj = new GameObject[4];
     [SerializeField] GameObject[] teamTag;
     [SerializeField] private Text[] teamTagText;
@@ -40,7 +40,7 @@ public class GameMode : MonoBehaviourPunCallbacks
     Vector2[] framePos = new Vector2[4];
     public static bool Finished;
     byte count = 0;
-    bool isDraw = false;
+    bool isDraw = true;
     float frameSpace = 10;
     private Vector2[] particlePos = new Vector2[4];
     public static float[,] killTimer = new float[4, 4];       // プレイヤー同士の衝突を記録(プレイヤー1～4とプレイヤー1～4の衝突)
@@ -61,7 +61,7 @@ public class GameMode : MonoBehaviourPunCallbacks
         backTitleButton.gameObject.SetActive(false);
         //ResultPanelArcade.gameObject.SetActive(false);
         showResultTriggerd = false;
-        isDraw = false;
+        isDraw = true;
     }
     void StartInUpdate()
     {   //基本
@@ -421,43 +421,35 @@ public class GameMode : MonoBehaviourPunCallbacks
                     //順位計測
                     for (int i = GameStart.PlayerNumber - 1; i >= 0; i--)
                     {
-
-                        if (points[i] == 0)
+                        for (int j = GameStart.PlayerNumber - 1; j >= 0; j--)
                         {
-                            playerNameByRank[num] = "Player" + (i + 1).ToString();
-                            playerRank[i] = num;
-                            //num--;
-                        }
-                        else
-                        {
-                            for (int j = 0; j < GameStart.PlayerNumber; j++)
+                            Debug.Log("j==" + j);
+                            if (pointsInOrder[j] == points[i])
                             {
-                            
-                                if (pointsInOrder[j] == points[i])
+
+                                playerNameByRank[j] = "Player" + (i + 1).ToString();
+                                playerRank[i] = j;
+                                if (GameStart.gameMode1 == "Online" && j == 0)
                                 {
-                                    if(!ignore[j]) 
+                                    ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
+                                    if (customProps.ContainsKey("winnings"))
                                     {
-                                        playerNameByRank[j] = "Player" + (i + 1).ToString();
-                                        playerRank[i] = j; 
-                                        if (GameStart.gameMode1 == "Online" && j == 0)
-                                        {
-                                            ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
-                                            if (customProps.ContainsKey("winnings"))
-                                            {
-                                                int[] winningsLocal = (int[])customProps["winnings"];
-                                                winningsLocal[i]++;
-                                                customProps["winnings"] = winningsLocal;
-                                            }
-                                            PhotonNetwork.CurrentRoom.SetCustomProperties(customProps);
-                                        }
-                                        ignore[j] = true;
-                                        j = 999;
+                                        int[] winningsLocal = (int[])customProps["winnings"];
+                                        winningsLocal[i]++;
+                                        customProps["winnings"] = winningsLocal;
                                     }
-                                 
+                                    PhotonNetwork.CurrentRoom.SetCustomProperties(customProps);
                                 }
                             }
                         }
-
+                    }
+                    for (int i = GameStart.PlayerNumber - 1; i >= 0; i--)
+                    {
+                            if (points[i] != points[0])
+                            {
+                                isDraw = false;
+                                break;
+                            }
                     }
                 }
                 else
@@ -473,77 +465,72 @@ public class GameMode : MonoBehaviourPunCallbacks
                     {
                         if (GameStart.teamSize[i] >= 1)
                         {
-                            if (teamPoints[i] == 0)
+                            for (int j = GameStart.teamCount - 1; j >= 0; j--)
                             {
-                                teamsInOrder[num] = "Team" + teamTagName[i];
-                                for (int k = 0; k < GameStart.PlayerNumber; k++)
-                                {
-                                    if(GameStart.playerTeam[k] == i) 
+                                    if (pointsInOrder[j] == teamPoints[i])
                                     {
-                                        playerRank[k] =  num;
-                                    }                     
-                                }
-                                //num--;
-                            }
-                            else
-                            {
-                                int count = 0;
-                                for (int j = 0; j < GameStart.teamCount; j++)
-                                {
-                                    if (!ignore[j]) 
-                                    {
-                                        if (pointsInOrder[j] == teamPoints[i])
+                                        teamsInOrder[j] = "Team" + teamTagName[i];
+                                        for (int l = 0; l < GameStart.PlayerNumber; l++)
                                         {
-                                            teamsInOrder[j] = "Team" + teamTagName[i];
-                                            for (int l = 0; l < GameStart.PlayerNumber; l++)
+                                            if (GameStart.playerTeam[l] == i)
                                             {
-                                                if (GameStart.playerTeam[l] == i)
-                                                {
-                                                    playerRank[l] = j;
-                                                    Debug.Log("Player" + (l + 1).ToString() + "の順位を" + (j + 1).ToString() + "に");
-                                                }
+                                                playerRank[l] = j;
+                                                Debug.Log("Player" + (l + 1).ToString() + "の順位を" + (j + 1).ToString() + "に");
                                             }
-                                            ignore[j] = true;
-                                            j = 999;
-                                            count++;
                                         }
-     
                                     }
-
+                            }
+                        }
+                        float firstValue = -1;
+                        for (int k = GameStart.PlayerNumber - 1; k >= 0; k--)
+                        {
+                            if (GameStart.teamSize[k] >= 1)
+                            {
+                                if (firstValue == -1) { firstValue = teamPoints[k]; }
+                                if (teamPoints[k] != firstValue)
+                                {
+                                    isDraw = false;
+                                    break;
                                 }
                             }
-
                         }
                     }
-                    if(GameStart.teamCount == 2 && teamPoints[0] == teamPoints[1])
-                    {
-                        isDraw = true;
-                    }
+ 
                 }
                 count = 1;
             }
             for (int i = 0; i < GameStart.PlayerNumber; i++)
             {
                 //王冠表示
-                if (playerRank[i] < 3 && !isDraw)
-                {          
-                    GameObject crownPrefab = (GameObject)Resources.Load("Crown" + (playerRank[i] + 1).ToString());
-                    Vector2 crownPos = gameSetting.players[i].transform.position;
-                    crownPos.y += 1f;
-                    crownObj[i] =  Instantiate(crownPrefab, crownPos, Quaternion.identity);
-                    crownObj[i].name = "Crown" + (playerRank[i] + 1).ToString();
-                    GameObject smokeAnim = (GameObject)Resources.Load("SmokeEffect");
-                    Instantiate(smokeAnim, crownPos, Quaternion.identity);
+                if (!isDraw) 
+                {
+                    if (playerRank[i] < 3)
+                    {
+                        GameObject crownPrefab = (GameObject)Resources.Load("Crown" + (playerRank[i] + 1).ToString());
+                        Vector2 crownPos = gameSetting.players[i].transform.position;
+                        crownPos.y += 1f;
+                        crownObj[i] = Instantiate(crownPrefab, crownPos, Quaternion.identity);
+                        crownObj[i].name = "Crown" + (playerRank[i] + 1).ToString();
+                        GameObject smokeAnim = (GameObject)Resources.Load("SmokeEffect");
+                        Instantiate(smokeAnim, crownPos, Quaternion.identity);
+                    }
+                }
+                else 
+                {
+                    drawTextGO.gameObject.SetActive(true);
                 }
             }
         }
         if (count == 1 && !isDraw)
         {
-            for (int i = 0; i < GameStart.PlayerNumber; i++)
+            for (int h = 0; h < GameStart.PlayerNumber; h++)
             {
-                Vector2 crownPos = gameSetting.players[i].transform.position;
-                crownPos.y += 1f;
-                crownObj[i].transform.position = crownPos;
+                if (playerRank[h] < 3) 
+                {
+                    Vector2 crownPos = gameSetting.players[h].transform.position;
+                    crownPos.y += 1f;
+                    crownObj[h].transform.position = crownPos;
+                }
             }
         }
 
@@ -641,6 +628,7 @@ public class GameMode : MonoBehaviourPunCallbacks
         ballRb.constraints = RigidbodyConstraints2D.None;
         ballRb.constraints = RigidbodyConstraints2D.FreezeRotation;
         ballRb.AddForce(new Vector2(0, -0.1f));
+        ball.GetComponent<Ball>().count = 0;
     }
 
     void AdjustTeamFramePos()

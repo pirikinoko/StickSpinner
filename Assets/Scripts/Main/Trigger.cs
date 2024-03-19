@@ -65,9 +65,21 @@ public class Trigger :MonoBehaviourPunCallbacks
                         pointTimer += Time.deltaTime;
                         if (pointTimer > 1)
                         {
-                            SoundEffect.soundTrigger[6] = 1;
-                            GameMode.points[playerId - 1] += 1;
-                            GameMode.playParticle[playerId - 1] = 1;
+                            if(GameStart.gameMode1 == "Online") 
+                            {
+                                if (photonView.IsMine) 
+                                {
+                                    photonView.RPC(nameof(RPCAddFlagPoints), RpcTarget.All, playerId);
+                                }
+
+                            }
+                            else 
+                            {
+                                SoundEffect.soundTrigger[6] = 1;
+                                GameMode.points[playerId - 1] += 1;
+                                GameMode.playParticle[playerId - 1] = 1;
+                            }
+
                             pointTimer = 0;
                         }
                     }
@@ -110,18 +122,44 @@ public class Trigger :MonoBehaviourPunCallbacks
             {
                 if (GameMode.killTimer[i, playerId - 1] > 0) //トゲに当たったプレイヤーに最後に5秒以内に触れていたプレイヤーにポイント付与
                 {
-                    GameMode.points[i] += 5;
-                    GameMode.playParticle[i] = 2;
-                    GameMode.killer = "Player" + (i + 1).ToString();
-                    GameMode.died = "Player" + playerId.ToString();
-                    GameMode.killTimer[i, playerId - 1] = 0;
-                    GameMode.KillLogTimer = 5.0f;
+                    if(GameStart.gameMode1 == "Online" )
+                    {
+                        if (photonView.IsMine)
+                        {
+                            photonView.RPC(nameof(RPCAddKillPoints), RpcTarget.All, i, playerId);
+                        }
+                    }
+                    else 
+                    {
+                        GameMode.points[i] += 5;
+                        GameMode.playParticle[i] = 2;
+                        GameMode.killer = "Player" + (i + 1).ToString();
+                        GameMode.died = "Player" + playerId.ToString();
+                        GameMode.killTimer[i, playerId - 1] = 0;
+                        GameMode.KillLogTimer = 5.0f;
+                    }
+ 
                 }
             }
         }
 
     }
-    
+    [PunRPC] void RPCAddKillPoints(int target, int myId) 
+    {
+        GameMode.points[target] += 5;
+        GameMode.playParticle[target] = 2;
+        GameMode.killer = "Player" + (target + 1).ToString();
+        GameMode.died = "Player" + myId.ToString();
+        GameMode.killTimer[target, myId - 1] = 0;
+        GameMode.KillLogTimer = 5.0f;
+    }
+    [PunRPC]
+    void RPCAddFlagPoints(int myId)
+    {
+        SoundEffect.soundTrigger[6] = 1;
+        GameMode.points[myId - 1] += 1;
+        GameMode.playParticle[myId - 1] = 1;
+    }
     private void OnCollisionStay2D(Collision2D other)
     {
         if(GameStart.gameMode2 == "Arcade")

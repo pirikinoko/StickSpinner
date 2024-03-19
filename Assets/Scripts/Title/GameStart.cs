@@ -12,6 +12,7 @@ public class GameStart : MonoBehaviourPunCallbacks
 {
     public int maxStageNomal;     // 総ステージ数
     public static int maxPlayer = 4, minPlayer;     // 総プレイヤー数
+    public static bool buttonPushable = true;
     const int KeyboardMode = 5;
     const int ControllerMode = 6;
     float difficulty, timeFromLastAction, cycle = 0.3f;
@@ -27,7 +28,6 @@ public class GameStart : MonoBehaviourPunCallbacks
     public static string teamMode = "FreeForAll"; //対戦チーム分け 
     public bool stageInfoActive { get; set; } = false;
     int lastPlayerNum, lastPhase;
-    public static bool inDemoPlay = false;
     public Text playerNumberText, stageNumberText, flagTimeLimitTx;
     public static int flagTimeLimit = 90;
     //画像
@@ -49,7 +49,6 @@ public class GameStart : MonoBehaviourPunCallbacks
 
         ingameLog = GameObject.Find("Systems").GetComponent<IngameLog>();
         Time.timeScale = 1;
-        inDemoPlay = false;
         GameSetting.Playable = false;
         reconnectable = false;
         Stage = 1;
@@ -78,11 +77,12 @@ public class GameStart : MonoBehaviourPunCallbacks
         if(timeFromLastAction > cycle) 
         {
             PhaseControll();
+            buttonPushable = true;
             timeFromLastAction = 0;
         }
         //PhaseControll();
         //上限下限の設定
-        phase = System.Math.Min(phase, 8);
+        phase = System.Math.Min(phase, 9);
         phase = System.Math.Max(phase, 0);
         if (gameMode1 == "Single" && gameMode2 == "Nomal")
         {
@@ -156,6 +156,7 @@ public class GameStart : MonoBehaviourPunCallbacks
     {
         if (lastPhase != phase)
         {
+            StopCoroutine(Reconnect());
             DisablePanel();
             switch (gameMode1)
             {
@@ -175,6 +176,7 @@ public class GameStart : MonoBehaviourPunCallbacks
                             break;
                         case 3:
                             SceneManager.LoadScene("Stage");
+                            loadScreen.gameObject.SetActive(true);
                             break;
 
                     }
@@ -204,6 +206,7 @@ public class GameStart : MonoBehaviourPunCallbacks
                             break;
                         case 5:
                             SceneManager.LoadScene("Stage");
+                            loadScreen.gameObject.SetActive(true);
                             break;
                     }
                     break;
@@ -212,6 +215,8 @@ public class GameStart : MonoBehaviourPunCallbacks
                     {
                         case 0:
                             mainTitle.gameObject.SetActive(true);
+                            NetWorkMain.isOnline = false;
+                            StopCoroutine(Reconnect());
                             reconnectable = true;
                             break;
                         case 1:
@@ -234,6 +239,7 @@ public class GameStart : MonoBehaviourPunCallbacks
                             break;
                         case 4:
                             photonView.RPC(nameof(SyncArcadeTime), RpcTarget.All, flagTimeLimit);
+                            photonView.RPC(nameof(SyncStage), RpcTarget.All);
                             photonView.RPC(nameof(RPCStartGame), RpcTarget.All);
                             phase = 3;
                             onlineLobby.gameObject.SetActive(true);
@@ -273,7 +279,7 @@ public class GameStart : MonoBehaviourPunCallbacks
     {
         while (true)
         {
-            if (reconnectable)
+            if (reconnectable && phase  == 1)
             {
                 if (PhotonNetwork.IsConnected) { PhotonNetwork.JoinLobby(); }
                 reconnectable = false;
@@ -282,13 +288,15 @@ public class GameStart : MonoBehaviourPunCallbacks
 
             yield return null; // 1フレーム待つ
 
-            if (PhotonNetwork.InLobby && !joinedLobby)
+            if (PhotonNetwork.InLobby && !joinedLobby && phase == 1 && gameMode1 == "Online")
             {
                 joinedLobby = true; // 重複して呼ばれないようにフラグを立てる
                 yield return new WaitForSeconds(2.0f); // 1フレーム待つ
-                PhotonNetwork.JoinLobby();
-                phase++;
-                break;
+                if (phase == 1 && gameMode1 == "Online") 
+                {
+                    PhotonNetwork.JoinLobby();
+                    phase++;
+                }
             }
 
         }
@@ -330,8 +338,34 @@ public class GameStart : MonoBehaviourPunCallbacks
     {
         if (GameStart.PlayerNumber > 1)
         {
-            PhotonNetwork.IsMessageQueueRunning = false;
-            SceneManager.LoadScene("Stage");
+            bool allReady = true;
+            ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
+            if (customProps.ContainsKey("isReady"))
+            {
+                bool[] isReadyLocal = (bool[])PhotonNetwork.CurrentRoom.CustomProperties["isReady"];
+                for (int i = 0; i < GameStart.PlayerNumber; i++)
+                {
+                    if (isReadyLocal[i] == false)
+                    {
+                        allReady = false;
+                    }
+                }
+                if (allReady)
+                {
+                    PhotonNetwork.IsMessageQueueRunning = false;
+                    SceneManager.LoadScene("Stage");
+                    for (int i = 0; i < maxPlayer; i++)
+                    {
+                        isReadyLocal[i] = false;
+                    }
+                    customProps["isReady"] = isReadyLocal;
+                    PhotonNetwork.CurrentRoom.SetCustomProperties(customProps);
+                }
+                else
+                {
+                    IngameLog.GenerateIngameLog("全てのプレイヤーの準備が完了していません");
+                }
+            }    
         }
         else
         {
@@ -451,7 +485,6 @@ public class GameStart : MonoBehaviourPunCallbacks
         selectOnlineLobby.gameObject.SetActive(false);
         onlineLobby.gameObject.SetActive(false);
         loadScreen.gameObject.SetActive(false);
-        inDemoPlay = false;
     }
 
     void SwichUI()

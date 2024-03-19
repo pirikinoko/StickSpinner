@@ -224,6 +224,7 @@ public class NetWorkMain : MonoBehaviourPunCallbacks
             customProps["gameMode"] = GameStart.gameMode2;
             customProps["Password"] = "";
             customProps["isJoined"] = new bool[] { false, false, false, false };
+            customProps["isReady"] = new bool[] { false, false, false, false };
             customProps["winnings"] = new int[] { 0, 0, 0, 0 };
             customProps["playerTeam"] = new int[] { 0, 1, 2, 3 };
             customProps["userName"] = new string[] { "", "", "", "", };

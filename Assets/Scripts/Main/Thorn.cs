@@ -55,7 +55,6 @@ public class Thorn : MonoBehaviour
             Controller cnt = other.gameObject.transform.GetChild(0).GetComponent<Controller>();
             cnt.StartDead();
             int id = bdy.id;
-            nameTags[id - 1].gameObject.SetActive(false);
             if(GameStart.gameMode1 == "Single" && GameStart.gameMode2 == "Arcade") 
             {
                 //無限モードゲームオーバー

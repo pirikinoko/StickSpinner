@@ -200,12 +200,13 @@ public class TitleButton : MonoBehaviourPunCallbacks
         }
 
         //選択中のボタンをクリック
-        if (ControllerInput.jump[0] || Input.GetKeyDown(KeyCode.Return))
+        if (ControllerInput.jump[0] || Input.GetKeyDown(KeyCode.Return) && GameStart.buttonPushable)
         {
             if (Settings.inSetting) { return; }
             if (activeButtons.Length != 0)
             {
                 activeButtons[targetButton].onClick.Invoke();
+                GameStart.buttonPushable = false;
             }
         }
 

@@ -7,11 +7,12 @@ public class Ball : MonoBehaviourPunCallbacks
     GameMode gameMode;
     GameSetting gameSetting;
     int lastColId;
+    public  int count;
     // Start is called before the first frame update
     void Start()
     {
-        
-        if(GameStart.gameMode1 != "Online") 
+        count = 0;
+        if (GameStart.gameMode1 != "Online") 
         {
             this.GetComponent<PhotonRigidbody2DView>().enabled = false;
         }
@@ -39,6 +40,7 @@ public class Ball : MonoBehaviourPunCallbacks
     }
     private void OnTriggerStay2D(Collider2D col)
     {
+        if (!GameSetting.Playable) { return; }
          if(col.gameObject.name == "GoalZoneLeft")
         {
 
@@ -133,6 +135,8 @@ public class Ball : MonoBehaviourPunCallbacks
     [PunRPC] 
     void GoalProcess(int targetTeam) 
     {
+        if(count >= 1) { return; }
+        count++;
         if (GameStart.teamMode == "FFA")
         {
                 GameMode.points[targetTeam]++;
