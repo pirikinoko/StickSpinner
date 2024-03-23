@@ -29,7 +29,6 @@ public class Trigger :MonoBehaviourPunCallbacks
         pointTimer = 0;
     }
 
-
     private void OnTriggerStay2D(Collider2D other)
     {
 
@@ -174,6 +173,5 @@ public class Trigger :MonoBehaviourPunCallbacks
                 GameMode.killTimer[playerId - 1, other.gameObject.GetComponent<Trigger>().playerId - 1] = 3.0f;
             }       
         }
-       
     }
 }

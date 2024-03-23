@@ -20,13 +20,15 @@ public class MatchmakingView : MonoBehaviourPunCallbacks
     GameObject quickStartingPanel;
     private CanvasGroup canvasGroup;
     IngameLog ingameLog;
-    string mode;
-    int stageQuick = 0;
+    public static string mode;
+    public static int stageQuick = 0;
     public static string gameModeQuick = "Nomal";
     public int ccuLimit = 80;
+    GameStart gameStart;
     private void Start()
     {
-        quickStartingPanel.SetActive(false);    
+        quickStartingPanel.SetActive(false);
+        gameStart = GameObject.Find("Systems").GetComponent<GameStart>();
         ingameLog = GameObject.Find("Systems").GetComponent<IngameLog>();
         canvasGroup = GetComponent<CanvasGroup>();
 
@@ -59,7 +61,7 @@ public class MatchmakingView : MonoBehaviourPunCallbacks
     {
         GameStart.gameMode2 = gameMode;
         GameStart.Stage = stage;
-        SceneManager.LoadScene("Stage");
+        GameStart.phase = 4;
         playerCountQuick.text = "";
     }
 
@@ -95,6 +97,7 @@ public class MatchmakingView : MonoBehaviourPunCallbacks
             if (PhotonNetwork.CurrentRoom.PlayerCount == maxPlayers)
             {
                 StartCoroutine(OpenQuickPanel());
+                quickMatchButton.interactable = false;
             }
         }
         else
@@ -137,7 +140,7 @@ public class MatchmakingView : MonoBehaviourPunCallbacks
     }
     private void OnJoinRoomButtonClick()
     {
-        if (CheckCCULimit() == false)
+        if (isCCUNotOver() == false)
         {
             IngameLog.GenerateIngameLog("現在サーバーが混雑しています");
             return;
@@ -147,7 +150,7 @@ public class MatchmakingView : MonoBehaviourPunCallbacks
     }
     private void OnCreateRoomLockedButtonClick()
     {
-        if (CheckCCULimit() == false)
+        if (isCCUNotOver() == false)
         {
             IngameLog.GenerateIngameLog("現在サーバーが混雑しています");
             return;
@@ -164,7 +167,7 @@ public class MatchmakingView : MonoBehaviourPunCallbacks
     }
     private void OnCreateRoomButtonClick()
     {
-        if(CheckCCULimit() == false) 
+        if(isCCUNotOver() == false) 
         {
             IngameLog.GenerateIngameLog("現在サーバーが混雑しています");
             return;
@@ -196,7 +199,8 @@ public class MatchmakingView : MonoBehaviourPunCallbacks
         if (PhotonNetwork.InRoom) 
         {
             PhotonNetwork.LeaveRoom();
-            if(roomNameInputField.text.Length > 0) 
+            mode = "Nomal";
+            if (roomNameInputField.text.Length > 0) 
             {
                 createRoomButton.interactable = true;
                 createRoomLockedButton.interactable = true;
@@ -205,7 +209,7 @@ public class MatchmakingView : MonoBehaviourPunCallbacks
      
             return;
         }
-        if (CheckCCULimit() == false)
+        if (isCCUNotOver() == false)
         {
             IngameLog.GenerateIngameLog("現在サーバーが混雑しています");
             return;
@@ -239,7 +243,7 @@ public class MatchmakingView : MonoBehaviourPunCallbacks
             string roomName = "!Quick!" + roomNum;
             PhotonNetwork.CreateRoom(roomName, roomOptions);
             int randomMode = Random.Range(0, 2);
-
+            randomMode = 1;
             // 0または1のいずれかに対応する処理を行う
             if (randomMode == 0)
             {
@@ -249,15 +253,14 @@ public class MatchmakingView : MonoBehaviourPunCallbacks
             else
             {
                 gameModeQuick = "Arcade";
-                stageQuick = Random.Range(1, 2);
+                stageQuick = Random.Range(1, 3);
             }
-            stageQuick = 1;
             gameModeQuick = "Arcade";
         }
         // ルームへの参加が失敗したら、再び入力できるようにする
         canvasGroup.interactable = true;
     }
-    private bool CheckCCULimit()
+    private bool isCCUNotOver()
     {
         // 現在の同時接続数を取得
         int currentCCU = PhotonNetwork.CountOfPlayers;

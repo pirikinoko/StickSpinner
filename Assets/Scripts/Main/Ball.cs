@@ -2,19 +2,26 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
+using System.Text.RegularExpressions;
 public class Ball : MonoBehaviourPunCallbacks
 {
     GameMode gameMode;
     GameSetting gameSetting;
     int lastColId;
     public  int count;
+    PhotonView photonView;
     // Start is called before the first frame update
     void Start()
     {
         count = 0;
+        gameSetting = GameObject.Find("Scripts").GetComponent<GameSetting>();
         if (GameStart.gameMode1 != "Online") 
         {
             this.GetComponent<PhotonRigidbody2DView>().enabled = false;
+        }
+        else
+        {
+            photonView = GetComponent<PhotonView>();
         }
     }
 
@@ -25,8 +32,27 @@ public class Ball : MonoBehaviourPunCallbacks
         {
             gameMode = GameObject.Find("Scripts").GetComponent<GameMode>();
         }
-    }
+        if (GameStart.gameMode1 == "Online")
+        {
+            if (!GameSetting.setupEnded) { return; }
+            // 最も近いプレイヤーの初期化
+            GameObject nearestPlayer = gameSetting.players[0];
+            float minDistance = Vector2.Distance(this.transform.position, nearestPlayer.transform.position);
 
+            // 全てのプレイヤーをチェックして最も近いものを見つける
+            for (int i = 0; i < GameStart.PlayerNumber; i++)
+            {
+                float distance = Vector2.Distance(this.transform.position, gameSetting.players[i].transform.position);
+                if (distance < minDistance)
+                {
+                    minDistance = distance;
+                    nearestPlayer = gameSetting.players[i];
+                }
+            }
+            int id = int.Parse(Regex.Replace(nearestPlayer.name, @"[^0-9]", ""));
+            photonView.TransferOwnership(id);
+        }
+  }
     private void OnCollisionStay2D(Collision2D col) 
     {
         if (col.gameObject.CompareTag("Player")) 
@@ -38,6 +64,7 @@ public class Ball : MonoBehaviourPunCallbacks
             lastColId = col.gameObject.GetComponent<Controller>().id;
         }
     }
+
     private void OnTriggerStay2D(Collider2D col)
     {
         if (!GameSetting.Playable) { return; }
@@ -52,7 +79,7 @@ public class Ball : MonoBehaviourPunCallbacks
                 }
                 else
                 {
-                    if (lastColId == NetWorkMain.netWorkId)
+                    if (photonView.IsMine)
                     {
                         photonView.RPC("GoalProcess", RpcTarget.All, 1);
                     }
@@ -66,7 +93,7 @@ public class Ball : MonoBehaviourPunCallbacks
                 }
                 else
                 {
-                    if (lastColId == NetWorkMain.netWorkId)
+                    if (photonView.IsMine)
                     {
                         photonView.RPC("GoalProcess", RpcTarget.All, 1);
                     }
@@ -86,7 +113,7 @@ public class Ball : MonoBehaviourPunCallbacks
                 }
                 else 
                 {
-                    if (lastColId == NetWorkMain.netWorkId)
+                    if (photonView.IsMine)
                     {
                         photonView.RPC("GoalProcess", RpcTarget.All, 0);
                     }
@@ -101,7 +128,7 @@ public class Ball : MonoBehaviourPunCallbacks
 
                 else 
                 {
-                    if(lastColId == NetWorkMain.netWorkId) 
+                    if (photonView.IsMine)
                     {
                         photonView.RPC("GoalProcess", RpcTarget.All, 0);
                     }

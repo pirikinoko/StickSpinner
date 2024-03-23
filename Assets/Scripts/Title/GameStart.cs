@@ -238,6 +238,24 @@ public class GameStart : MonoBehaviourPunCallbacks
                             }
                             break;
                         case 4:
+
+                            if (MatchmakingView.mode == "Quick" && NetWorkMain.netWorkId == NetWorkMain.leaderId)
+                            {
+                                photonView.RPC(nameof(SetDefaultArcade), RpcTarget.All, MatchmakingView.stageQuick);
+                                ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
+                                if (customProps.ContainsKey("isReady"))
+                                {
+                                    bool[] isReadyLocal = (bool[])PhotonNetwork.CurrentRoom.CustomProperties["isReady"];
+                                    for (int i = 0; i < maxPlayer; i++)
+                                    {
+                                        isReadyLocal[i] = true;
+                                    }
+                                    PhotonNetwork.CurrentRoom.SetCustomProperties(customProps);
+                                }
+                                photonView.RPC(nameof(RPCStartGame), RpcTarget.All);
+                                photonView.RPC(nameof(SyncArcadeTime), RpcTarget.All, flagTimeLimit);
+                                return;
+                            }
                             photonView.RPC(nameof(SyncArcadeTime), RpcTarget.All, flagTimeLimit);
                             photonView.RPC(nameof(SyncStage), RpcTarget.All);
                             photonView.RPC(nameof(RPCStartGame), RpcTarget.All);
@@ -246,13 +264,15 @@ public class GameStart : MonoBehaviourPunCallbacks
                             break;
                         case 5:
                             phase = 3;
+                            photonView.RPC(nameof(SetDefaultArcade), RpcTarget.All, Stage);
                             return;
                             break;
                         case 6:
-                            stageSelect.gameObject.SetActive(true);
+                            stageSelect.gameObject.SetActive(true);  
                             break;
                         case 7:
                             phase = 3;
+                            photonView.RPC(nameof(SetDefaultArcade), RpcTarget.All, Stage);
                             return;
                             break;
                         case 8:
@@ -292,13 +312,8 @@ public class GameStart : MonoBehaviourPunCallbacks
             {
                 joinedLobby = true; // 重複して呼ばれないようにフラグを立てる
                 yield return new WaitForSeconds(2.0f); // 1フレーム待つ
-                if (phase == 1 && gameMode1 == "Online") 
-                {
-                    PhotonNetwork.JoinLobby();
-                    phase++;
-                }
+                phase++;
             }
-
         }
     }
 
@@ -332,7 +347,12 @@ public class GameStart : MonoBehaviourPunCallbacks
     {
         phase = phaseLocal;
     }
-
+    [PunRPC]
+    public void SetDefaultArcade(int updatedStage)
+    {
+        Stage= updatedStage;    
+        SetArcade();
+    }
     [PunRPC]
     void RPCStartGame()
     {
@@ -386,6 +406,21 @@ public class GameStart : MonoBehaviourPunCallbacks
             {
                 playerIcon[i].gameObject.SetActive(true);
                 playerSlot[i].gameObject.SetActive(true);
+                playerTeam[i] = i;
+            }
+            if (gameMode1 == "Online")
+            {
+                ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
+                if (customProps.ContainsKey("playerTeam"))
+                {
+                    int[] playerTeamLocal = (int[])customProps["playerTeam"];
+                    for (int i = 0; i < 4; i++)
+                    { 
+                        playerTeamLocal[i] = i;
+                    }
+                    customProps["playerTeam"] = playerTeamLocal;
+                    PhotonNetwork.CurrentRoom.SetCustomProperties(customProps);
+                }
             }
         }
         if (Stage == 2)
@@ -409,6 +444,27 @@ public class GameStart : MonoBehaviourPunCallbacks
             }
             playerSlot[0].gameObject.SetActive(true);
             playerSlot[1].gameObject.SetActive(true);
+            if (gameMode1 == "Online")
+            {
+                ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
+                if (customProps.ContainsKey("playerTeam"))
+                {
+                    int[] playerTeamLocal = (int[])customProps["playerTeam"];
+                    for (int i = 0; i < 4; i++)
+                    {
+                        if ((i + 1) % 2 == 0)
+                        {
+                            playerTeamLocal[i] = 1;
+                        }
+                        else
+                        {
+                            playerTeamLocal[i] = 0;
+                        }
+                    }
+                    customProps["playerTeam"] = playerTeamLocal;
+                    PhotonNetwork.CurrentRoom.SetCustomProperties(customProps);
+                }
+            }
 
         }
         TeamSelect();
