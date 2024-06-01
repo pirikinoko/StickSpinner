@@ -17,7 +17,11 @@ public class SoundEffect : MonoBehaviour　//効果音呼び出しスクリプ�
     // Start is called before the first frame update
     void Start()
     {
+        //シーン遷移時に破棄しない
+        DontDestroyOnLoad(this.gameObject);
+        //AudioSorceの取得
         audioSource = GetComponent<AudioSource>();
+        //クールダウンの設定
         for (int i = 0; i < coolTime.Length; i++)
         {
             coolTime[i] = 0.1f;
@@ -25,16 +29,9 @@ public class SoundEffect : MonoBehaviour　//効果音呼び出しスクリプ�
         }
     }
     void Update()
-    {   
-        //音量上限下限の設定
-        if (SEStage > 30)
-        {
-            SEStage = 30;
-        }
-        if (SEStage < 0)
-        {
-            SEStage = 0;
-        }
+    {
+        //音量上限下限の設定 
+        SEStage = Mathf.Clamp(SEStage, 0, 30);
         SetSEVol();
 
         for (int i = 0; i < sounds.Length; i++)
