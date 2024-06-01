@@ -3,34 +3,29 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using CI.QuickSave;
 using System.Linq;
 public class Settings : MonoBehaviour
 {
+    [SerializeField] Text confirmText, yesText, noText, BGMText, SEText;
+    [SerializeField] GameObject yesButton, noButton;
+    Controller controller;
     public GameObject SettingPanel, exitPanel;
     public Text languageText, screenText, guideText;
     public static bool SettingPanelActive = false, inSetting = false;
     bool InputCrossX, InputCrossY;
-    int Selected = 0;
-    public static int languageNum = 0, guideMode = 0;
+    int Selected = 0, buttonSelect = 0 ,min ,max  , lastScreenNum;
+    public static int languageNum = 0, guideMode = 0, screenModeNum = 0;
     string[] languages = { "JP", "EN" };
-    public static int screenModeNum = 0;
     string[] screenMode = { "ウィンドウ", "フルスクリーン", "Window", "FullScreen" };
     string[] guide = { "On", "Off" };
     float[] settingStages = new float[5]; //設定項目の数
-    int lastScreenNum;
-    int max, min = 0;
     public GameObject[] item = new GameObject[3];
     Vector2[] itemPos = new Vector2[10];
-    public static float[] rotStage = { 10, 10, 10, 10 }; //感度を保存しておく
     float lastLstickX, lastLstickY;
-    Controller controller;
+
     private Button[] activeButtons;
     //OnExitPanel
     public static bool exitPanelActive = false;
-    [SerializeField] Text confirmText, yesText, noText;
-    [SerializeField] GameObject yesButton, noButton;
-    int buttonSelect = 0;
 
     void Start()
     {
@@ -58,6 +53,8 @@ public class Settings : MonoBehaviour
             languageText.text = languages[languageNum];
             screenText.text = screenMode[(languageNum * 2) + screenModeNum];
             guideText.text = guide[guideMode];
+            BGMText.text = BGM.BGMStage.ToString(); 
+            SEText.text = SoundEffect.SEStage.ToString();
             if (languageNum == 0)
             {
                 screenText.fontSize = 160;
@@ -221,9 +218,6 @@ public class Settings : MonoBehaviour
                 }
                 /*ゲーム終了*/
             }
-            //上限下限の設定
-            rotStage[i] = System.Math.Min(rotStage[i], 20);
-            rotStage[i] = System.Math.Max(rotStage[i], 1);
         }
 
         if(lastScreenNum != screenModeNum)

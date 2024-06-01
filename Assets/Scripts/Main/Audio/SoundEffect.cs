@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class SoundEffect : MonoBehaviour　//効果音呼び出しスクリプト
 {
-
+    [SerializeField] int maxVolume, volumeReducer;
     public AudioClip[] sounds;
     public static float SEStage =  10;
     public Text SEText;
@@ -31,7 +31,7 @@ public class SoundEffect : MonoBehaviour　//効果音呼び出しスクリプ�
     void Update()
     {
         //音量上限下限の設定 
-        SEStage = Mathf.Clamp(SEStage, 0, 30);
+        SEStage = Mathf.Clamp(SEStage, 0, maxVolume);
         SetSEVol();
 
         for (int i = 0; i < sounds.Length; i++)
@@ -64,8 +64,7 @@ public class SoundEffect : MonoBehaviour　//効果音呼び出しスクリプ�
 
     void SetSEVol()
     {
-        audioSource.volume = SEStage / 170;
-        SEText.text = SEStage.ToString();
+        audioSource.volume = SEStage / maxVolume;
     }
 
 
