@@ -453,48 +453,7 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
         GameStart.flagTimeLimit -= 10;
         GameStart.flagTimeLimit = System.Math.Max(40, GameStart.flagTimeLimit);
     }
-    //感度変更ボタン
-    public void GainSensP1()
-    {
-        Settings.rotStage[0] += 1;
-        SoundEffect.soundTrigger[3] = 1;
-    }
-    public void GainSensP2()
-    {
-        Settings.rotStage[1] += 1;
-        SoundEffect.soundTrigger[3] = 1;
-    }
-    public void GainSensP3()
-    {
-        Settings.rotStage[2] += 1;
-        SoundEffect.soundTrigger[3] = 1;
-    }
-    public void GainSensP4()
-    {
-        Settings.rotStage[3] += 1;
-        SoundEffect.soundTrigger[3] = 1;
-    }
-    public void LoseSensP1()
-    {
-        Settings.rotStage[0] -= 1;
-        SoundEffect.soundTrigger[3] = 1;
-    }
-    public void LoseSensP2()
-    {
-        Settings.rotStage[1] -= 1;
-        SoundEffect.soundTrigger[3] = 1;
-    }
-    public void LoseSensP3()
-    {
-        Settings.rotStage[2] -= 1;
-        SoundEffect.soundTrigger[3] = 1;
-    }
-    public void LoseSensP4()
-    {
-        Settings.rotStage[3] -= 1;
-        SoundEffect.soundTrigger[3] = 1;
-    }
-
+  
 
     //設定画面のボタン
     public void GainBGMVol()

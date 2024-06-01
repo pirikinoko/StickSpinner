@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 public class BGM : MonoBehaviour //BGM音量調整スクリプト
 {
+    [SerializeField] int maxVolume, volumeReducer;
     public GameObject SettingPanel;
     public AudioClip titleBGM, gameBGM;
     AudioSource audioSource;
@@ -27,12 +28,11 @@ public class BGM : MonoBehaviour //BGM音量調整スクリプト
     void Update()
     {
         //BGMの範囲設定
-        BGMStage = Mathf.Clamp(BGMStage, 0, 30);
+        BGMStage = Mathf.Clamp(BGMStage, 0, maxVolume);
         SetBGMVol();
     }
     void SetBGMVol()
     {
-        audioSource.volume = BGMStage / 200;
-        BGMText.text = BGMStage.ToString();
+        audioSource.volume = BGMStage / volumeReducer;
     }
 }

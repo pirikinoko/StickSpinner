@@ -14,7 +14,7 @@ public class Controller : MonoBehaviourPunCallbacks
     public int id;                                      // プレイヤー番号(1～4)
     [SerializeField]
     KeyCode KeyLeft, KeyRight, KeyJump, KeyDown;                          // 左右キー(キーボード使用時)
-    float rotSpeed = 160f;                              // 棒の回転速度
+    [SerializeField]float rotSpeed = 160f;                              // 棒の回転速度
     [SerializeField]
     float CoolTime_ = 0.2f;                             // ジャンプのクールタイム初期化用
     float coolTime = 0.2f;                              // ジャンプのクールタイム
@@ -320,7 +320,6 @@ public class Controller : MonoBehaviourPunCallbacks
     // 移動
     void Move()
     {
-        rotSpeed = 120 + Settings.rotStage[id - 1] * 4;  //感度反映
         if (GameSetting.Playable && ButtonInGame.Paused != 1) //プレイヤー数選択画面でも操作可能
         {
             if (!NetWorkMain.isOnline)

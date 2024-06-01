@@ -16008,6 +16008,7 @@ GameObject:
   - component: {fileID: 1149599067}
   - component: {fileID: 1149599069}
   - component: {fileID: 1149599070}
+  - component: {fileID: 1149599071}
   m_Layer: 0
   m_Name: EventSystem
   m_TagString: Untagged
@@ -16057,6 +16058,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5bdbcb664371fc4a9a0a752bdf253cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxVolume: 0
+  volumeReducer: 0
   sounds:
   - {fileID: 8300000, guid: 946f852ebf72c05438396f8458cc6f11, type: 3}
   - {fileID: 8300000, guid: 1baab7befe85cad40a9e7e8e53eb1465, type: 3}
@@ -16166,6 +16169,26 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &1149599071
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1149599065}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4f231c4fb786f3946a6b90b886c48677, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SendPointerHoverToParent: 1
+  m_HorizontalAxis: Horizontal
+  m_VerticalAxis: Vertical
+  m_SubmitButton: Submit
+  m_CancelButton: Cancel
+  m_InputActionsPerSecond: 10
+  m_RepeatDelay: 0.5
+  m_ForceModuleActive: 0
 --- !u!1 &1152311645
 GameObject:
   m_ObjectHideFlags: 0
@@ -16347,7 +16370,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 864f958ddad30c84b9be003feef7dd04, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxVolume: 30
+  volumeReducer: 200
   SettingPanel: {fileID: 848770239}
+  titleBGM: {fileID: 0}
+  gameBGM: {fileID: 0}
   BGMText: {fileID: 820856222}
 --- !u!82 &1158970429
 AudioSource:
@@ -16746,7 +16773,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 864f958ddad30c84b9be003feef7dd04, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxVolume: 30
+  volumeReducer: 120
   SettingPanel: {fileID: 848770239}
+  titleBGM: {fileID: 8300000, guid: 263b1aa71d383394aab46989f3b6d972, type: 3}
+  gameBGM: {fileID: 8300000, guid: 7cbe7daba704d504481f242f6eb39453, type: 3}
   BGMText: {fileID: 820856222}
 --- !u!1 &1215081781
 GameObject:
