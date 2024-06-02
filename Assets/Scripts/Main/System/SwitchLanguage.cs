@@ -5,8 +5,8 @@ using UnityEngine.UI;
 
 public class SwitchLanguage : MonoBehaviour
 {
-    [SerializeField] string[] texts;
-    [SerializeField] int[] fontSize;
+    public string[] texts;
+    public int[] fontSize;
     Text targetText;
     // Start is called before the first frame update
     void Start()

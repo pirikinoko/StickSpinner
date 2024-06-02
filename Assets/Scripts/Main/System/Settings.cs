@@ -23,7 +23,7 @@ public class Settings : MonoBehaviour
     public GameObject[] item = new GameObject[3];
     Vector2[] itemPos = new Vector2[10];
     float lastLstickX, lastLstickY;
-
+    string sceneName;
     private Button[] activeButtons;
     //OnExitPanel
     public static bool exitPanelActive = false;
@@ -39,6 +39,29 @@ public class Settings : MonoBehaviour
         SettingPanelActive = false;
         inSetting = false;
         exitPanelActive = false;
+        GetComponent<Canvas>().worldCamera = GameObject.Find("Main Camera").GetComponent<Camera>();
+        //シーンによっての設定画面の機能の切り替え
+        sceneName = SceneManager.GetActiveScene().name;
+        SwitchButtonFunction(); 
+    }
+    void FixedUpdate()
+    {
+        if (sceneName != SceneManager.GetActiveScene().name)
+        {
+            //初期化
+            Selected = 0;
+            Time.timeScale = 1;
+            lastScreenNum = screenMode;
+            SetScreenMode();
+            Debug.Log(languageNum);
+            SettingPanelActive = false;
+            inSetting = false;
+            exitPanelActive = false;
+            GetComponent<Canvas>().worldCamera = GameObject.Find("Main Camera").GetComponent<Camera>();
+            //シーンによってのBGM切り替え
+            sceneName = SceneManager.GetActiveScene().name;
+            SwitchButtonFunction();
+        }
     }
 
     void Update()
@@ -72,10 +95,6 @@ public class Settings : MonoBehaviour
         {
             SettingPanel.gameObject.SetActive(false);
         }
-
-    }
-    void FixedUpdate() 
-    {
 
     }
 
@@ -299,17 +318,33 @@ public class Settings : MonoBehaviour
 
             for (int i = 0; i < controllerUI.Length; i++) { controllerUI[i].gameObject.SetActive(true); }
         }
+    }
 
+    void SwitchButtonFunction() 
+    {
+        Button exitButton = item[5].GetComponent<Button>();
+        exitButton.onClick.RemoveAllListeners();
+        SwitchLanguage switchLanguage = item[5].transform.GetChild(0).gameObject.GetComponent<SwitchLanguage>();
         //ゲーム内とタイトルで挙動が違うボタンの管理
         if (SceneManager.GetActiveScene().name == "Title")
         {
             resumeBtnTitle.SetActive(true);
             resumeBtnGame.SetActive(false);
+            //タイトルではゲーム終了ボタン
+            switchLanguage.texts[0] = "ゲーム終了";
+            switchLanguage.texts[1] = "QuitGame";
+            exitButton.onClick.AddListener(() => exitPanelActive = true);
+            Debug.Log("タイトルボタン");
         }
         else
         {
             resumeBtnGame.SetActive(true);
             resumeBtnTitle.SetActive(false);
+            //ゲーム中ではタイトルに戻るボタン
+            switchLanguage.texts[0] = "タイトルに戻る";
+            switchLanguage.texts[1] = "BackToTitle";
+            exitButton.onClick.AddListener(() => item[5].GetComponent<ButtonClick>().BackToTitle());
+            Debug.Log("タイトルボタン");
         }
     }
 }

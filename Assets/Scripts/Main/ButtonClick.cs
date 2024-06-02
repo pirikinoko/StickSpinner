@@ -219,6 +219,7 @@ public class ButtonClick : MonoBehaviourPunCallbacks　//クリック用ボタ�
         SoundEffect.soundTrigger[2] = 1;
         GameStart.phase = 0;
         ButtonInGame.Paused = 0;
+        Time.timeScale =  1;
         GameSetting.Playable = false;
         GameStart.PlayerNumber = 1;
         Settings.SettingPanelActive = false;
