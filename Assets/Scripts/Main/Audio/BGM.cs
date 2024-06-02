@@ -10,7 +10,6 @@ public class BGM : MonoBehaviour //BGM音量調整スクリプト
     public AudioClip titleBGM, gameBGM;
     AudioSource audioSource;
     public static float BGMStage = 10;
-    public Text BGMText;
     // Start is called before the first frame update
     void Start()
     {
@@ -22,6 +21,7 @@ public class BGM : MonoBehaviour //BGM音量調整スクリプト
         //シーンによってのBGM切り替え
         string currentSceneName = SceneManager.GetActiveScene().name;
         audioSource.clip = (currentSceneName == "Title") ? titleBGM : gameBGM;
+        audioSource.Play();
     }
 
     // Update is called once per frame

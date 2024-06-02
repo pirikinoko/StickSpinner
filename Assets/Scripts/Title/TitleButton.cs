@@ -130,16 +130,16 @@ public class TitleButton : MonoBehaviourPunCallbacks
             inputCrossYMinus = false;
         }
 
-
-        /*矢印キー横*/
-        if (Input.GetKeyDown(KeyCode.RightArrow) || inputCrossXPlus || inputLstickXPlus || lastPhase != GameStart.phase) 
+        //方向ボタンの受付時シーン上の全ボタンの位置と現在選択されているボタンの位置を比較し一番近いものでかつ入力された方向にあるものを選択する
+        /*横プラス入力時*/
+        if (Input.GetKeyDown(KeyCode.RightArrow) || inputCrossXPlus || inputLstickXPlus || lastPhase != GameStart.phase)
         {
             for (int i = 0; i < activeButtons.Length; i++)
             {
-                if (buttonPositions[i].x > buttonPositions[targetButton].x) 
+                if (buttonPositions[i].x > buttonPositions[targetButton].x)
                 {
-                   
-                    Debug.Log(buttonsInTheScene[i].name + "と" + buttonsInTheScene[targetButton].name + "の距離は" + Vector2.Distance(buttonPositions[targetButton], buttonPositions[i]) );
+
+                    Debug.Log(buttonsInTheScene[i].name + "と" + buttonsInTheScene[targetButton].name + "の距離は" + Vector2.Distance(buttonPositions[targetButton], buttonPositions[i]));
                     if (Vector2.Distance(buttonPositions[targetButton], buttonPositions[i]) < buttonDistance)
                     {
                         newTarget = i;
@@ -150,6 +150,7 @@ public class TitleButton : MonoBehaviourPunCallbacks
             targetButton = newTarget;
             SoundEffect.soundTrigger[3] = 1;
         }
+        /*横マイナス入力時*/
         if (Input.GetKeyDown(KeyCode.LeftArrow) || inputCrossXMinus || inputLstickXMinus)
         {
             for (int i = 0; i < activeButtons.Length; i++)
@@ -166,6 +167,7 @@ public class TitleButton : MonoBehaviourPunCallbacks
             targetButton = newTarget;
             SoundEffect.soundTrigger[3] = 1;
         }
+        //縦プラス入力時
         if (Input.GetKeyDown(KeyCode.UpArrow) || inputCrossYPlus || inputLstickYPlus)
         {
             for (int i = 0; i < activeButtons.Length; i++)
@@ -182,6 +184,7 @@ public class TitleButton : MonoBehaviourPunCallbacks
             targetButton = newTarget;
             SoundEffect.soundTrigger[3] = 1;
         }
+        //縦マイナス入力時
         if (Input.GetKeyDown(KeyCode.DownArrow) || inputCrossYMinus || inputLstickYMinus)
         {
             for (int i = 0; i < activeButtons.Length; i++)
@@ -212,10 +215,11 @@ public class TitleButton : MonoBehaviourPunCallbacks
 
         lastCrossX = ControllerInput.crossX[0];
         lastCrossY = ControllerInput.crossY[0];
-        
+
         lastPhase = GameStart.phase;
     }
- 
+
+
 
 
 }
