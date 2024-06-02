@@ -110,7 +110,7 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
 
 
 
-        //boolプロパティ「inputButton」を設定されたボタンに対応いさせる
+        //bool「inputButton」を設定されたボタンに対応させる
         switch (selectedButton) 
         {
             case ControllerButtons.False:
@@ -236,11 +236,6 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
         Instantiate(imageObj, generatePos, Quaternion.identity, rootTransform);
     }
     /*↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ボタンにアタッチするスクリプト↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓*/
-    //ゲーム終了ボタン
-    public void ExitGame()
-    {
-        Settings.exitPanelActive = true;
-    }
     public void yesExit()
     {
 #if UNITY_EDITOR
