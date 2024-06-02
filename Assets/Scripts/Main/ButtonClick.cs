@@ -306,17 +306,17 @@ public class ButtonClick : MonoBehaviourPunCallbacks　//クリック用ボタ�
     }
     public void NextScreenMode()
     {
-        if (Settings.screenModeNum < 1)
+        if (Settings.screenMode < 1)
         {
-            Settings.screenModeNum++;
+            Settings.screenMode++;
             SoundEffect.soundTrigger[3] = 1;
         }
     }
     public void PrevScreenMode()
     {
-        if (Settings.screenModeNum > 0)
+        if (Settings.screenMode > 0)
         {
-            Settings.screenModeNum--;
+            Settings.screenMode--;
             SoundEffect.soundTrigger[3] = 1;
         }
     }

@@ -10,19 +10,19 @@ public class BGM : MonoBehaviour //BGM音量調整スクリプト
     public AudioClip titleBGM, gameBGM;
     AudioSource audioSource;
     public static float BGMStage = 10;
+    string currentSceneName;
     // Start is called before the first frame update
     void Start()
     {
-        //シーン遷移時に破棄しない
-        DontDestroyOnLoad(this.gameObject);
         SettingPanel.gameObject.SetActive(false);
         //AudioSorceの取得
         audioSource = GetComponent<AudioSource>();
         //シーンによってのBGM切り替え
-        string currentSceneName = SceneManager.GetActiveScene().name;
+        currentSceneName = SceneManager.GetActiveScene().name;
         audioSource.clip = (currentSceneName == "Title") ? titleBGM : gameBGM;
         audioSource.Play();
     }
+
 
     // Update is called once per frame
     void Update()
@@ -30,6 +30,13 @@ public class BGM : MonoBehaviour //BGM音量調整スクリプト
         //BGMの範囲設定
         BGMStage = Mathf.Clamp(BGMStage, 0, maxVolume);
         SetBGMVol();
+        if (currentSceneName != SceneManager.GetActiveScene().name)
+        {
+            //シーンによってのBGM切り替え
+            currentSceneName = SceneManager.GetActiveScene().name;
+            audioSource.clip = (currentSceneName == "Title") ? titleBGM : gameBGM;
+            audioSource.Play();
+        }
     }
     void SetBGMVol()
     {

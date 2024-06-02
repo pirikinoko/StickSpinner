@@ -50,6 +50,7 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
 
     void Start()
     {
+        //どのボタンを押されたときに処理を行うかを決定（Falseが選ばれた場合はコントローラーボタンに対応しない）
         controllerButton = selectedButton.ToString();
         if (SceneManager.GetActiveScene().name == "Title")
         {
@@ -65,6 +66,7 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
     }
     void controllerPushButton()
     {
+        //スティックや十字ボタンを数値ではなく1回入力されたという形で受け付ける処理
         if (inputCrossXPlus == false && inputCrossXMinus == false)
         {
             if (ControllerInput.crossX[0] >= 0.1f) {  inputCrossXPlus = true;  }
@@ -108,7 +110,7 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
 
 
 
-
+        //boolプロパティ「inputButton」を設定されたボタンに対応いさせる
         switch (selectedButton) 
         {
             case ControllerButtons.False:
@@ -194,7 +196,7 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
 
 
       
-
+        //初期化
         lastLstickX = ControllerInput.LstickX[0];
         lastLstickY = ControllerInput.LstickY[0];
 
@@ -233,6 +235,7 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
         GameObject imageObj = (GameObject)Resources.Load(buttonName);
         Instantiate(imageObj, generatePos, Quaternion.identity, rootTransform);
     }
+    /*↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ボタンにアタッチするスクリプト↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓*/
     //ゲーム終了ボタン
     public void ExitGame()
     {
@@ -494,17 +497,17 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
     }
     public void NextScreenMode()
     {
-        if (Settings.screenModeNum < 1)
+        if (Settings.screenMode < 1)
         {
-            Settings.screenModeNum++;
+            Settings.screenMode++;
             SoundEffect.soundTrigger[3] = 1;
         }
     }
     public void PrevScreenMode()
     {
-        if (Settings.screenModeNum > 0)
+        if (Settings.screenMode > 0)
         {
-            Settings.screenModeNum--;
+            Settings.screenMode--;
             SoundEffect.soundTrigger[3] = 1;
         }
     }

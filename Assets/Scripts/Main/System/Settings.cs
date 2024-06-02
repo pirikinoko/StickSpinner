@@ -13,10 +13,10 @@ public class Settings : MonoBehaviour
     public Text languageText, screenText, guideText;
     public static bool SettingPanelActive = false, inSetting = false;
     bool InputCrossX, InputCrossY;
-    int Selected = 0, buttonSelect = 0 ,min ,max  , lastScreenNum;
-    public static int languageNum = 0, guideMode = 0, screenModeNum = 0;
+    int Selected = 0, buttonSelect = 0, itemLength  , lastScreenNum;
+    public static int languageNum = 0, guideMode = 0, screenMode = 0;
     string[] languages = { "JP", "EN" };
-    string[] screenMode = { "ウィンドウ", "フルスクリーン", "Window", "FullScreen" };
+    string[] screenModeValues = { "ウィンドウ", "フルスクリーン", "Window", "FullScreen" };
     string[] guide = { "On", "Off" };
     float[] settingStages = new float[5]; //設定項目の数
     public GameObject[] item = new GameObject[3];
@@ -35,7 +35,7 @@ public class Settings : MonoBehaviour
         SettingPanelActive = false;
         inSetting = false;
         exitPanelActive = false;
-        lastScreenNum = screenModeNum;
+        lastScreenNum = screenMode;
         SetScreenMode();
         Debug.Log(languageNum);
     }
@@ -51,7 +51,7 @@ public class Settings : MonoBehaviour
             lastLstickX = ControllerInput.LstickX[0];
             lastLstickY = ControllerInput.LstickY[0];
             languageText.text = languages[languageNum];
-            screenText.text = screenMode[(languageNum * 2) + screenModeNum];
+            screenText.text = screenModeValues[(languageNum * 2) + screenMode];
             guideText.text = guide[guideMode];
             BGMText.text = BGM.BGMStage.ToString(); 
             SEText.text = SoundEffect.SEStage.ToString();
@@ -117,15 +117,15 @@ public class Settings : MonoBehaviour
                         /*矢印キー縦*/
 
                         //上限下限の設定
-                        Selected = Mathf.Clamp(Selected, min, max);
+                        Selected = Mathf.Clamp(Selected, 0, itemLength);
                     }
                     /*設定項目の選択*/
 
                     activeButtons = FindObjectsOfType<Button>()
-            .Where(button => button.gameObject.activeSelf &&
+                            .Where(button => button.gameObject.activeSelf &&
                              !button.gameObject.name.Contains("Pause") &&
                              !button.gameObject.name.Contains("Resume"))
-            .ToArray();
+                            .ToArray();
                     if (InputCrossX == false)
                     {
                         //十字ボタン横
@@ -157,7 +157,7 @@ public class Settings : MonoBehaviour
                     }
                 }
                
-
+                //ゲーム終了画面表示時
                 if (exitPanelActive)
                 {
 
@@ -219,19 +219,19 @@ public class Settings : MonoBehaviour
                 /*ゲーム終了*/
             }
         }
-
-        if(lastScreenNum != screenModeNum)
+        //ウィンドウモード切替
+        if(lastScreenNum != screenMode)
         {
             SetScreenMode();
         }
-        lastScreenNum = screenModeNum;
+        lastScreenNum = screenMode;
         
     }
 
     private void SetScreenMode()
     {
         // 0のときはフルスクリーン
-        if (screenModeNum == 0)
+        if (screenMode == 0)
         {
             Screen.SetResolution(1280, 720, FullScreenMode.Windowed);
         }
@@ -242,6 +242,7 @@ public class Settings : MonoBehaviour
         }
     }
 
+    //選択されている項目を強調する
     void SelectEffect()
     {
         Text[] stageText = FindObjectsOfType<Text>()
@@ -252,7 +253,7 @@ public class Settings : MonoBehaviour
            .Where(item => item.gameObject.activeSelf &&
                             item.gameObject.name.Contains("Item"))
            .ToArray();
-        max = stageText.Length　-1;
+        itemLength = stageText.Length　-1;
         for (int i = 0; i < itemText.Length; i++)
         {
             itemText[i].color = Color.white;

@@ -16,8 +16,6 @@ public class SoundEffect : MonoBehaviour　//効果音呼び出しスクリプ�
     // Start is called before the first frame update
     void Start()
     {
-        //シーン遷移時に破棄しない
-        DontDestroyOnLoad(this.gameObject);
         //AudioSorceの取得
         audioSource = GetComponent<AudioSource>();
         //クールダウンの設定

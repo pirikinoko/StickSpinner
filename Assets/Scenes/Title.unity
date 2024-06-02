@@ -11736,7 +11736,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &848770240
 RectTransform:
   m_ObjectHideFlags: 0
@@ -16116,6 +16116,7 @@ GameObject:
   - component: {fileID: 1158970430}
   - component: {fileID: 1158970429}
   - component: {fileID: 1158970431}
+  - component: {fileID: 1158970432}
   m_Layer: 0
   m_Name: SEController
   m_TagString: Untagged
@@ -16260,6 +16261,18 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 58239c2e4d09096499611d83e3b68288, type: 3}
   - {fileID: 8300000, guid: d52a6b60e30ad2543b4f995743e4b32c, type: 3}
   - {fileID: 8300000, guid: 24b3d12d663c1864aadd859f518639f3, type: 3}
+--- !u!114 &1158970432
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1158970427}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a66389b5014ac1945872cbe328ab1a70, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1177690815
 GameObject:
   m_ObjectHideFlags: 0
@@ -16416,6 +16429,7 @@ GameObject:
   - component: {fileID: 1213626120}
   - component: {fileID: 1213626119}
   - component: {fileID: 1213626121}
+  - component: {fileID: 1213626122}
   m_Layer: 0
   m_Name: BGMController
   m_TagString: Untagged
@@ -16551,6 +16565,18 @@ MonoBehaviour:
   SettingPanel: {fileID: 848770239}
   titleBGM: {fileID: 8300000, guid: 263b1aa71d383394aab46989f3b6d972, type: 3}
   gameBGM: {fileID: 8300000, guid: 7cbe7daba704d504481f242f6eb39453, type: 3}
+--- !u!114 &1213626122
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1213626118}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f62df02f9227af419dce4942300f0e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1215081781
 GameObject:
   m_ObjectHideFlags: 0
@@ -16949,6 +16975,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1232668956}
+  - component: {fileID: 1232668957}
   m_Layer: 0
   m_Name: Collisions
   m_TagString: Untagged
@@ -16976,6 +17003,18 @@ Transform:
   - {fileID: 1699445681}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1232668957
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1232668955}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f62df02f9227af419dce4942300f0e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1233950197
 GameObject:
   m_ObjectHideFlags: 0
