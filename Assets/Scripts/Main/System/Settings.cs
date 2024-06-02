@@ -7,7 +7,8 @@ using System.Linq;
 public class Settings : MonoBehaviour
 {
     [SerializeField] Text confirmText, yesText, noText, BGMText, SEText;
-    [SerializeField] GameObject yesButton, noButton;
+    [SerializeField] GameObject yesButton, noButton, resumeBtnTitle, resumeBtnGame;
+    [SerializeField] GameObject[] controllerUI;
     Controller controller;
     public GameObject SettingPanel, exitPanel;
     public Text languageText, screenText, guideText;
@@ -32,12 +33,12 @@ public class Settings : MonoBehaviour
         
         Selected = 0;
         Time.timeScale = 1;
-        SettingPanelActive = false;
-        inSetting = false;
-        exitPanelActive = false;
         lastScreenNum = screenMode;
         SetScreenMode();
         Debug.Log(languageNum);
+        SettingPanelActive = false;
+        inSetting = false;
+        exitPanelActive = false;
     }
 
     void Update()
@@ -48,6 +49,7 @@ public class Settings : MonoBehaviour
             SettingPanel.gameObject.SetActive(true);
             SettingControl();
             SelectEffect();
+            SwitchUIMode();
             lastLstickX = ControllerInput.LstickX[0];
             lastLstickY = ControllerInput.LstickY[0];
             languageText.text = languages[languageNum];
@@ -120,12 +122,12 @@ public class Settings : MonoBehaviour
                         Selected = Mathf.Clamp(Selected, 0, itemLength);
                     }
                     /*設定項目の選択*/
-
                     activeButtons = FindObjectsOfType<Button>()
                             .Where(button => button.gameObject.activeSelf &&
                              !button.gameObject.name.Contains("Pause") &&
                              !button.gameObject.name.Contains("Resume"))
                             .ToArray();
+
                     if (InputCrossX == false)
                     {
                         //十字ボタン横
@@ -281,6 +283,33 @@ public class Settings : MonoBehaviour
             {
                 activeButtons[i].onClick.Invoke();
             }    
+        }
+    }
+
+    void SwitchUIMode() 
+    {
+        //キーボード,マウスのとき
+        if (!(ControllerInput.usingController))
+        {
+            for (int i = 0; i < controllerUI.Length; i++) { controllerUI[i].gameObject.SetActive(false); }
+        }
+        //コントローラーのとき
+        else if (ControllerInput.usingController)
+        {
+
+            for (int i = 0; i < controllerUI.Length; i++) { controllerUI[i].gameObject.SetActive(true); }
+        }
+
+        //ゲーム内とタイトルで挙動が違うボタンの管理
+        if (SceneManager.GetActiveScene().name == "Title")
+        {
+            resumeBtnTitle.SetActive(true);
+            resumeBtnGame.SetActive(false);
+        }
+        else
+        {
+            resumeBtnGame.SetActive(true);
+            resumeBtnTitle.SetActive(false);
         }
     }
 }

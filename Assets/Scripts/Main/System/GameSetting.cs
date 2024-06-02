@@ -12,7 +12,7 @@ public class GameSetting : MonoBehaviourPunCallbacks
     [SerializeField] Text countDown, playTimeTx;
     [SerializeField] Text[] nameTagTexts;
     [SerializeField] float timeLimit;
-    [SerializeField] GameObject canvas, frontCanvas, quickStartingPanel;
+    [SerializeField] GameObject canvas, frontCanvas, quickStartingPanel, pauseButton;
     [HideInInspector] public GameObject[] players = new GameObject[GameStart.maxPlayer];
     [HideInInspector] public GameObject[] sticks = new GameObject[GameStart.maxPlayer];
     [HideInInspector] public GameObject[] nameTags = new GameObject[GameStart.maxPlayer];
@@ -325,6 +325,7 @@ public class GameSetting : MonoBehaviourPunCallbacks
 
     void Update()
     {
+        //プレイヤーのシーン遷移確認
         if (GameStart.gameMode1 == "Online") 
         {
             ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
@@ -335,7 +336,6 @@ public class GameSetting : MonoBehaviourPunCallbacks
                 customProps["isJoined"] = isJoinedLocal;
             }
             PhotonNetwork.CurrentRoom.SetCustomProperties(customProps);
-
         }
 
         if (!allJoin)
@@ -545,6 +545,18 @@ public class GameSetting : MonoBehaviourPunCallbacks
             for (int i = 0; i < keyBoardMouseUI.Length; i++) { keyBoardMouseUI[i].gameObject.SetActive(false); }
             for (int i = 0; i < controllerUI.Length; i++) { controllerUI[i].gameObject.SetActive(true); }
         }
+
+        //ポーズ時とそれ以外の時
+        if (ButtonInGame.Paused == 1)
+        {
+            pauseButton.SetActive(false);
+        }
+        //コントローラーのとき
+        else
+        {
+            pauseButton.SetActive(true);
+        }
+
     }
 
     void CheckPlayersLeft()

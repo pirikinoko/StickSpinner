@@ -7,9 +7,7 @@ using UnityEngine.InputSystem;
 using Photon.Pun;
 public class ButtonClick : MonoBehaviourPunCallbacks　//クリック用ボタン
 {
-    public GameObject pauseButton;
     private GameSetting gameSetting;
-
     bool inputButton;
     [SerializeField] KeyCode keyBind;
     string controllerButton;
@@ -42,7 +40,11 @@ public class ButtonClick : MonoBehaviourPunCallbacks　//クリック用ボタ�
 
     void Start()
     {
-        gameSetting = GameObject.Find("Scripts").GetComponent<GameSetting>();
+        if(SceneManager.GetActiveScene().name == "Stage") 
+        {
+            gameSetting = GameObject.Find("Scripts").GetComponent<GameSetting>();
+        }
+
         controllerButton = selectedButton.ToString();
     }
 
@@ -201,7 +203,6 @@ public class ButtonClick : MonoBehaviourPunCallbacks　//クリック用ボタ�
         {
             ButtonInGame.Paused = 1;
             GameSetting.Playable = false;
-            pauseButton.gameObject.SetActive(false);
             Settings.SettingPanelActive = true;
             Settings.inSetting = true;
             Time.timeScale = 0;
@@ -261,7 +262,6 @@ public class ButtonClick : MonoBehaviourPunCallbacks　//クリック用ボタ�
         ButtonInGame.Paused = 0;
         GameSetting.startTime = -1;
         GameSetting.Playable = true;
-        pauseButton.gameObject.SetActive(true);
         Settings.SettingPanelActive = false;
         Settings.inSetting = false;
         Time.timeScale = 1;
