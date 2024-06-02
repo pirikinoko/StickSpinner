@@ -8,7 +8,6 @@ public class SoundEffect : MonoBehaviour　//効果音呼び出しスクリプ�
     [SerializeField] int maxVolume, volumeReducer;
     public AudioClip[] sounds;
     public static float SEStage =  10;
-    public Text SEText;
     AudioSource audioSource;
     const int SECount = 11;
     public static byte[] soundTrigger = new byte[SECount];
@@ -64,7 +63,7 @@ public class SoundEffect : MonoBehaviour　//効果音呼び出しスクリプ�
 
     void SetSEVol()
     {
-        audioSource.volume = SEStage / maxVolume;
+        audioSource.volume = SEStage / volumeReducer;
     }
 
 
