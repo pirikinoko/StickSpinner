@@ -10,11 +10,11 @@ using Photon.Pun;
 
 public class GameStart : MonoBehaviourPunCallbacks
 {
+    [SerializeField] int minFlagTime, maxFlagTime;
     public int maxStageNomal;     // 総ステージ数
     public static int maxPlayer = 4, minPlayer;     // 総プレイヤー数
     public static bool buttonPushable = true;
-    const int KeyboardMode = 5;
-    const int ControllerMode = 6;
+    
     float difficulty, timeFromLastAction, cycle = 0.3f;
     public GameObject mainTitle, startPanel, changePlayerNumber, stageSelect, selectGameMode, setArcadeGame, keyBoardMouseUI, selectOnlineLobby, onlineLobby, loadScreen, cursor;
     public GameObject[] controllerUI, playerIcon, playerSlot;
@@ -26,7 +26,6 @@ public class GameStart : MonoBehaviourPunCallbacks
     public static int[] teamSize = new int[4]; // チーム　A, B, C, Dにいるプレイヤーの人数
     public static int teamCount = 0; //チームの数
     public static string teamMode = "FreeForAll"; //対戦チーム分け 
-    public bool stageInfoActive { get; set; } = false;
     int lastPlayerNum, lastPhase;
     public Text playerNumberText, stageNumberText, flagTimeLimitTx;
     public static int flagTimeLimit = 90;
@@ -105,6 +104,11 @@ public class GameStart : MonoBehaviourPunCallbacks
             Stage = System.Math.Max(Stage, 1);
         }
         timeFromLastAction += Time.deltaTime;
+
+        //プレイヤー数制限
+        PlayerNumber = Mathf.Clamp(PlayerNumber, 1, maxPlayer);
+        //フラッグモード時間範囲
+        flagTimeLimit = Mathf.Clamp(flagTimeLimit, minFlagTime, maxFlagTime);
     }
 
 

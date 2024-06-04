@@ -209,12 +209,24 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 690046}
         m_TargetAssemblyTypeName: TitleButtonClick, Assembly-CSharp
-        m_MethodName: GoOnlineMode
-        m_Mode: 1
+        m_MethodName: SwitchWayToPlay
+        m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: Online
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 690046}
+        m_TargetAssemblyTypeName: TitleButtonClick, Assembly-CSharp
+        m_MethodName: PhaseSwitch
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 1
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -1399,14 +1411,14 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 98474466}
         m_TargetAssemblyTypeName: TitleButtonClick, Assembly-CSharp
-        m_MethodName: setArcadeMode
-        m_Mode: 1
+        m_MethodName: SetAndSyncGameMode
+        m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: 
+          m_StringArgument: Arcade
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &98474468
@@ -3153,24 +3165,12 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 200493535}
         m_TargetAssemblyTypeName: TitleButtonClick, Assembly-CSharp
-        m_MethodName: PrevStage
-        m_Mode: 1
+        m_MethodName: StageSwitch
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 200493535}
-        m_TargetAssemblyTypeName: TitleButtonClick, Assembly-CSharp
-        m_MethodName: syncStage
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
+          m_IntArgument: -1
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -5024,14 +5024,14 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 362053036}
         m_TargetAssemblyTypeName: TitleButtonClick, Assembly-CSharp
-        m_MethodName: setNomalMode
-        m_Mode: 1
+        m_MethodName: SetAndSyncGameMode
+        m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: 
+          m_StringArgument: Nomal
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &362053038
@@ -5385,12 +5385,12 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 378244902}
         m_TargetAssemblyTypeName: TitleButtonClick, Assembly-CSharp
-        m_MethodName: PrevGuideMode
-        m_Mode: 1
+        m_MethodName: ChangeGuideMode
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
+          m_IntArgument: -1
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -6287,12 +6287,12 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 431949549}
         m_TargetAssemblyTypeName: TitleButtonClick, Assembly-CSharp
-        m_MethodName: GainSEVol
-        m_Mode: 1
+        m_MethodName: ChangeSEVol
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
+          m_IntArgument: 1
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -6676,12 +6676,12 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 450875372}
         m_TargetAssemblyTypeName: TitleButtonClick, Assembly-CSharp
-        m_MethodName: PrevLanguage
-        m_Mode: 1
+        m_MethodName: ChangeLanguage
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
+          m_IntArgument: -1
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -8844,12 +8844,12 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 623072316}
         m_TargetAssemblyTypeName: TitleButtonClick, Assembly-CSharp
-        m_MethodName: PlusFlagTime
-        m_Mode: 1
+        m_MethodName: ChangeFlagTime
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
+          m_IntArgument: 10
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -9761,12 +9761,24 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 732273641}
         m_TargetAssemblyTypeName: TitleButtonClick, Assembly-CSharp
-        m_MethodName: NextPhaseSingle
-        m_Mode: 1
+        m_MethodName: SwitchWayToPlay
+        m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: Single
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 732273641}
+        m_TargetAssemblyTypeName: TitleButtonClick, Assembly-CSharp
+        m_MethodName: PhaseSwitch
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 1
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -10419,12 +10431,24 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 785510393}
         m_TargetAssemblyTypeName: TitleButtonClick, Assembly-CSharp
-        m_MethodName: NextPhaseArcade
-        m_Mode: 1
+        m_MethodName: SwitchGameMode
+        m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: Arcade
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 785510393}
+        m_TargetAssemblyTypeName: TitleButtonClick, Assembly-CSharp
+        m_MethodName: PhaseSwitch
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 1
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -11307,26 +11331,26 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 824849253}
         m_TargetAssemblyTypeName: TitleButtonClick, Assembly-CSharp
-        m_MethodName: NextPhase
-        m_Mode: 1
+        m_MethodName: PhaseSwitch
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
+          m_IntArgument: 1
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
       - m_Target: {fileID: 824849253}
         m_TargetAssemblyTypeName: TitleButtonClick, Assembly-CSharp
-        m_MethodName: SetModeMulti
-        m_Mode: 1
+        m_MethodName: SwitchWayToPlay
+        m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: 
+          m_StringArgument: Multi
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &824849253
@@ -12066,12 +12090,12 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 860801064}
         m_TargetAssemblyTypeName: TitleButtonClick, Assembly-CSharp
-        m_MethodName: PrevScreenMode
-        m_Mode: 1
+        m_MethodName: ChangeScreenMode
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
+          m_IntArgument: -1
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -12222,12 +12246,12 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 864738016}
         m_TargetAssemblyTypeName: TitleButtonClick, Assembly-CSharp
-        m_MethodName: PrevPhase
-        m_Mode: 1
+        m_MethodName: PhaseSwitch
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
+          m_IntArgument: -1
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -12859,6 +12883,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd95cb68d5fbd7740b331c67cb782142, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  minFlagTime: 0
+  maxFlagTime: 0
   maxStageNomal: 5
   mainTitle: {fileID: 1860077421}
   startPanel: {fileID: 0}
@@ -13227,12 +13253,12 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 905844756}
         m_TargetAssemblyTypeName: TitleButtonClick, Assembly-CSharp
-        m_MethodName: LoseSEVol
-        m_Mode: 1
+        m_MethodName: ChangeSEVol
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
+          m_IntArgument: -1
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -13896,24 +13922,12 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 936991232}
         m_TargetAssemblyTypeName: TitleButtonClick, Assembly-CSharp
-        m_MethodName: syncStage
-        m_Mode: 1
+        m_MethodName: StageSwitch
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 936991232}
-        m_TargetAssemblyTypeName: TitleButtonClick, Assembly-CSharp
-        m_MethodName: NextStage
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
+          m_IntArgument: 1
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -14584,12 +14598,24 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1015988230}
         m_TargetAssemblyTypeName: TitleButtonClick, Assembly-CSharp
-        m_MethodName: NextPhaseNomal
-        m_Mode: 1
+        m_MethodName: SwitchGameMode
+        m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: Nomal
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1015988230}
+        m_TargetAssemblyTypeName: TitleButtonClick, Assembly-CSharp
+        m_MethodName: PhaseSwitch
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 1
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -16016,12 +16042,12 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1115091898}
         m_TargetAssemblyTypeName: TitleButtonClick, Assembly-CSharp
-        m_MethodName: LoseBGMVol
-        m_Mode: 1
+        m_MethodName: ChangeBGMVol
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
+          m_IntArgument: -1
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -17328,12 +17354,12 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1233950199}
         m_TargetAssemblyTypeName: TitleButtonClick, Assembly-CSharp
-        m_MethodName: NextGuideMode
-        m_Mode: 1
+        m_MethodName: ChangeGuideMode
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
+          m_IntArgument: 1
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -17814,7 +17840,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1263605394
 RectTransform:
   m_ObjectHideFlags: 0
@@ -19398,12 +19424,12 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1409100232}
         m_TargetAssemblyTypeName: TitleButtonClick, Assembly-CSharp
-        m_MethodName: GainBGMVol
-        m_Mode: 1
+        m_MethodName: ChangeBGMVol
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
+          m_IntArgument: 1
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -19696,12 +19722,12 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1444053256}
         m_TargetAssemblyTypeName: TitleButtonClick, Assembly-CSharp
-        m_MethodName: MinusButton
-        m_Mode: 1
+        m_MethodName: ChangePlayerNum
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
+          m_IntArgument: -1
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -20255,12 +20281,12 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1507050014}
         m_TargetAssemblyTypeName: TitleButtonClick, Assembly-CSharp
-        m_MethodName: NextScreenMode
-        m_Mode: 1
+        m_MethodName: ChangeScreenMode
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
+          m_IntArgument: 1
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -20640,12 +20666,12 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1579971349}
         m_TargetAssemblyTypeName: TitleButtonClick, Assembly-CSharp
-        m_MethodName: NextPhase
-        m_Mode: 1
+        m_MethodName: PhaseSwitch
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
+          m_IntArgument: 1
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -22886,12 +22912,12 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1749815839}
         m_TargetAssemblyTypeName: TitleButtonClick, Assembly-CSharp
-        m_MethodName: NextLanguage
-        m_Mode: 1
+        m_MethodName: ChangeLanguage
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
+          m_IntArgument: 1
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -23825,7 +23851,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1860077423
 Transform:
   m_ObjectHideFlags: 0
@@ -24876,12 +24902,12 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1933410072}
         m_TargetAssemblyTypeName: TitleButtonClick, Assembly-CSharp
-        m_MethodName: PlusButton
-        m_Mode: 1
+        m_MethodName: ChangePlayerNum
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
+          m_IntArgument: 1
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -25234,12 +25260,12 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1978132737}
         m_TargetAssemblyTypeName: TitleButtonClick, Assembly-CSharp
-        m_MethodName: MinusFlagTime
-        m_Mode: 1
+        m_MethodName: ChangeFlagTime
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
+          m_IntArgument: -10
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
