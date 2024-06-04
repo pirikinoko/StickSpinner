@@ -74,10 +74,6 @@ public class ShowHighScore : MonoBehaviour
             data.multiHighScore[i] = multiHighScore[i];
             data.multiArcadeHighScore[i] = multiArcadeHighScore[i];
         }
-        data.languageNum = Settings.languageNum;
-        data.screenModeNum = Settings.screenMode;
-        data.BGM = BGM.BGMStage;
-        data.SE = SoundEffect.SEStage;
     }
 }
 

@@ -62,6 +62,12 @@ public class Settings : MonoBehaviour
             sceneName = SceneManager.GetActiveScene().name;
             SwitchButtonFunction();
         }
+        //データ保存
+        SaveData data = new SaveData();
+        data.languageNum = languageNum;
+        data.screenModeNum = screenMode;
+        data.BGM = BGM.BGMStage;
+        data.SE = SoundEffect.SEStage;
     }
 
     void Update()
@@ -95,7 +101,10 @@ public class Settings : MonoBehaviour
         {
             SettingPanel.gameObject.SetActive(false);
         }
-
+        //上限下限の制限
+        languageNum = Mathf.Clamp(languageNum, 0, languages.Length - 1);
+        screenMode = Mathf.Clamp(screenMode, 0, screenModeValues.Length / languages.Length);
+        guideMode = Mathf.Clamp(guideMode, 0, 1);
     }
 
     void SettingControl()

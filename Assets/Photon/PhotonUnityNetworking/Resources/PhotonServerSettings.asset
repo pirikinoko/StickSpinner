@@ -88,6 +88,7 @@ MonoBehaviour:
   - SetDefaultArcade
   - SyncVelocity
   - UpdateVelocity
+  - RPCChangeFlagTime
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 0

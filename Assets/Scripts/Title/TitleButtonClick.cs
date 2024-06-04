@@ -7,13 +7,6 @@ using System.Text.RegularExpressions;
 using Photon.Pun;
 public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボタン
 {
-    const int Title = 0;
-    const int SelectStage = 1;
-    const int SelectPNumber = 2;
-    const int Stage1 = 1;
-    const int Stage2 = 2;
-    const int Stage3 = 3;
-    const int Stage4 = 4;
     public static int[] sensChange = new int[4];
     TitleButton titleButton;
     GameStart gameStart;
@@ -248,67 +241,29 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
     {
         Settings.exitPanelActive = false;
     }
-    //次の画面(シングルプレイ)
-    public void NextPhaseSingle()
+    //ゲームモード変更
+    public void SwitchWayToPlay(string gameMode)
     {
-        GameStart.gameMode1 = "Single";
+        GameStart.gameMode1 = gameMode;
         SoundEffect.soundTrigger[2] = 1;
-        GameStart.phase++;
     }
-    //次の画面(マルチプレイ)
-    public void NextPhase()
+    //Phase移動
+    public void PhaseSwitch(int difference)
     {
         SoundEffect.soundTrigger[2] = 1;
-        GameStart.phase++;
+        GameStart.phase += difference;
     }
 
-    public void SetModeMulti()
-    {
-        GameStart.gameMode1 = "Multi";
-    }
-    public void GoOnlineMode()
-    {
-        GameStart.gameMode1 = "Online";
-        SoundEffect.soundTrigger[2] = 1;
-        GameStart.phase++;
-    }
-    public void GoStageSelect()
-    {
-        SoundEffect.soundTrigger[2] = 1;
-        GameStart.phase = 6;
-    }
-    public void GoTeamSelect()
-    {
-        SoundEffect.soundTrigger[2] = 1;
-        GameStart.phase = 8;
-    }
-    public void NextPhaseOnline()
-    {
-        GameStart.gameMode1 = "Online";
-        if (NetWorkMain.netWorkId != NetWorkMain.leaderId)
-        {
-            return;
-        }
-        SoundEffect.soundTrigger[2] = 1;
-        GameStart.phase++;
-    }
     //モード変更
-    public void setNomalMode()
+    public void SetAndSyncGameMode(string gameMode)
     {
-        GameStart.gameMode2 = "Nomal";
+        GameStart.gameMode2 = gameMode;
         NetWorkMain.UpdateRoomStats(1);
         photonView.RPC(nameof(SetCustomPropsStage), RpcTarget.All);
-        NetWorkMain.UpdateGameMode("Nomal");
+        NetWorkMain.UpdateGameMode(gameMode);
         photonView.RPC(nameof(SetCustomPropsGameMode), RpcTarget.All);
     }
-    public void setArcadeMode()
-    {
-        GameStart.gameMode2 = "Arcade";
-        NetWorkMain.UpdateRoomStats(1);
-        photonView.RPC(nameof(SetCustomPropsStage), RpcTarget.All);
-        NetWorkMain.UpdateGameMode("Arcade");
-        photonView.RPC(nameof(SetCustomPropsGameMode), RpcTarget.All);
-    }
+
 
 
     [PunRPC]
@@ -325,77 +280,6 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
             }
         }
     }
-
-
-    //次の画面(通常モード)
-    public void NextPhaseNomal()
-    {
-        GameStart.gameMode2 = "Nomal";
-        SoundEffect.soundTrigger[2] = 1;
-        GameStart.phase++;
-    }
-    //次の画面(ミニゲーム)
-    public void NextPhaseArcade()
-    {
-        GameStart.gameMode2 = "Arcade";
-        SoundEffect.soundTrigger[2] = 1;
-        GameStart.phase++;
-    }
-    public void PrevPhase()
-    {
-        GameStart.phase--;
-        StopAllCoroutines();
-        SoundEffect.soundTrigger[2] = 1;
-    }
-
-    //部屋を抜ける
-    public void LeaveRoom()
-    {
-        PhotonNetwork.LeaveRoom();
-    }
-
-
-    //ステージ変更
-    public void NextStage()
-    {
-        GameStart.Stage++;
-        SoundEffect.soundTrigger[3] = 1;
-    }
-    public void PrevStage()
-    {
-        GameStart.Stage--;
-        SoundEffect.soundTrigger[3] = 1;
-    }
-
-    //プレイヤー数増減
-    public void PlusButton()
-    {
-        if (GameStart.PlayerNumber < GameStart.maxPlayer)
-        {
-            GameStart.PlayerNumber++;
-            SoundEffect.soundTrigger[3] = 1;
-        }
-    }
-    public void MinusButton()
-    {
-        if (GameStart.PlayerNumber > GameStart.minPlayer)
-        {
-            GameStart.PlayerNumber--;
-            SoundEffect.soundTrigger[3] = 1;
-        }
-    }
-
-    public void OpenInfo()
-    {
-        gameStart.stageInfoActive = true;
-    }
-
-    public void CloseInfo()
-    {
-        gameStart.stageInfoActive = false;
-    }
-
-
     [PunRPC]
     void SetCustomPropsGameMode()
     {
@@ -407,135 +291,105 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
         }
     }
 
-    
+    //ゲームモード変更
+    public void SwitchGameMode(string gameMode)
+    {
+        GameStart.gameMode2 = gameMode;
+    }
+
+
+    //部屋を抜ける
+    public void LeaveRoom()
+    {
+        PhotonNetwork.LeaveRoom();
+    }
+
+
+    //ステージ変更
+    public void StageSwitch(int difference)
+    {
+        GameStart.Stage += difference;
+        SoundEffect.soundTrigger[3] = 1;
+    }
+
+
+    //プレイヤー数増減
+    public void ChangePlayerNum(int difference)
+    {
+        GameStart.PlayerNumber += difference;
+        SoundEffect.soundTrigger[3] = 1;
+    }
+
+
+
     public void SettingPanelTrigger()    //設定画面の表示
     {
         Settings.SettingPanelActive = !(Settings.SettingPanelActive);
         Settings.inSetting = !(Settings.inSetting);
     }
 
-    public void PlusFlagTime()
+    public void ChangeFlagTime(int difference)
     {
         SoundEffect.soundTrigger[3] = 1;
+        //オンラインならRPCで全体に適用する
         if (PhotonNetwork.InRoom && NetWorkMain.leaderId == NetWorkMain.netWorkId)
         {
-            photonView.RPC(nameof(RPCPlusFlagTime), RpcTarget.All);
+            photonView.RPC(nameof(RPCChangeFlagTime), RpcTarget.All, difference);
             return;
         }
-
-        GameStart.flagTimeLimit += 10;
-        GameStart.flagTimeLimit = System.Math.Min(GameStart.flagTimeLimit, 150);
+        GameStart.flagTimeLimit += difference;
     }
-    public void MinusFlagTime()
-    {
-        SoundEffect.soundTrigger[3] = 1;
-        if (PhotonNetwork.InRoom && NetWorkMain.leaderId == NetWorkMain.netWorkId)
-        {
-            photonView.RPC(nameof(RPCMinusFlagTime), RpcTarget.All);
-            return;
-        }
 
-        GameStart.flagTimeLimit -= 10;
-        GameStart.flagTimeLimit = System.Math.Max(40, GameStart.flagTimeLimit);
-
-    }
+    
     [PunRPC]
-    void RPCPlusFlagTime()
+    void RPCChangeFlagTime(int difference)
     {
-        GameStart.flagTimeLimit += 10;
-        GameStart.flagTimeLimit = System.Math.Min(GameStart.flagTimeLimit, 150);
-    }
-    [PunRPC]
-    void RPCMinusFlagTime()
-    {
-        GameStart.flagTimeLimit -= 10;
-        GameStart.flagTimeLimit = System.Math.Max(40, GameStart.flagTimeLimit);
+        GameStart.flagTimeLimit -= difference;
     }
   
 
     //設定画面のボタン
-    public void GainBGMVol()
+    public void ChangeBGMVol(int difference)
     {
-        BGM.BGMStage++;
+        BGM.BGMStage += difference;
         SoundEffect.soundTrigger[3] = 1;
     }
-    public void LoseBGMVol()
+
+    public void ChangeSEVol(int difference)
     {
-        BGM.BGMStage--;
+        SoundEffect.SEStage += difference;
         SoundEffect.soundTrigger[3] = 1;
     }
-    public void GainSEVol()
+
+    public void ChangeLanguage(int difference)
     {
-        SoundEffect.SEStage++;
+            Settings.languageNum += difference;
+            SoundEffect.soundTrigger[3] = 1;
+    }
+
+    public void ChangeScreenMode(int difference)
+    {
+            Settings.screenMode += difference;
+            SoundEffect.soundTrigger[3] = 1;
+    }
+    public void ChangeGuideMode(int difference)
+    {
+        Settings.guideMode += difference;
         SoundEffect.soundTrigger[3] = 1;
-    }
-    public void LoseSEVol()
-    {
-        SoundEffect.SEStage--;
-        SoundEffect.soundTrigger[3] = 1;
-    }
-    public void NextLanguage()
-    {
-        if (Settings.languageNum < 1)
-        {
-            Settings.languageNum++;
-            SoundEffect.soundTrigger[3] = 1;
-        }
-    }
-    public void PrevLanguage()
-    {
-        if (Settings.languageNum > 0)
-        {
-            Settings.languageNum--;
-            SoundEffect.soundTrigger[3] = 1;
-        }
-    }
-    public void NextScreenMode()
-    {
-        if (Settings.screenMode < 1)
-        {
-            Settings.screenMode++;
-            SoundEffect.soundTrigger[3] = 1;
-        }
-    }
-    public void PrevScreenMode()
-    {
-        if (Settings.screenMode > 0)
-        {
-            Settings.screenMode--;
-            SoundEffect.soundTrigger[3] = 1;
-        }
-    }
-    public void NextGuideMode()
-    {
-        if (Settings.guideMode < 1)
-        {
-            Settings.guideMode++;
-            SoundEffect.soundTrigger[3] = 1;
-        }
-    }
-    public void PrevGuideMode()
-    {
-        if (Settings.guideMode > 0)
-        {
-            Settings.guideMode--;
-            SoundEffect.soundTrigger[3] = 1;
-        }
     }
 
 
-    [PunRPC]
     public void RPCsyncLeader()
     {
         photonView.RPC(nameof(syncLeader), RpcTarget.All);
     }
-    [PunRPC]
+
     public void RPCSetTeam()
     {
         SoundEffect.soundTrigger[3] = 1;
         photonView.RPC(nameof(SetTeam), RpcTarget.All, NetWorkMain.netWorkId);
     }
-    [PunRPC]
+
     public void RPCSetLeader()
     {
         if (NetWorkMain.netWorkId != NetWorkMain.leaderId)
