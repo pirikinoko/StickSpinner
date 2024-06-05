@@ -12,7 +12,7 @@ public class Settings : MonoBehaviour
     Controller controller;
     public GameObject SettingPanel, exitPanel;
     public Text languageText, screenText, guideText;
-    public static bool SettingPanelActive = false, inSetting = false;
+    public static bool SettingPanelActive = false;
     bool InputCrossX, InputCrossY;
     int Selected = 0, buttonSelect = 0, itemLength  , lastScreenNum;
     public static int languageNum = 0, guideMode = 0, screenMode = 0;
@@ -37,7 +37,6 @@ public class Settings : MonoBehaviour
         SetScreenMode();
         Debug.Log(languageNum);
         SettingPanelActive = false;
-        inSetting = false;
         exitPanelActive = false;
         GetComponent<Canvas>().worldCamera = GameObject.Find("Main Camera").GetComponent<Camera>();
         //シーンによっての設定画面の機能の切り替え
@@ -55,7 +54,6 @@ public class Settings : MonoBehaviour
             SetScreenMode();
             Debug.Log(languageNum);
             SettingPanelActive = false;
-            inSetting = false;
             exitPanelActive = false;
             GetComponent<Canvas>().worldCamera = GameObject.Find("Main Camera").GetComponent<Camera>();
             //シーンによってのBGM切り替え
@@ -117,7 +115,7 @@ public class Settings : MonoBehaviour
 
         for (int i = 0; i < GameStart.PlayerNumber; i++)
         {
-            if (inSetting)
+            if (SettingPanelActive)
             {
                 if (!exitPanelActive)
                 {

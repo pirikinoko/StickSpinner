@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
 using Photon.Pun;
 using System.Linq;
-public class TitleButton : MonoBehaviourPunCallbacks
+public class SelectButton : MonoBehaviourPunCallbacks
 {
     // ボタンの長押し時間
     [SerializeField]
@@ -205,7 +205,7 @@ public class TitleButton : MonoBehaviourPunCallbacks
         //選択中のボタンをクリック
         if (ControllerInput.jump[0] || Input.GetKeyDown(KeyCode.Return) && GameStart.buttonPushable)
         {
-            if (Settings.inSetting) { return; }
+            if (Settings.SettingPanelActive) { return; }
             if (activeButtons.Length != 0)
             {
                 activeButtons[targetButton].onClick.Invoke();

@@ -10,9 +10,11 @@ public class Trigger :MonoBehaviourPunCallbacks
     float   pointTimer;
     int playerId;                   // プレイヤー番号(1～4)      
     GameMode gamemode;
+    GameSetting gameSetting;
     int checkNum = 0;
     void Start()
     {
+        gameSetting = GameObject.Find("Scripts").GetComponent<GameSetting>();
         gamemode = GameObject.Find("Scripts").GetComponent<GameMode>();
 
         // ボディかスティックより ID を得る
@@ -59,7 +61,7 @@ public class Trigger :MonoBehaviourPunCallbacks
             {
 
                 {
-                    if (GameSetting.playTime > 0 && ButtonInGame.Paused != 1)
+                    if (GameSetting.playTime > 0 && !gameSetting.isPaused)
                     {
                         pointTimer += Time.deltaTime;
                         if (pointTimer > 1)

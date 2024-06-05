@@ -10,6 +10,8 @@ public class ArrowEffect : MonoBehaviour
     public float speed = 1.3f, delay = 0;
     Rigidbody2D rbody2D;
     RigidbodyConstraints2D defaultConstraints;
+    GameSetting gameSetting;
+
     public enum Direction
     {
         Right,
@@ -36,6 +38,7 @@ public class ArrowEffect : MonoBehaviour
     }
     void Start()
     {
+        gameSetting = GameObject.Find("Scripts").GetComponent<GameSetting>();
         start = false;
         if (optionStrings[(int)selectedDirection] == "Left")
         {
@@ -70,7 +73,7 @@ public class ArrowEffect : MonoBehaviour
             return;
         }
         RigidbodyConstraints2D constraints = rbody2D.constraints;
-            if (ButtonInGame.Paused == 1)
+            if (gameSetting.isPaused)
             {
                 constraints = RigidbodyConstraints2D.FreezePosition;
             }

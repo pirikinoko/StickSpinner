@@ -5,16 +5,17 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.Text.RegularExpressions;
 using Photon.Pun;
-public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボタン
+public class ButtonClick : MonoBehaviourPunCallbacks　//クリック用ボタン
 {
     public static int[] sensChange = new int[4];
-    TitleButton titleButton;
+    SelectButton selectButton;
     GameStart gameStart;
+    GameSetting gameSetting;
     //コントローラー対応 
     bool inputButton;
     [SerializeField] KeyCode keyBind;
     string controllerButton;
-    bool inputCrossXPlus, inputCrossXMinus, inputCrossYPlus, inputCrossYMinus, inputLstickXPlus,  inputLstickXMinus, inputLstickYPlus, inputLstickYMinus;
+    bool inputCrossXPlus, inputCrossXMinus, inputCrossYPlus, inputCrossYMinus, inputLstickXPlus, inputLstickXMinus, inputLstickYPlus, inputLstickYMinus;
     float lastLstickX, lastLstickY;
     //対応するコントローラーボタンの選択肢
     public enum ControllerButtons
@@ -48,7 +49,7 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
         if (SceneManager.GetActiveScene().name == "Title")
         {
             gameStart = GameObject.Find("Systems").GetComponent<GameStart>();
-            titleButton = GameObject.Find("Systems").GetComponent<TitleButton>();
+            selectButton = GameObject.Find("Systems").GetComponent<SelectButton>();
         }
 
     }
@@ -57,19 +58,35 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
     {
         controllerPushButton();
     }
+    // このスクリプトが有効になったときにイベントリスナーを登録
+    void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    // このスクリプトが無効になったときにイベントリスナーを解除
+    void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        gameSetting = GameObject.Find("Scripts").GetComponent<GameSetting>();
+    }
     void controllerPushButton()
     {
         //スティックや十字ボタンを数値ではなく1回入力されたという形で受け付ける処理
         if (inputCrossXPlus == false && inputCrossXMinus == false)
         {
-            if (ControllerInput.crossX[0] >= 0.1f) {  inputCrossXPlus = true;  }
-            else if (ControllerInput.crossX[0] <= -0.1f) { inputCrossXMinus = true;  }
+            if (ControllerInput.crossX[0] >= 0.1f) { inputCrossXPlus = true; }
+            else if (ControllerInput.crossX[0] <= -0.1f) { inputCrossXMinus = true; }
         }
 
         if (inputCrossYPlus == false && inputCrossYMinus == false)
         {
             if (ControllerInput.crossY[0] >= 0.1f) { inputCrossYPlus = true; }
-            else if (ControllerInput.crossY[0] <= -0.1f) { inputCrossYMinus = true;  }
+            else if (ControllerInput.crossY[0] <= -0.1f) { inputCrossYMinus = true; }
         }
 
 
@@ -80,7 +97,7 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
         if (ControllerInput.LstickY[0] > 0.5f) { inputLstickYPlus = true; }
         else if (ControllerInput.LstickY[0] < -0.5f) { inputLstickYMinus = true; }
         //入力リセット
-        if (lastLstickX> 0.1f || lastLstickY < -0.1f ) 
+        if (lastLstickX > 0.1f || lastLstickY < -0.1f)
         {
             inputLstickXPlus = false;
             inputLstickXMinus = false;
@@ -90,12 +107,12 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
             inputLstickYPlus = false;
             inputLstickYMinus = false;
         }
-        if (ControllerInput.crossX[0] == 0) 
-        { 
+        if (ControllerInput.crossX[0] == 0)
+        {
             inputCrossXPlus = false;
             inputCrossXMinus = false;
         }
-        if (ControllerInput.crossY[0] == 0) 
+        if (ControllerInput.crossY[0] == 0)
         {
             inputCrossYPlus = false;
             inputCrossYMinus = false;
@@ -104,7 +121,7 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
 
 
         //bool「inputButton」を設定されたボタンに対応させる
-        switch (selectedButton) 
+        switch (selectedButton)
         {
             case ControllerButtons.False:
                 inputButton = false;
@@ -165,43 +182,43 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
                 inputButton = ControllerInput.start[0];
                 break;
         }
-  
+
         //設定画面オンオフ
         if (Input.GetKeyDown(KeyCode.Escape) || ControllerInput.start[0])
         {
-            if (Settings.inSetting && this.name.Contains("Resume"))
+            if (Settings.SettingPanelActive && this.name.Contains("Resume"))
             {
                 SettingPanelTrigger();
             }
-            else if (!Settings.inSetting && this.name.Contains("Pause"))
+            else if (!Settings.SettingPanelActive && this.name.Contains("Pause"))
             {
                 SettingPanelTrigger();
             }
             return;
         }
         //ボタンをクリックしたことに
-        if ((inputButton || Input.GetKeyDown(keyBind)) && GameStart.buttonPushable)  
+        if ((inputButton || Input.GetKeyDown(keyBind)) && GameStart.buttonPushable)
         {
-            if (Settings.inSetting) { return; }
+            if (Settings.SettingPanelActive) { return; }
             GameStart.buttonPushable = false;
             this.GetComponent<Button>().onClick.Invoke();
         }
 
 
-      
+
         //初期化
         lastLstickX = ControllerInput.LstickX[0];
         lastLstickY = ControllerInput.LstickY[0];
 
-            inputLstickXPlus = false;
-            inputLstickXMinus = false;
-            inputLstickYPlus = false;
-            inputLstickYMinus = false;
-            inputCrossXPlus = false;
-            inputCrossXMinus = false;
-            inputCrossYPlus = false;
-            inputCrossYMinus = false;
-  
+        inputLstickXPlus = false;
+        inputLstickXMinus = false;
+        inputLstickYPlus = false;
+        inputLstickYMinus = false;
+        inputCrossXPlus = false;
+        inputCrossXMinus = false;
+        inputCrossYPlus = false;
+        inputCrossYMinus = false;
+
     }
 
     //対応するボタンを表示
@@ -209,11 +226,11 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
     {
         Transform rootTransform = transform.root;
         Vector2 generatePos = targetButtom.transform.position;
-        if(direction == "UP")
+        if (direction == "UP")
         {
             generatePos.y += space;
         }
-        else if(direction == "DOWN")
+        else if (direction == "DOWN")
         {
             generatePos.y -= space;
         }
@@ -325,8 +342,53 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
     public void SettingPanelTrigger()    //設定画面の表示
     {
         Settings.SettingPanelActive = !(Settings.SettingPanelActive);
-        Settings.inSetting = !(Settings.inSetting);
     }
+    //ポーズ処理
+    public void PauseGame()
+    {
+        if (GameSetting.startTime < 0 && GameMode.Finished == false && GameMode.Goaled == false)
+        {
+            gameSetting.isPaused = true;
+            GameSetting.Playable = false;
+            Settings.SettingPanelActive = true;
+            Time.timeScale = 0;
+        }
+        if (GameStart.gameMode1 == "Online")
+        {
+            Time.timeScale = 1;
+            GameSetting.Playable = true;
+        }
+    }
+
+    public void RestartGame()
+    {
+        gameSetting.isPaused = false;
+        GameSetting.startTime = -1;
+        GameSetting.Playable = true;
+        Time.timeScale = 1;
+    }
+    public void BackToTitle()
+    {
+        SoundEffect.soundTrigger[2] = 1;
+        if (GameStart.gameMode1 == "Online")
+        {
+            photonView.RPC("DeleatPlayer", RpcTarget.All, NetWorkMain.netWorkId);
+            if (MatchmakingView.gameModeQuick == "Quick")
+            {
+                PhotonNetwork.LeaveRoom();
+                PhotonNetwork.LeaveLobby();
+            }
+        }
+        SceneManager.LoadScene("Title");
+    }
+
+    [PunRPC]
+    void DeleatPlayer(int id)
+    {
+        GameSetting.playerLeft[id - 1] = true;
+    }
+
+
 
     public void ChangeFlagTime(int difference)
     {
@@ -340,13 +402,13 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
         GameStart.flagTimeLimit += difference;
     }
 
-    
+
     [PunRPC]
     void RPCChangeFlagTime(int difference)
     {
         GameStart.flagTimeLimit -= difference;
     }
-  
+
 
     //設定画面のボタン
     public void ChangeBGMVol(int difference)
@@ -363,14 +425,14 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
 
     public void ChangeLanguage(int difference)
     {
-            Settings.languageNum += difference;
-            SoundEffect.soundTrigger[3] = 1;
+        Settings.languageNum += difference;
+        SoundEffect.soundTrigger[3] = 1;
     }
 
     public void ChangeScreenMode(int difference)
     {
-            Settings.screenMode += difference;
-            SoundEffect.soundTrigger[3] = 1;
+        Settings.screenMode += difference;
+        SoundEffect.soundTrigger[3] = 1;
     }
     public void ChangeGuideMode(int difference)
     {
@@ -432,7 +494,7 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
     public void ReadyButton()
     {
         int targetId = int.Parse(Regex.Replace(this.gameObject.name, @"[^0-9]", ""));
-        if(NetWorkMain.netWorkId != targetId) { return; }
+        if (NetWorkMain.netWorkId != targetId) { return; }
         ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
         if (customProps.ContainsKey("isReady"))
         {
@@ -440,11 +502,11 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
             isReadyLocal[targetId - 1] = !isReadyLocal[targetId - 1];
             customProps["isReady"] = isReadyLocal;
             PhotonNetwork.CurrentRoom.SetCustomProperties(customProps);
-            if(isReadyLocal[targetId - 1] == true) 
+            if (isReadyLocal[targetId - 1] == true)
             {
                 SoundEffect.soundTrigger[10] = 1;
             }
-            else 
+            else
             {
                 SoundEffect.soundTrigger[9] = 1;
             }
@@ -473,7 +535,7 @@ public class TitleButtonClick : MonoBehaviourPunCallbacks　//クリック用ボ
         if (PhotonNetwork.InRoom)
         {
             PhotonNetwork.LeaveRoom();
-        }   
+        }
     }
     public void DisconnectLobby()
     {
