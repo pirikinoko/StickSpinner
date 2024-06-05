@@ -9,7 +9,9 @@ public class ActiveObject : MonoBehaviour  //動く床などのオブジェク�
     string direction = "Right";
     public float speed = 1.3f, delay = 0;
     Rigidbody2D rbody2D;
+    GameSetting gameSetting;
     RigidbodyConstraints2D defaultConstraints;
+
     public enum Direction
     {
         Right,
@@ -37,7 +39,7 @@ public class ActiveObject : MonoBehaviour  //動く床などのオブジェク�
 
     void Start()
     {
-
+        gameSetting = GameObject.Find("Scripts").GetComponent<GameSetting>();
         start = false;
         if (optionStrings[(int)selectedDirection] == "Left")
         {
@@ -96,7 +98,7 @@ public class ActiveObject : MonoBehaviour  //動く床などのオブジェク�
             if (this.gameObject.name.Contains("Anim")) { return; }
             RigidbodyConstraints2D constraints = rbody2D.constraints;
 
-            if (ButtonInGame.Paused == 1)
+            if (gameSetting.isPaused)
             {
                 constraints = RigidbodyConstraints2D.FreezePosition;
             }
@@ -153,7 +155,7 @@ public class ActiveObject : MonoBehaviour  //動く床などのオブジェク�
 
     void ColReverse()
     {
-        if (ButtonInGame.Paused == 1)
+        if (gameSetting.isPaused)
         {
             rbody2D.velocity = new Vector2(0f, 0f);
         }

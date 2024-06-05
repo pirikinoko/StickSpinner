@@ -206,7 +206,7 @@ public class Controller : MonoBehaviourPunCallbacks
 
         if (!(isRespowing))
         {
-            if (GameSetting.Playable && ButtonInGame.Paused != 1)
+            if (GameSetting.Playable && !gameSetting.isPaused)
             {
                 selfDeath();
                 Jump();
@@ -245,18 +245,18 @@ public class Controller : MonoBehaviourPunCallbacks
         if (GameStart.gameMode1 == "Online") { return; }
         // プレイヤー速度取得
         Playerspeed = ((transform.parent.gameObject.transform.position - latestPos) / Time.deltaTime);
-        if (ButtonInGame.Paused == 1 && saveCount == 0)
+        if (gameSetting.isPaused && saveCount == 0)
         {
             pausedPos = transform.parent.gameObject.transform.position;
             speedWhenPaused = Playerspeed;
             saveCount = 1;
         }
-        if (ButtonInGame.Paused == 1)
+        if (gameSetting.isPaused)
         {
             stickRb.velocity = new Vector2(0, 0);
             transform.parent.gameObject.transform.position = pausedPos;
         }
-        if (ButtonInGame.Paused == 0 && saveCount == 1)
+        if (gameSetting.isPaused && saveCount == 1)
         {
             stickRb.velocity = new Vector2(speedWhenPaused.x * 2.1f, speedWhenPaused.y * 2.1f);
             saveCount = 0;
@@ -276,7 +276,7 @@ public class Controller : MonoBehaviourPunCallbacks
             coolTime -= Time.deltaTime;
             return;   //処理中断
         }
-        if (GameSetting.Playable && ButtonInGame.Paused != 1) //プレイヤー数選択画面でも操作可能
+        if (GameSetting.Playable && !gameSetting.isPaused) //プレイヤー数選択画面でも操作可能
         {
             if (!NetWorkMain.isOnline || (NetWorkMain.isOnline && photonView.IsMine))
             {
@@ -320,7 +320,7 @@ public class Controller : MonoBehaviourPunCallbacks
     // 移動
     void Move()
     {
-        if (GameSetting.Playable && ButtonInGame.Paused != 1) //プレイヤー数選択画面でも操作可能
+        if (GameSetting.Playable && !gameSetting.isPaused) //プレイヤー数選択画面でも操作可能
         {
             if (!NetWorkMain.isOnline)
             {

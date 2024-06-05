@@ -22,6 +22,7 @@ public class GameSetting : MonoBehaviourPunCallbacks
     string[] startText = { "スタート", "Start" };
     public static bool Playable = false, allJoin = false, setupEnded = false;
     public static bool[] playerLeft = new bool[4];
+    public bool isPaused = false;
     //タイム
     float elapsedTime;
     public static float playTime;
@@ -74,7 +75,9 @@ public class GameSetting : MonoBehaviourPunCallbacks
         startTrigger = 0;
         allJoin = false;
         setupEnded = false;
+        isPaused = false;
         coroutineEnded = false;
+        Playable = false;
         ingameLog = GameObject.Find("Scripts").GetComponent<IngameLog>();
         for (int i = 0; i < 4; i++)
         {
@@ -442,7 +445,7 @@ public class GameSetting : MonoBehaviourPunCallbacks
                 SoundTime = 1;
             }
         }
-        if (startTime < 0 && (ButtonInGame.Paused != 1 || GameStart.gameMode1 == "Online")) //ゲーム開始
+        if (startTime < 0 && (!isPaused || GameStart.gameMode1 == "Online")) //ゲーム開始
         {
 
             if(!GameMode.Finished && !GameMode.Goaled) 
@@ -546,17 +549,8 @@ public class GameSetting : MonoBehaviourPunCallbacks
             for (int i = 0; i < controllerUI.Length; i++) { controllerUI[i].gameObject.SetActive(true); }
         }
 
-        //ポーズ時とそれ以外の時
-        if (ButtonInGame.Paused == 1)
-        {
-            pauseButton.SetActive(false);
-        }
-        //コントローラーのとき
-        else
-        {
-            pauseButton.SetActive(true);
-        }
-
+        //ポーズボタン表示
+        pauseButton.SetActive(!isPaused);
     }
 
     void CheckPlayersLeft()
