@@ -34,7 +34,7 @@ public class ArcadeTeamChange : MonoBehaviourPunCallbacks
         ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
         int targetId = NetWorkMain.netWorkId - 1;
         if (GameStart.PlayerNumber == 2) { return; }
-        if (GameStart.Stage == 1)
+        if (GameStart.stage == 1)
         {
             /*ボタン選択（縦）*/
             if (lastLstickX[0] > 0.1f || lastLstickX[0] < -0.1f || lastLstickY[0] > 0.1f || lastLstickY[0] < -0.1f) { return; }
@@ -154,7 +154,7 @@ public class ArcadeTeamChange : MonoBehaviourPunCallbacks
     void ArcadeControll()
     {
         if(GameStart.PlayerNumber == 2) { return; }
-        if(GameStart.Stage == 1)
+        if(GameStart.stage == 1)
         {
             //チーム選択
             for (int i = 0; i < GameStart.PlayerNumber; i++)

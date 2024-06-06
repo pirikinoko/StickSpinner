@@ -16,7 +16,7 @@ public class DebugScript : MonoBehaviour　//デバッグ用スクリプト
     {
         GameStart.gameMode1 = targetMode1;
         GameStart.gameMode2 = targetMode2;
-        GameStart.Stage = targetStage;
+        GameStart.stage = targetStage;
         GameStart.flagTimeLimit  = timeLimit;
         GameStart.PlayerNumber = playerNumber;
         GameStart.teamMode = teamMode;

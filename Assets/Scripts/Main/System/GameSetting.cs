@@ -107,7 +107,7 @@ public class GameSetting : MonoBehaviourPunCallbacks
             switch (GameStart.gameMode2)
             {
                 case "Nomal":
-                    stageObjectSingle[GameStart.Stage - 1].gameObject.SetActive(true);
+                    stageObjectSingle[GameStart.stage - 1].gameObject.SetActive(true);
                     tilemap.color = new Color32(50, 50, 50, 255);
                     playTime = 0;
                     elapsedTime = 0;
@@ -117,7 +117,7 @@ public class GameSetting : MonoBehaviourPunCallbacks
                     }
                     break;
                 case "Arcade":
-                    stageObjectSingleArcade[GameStart.Stage - 1].gameObject.SetActive(true);
+                    stageObjectSingleArcade[GameStart.stage - 1].gameObject.SetActive(true);
                     tilemap.color = new Color32(50, 50, 50, 255);
                     playTime = 0;
                     elapsedTime = 0;
@@ -135,7 +135,7 @@ public class GameSetting : MonoBehaviourPunCallbacks
             switch (GameStart.gameMode2)
             {
                 case "Nomal":
-                    stageObjectMulti[GameStart.Stage - 1].gameObject.SetActive(true);
+                    stageObjectMulti[GameStart.stage - 1].gameObject.SetActive(true);
                     playTime = 0;
                     elapsedTime = 0;
                     for (int i = 0; i < battleModeUI.Length; i++)
@@ -146,7 +146,7 @@ public class GameSetting : MonoBehaviourPunCallbacks
                     break;
 
                 case "Arcade":
-                    stageObjectMultiArcade[GameStart.Stage - 1].gameObject.SetActive(true);
+                    stageObjectMultiArcade[GameStart.stage - 1].gameObject.SetActive(true);
                     playTimeTx.text = timeLimit.ToString();
                     playTime = GameStart.flagTimeLimit;
                     elapsedTime = GameStart.flagTimeLimit;
@@ -179,7 +179,7 @@ public class GameSetting : MonoBehaviourPunCallbacks
             int leftTeamCount = 0, rightTeamCount = 0;
             for (int i = 0; i < GameStart.maxPlayer; i++)
             {
-                if (GameStart.gameMode2 == "Arcade" && GameStart.Stage == 2)
+                if (GameStart.gameMode2 == "Arcade" && GameStart.stage == 2)
                 {
                     if (GameStart.playerTeam[i] == 0)
                     {
@@ -216,7 +216,7 @@ public class GameSetting : MonoBehaviourPunCallbacks
             var position = respownPos[NetWorkMain.netWorkId - 1];
             PhotonNetwork.Instantiate("Player" + NetWorkMain.netWorkId, position, Quaternion.identity);
             photonView.RPC("RPCSetStickPos", RpcTarget.All);
-            if(GameStart.gameMode2 == "Arcade" && GameStart.Stage == 2 && NetWorkMain.netWorkId == NetWorkMain.leaderId)
+            if(GameStart.gameMode2 == "Arcade" && GameStart.stage == 2 && NetWorkMain.netWorkId == NetWorkMain.leaderId)
             {
                 Transform parentTrans = GameObject.Find("Soccer").GetComponent<Transform>().transform;
                 GameObject ballObj = PhotonNetwork.Instantiate("SoccerBall", new Vector2(0, -2f), Quaternion.identity);
@@ -234,7 +234,7 @@ public class GameSetting : MonoBehaviourPunCallbacks
                 players[i] = GameObject.Find("Player" + PlayerId + "(Clone)");
                 players[i].name = "Player" + PlayerId;
             }
-            if (GameStart.gameMode1 == "Multi" && GameStart.gameMode2 == "Arcade" && GameStart.Stage == 2) 
+            if (GameStart.gameMode1 == "Multi" && GameStart.gameMode2 == "Arcade" && GameStart.stage == 2) 
             {
                 Transform parentTrans = GameObject.Find("Soccer").GetComponent<Transform>().transform;
                 GameObject ballObj = Instantiate(Resources.Load("SoccerBall") as GameObject, new Vector2(0, -2f), Quaternion.identity);
@@ -250,7 +250,7 @@ public class GameSetting : MonoBehaviourPunCallbacks
         canvas.gameObject.SetActive(true);
         frontCanvas.gameObject.SetActive(true);
         playTimeTx.color = new Color32(255, 255, 255, 255); // 例: 赤色
-        Debug.Log("PlayerNumber: " + GameStart.PlayerNumber + " Stage: " + GameStart.Stage);
+        Debug.Log("PlayerNumber: " + GameStart.PlayerNumber + " stage: " + GameStart.stage);
         countDown = GameObject.Find("CountDown").GetComponent<Text>();
         playTimeTx = GameObject.Find("TimeText").GetComponent<Text>();
         playTimeTx.text = "";
@@ -398,8 +398,8 @@ public class GameSetting : MonoBehaviourPunCallbacks
         SwichUI();
         StartTimer();
         // data.languageNum = Settings.languageNum;
-        // data.BGM = BGM.BGMStage;
-        // data.SE = SoundEffect.SEStage;
+        // data.BGM = BGM.BGMstage;
+        // data.SE = SoundEffect.SEstage;
 
     }
 
@@ -588,9 +588,9 @@ public class GameSetting : MonoBehaviourPunCallbacks
         }
         GameObject imageFrame = quickStartingPanel.transform.GetChild(4).gameObject;
         Image stageImg = imageFrame.transform.GetChild(0).gameObject.GetComponent<Image>();
-        stageImg.sprite = Resources.Load<Sprite>("Multi" + GameStart.gameMode2 + GameStart.Stage);
-        imageFrame.transform.GetChild(1).gameObject.GetComponent<TextSwicher>().num = GameStart.Stage;
-        imageFrame.transform.GetChild(2).gameObject.GetComponent<TextSwicher>().num = GameStart.Stage;
+        stageImg.sprite = Resources.Load<Sprite>("Multi" + GameStart.gameMode2 + GameStart.stage);
+        imageFrame.transform.GetChild(1).gameObject.GetComponent<TextSwicher>().num = GameStart.stage;
+        imageFrame.transform.GetChild(2).gameObject.GetComponent<TextSwicher>().num = GameStart.stage;
         string[] texts1 = { "プレイヤーを待っています", "Waiting For Players" };
         quickStartingPanel.transform.GetChild(5).gameObject.GetComponent<Text>().text = texts1[Settings.languageNum];
         while (true)

@@ -292,7 +292,7 @@ public class ButtonClick : MonoBehaviourPunCallbacks　//クリック用ボタ�
             int stageTmp;
             if (int.TryParse(customProps["stage"].ToString(), out stageTmp))
             {
-                GameStart.Stage = stageTmp;
+                GameStart.stage = stageTmp;
                 Debug.Log("GameStart.Stageを" + stageTmp + "に設定しました");
             }
         }
@@ -325,7 +325,7 @@ public class ButtonClick : MonoBehaviourPunCallbacks　//クリック用ボタ�
     //ステージ変更
     public void StageSwitch(int difference)
     {
-        GameStart.Stage += difference;
+        GameStart.stage += difference;
         SoundEffect.soundTrigger[3] = 1;
     }
 

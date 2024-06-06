@@ -13,7 +13,7 @@ public class GetFirstName : MonoBehaviour
     }
     public void GetText()   //1位は名前を変更可能
     {
-        if(GameStart.Stage == 4)
+        if(GameStart.stage == 4)
         {
             GameMode.playerNameByRank[0] = inputField.text;
         }

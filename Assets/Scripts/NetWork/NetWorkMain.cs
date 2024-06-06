@@ -29,7 +29,7 @@ public class NetWorkMain : MonoBehaviourPunCallbacks
                 int tmpNum = 0;
                 if (int.TryParse(PhotonNetwork.CurrentRoom.CustomProperties["stage"].ToString(), out tmpNum))
                 {
-                    GameStart.Stage = tmpNum;
+                    GameStart.stage = tmpNum;
                 }
                 int[] playerTeamLocal = (int[])PhotonNetwork.CurrentRoom.CustomProperties["playerTeam"];
                 for (int i = 0; i < playerTeamLocal.Length; i++)
@@ -46,7 +46,7 @@ public class NetWorkMain : MonoBehaviourPunCallbacks
     {
 
         modeText.text = GameStart.gameMode2;
-        stageText.text = "Stage" + GameStart.Stage;
+        stageText.text = "stage" + GameStart.stage;
         if (GameStart.gameMode1 == "Online" && PhotonNetwork.InRoom)
         {
             ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
@@ -160,10 +160,6 @@ public class NetWorkMain : MonoBehaviourPunCallbacks
         //var position = new Vector3(Random.Range(-3f, 3f), Random.Range(-3f, 3f));
         //PhotonNetwork.Instantiate("Avatar", position, Quaternion.identity);
 
-        if (PhotonNetwork.IsMasterClient)
-        {
-            PhotonNetwork.CurrentRoom.SetStartTime(PhotonNetwork.ServerTimestamp);
-        }
         Photon.Realtime.Player[] playerArray = PhotonNetwork.PlayerList;
         int[] actorNumbers = new int[4];
         int tmpId = 0;
@@ -208,7 +204,7 @@ public class NetWorkMain : MonoBehaviourPunCallbacks
             int tmpNum = 0;
                 if (int.TryParse(customProps["stage"].ToString(), out tmpNum))
                 {
-                    GameStart.Stage = tmpNum;
+                    GameStart.stage = tmpNum;
                 }
 
 
@@ -304,7 +300,6 @@ public class NetWorkMain : MonoBehaviourPunCallbacks
         ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
         if (customProps.ContainsKey("gameMode"))
         {
-            int[] winningsLocal = (int[])customProps["winnings"];
             customProps["gameMode"] = updatedMode;
         }
         PhotonNetwork.CurrentRoom.SetCustomProperties(customProps);
@@ -312,14 +307,15 @@ public class NetWorkMain : MonoBehaviourPunCallbacks
     // ルームで値を共有する
     public static void UpdateLeader(int updatedId)
     {
-        ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
-        int idTmp = 1;
-        if (int.TryParse(customProps["leaderId"].ToString(), out idTmp))
+        var customProps = PhotonNetwork.CurrentRoom.CustomProperties;
+
+        if (customProps.TryGetValue("leaderId", out var leaderId) && int.TryParse(leaderId.ToString(), out _))
         {
             customProps["leaderId"] = updatedId;
+            PhotonNetwork.CurrentRoom.SetCustomProperties(customProps);
         }
-        PhotonNetwork.CurrentRoom.SetCustomProperties(customProps);
     }
+
     [PunRPC]
     void SetCustomPropsStage()
     {
@@ -329,9 +325,36 @@ public class NetWorkMain : MonoBehaviourPunCallbacks
             int stageTmp;
             if (int.TryParse(customProps["stage"].ToString(), out stageTmp))
             {
-                GameStart.Stage = stageTmp;
+                GameStart.stage = stageTmp;
                 Debug.Log("GameStart.Stageを" + stageTmp + "に設定しました");
             }
+        }
+    }
+
+    public static void SetCustomProps<type>(string key, type toSet)
+    {
+        ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
+        if (customProps.ContainsKey(key))
+        {
+            switch (toSet)
+            {
+                case int i:
+                    if (customProps.TryGetValue(key, out var int_value) && int.TryParse(int_value.ToString(), out _))
+                    {
+                        customProps[key] = toSet;
+                    }
+                    break;
+                case string s:
+                    customProps[key] = toSet;
+                    break;
+                case float f:
+                    if (customProps.TryGetValue(key, out var float_value) && float.TryParse(float_value.ToString(), out _))
+                    {
+                        customProps[key] = toSet;
+                    }
+                    break;
+            }
+            PhotonNetwork.CurrentRoom.SetCustomProperties(customProps);
         }
     }
 }

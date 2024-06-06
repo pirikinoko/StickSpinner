@@ -48,7 +48,7 @@ public class CameraControl : MonoBehaviour
             return;
         }
         //最初のカメラズームアウト演出
-        if ((GameStart.gameMode1 == "Multi" && GameStart.Stage == 1) || (GameStart.gameMode1 == "Single" && GameStart.gameMode2 == "Nomal"))
+        if ((GameStart.gameMode1 == "Multi" && GameStart.stage == 1) || (GameStart.gameMode1 == "Single" && GameStart.gameMode2 == "Nomal"))
         {
             if (goalFlag == null)
             {
@@ -124,7 +124,7 @@ public class CameraControl : MonoBehaviour
         float maxDistanceX = 0f;
         float maxDistanceY = 0f;
         bool yIsZero = true;
-        if (!NetWorkMain.isOnline || (GameStart.gameMode1 == "Online" && GameStart.gameMode2== "Arcade" && GameStart.Stage == 2 )) 
+        if (!NetWorkMain.isOnline || (GameStart.gameMode1 == "Online" && GameStart.gameMode2== "Arcade" && GameStart.stage == 2 )) 
         {
             for (int i = 0; i < GameStart.PlayerNumber - 1; i++)
             {
@@ -146,7 +146,7 @@ public class CameraControl : MonoBehaviour
                         float distanceY = (float)Math.Sqrt(Math.Pow(playerPos[i].y - playerPos[j].y, 2));
 
                         //サッカーボールもカメラに含める
-                        if (GameStart.gameMode1 != "Single" && GameStart.gameMode2 == "Arcade" && GameStart.Stage == 2)
+                        if (GameStart.gameMode1 != "Single" && GameStart.gameMode2 == "Arcade" && GameStart.stage == 2)
                         {
                             GameObject ballObj = Utility.FindObjectWithContainingName("SoccerBall");
 

@@ -143,7 +143,7 @@ public class GameMode : MonoBehaviourPunCallbacks
             // 画面上部スコア表示リセット
             for (int i = 0; i < 4; i++) { pointFrame[i].gameObject.SetActive(false); }
             //旗取りモード
-            if (GameStart.Stage == 1)
+            if (GameStart.stage == 1)
             {
                 if (GameStart.teamMode == "FFA")
                 {
@@ -163,7 +163,7 @@ public class GameMode : MonoBehaviourPunCallbacks
 
             }
             //サッカーモード
-            if (GameStart.Stage == 2)
+            if (GameStart.stage == 2)
             {
                 //チームレフト
                 pointFrame[0].gameObject.SetActive(true);
@@ -196,7 +196,7 @@ public class GameMode : MonoBehaviourPunCallbacks
         if ((GameStart.gameMode1 == "Multi" || GameStart.gameMode1 == "Online") && GameStart.gameMode2 == "Arcade")
         {
             //旗取りモード
-            if (GameStart.Stage == 1)
+            if (GameStart.stage == 1)
             {
                 KillSystem();
                 PointDisplay();
@@ -205,7 +205,7 @@ public class GameMode : MonoBehaviourPunCallbacks
                 ShowResult();
             }
             //サッカーモード
-            if (GameStart.Stage == 2)
+            if (GameStart.stage == 2)
             {
                 PointDisplay();
                 checkResult();
@@ -336,7 +336,7 @@ public class GameMode : MonoBehaviourPunCallbacks
             KillLogBack.gameObject.SetActive(false);
             KillLogText.text = null;
         }
-        if (GameStart.Stage == 2) { KillLogText.text = ""; KillLogBack.gameObject.SetActive(false); }
+        if (GameStart.stage == 2) { KillLogText.text = ""; KillLogBack.gameObject.SetActive(false); }
     }
 
     void PointDisplay() //ポイント小数点以下切り捨て＆表示
@@ -354,7 +354,7 @@ public class GameMode : MonoBehaviourPunCallbacks
 
             for (int i = 0; i < 4; i++)
             {
-                if (GameStart.Stage == 1)
+                if (GameStart.stage == 1)
                 {
                     teamPoints[i] = 0;
                 }           
@@ -633,7 +633,7 @@ public class GameMode : MonoBehaviourPunCallbacks
 
     void AdjustTeamFramePos()
     {
-        if (GameStart.Stage == 1)
+        if (GameStart.stage == 1)
         {
             for (int i = 0; i < pointFrame.Length; i++)
             {
@@ -645,7 +645,7 @@ public class GameMode : MonoBehaviourPunCallbacks
                 pointFrame[i].transform.position = framePos[i];
             }
         }
-        if (GameStart.Stage == 2)
+        if (GameStart.stage == 2)
         {
             for (int i = 0; i < 2; i++)
             {
