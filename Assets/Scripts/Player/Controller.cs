@@ -172,7 +172,7 @@ public class Controller : MonoBehaviourPunCallbacks
                 ghostCollider = ghostObject != null ? ghostObject.GetComponent<Collider2D>() : null;
                 GameObject ghostStickObject = GameObject.Find("Stick5");
                 Collider2D ghostStickCollider = ghostStickObject != null ? ghostStickObject.GetComponent<Collider2D>() : null;
-                if ((GameStart.gameMode2 == "Nomal" && GameStart.Stage == 1) && thisCollider != null && ghostCollider != null)
+                if ((GameStart.gameMode2 == "Nomal" && GameStart.stage == 1) && thisCollider != null && ghostCollider != null)
                 {
                     // IgnoreCollisionはCollider型を使用し、Physics2D.IgnoreCollisionを使用する
                     Physics2D.IgnoreCollision(thisCollider, ghostCollider);

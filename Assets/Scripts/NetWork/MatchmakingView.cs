@@ -60,7 +60,7 @@ public class MatchmakingView : MonoBehaviourPunCallbacks
     void StartQuickGame(int stage, string gameMode)
     {
         GameStart.gameMode2 = gameMode;
-        GameStart.Stage = stage;
+        GameStart.stage = stage;
         GameStart.phase = 4;
         playerCountQuick.text = "";
     }
@@ -78,9 +78,9 @@ public class MatchmakingView : MonoBehaviourPunCallbacks
         }
         GameObject imageFrame = quickStartingPanel.transform.GetChild(4).gameObject;
         Image stageImg = imageFrame.transform.GetChild(0).gameObject.GetComponent<Image>();
-        stageImg.sprite = Resources.Load<Sprite>("Multi" + GameStart.gameMode2 + GameStart.Stage);
-        imageFrame.transform.GetChild(1).gameObject.GetComponent<TextSwicher>().num =  GameStart.Stage;
-        imageFrame.transform.GetChild(2).gameObject.GetComponent<TextSwicher>().num = GameStart.Stage;
+        stageImg.sprite = Resources.Load<Sprite>("Multi" + GameStart.gameMode2 + GameStart.stage);
+        imageFrame.transform.GetChild(1).gameObject.GetComponent<TextSwicher>().num =  GameStart.stage;
+        imageFrame.transform.GetChild(2).gameObject.GetComponent<TextSwicher>().num = GameStart.stage;
         yield return new WaitForSeconds(3.0f);
         if (NetWorkMain.netWorkId == NetWorkMain.leaderId)
         {

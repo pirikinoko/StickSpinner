@@ -44,27 +44,27 @@ public class ShowHighScore : MonoBehaviour
     }
     private void Update()
     {
-        if(GameStart.Stage < 1) { return; }
+        if(GameStart.stage < 1) { return; }
         if (GameStart.gameMode1 == "Single")
         {
             if (GameStart.gameMode2 == "Nomal")
             {
-                highScoreText.text = text[Settings.languageNum] + ":" + singleHighScore[GameStart.Stage - 1] + unit[Settings.languageNum];
+                highScoreText.text = text[Settings.languageNum] + ":" + singleHighScore[GameStart.stage - 1] + unit[Settings.languageNum];
             }
             else
             {
-                highScoreText.text = text[Settings.languageNum] + ":" + singleArcadeHighScore[GameStart.Stage - 1] + "m";
+                highScoreText.text = text[Settings.languageNum] + ":" + singleArcadeHighScore[GameStart.stage - 1] + "m";
             }
         }
         else
         {
             if (GameStart.gameMode2 == "Nomal")
             {
-                highScoreText.text = text[Settings.languageNum] + ":" + multiHighScore[GameStart.Stage - 1] + unit[Settings.languageNum];
+                highScoreText.text = text[Settings.languageNum] + ":" + multiHighScore[GameStart.stage - 1] + unit[Settings.languageNum];
             }
             else
             {
-                highScoreText.text = text[Settings.languageNum] + ":" + multiArcadeHighScore[GameStart.Stage - 1] + "P";
+                highScoreText.text = text[Settings.languageNum] + ":" + multiArcadeHighScore[GameStart.stage - 1] + "P";
             }
         }
         for (int i = 0; i < 10; i++)
