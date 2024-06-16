@@ -33,8 +33,6 @@ public class Trigger :MonoBehaviourPunCallbacks
 
     private void OnTriggerStay2D(Collider2D other)
     {
-
-
         if (this.gameObject.name.Contains("Player"))
         {
             if (other.gameObject.name.Contains("CheckPos"))
@@ -59,7 +57,6 @@ public class Trigger :MonoBehaviourPunCallbacks
 
             if (other.gameObject.name.Contains("Point"))
             {
-
                 {
                     if (GameSetting.playTime > 0 && !gameSetting.isPaused)
                     {
@@ -72,7 +69,6 @@ public class Trigger :MonoBehaviourPunCallbacks
                                 {
                                     photonView.RPC(nameof(RPCAddFlagPoints), RpcTarget.All, playerId);
                                 }
-
                             }
                             else 
                             {
@@ -80,7 +76,6 @@ public class Trigger :MonoBehaviourPunCallbacks
                                 GameMode.points[playerId - 1] += 1;
                                 GameMode.playParticle[playerId - 1] = 1;
                             }
-
                             pointTimer = 0;
                         }
                     }

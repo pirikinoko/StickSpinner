@@ -14,10 +14,10 @@ public class CameraControl : MonoBehaviour
     public float maxCameraSize = 5.5f;
     float cameraSpeed = 0.02f, cameraSpeedStart, cameraSize, cameraSizeStart;
     private Camera mainCamera;
-    Vector3 cameraPos, vectorZero = new Vector3(0, 0, 0);
+    Vector3 cameraPos, centerPoint;
     int goals = 0, playerAlive, spectateTarget;
     bool[] isGoaled = new bool[4];
-    bool chasePlayers = false;
+    bool isFirstAnimationEnded = false;
     private void Start()
     {
         gameSetting = GameObject.Find("Scripts").GetComponent<GameSetting>();
@@ -30,9 +30,9 @@ public class CameraControl : MonoBehaviour
         spectateTarget = 1;
         goals = 0;
         mainCamera = GetComponent<Camera>();
-        cameraPos = vectorZero;
+        cameraPos = Vector2.zero;
         cameraPos.z = -10;
-
+        cameraSpeedStart = 0.005f;
 
     }
 
@@ -47,25 +47,18 @@ public class CameraControl : MonoBehaviour
         {
             return;
         }
-        //最初のカメラズームアウト演出
-        if ((GameStart.gameMode1 == "Multi" && GameStart.stage == 1) || (GameStart.gameMode1 == "Single" && GameStart.gameMode2 == "Nomal"))
-        {
-            if (goalFlag == null)
-            {
-                goalFlag = GameObject.Find("GoalFlag");
-                cameraPos = goalFlag.transform.position;
+        //セットアップ終了後旗にズームインする
+        ZoomInToFlag();
 
-
-                cameraPos.z = -10;
-                transform.position = cameraPos;
-                cameraSizeStart = 1;
-                cameraSpeedStart = 0.005f;
-                chasePlayers = false;
-                mainCamera.orthographicSize = cameraSizeStart;
-            }
-        }
-
-        Vector3 centerPoint = Vector3.zero;
+        // Vector3 centerPoint = Vector3.zero;
+        CountPlayersInTheScene();
+        OnePlayerCamera();
+        CalucuratePosAndSize();  
+        MoveCamera();
+        RejectGoaldPlayerFromTarget();
+    }
+    void CountPlayersInTheScene() 
+    {
         playerAlive = 0;
         if (!NetWorkMain.isOnline)
         {
@@ -77,71 +70,37 @@ public class CameraControl : MonoBehaviour
                 }
             }
         }
-
-        //一人プレイの時
-        if (playerAlive == 1 || NetWorkMain.isOnline)
-        {
-            if (GameSetting.startTime < 3)
-            {
-                mainCamera.orthographicSize = 3.0f;
-            }
-
-            if (NetWorkMain.isOnline)
-            {
-                if (!GameMode.Goaled)
-                {
-                    if (gameSetting.players[NetWorkMain.netWorkId - 1] != null && gameSetting.players[NetWorkMain.netWorkId - 1].activeSelf)
-                    {
-                        centerPoint = gameSetting.players[NetWorkMain.netWorkId - 1].transform.position;
-                    }
-                }
-                if (gameSetting.players[NetWorkMain.netWorkId - 1].activeSelf == false)
-                {
-                    OnlineSpectate();
-                    if (gameSetting.players[spectateTarget - 1] == true)
-                    {
-                        centerPoint = gameSetting.players[spectateTarget - 1].transform.position;
-                    }
-
-                }
-
-            }
-            else
-            {
-                for (int i = 0; i < 4; i++)
-                {
-                    if (gameSetting.players[i].activeSelf)
-                    {
-                        centerPoint = gameSetting.players[i].transform.position;
-                    }
-                }
-
-            }
-        }
-
+    }
+    void CalucuratePosAndSize() 
+    {
         // 複数人プレイの時は最も離れている二点(X,Y)の中点にカメラ
         float maxDistance = 0f;
         float maxDistanceX = 0f;
         float maxDistanceY = 0f;
         bool yIsZero = true;
-        if (!NetWorkMain.isOnline || (GameStart.gameMode1 == "Online" && GameStart.gameMode2== "Arcade" && GameStart.stage == 2 )) 
+        if (!NetWorkMain.isOnline || (GameStart.gameMode1 == "Online" && GameStart.gameMode2 == "Arcade" && GameStart.stage == 2))
         {
+            // i(プレイヤー１～３とj(プレイヤー2~4)のxとyの距離を見て一番遠いxとyを採用してカメラの位置とする)
             for (int i = 0; i < GameStart.PlayerNumber - 1; i++)
             {
-                if (gameSetting.players[i] != null) 
+                //プレイヤーが死亡中やゴール済みの場合は計算に入れない
+                if (gameSetting.players[i] != null)
                 {
                     playerPos[i] = gameSetting.players[i].transform.position;
                     if (isGoaled[i]) { continue; }
                     for (int j = i + 1; j < GameStart.PlayerNumber; j++)
                     {
-                        if (gameSetting.players[j] == null) 
+                        //プレイヤーが死亡中やゴール済みの場合は計算に入れない
+                        if (gameSetting.players[j] == null)
                         {
                             return;
                         }
                         playerPos[j] = gameSetting.players[j].transform.position;
 
                         if (isGoaled[j]) { continue; }
+                        //単純にどのプレイヤー間が一番離れているか，カメラのサイズの調整に使用する
                         float distance = Vector3.Distance(gameSetting.players[i].transform.position, gameSetting.players[j].transform.position);
+                        //一番離れているxとyをそれぞれ求めるためのものカメラの位置の計算に使用する
                         float distanceX = (float)Math.Sqrt(Math.Pow(playerPos[i].x - playerPos[j].x, 2));
                         float distanceY = (float)Math.Sqrt(Math.Pow(playerPos[i].y - playerPos[j].y, 2));
 
@@ -187,21 +146,77 @@ public class CameraControl : MonoBehaviour
                             centerPoint.y = (playerPos[i].y + playerPos[j].y) / 2;
                             yIsZero = false;
                         }
-                        else if (distanceY == 0 && yIsZero) { centerPoint.y = (playerPos[i].y + playerPos[j].y) / 2; } //スタート時はdistanceYが0のための処理
-
+                        //スタート時はdistanceYが0のための処理
+                        else if (distanceY == 0 && yIsZero) { centerPoint.y = (playerPos[i].y + playerPos[j].y) / 2; }
                     }
-
                 }
             }
         }
-         
-
         // カメラの拡大率をプレイヤー同士の距離に応じて変更
         cameraSize = maxDistance / 1.3f;
         cameraSize = System.Math.Min(cameraSize, maxCameraSize);
         cameraSize = System.Math.Max(cameraSize, minCameraSize);
+    }
+    void ZoomInToFlag() 
+    {
+        //最初のカメラズームアウト演出
+        if ((GameStart.gameMode1 == "Multi" && GameStart.stage == 1) || (GameStart.gameMode1 == "Single" && GameStart.gameMode2 == "Nomal"))
+        {
+            if (goalFlag == null)
+            {
+                //カメラをゴールフラッグの位置まで移動しズームインする
+                goalFlag = GameObject.Find("GoalFlag");
+                cameraPos = goalFlag.transform.position;
+                cameraPos.z = -10;
+                transform.position = cameraPos;
+                cameraSizeStart = 1;
+                isFirstAnimationEnded = false;
+                mainCamera.orthographicSize = cameraSizeStart;
+            }
+        }
 
-        if (chasePlayers == false)
+    }
+    void OnePlayerCamera() 
+    {
+        //一人しか未ゴールプレイヤーがいない，またはオンラインの時カメラは自分のみを写す
+        if (playerAlive == 1 || NetWorkMain.isOnline)
+        {
+            if (GameSetting.startTime < 3)
+            {
+                mainCamera.orthographicSize = 3.0f;
+            }
+
+
+            if (NetWorkMain.isOnline)
+            {
+                //ゴールしていなければ自身の位置にカメラを
+                if (!GameMode.Goaled)
+                {
+                    if (gameSetting.players[NetWorkMain.netWorkId - 1] != null && gameSetting.players[NetWorkMain.netWorkId - 1].activeSelf)
+                    {
+                        centerPoint = gameSetting.players[NetWorkMain.netWorkId - 1].transform.position;
+                    }
+                }
+                //ゴール済みであれば観戦できるようにする
+                if (gameSetting.players[NetWorkMain.netWorkId - 1].activeSelf == false)
+                {
+                    OnlineSpectate();
+                    if (gameSetting.players[spectateTarget - 1] == true)
+                    {
+                        centerPoint = gameSetting.players[spectateTarget - 1].transform.position;
+                    }
+                    else
+                    {
+                        spectateTarget++;
+                    }
+                }
+
+            }
+        }
+    }
+    void MoveCamera() 
+    {
+        if (isFirstAnimationEnded == false)
         {
             if (GameSetting.startTime < 4.3)
             {
@@ -214,24 +229,23 @@ public class CameraControl : MonoBehaviour
                 transform.position = cameraPos;
                 if (GameSetting.startTime < 0)
                 {
-                    chasePlayers = true;
+                    isFirstAnimationEnded = true;
                 }
             }
             return;
         }
+        else
+        {
+            // カメラ計算されたcenterPointの位置に反映する処理
+            mainCamera.orthographicSize = cameraSize;
+            cameraPos = Vector3.Lerp(transform.position, centerPoint, cameraSpeed);
+            cameraPos.z = -10;
+            transform.position = cameraPos;
 
-
-        // カメラ移動 
-        mainCamera.orthographicSize = cameraSize;
-        cameraPos = Vector3.Lerp(transform.position, centerPoint, cameraSpeed);
-        cameraPos.z = -10;
-        transform.position = cameraPos;
-
-        GoaledPlayersPos();
+        }
     }
-
     //ゴールしたプレイヤーをカメラの対象から外す
-    void GoaledPlayersPos()
+    void RejectGoaldPlayerFromTarget()
     {
         if (GameStart.gameMode2 == "Nomal" && !(GameMode.Goaled))
         {

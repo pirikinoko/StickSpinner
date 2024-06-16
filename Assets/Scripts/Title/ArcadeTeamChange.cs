@@ -127,15 +127,8 @@ public class ArcadeTeamChange : MonoBehaviourPunCallbacks
         Debug.Log("GameStart.playerTeam[targetId]:" + GameStart.playerTeam[targetId] + "   lastTeam:" + lastTeam);
         if (GameStart.playerTeam[targetId] != lastTeam) 
         {
-            Debug.Log("Working");
-            if (customProps.ContainsKey("playerTeam"))
-            {
-                int[] playerTeamLocal = (int[])customProps["playerTeam"];
-                playerTeamLocal[targetId] = GameStart.playerTeam[targetId];
-                customProps["playerTeam"] = playerTeamLocal;
-                PhotonNetwork.CurrentRoom.SetCustomProperties(customProps);
-                photonView.RPC(nameof(SyncPlayerTeam), RpcTarget.All);
-            }
+            NetWorkMain.SetCustomProps<int[]>("playerTeam", GameStart.playerTeam);
+            photonView.RPC(nameof(SyncPlayerTeam), RpcTarget.All);
             lastTeam = GameStart.playerTeam[targetId];
         }
    
@@ -145,17 +138,15 @@ public class ArcadeTeamChange : MonoBehaviourPunCallbacks
     void SyncPlayerTeam()
     {
         ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
-        if (customProps.ContainsKey("playerTeam"))
+        if (NetWorkMain.GetCustomProps<int[]>("playerTeam", out int[] valueA))
         {
-            int[] playerTeamLocal = (int[])customProps["playerTeam"];
-            GameStart.playerTeam = (int[])customProps["playerTeam"];
+            GameStart.playerTeam = valueA;
         }
     }
     void ArcadeControll()
     {
         if(GameStart.PlayerNumber == 2) { return; }
-        if(GameStart.stage == 1)
-        {
+
             //チーム選択
             for (int i = 0; i < GameStart.PlayerNumber; i++)
             {
@@ -186,8 +177,12 @@ public class ArcadeTeamChange : MonoBehaviourPunCallbacks
                         }
                     }
                 }
-                /*Lスティック横*/
-
+            /*Lスティック横*/
+            if (GameStart.stage == 2)
+            {
+                //サッカーモードは2チームしかないため縦の入力を受け付けない
+                return;
+            }
                 /*Lスティック縦*/
                 if (ControllerInput.LstickY[i] > 0.5f)
                 {
@@ -214,45 +209,6 @@ public class ArcadeTeamChange : MonoBehaviourPunCallbacks
                     }
                 }
                 /*Lスティック縦*/
-            }
-
-        }
-
-        else
-        {
-            //チーム選択
-            for (int i = 0; i < GameStart.PlayerNumber; i++)
-            {
-                /*ボタン選択（縦）*/
-                if (lastLstickX[i] > 0.1f || lastLstickX[i] < -0.1f || lastLstickY[i] > 0.1f || lastLstickY[i] < -0.1f) { return; }
-                /*Lスティック横*/
-                if (ControllerInput.LstickX[i] > 0.5f || Input.GetKeyDown(keyRight[i]))
-                {
-                    if (GameStart.playerTeam[i] < 1)
-                    {
-                        GameStart.playerTeam[i]++;
-                        SoundEffect.soundTrigger[3] = 1;
-                        if (GameStart.teamSize[GameStart.playerTeam[i]] > GameStart.PlayerNumber - 2)
-                        {
-                            GameStart.playerTeam[i] -= 1;
-                        }
-                    }
-                }
-                else if (ControllerInput.LstickX[i] < -0.5f || Input.GetKeyDown(keyLeft[i]))
-                {
-                    if (GameStart.playerTeam[i] > 0)
-                    {
-                        GameStart.playerTeam[i]--;
-                        SoundEffect.soundTrigger[3] = 1;
-                        if (GameStart.teamSize[GameStart.playerTeam[i]] > GameStart.PlayerNumber - 2)
-                        {
-                            GameStart.playerTeam[i] += 1;
-                        }
-                    }
-                }
-                /*Lスティック横*/
-            }
-
         }
     }
 }

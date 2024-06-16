@@ -27,7 +27,7 @@ public class Settings : MonoBehaviour
     private Button[] activeButtons;
     //OnExitPanel
     public static bool exitPanelActive = false;
-
+    public static bool isDataLoaded = false;                
     void Start()
     {
         
@@ -42,6 +42,7 @@ public class Settings : MonoBehaviour
         //シーンによっての設定画面の機能の切り替え
         sceneName = SceneManager.GetActiveScene().name;
         SwitchButtonFunction(); 
+        LoadSettingData();  
     }
     void FixedUpdate()
     {
@@ -352,6 +353,18 @@ public class Settings : MonoBehaviour
             switchLanguage.texts[1] = "BackToTitle";
             exitButton.onClick.AddListener(() => item[5].GetComponent<ButtonClick>().BackToTitle());
             Debug.Log("タイトルボタン");
+        }
+    }
+
+    void LoadSettingData() 
+    {
+        if (!isDataLoaded)
+        {
+            var data = FindObjectOfType<DataManager>().data;
+            languageNum = data.languageNum;
+            screenMode = data.screenModeNum;
+            BGM.BGMStage = data.BGM;
+            SoundEffect.SEStage = data.SE;
         }
     }
 }

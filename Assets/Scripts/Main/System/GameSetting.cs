@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
@@ -11,7 +12,6 @@ public class GameSetting : MonoBehaviourPunCallbacks
     //基本
     [SerializeField] Text countDown, playTimeTx;
     [SerializeField] Text[] nameTagTexts;
-    [SerializeField] float timeLimit;
     [SerializeField] GameObject canvas, frontCanvas, quickStartingPanel, pauseButton;
     [HideInInspector] public GameObject[] players = new GameObject[GameStart.maxPlayer];
     [HideInInspector] public GameObject[] sticks = new GameObject[GameStart.maxPlayer];
@@ -84,48 +84,32 @@ public class GameSetting : MonoBehaviourPunCallbacks
             playerLeft[i] = false;
             nameTags[i] = GameObject.Find("P" + (i + 1).ToString() + "NameTag");
         }
-        //ステージ切り替え
-        for (int i = 0; i < stageObjectSingle.Length; i++)
-        {
-            stageObjectSingle[i].gameObject.SetActive(false);
-        }
-        for (int i = 0; i < stageObjectMulti.Length; i++)
-        {
-            stageObjectMulti[i].gameObject.SetActive(false);
-        }
-        for (int i = 0; i < stageObjectSingleArcade.Length; i++)
-        {
-            stageObjectSingleArcade[i].gameObject.SetActive(false);
-        }
-        for (int i = 0; i < stageObjectMultiArcade.Length; i++)
-        {
-            stageObjectMultiArcade[i].gameObject.SetActive(false);
-        }
+        //ステージを非アクティブ化
+        new[] { stageObjectSingle, stageObjectMulti, stageObjectSingleArcade, stageObjectMultiArcade }
+                  .SelectMany(array => array)
+                  .ToList()
+                  .ForEach(obj => obj.gameObject.SetActive(false));
+
         if (GameStart.gameMode1 == "Single")
         {
             quickStartingPanel.SetActive(false);
+            playTime = 0;
+            elapsedTime = 0;
+            for (int i = 0; i < battleModeUI.Length; i++)
+            {
+                battleModeUI[i].gameObject.SetActive(false);
+            }
+            //モードごとの初期化
             switch (GameStart.gameMode2)
             {
                 case "Nomal":
                     stageObjectSingle[GameStart.stage - 1].gameObject.SetActive(true);
                     tilemap.color = new Color32(50, 50, 50, 255);
-                    playTime = 0;
-                    elapsedTime = 0;
-                    for (int i = 0; i < battleModeUI.Length; i++)
-                    {
-                        battleModeUI[i].gameObject.SetActive(false);
-                    }
                     break;
                 case "Arcade":
                     stageObjectSingleArcade[GameStart.stage - 1].gameObject.SetActive(true);
                     tilemap.color = new Color32(50, 50, 50, 255);
-                    playTime = 0;
-                    elapsedTime = 0;
                     playTimeTx.text = GenerateStage.maxHeight + "m";
-                    for (int i = 0; i < battleModeUI.Length; i++)
-                    {
-                        battleModeUI[i].gameObject.SetActive(false);
-                    }
                     break;
             }
         }
@@ -136,18 +120,11 @@ public class GameSetting : MonoBehaviourPunCallbacks
             {
                 case "Nomal":
                     stageObjectMulti[GameStart.stage - 1].gameObject.SetActive(true);
-                    playTime = 0;
-                    elapsedTime = 0;
-                    for (int i = 0; i < battleModeUI.Length; i++)
-                    {
-                        battleModeUI[i].gameObject.SetActive(false);
-                    }
                     ingameLog.GenerateIngameBanner("ゲームモード:レース　 ゴールを目指そう");
                     break;
 
                 case "Arcade":
                     stageObjectMultiArcade[GameStart.stage - 1].gameObject.SetActive(true);
-                    playTimeTx.text = timeLimit.ToString();
                     playTime = GameStart.flagTimeLimit;
                     elapsedTime = GameStart.flagTimeLimit;
                     playTimeTx.text = GameStart.flagTimeLimit.ToString();
@@ -161,6 +138,7 @@ public class GameSetting : MonoBehaviourPunCallbacks
             }
         }
     }
+    //すべてのプレイヤーがそろってから行う処理
     void AfterAllJoin()
     {
         //プレイヤー生成
@@ -174,11 +152,13 @@ public class GameSetting : MonoBehaviourPunCallbacks
                 }
             }
         }
+        //マルチプレイ時のスポーン地点設定
         if (GameStart.gameMode1 != "Single")
         {
             int leftTeamCount = 0, rightTeamCount = 0;
             for (int i = 0; i < GameStart.maxPlayer; i++)
             {
+                //サッカーモード時のスポーン地点設定
                 if (GameStart.gameMode2 == "Arcade" && GameStart.stage == 2)
                 {
                     if (GameStart.playerTeam[i] == 0)
@@ -196,6 +176,7 @@ public class GameSetting : MonoBehaviourPunCallbacks
                         defaultPosGO[i] = GameObject.Find("RightDefaultPlayerPos1");
                     }
                 }
+                //サッカーモード以外のスポーン地点設定
                 else
                 {
                     defaultPosGO[i] = GameObject.Find("DefaultPlayerPos" + (i + 1).ToString());
@@ -204,6 +185,7 @@ public class GameSetting : MonoBehaviourPunCallbacks
                 respownPos[i] = defaultPosGO[i].gameObject.transform.position;
             }
         }
+        //シングルプレイ時のスポーン地点設定
         else
         {
             defaultPosGO[0] = GameObject.Find("DefaultPlayerPos1");
@@ -224,7 +206,7 @@ public class GameSetting : MonoBehaviourPunCallbacks
                 ballObj.name = "SoccerBall";
             }
         }
-        else //オフライン
+        else //オフライン時のプレイヤー生成処理
         {
             for (int i = 0; i < 4; i++)
             {
@@ -240,9 +222,7 @@ public class GameSetting : MonoBehaviourPunCallbacks
                 GameObject ballObj = Instantiate(Resources.Load("SoccerBall") as GameObject, new Vector2(0, -2f), Quaternion.identity);
                 ballObj.GetComponent<Transform>().transform.SetParent(parentTrans);
                 ballObj.name = "SoccerBall";
-            }
-
-          
+            }    
         }
 
 
@@ -254,7 +234,7 @@ public class GameSetting : MonoBehaviourPunCallbacks
         countDown = GameObject.Find("CountDown").GetComponent<Text>();
         playTimeTx = GameObject.Find("TimeText").GetComponent<Text>();
         playTimeTx.text = "";
-        for (int i = 0; i < GameStart.maxPlayer; i++) //初期化処理
+        for (int i = 0; i < GameStart.maxPlayer; i++) 
         {
             nameTags[i].gameObject.SetActive(false);
             sticks[i] = GameObject.Find("Stick" + (i + 1).ToString());
@@ -262,18 +242,11 @@ public class GameSetting : MonoBehaviourPunCallbacks
             deadTimer[i].SetActive(false);
         }
 
-
-
-
         SoundTime = 1f;
         startTime = 6;
         Playable = false;
         StartFlag = true;
         countDown.text = ("3");
-
-
-     
-
 
         //プレイヤー人数の反映
         if (GameStart.gameMode1 != "Online")
@@ -331,42 +304,36 @@ public class GameSetting : MonoBehaviourPunCallbacks
         //プレイヤーのシーン遷移確認
         if (GameStart.gameMode1 == "Online") 
         {
-            ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
-            if (customProps.ContainsKey("isJoined"))
+            if (NetWorkMain.GetCustomProps<bool[]>("isJoined", out var ValueArrayA))
             {
-                bool[] isJoinedLocal = (bool[])PhotonNetwork.CurrentRoom.CustomProperties["isJoined"];
-                isJoinedLocal[NetWorkMain.netWorkId - 1] = true;
-                customProps["isJoined"] = isJoinedLocal;
+                ValueArrayA[NetWorkMain.netWorkId - 1] = true;
+                NetWorkMain.SetCustomProps<bool[]>("isJoined", ValueArrayA);
             }
-            PhotonNetwork.CurrentRoom.SetCustomProperties(customProps);
         }
 
         if (!allJoin)
         {
+            //全員ジョインするまでゲーム説明パネルを表示しておく
+            StartCoroutine(OpenQuickPanel());
             if (GameStart.gameMode1 == "Online")
             {
-                ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
                 allJoin = true;
-                if (customProps.ContainsKey("isJoined"))
+                if (NetWorkMain.GetCustomProps<bool[]>("isJoined", out var ValueArrayA)) 
                 {
                     for (int i = 0; i < GameStart.PlayerNumber; i++)
                     {
-                        // カスタムプロパティを取得
-
-                        bool[] isJoinedLocal = (bool[])PhotonNetwork.CurrentRoom.CustomProperties["isJoined"];
                         //Debug.Log(isJoinedLocal[0] + "  " + isJoinedLocal[1]);
-                        if (isJoinedLocal[i] == false)
+                        if (ValueArrayA[i] == false)
                         {
                             allJoin = false;
                         }
-                    }
+                    }           
                 }
                 else
                 {
                     allJoin = false;
                     Debug.Log("isJoinedNotFound");
                 }
-                StartCoroutine(OpenQuickPanel());
             }
             else
             {
@@ -397,9 +364,6 @@ public class GameSetting : MonoBehaviourPunCallbacks
         CheckPlayersLeft();
         SwichUI();
         StartTimer();
-        // data.languageNum = Settings.languageNum;
-        // data.BGM = BGM.BGMstage;
-        // data.SE = SoundEffect.SEstage;
 
     }
 
@@ -533,8 +497,6 @@ public class GameSetting : MonoBehaviourPunCallbacks
             return;
         }
 
-        //キーボードマウス用UIとコントローラー用UIの切り替え
-
         //キーボード,マウスのとき
         if (!(ControllerInput.usingController))
         {
@@ -544,7 +506,6 @@ public class GameSetting : MonoBehaviourPunCallbacks
         //コントローラーのとき
         else if (ControllerInput.usingController)
         {
-
             for (int i = 0; i < keyBoardMouseUI.Length; i++) { keyBoardMouseUI[i].gameObject.SetActive(false); }
             for (int i = 0; i < controllerUI.Length; i++) { controllerUI[i].gameObject.SetActive(true); }
         }

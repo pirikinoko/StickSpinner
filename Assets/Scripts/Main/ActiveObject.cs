@@ -5,7 +5,7 @@ using Photon.Pun;
 public class ActiveObject : MonoBehaviour  //動く床などのオブジェクト制御用
 {
     //基本
-    bool start;
+    bool isAnimationStarted;
     string direction = "Right";
     public float speed = 1.3f, delay = 0;
     Rigidbody2D rbody2D;
@@ -40,45 +40,53 @@ public class ActiveObject : MonoBehaviour  //動く床などのオブジェク�
     void Start()
     {
         gameSetting = GameObject.Find("Scripts").GetComponent<GameSetting>();
-        start = false;
+        rbody2D = GetComponent<Rigidbody2D>();
+        Renderer renderer = GetComponent<Renderer>();
+        isAnimationStarted = false;
+        StartPos = this.gameObject.transform.position;
+        startSize = transform.localScale.y;
+        sizeLimit = startSize * sizeMulti;
+
         if (optionStrings[(int)selectedDirection] == "Left")
         {
             speed *= -1;
         }
 
-        rbody2D = GetComponent<Rigidbody2D>();
+
         if (rbody2D != null)
         {
             defaultConstraints = rbody2D.constraints;
         }
 
-        StartPos = this.gameObject.transform.position;
-        startSize = transform.localScale.y;
-        sizeLimit = startSize * sizeMulti;
+
         if (this.gameObject.CompareTag("Reverse"))    //反転タグで進行方向反転
         {
             speed *= -1;
         }
-        //色取得
-        Renderer renderer = GetComponent<Renderer>();
+
         if (renderer != null)
         {
             material = renderer.material;
             originalColor = material.color;
         }
     }
+
     IEnumerator startDelay(float delaySec)
     {
         yield return new WaitForSeconds(delaySec);
-        start = true;
+        isAnimationStarted = true;
     }
+
     void Update()
     {
+        //オンラインの場合は全プレイヤーのセットアップ完了を待つ
         if (GameStart.gameMode1 == "Online")
         {
             if (!GameSetting.setupEnded) { return; }
         }
-        if (!start)
+
+        //遅延の設定がある場合は遅延
+        if (!isAnimationStarted)
         {
             StartCoroutine(startDelay(delay));
             return;
@@ -141,17 +149,6 @@ public class ActiveObject : MonoBehaviour  //動く床などのオブジェク�
 
     }
 
-    private void OnCollisionStay2D(Collision2D other)
-    {
-        if (this.gameObject.name.Contains("ExtendFloor"))
-        {
-            if (other.gameObject.CompareTag("Player") || other.gameObject.CompareTag("Stick"))
-            {
-                // Rigidbody2D otherRb2d = other.gameObject.GetComponent<Rigidbody2D>();
-                //otherRb2d.velocity = rb2d.velocity;
-            }
-        }
-    }
 
     void ColReverse()
     {

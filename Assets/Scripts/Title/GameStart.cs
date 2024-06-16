@@ -37,7 +37,6 @@ public class GameStart : MonoBehaviourPunCallbacks
     public static int phase = 0;
     public static int PlayerNumber { get; set; } = 1;     // 参加プレイヤー数
     public static int stage = 1;
-    public static int loadData = 0;
     public static int flagTimeLimit = 90;
     public static int[] playerTeam { get; set; } = { 0, 1, 2, 3 }; // {p1, p2, p3, p4}が TeamA, TeamB, TeamC, TeamDにいることを示す。ex..a = 1, c =3
     public static int[] teamSize = new int[4]; // チーム　A, B, C, Dにいるプレイヤーの人数
@@ -184,6 +183,7 @@ public class GameStart : MonoBehaviourPunCallbacks
                             stageSelect.gameObject.SetActive(true);
                             break;
                         case 4:
+                            //ノーマルモードならチーム選択画面はスキップ
                             if (gameMode2 == "Nomal") { phase++; return; }
                             setArcadeGame.gameObject.SetActive(true);
                             SetArcade();
@@ -216,32 +216,19 @@ public class GameStart : MonoBehaviourPunCallbacks
                             onlineLobby.gameObject.SetActive(true);
                             if (NetWorkMain.netWorkId == NetWorkMain.leaderId)
                             {
-                                NetWorkMain.UpdateRoomStats(GameStart.stage);
-                                photonView.RPC(nameof(SyncStage), RpcTarget.All);
                                 photonView.RPC(nameof(SyncPhase), RpcTarget.All, phase);
                             }
                             break;
                         case 4:
-
                             if (MatchmakingView.mode == "Quick" && NetWorkMain.netWorkId == NetWorkMain.leaderId)
                             {
+                                NetWorkMain.SetCustomProps<bool[]>("isReady", new bool[4] { true, true, true, true });
                                 photonView.RPC(nameof(SetDefaultArcade), RpcTarget.All, MatchmakingView.stageQuick);
-                                ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
-                                if (customProps.ContainsKey("isReady"))
-                                {
-                                    bool[] isReadyLocal = (bool[])PhotonNetwork.CurrentRoom.CustomProperties["isReady"];
-                                    for (int i = 0; i < maxPlayer; i++)
-                                    {
-                                        isReadyLocal[i] = true;
-                                    }
-                                    PhotonNetwork.CurrentRoom.SetCustomProperties(customProps);
-                                }
                                 photonView.RPC(nameof(RPCStartGame), RpcTarget.All);
                                 photonView.RPC(nameof(SyncArcadeTime), RpcTarget.All, flagTimeLimit);
                                 return;
                             }
                             photonView.RPC(nameof(SyncArcadeTime), RpcTarget.All, flagTimeLimit);
-                            photonView.RPC(nameof(SyncStage), RpcTarget.All);
                             photonView.RPC(nameof(RPCStartGame), RpcTarget.All);
                             phase = 3;
                             onlineLobby.gameObject.SetActive(true);
@@ -308,20 +295,6 @@ public class GameStart : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    void SyncStage()
-    {
-        ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
-        if (customProps.ContainsKey("stage"))
-        {
-            int stageTmp;
-            if (int.TryParse(customProps["stage"].ToString(), out stageTmp))
-            {
-                GameStart.stage = stageTmp;
-                Debug.Log("GameStart.Stageを" + stageTmp + "に設定しました");
-            }
-        }
-    }
-    [PunRPC]
     void SyncArcadeTime(int timeLimit)
     {
         flagTimeLimit = timeLimit;
@@ -342,12 +315,13 @@ public class GameStart : MonoBehaviourPunCallbacks
     {
         if (GameStart.PlayerNumber > 1)
         {
+            //全プレイヤーが準備完了か確認する
             bool allReady = true;
             ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
             if (customProps.ContainsKey("isReady"))
             {
                 bool[] isReadyLocal = (bool[])PhotonNetwork.CurrentRoom.CustomProperties["isReady"];
-                for (int i = 0; i < GameStart.PlayerNumber; i++)
+                for (int i = 0; i < PlayerNumber; i++)
                 {
                     if (isReadyLocal[i] == false)
                     {
@@ -356,12 +330,13 @@ public class GameStart : MonoBehaviourPunCallbacks
                 }
                 if (allReady)
                 {
-                    PhotonNetwork.IsMessageQueueRunning = false;
-                    SceneManager.LoadScene("Stage");
+                    //次のために全プレイヤーのreadyを解除しておく
                     for (int i = 0; i < maxPlayer; i++)
                     {
                         isReadyLocal[i] = false;
                     }
+                    PhotonNetwork.IsMessageQueueRunning = false;
+                    SceneManager.LoadScene("Stage");
                     customProps["isReady"] = isReadyLocal;
                     PhotonNetwork.CurrentRoom.SetCustomProperties(customProps);
                 }
@@ -379,6 +354,7 @@ public class GameStart : MonoBehaviourPunCallbacks
 
     void SetArcade()
     {
+        //旗鳥モードのデフォルト設定
         if (stage == 1)
         {
             for (int i = 0; i < 4; i++)
@@ -394,19 +370,10 @@ public class GameStart : MonoBehaviourPunCallbacks
             }
             if (gameMode1 == "Online")
             {
-                ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
-                if (customProps.ContainsKey("playerTeam"))
-                {
-                    int[] playerTeamLocal = (int[])customProps["playerTeam"];
-                    for (int i = 0; i < 4; i++)
-                    { 
-                        playerTeamLocal[i] = i;
-                    }
-                    customProps["playerTeam"] = playerTeamLocal;
-                    PhotonNetwork.CurrentRoom.SetCustomProperties(customProps);
-                }
+                NetWorkMain.SetCustomProps<int[]>("playerTeam", new int[] { 0, 1, 2, 3 });
             }
         }
+        //サッカーモードのデフォルト設定
         if (stage == 2)
         {
             for (int i = 0; i < 4; i++)
@@ -430,36 +397,15 @@ public class GameStart : MonoBehaviourPunCallbacks
             playerSlot[1].gameObject.SetActive(true);
             if (gameMode1 == "Online")
             {
-                ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
-                if (customProps.ContainsKey("playerTeam"))
-                {
-                    int[] playerTeamLocal = (int[])customProps["playerTeam"];
-                    for (int i = 0; i < 4; i++)
-                    {
-                        if ((i + 1) % 2 == 0)
-                        {
-                            playerTeamLocal[i] = 1;
-                        }
-                        else
-                        {
-                            playerTeamLocal[i] = 0;
-                        }
-                    }
-                    customProps["playerTeam"] = playerTeamLocal;
-                    PhotonNetwork.CurrentRoom.SetCustomProperties(customProps);
-                }
+                NetWorkMain.SetCustomProps<int[]>("playerTeam", new int[] { 0, 1, 0, 1 });
             }
 
         }
         TeamSelect();
-
-
     }
     void TeamSelect()
     {
         flagTimeLimitTx.text = flagTimeLimit.ToString();
-
-
         for (int i = 0; i < PlayerNumber; i++)
         {
             playerIcon[i].transform.position = playerIconPos[i];
@@ -529,10 +475,6 @@ public class GameStart : MonoBehaviourPunCallbacks
 
     void SwichUI()
     {
-
-
-        //キーボードマウス用UIとコントローラー用UIの切り替え
-
         //キーボード,マウスのとき
         if (!(ControllerInput.usingController))
         {

@@ -270,41 +270,47 @@ public class ButtonClick : MonoBehaviourPunCallbacks　//クリック用ボタ�
         SoundEffect.soundTrigger[2] = 1;
         GameStart.phase += difference;
     }
+    //ルームのプレイヤーたちのステージをリーダーの値と同期
+    public void SyncStage() 
+    {
+        if (!NetWorkMain.isOnline) { return; }
+        NetWorkMain.SetCustomProps<int>("stage", GameStart.stage);
+        photonView.RPC(nameof(GetCPStage), RpcTarget.All);
+    }
 
+    [PunRPC]
+    void GetCPStage()
+    {
+        if (NetWorkMain.GetCustomProps<int>("stage", out var stageValue))
+        {
+            GameStart.stage = stageValue;
+        }
+    }
     //モード変更
     public void SetAndSyncGameMode(string gameMode)
     {
+        //ゲームモード変更の際ステージを１にリセットする
         GameStart.gameMode2 = gameMode;
-        NetWorkMain.UpdateRoomStats(1);
-        photonView.RPC(nameof(SetCustomPropsStage), RpcTarget.All);
-        NetWorkMain.UpdateGameMode(gameMode);
-        photonView.RPC(nameof(SetCustomPropsGameMode), RpcTarget.All);
+        NetWorkMain.SetCustomProps<int>("stage", 1);
+        photonView.RPC(nameof(GetCustomPropsStage), RpcTarget.All);
+        NetWorkMain.SetCustomProps<string>("gameMode", gameMode);
+        photonView.RPC(nameof(GetCustomPropsGameMode), RpcTarget.All);
     }
 
-
-
     [PunRPC]
-    void SetCustomPropsStage()
+    void GetCustomPropsStage()
     {
-        ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
-        if (customProps.ContainsKey("stage"))
+        if (NetWorkMain.GetCustomProps<int>("stage", out int valueA))
         {
-            int stageTmp;
-            if (int.TryParse(customProps["stage"].ToString(), out stageTmp))
-            {
-                GameStart.stage = stageTmp;
-                Debug.Log("GameStart.Stageを" + stageTmp + "に設定しました");
-            }
+            GameStart.stage = valueA;
         }
     }
     [PunRPC]
-    void SetCustomPropsGameMode()
+    void GetCustomPropsGameMode()
     {
-        ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
-        if (customProps.ContainsKey("gameMode"))
+        if (NetWorkMain.GetCustomProps<string>("gameMode", out string valueB))
         {
-            GameStart.gameMode2 = customProps["gameMode"].ToString();
-            Debug.Log("GameModeを" + customProps["gameMode"].ToString() + "に設定しました");
+            GameStart.gameMode2 = valueB;
         }
     }
 
@@ -441,7 +447,7 @@ public class ButtonClick : MonoBehaviourPunCallbacks　//クリック用ボタ�
     }
 
 
-    public void RPCsyncLeader()
+    public void SyncLeader()
     {
         photonView.RPC(nameof(syncLeader), RpcTarget.All);
     }

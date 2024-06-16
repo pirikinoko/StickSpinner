@@ -9172,8 +9172,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 06fc9be62a4bc11458ad97a4e20a7e21, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  keyBind: 0
-  selectedButton: 0
 --- !u!1 &689817645
 GameObject:
   m_ObjectHideFlags: 0
@@ -12844,7 +12842,6 @@ GameObject:
   - component: {fileID: 904680234}
   - component: {fileID: 904680236}
   - component: {fileID: 904680233}
-  - component: {fileID: 904680237}
   - component: {fileID: 904680238}
   - component: {fileID: 904680239}
   - component: {fileID: 904680240}
@@ -12980,19 +12977,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b16093d9bdda29c40a08c714f743f59d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &904680237
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 904680229}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 704129d639161df42ae7b4e258894c44, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  lobbyPlayerNumberText: []
 --- !u!114 &904680238
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13027,7 +13011,6 @@ MonoBehaviour:
   - {fileID: 710214707}
   modeText: {fileID: 1544923317}
   stageText: {fileID: 213008529}
-  isOffline: 0
 --- !u!114 &904680239
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15449,8 +15432,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 06fc9be62a4bc11458ad97a4e20a7e21, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  keyBind: 27
-  selectedButton: 14
 --- !u!61 &1077732974
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -17840,7 +17821,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1263605394
 RectTransform:
   m_ObjectHideFlags: 0

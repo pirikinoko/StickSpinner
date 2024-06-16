@@ -170,9 +170,7 @@ public class GameMode : MonoBehaviourPunCallbacks
                 //チームライト
                 pointFrame[1].gameObject.SetActive(true);
             }
-
         }
-
     }
 
     void Update()
@@ -217,7 +215,7 @@ public class GameMode : MonoBehaviourPunCallbacks
         // 無限モード
         if (GameStart.gameMode1 == "Single" && GameStart.gameMode2 == "Arcade")
         {
-            InfinityMode();
+            SettingInfinityMode();
         }
     }
     private void FixedUpdate()
@@ -280,18 +278,14 @@ public class GameMode : MonoBehaviourPunCallbacks
     }
     public void GoalProcess(int playerid)
     {
+        //（オンライン）1位の時winningsプラス１
         if (GameStart.gameMode1 == "Online" && Goals == 0)
         {
-            ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
-            if (customProps.ContainsKey("winnings"))
+            if(NetWorkMain.GetCustomProps<int[]>("winnings", out var ValueBArray))
             {
-                int[] winningsLocal = (int[])customProps["winnings"];
-                winningsLocal[playerid - 1]++;
-                customProps["winnings"] = winningsLocal;
-                Debug.Log("   customProps[winnings] " + winningsLocal[0]);
+                ValueBArray[playerid - 1]++;
+                NetWorkMain.SetCustomProps<int[]>("winnings", ValueBArray);
             }
-            PhotonNetwork.CurrentRoom.SetCustomProperties(customProps);
-
         }
         Debug.Log("playerId == " + playerid);
         if (gameSetting.players[playerid - 1].activeSelf)
@@ -382,8 +376,6 @@ public class GameMode : MonoBehaviourPunCallbacks
     }
     void checkResult()
     {
-
-
         if (GameSetting.playTime <= 0 && !Finished)
         {
             Finished = true;
@@ -571,9 +563,7 @@ public class GameMode : MonoBehaviourPunCallbacks
                     iconPos[pId - 1] = resultTextGO[i].transform.position;
                     iconPos[pId - 1].x -= 0.7f;
                     icons[pId - 1].transform.position = iconPos[pId - 1];
-                    resultText[i].text = "#" + (i + 1) + "     " + pointsInOrder[i] + "point";
-
-                   
+                    resultText[i].text = "#" + (i + 1) + "     " + pointsInOrder[i] + "point";          
                 }
             }
             else
@@ -585,10 +575,11 @@ public class GameMode : MonoBehaviourPunCallbacks
 
             }
         }
+        SetHighScore();
         showResultTriggerd = true;
     }
 
-    void InfinityMode()
+    void SettingInfinityMode()
     {
         if (isGameOver)
         {
@@ -612,16 +603,20 @@ public class GameMode : MonoBehaviourPunCallbacks
 
         Vector2 textPos = ballPosDefault;
         ballCountText.transform.position = textPos;
-        float countdown = 3.0f; // 開始するカウントダウンの数
+        // 開始するカウントダウンの数
+        float countdown = 3.0f;
         while (countdown > 0)
         {
             if (Mathf.Floor(countdown) < Mathf.Floor(countdown + Time.deltaTime))
             {
                 SoundEffect.soundTrigger[3] = 1;
             }
-            ballCountText.text = Mathf.Ceil(countdown).ToString(); // カウントダウンの整数部分を表示
-            countdown -= Time.deltaTime; // Time.deltaTime を使用して時間を減少させる
-            yield return null; // 次のフレームまで待機
+            // カウントダウンの整数部分を表示
+            ballCountText.text = Mathf.Ceil(countdown).ToString();
+            // Time.deltaTime を使用して時間を減少させる
+            countdown -= Time.deltaTime;
+            // 次のフレームまで待機
+            yield return null; 
         }
         ballCountText.text = null;
         ball.GetComponent<CircleCollider2D>().enabled = true;
@@ -633,28 +628,58 @@ public class GameMode : MonoBehaviourPunCallbacks
 
     void AdjustTeamFramePos()
     {
+        //フラッグモードの時
         if (GameStart.stage == 1)
         {
             for (int i = 0; i < pointFrame.Length; i++)
             {
-                //チームフレーム位置設定
-                //初期位置に設定
+                //チームフレームを初期位置に設定
                 framePos[i] = pointFrame[0].transform.position;
                 //右にずらす
                 framePos[i].x += (i * (frameSpace / (-1 + (float)GameStart.PlayerNumber)));
                 pointFrame[i].transform.position = framePos[i];
             }
         }
+        //サッカーモードの時
         if (GameStart.stage == 2)
         {
             for (int i = 0; i < 2; i++)
             {
-                //チームフレーム位置設定
-                //初期位置に設定
+                //チームフレームを初期位置に設定
                 framePos[i] = pointFrame[0].transform.position;
                 //右にずらす
                 framePos[i].x += frameSpace * i;
                 pointFrame[i].transform.position = framePos[i];
+            }
+        }
+    }
+
+
+     void SetHighScore()
+    {
+        if (GameStart.gameMode1 == "Single")
+        {
+            if (GameStart.gameMode2 == "Nomal")
+            {
+                if (ShowHighScore.singleHighScore[GameStart.stage - 1] == 0) { ShowHighScore.singleHighScore[GameStart.stage - 1] = (int)(GameMode.clearTime[0]); }
+                ShowHighScore.singleHighScore[GameStart.stage - 1] = Mathf.Min((int)(GameMode.clearTime[0]), (int)(ShowHighScore.singleHighScore[GameStart.stage - 1]));
+            }
+            else
+            {
+                if (ShowHighScore.singleHighScore[GameStart.stage - 1] == 0) { ShowHighScore.singleArcadeHighScore[GameStart.stage - 1] = (int)(GenerateStage.maxHeight); }
+                ShowHighScore.singleArcadeHighScore[GameStart.stage - 1] = Mathf.Max((int)(GenerateStage.maxHeight), (int)(ShowHighScore.singleArcadeHighScore[GameStart.stage - 1]));
+            }
+        }
+        else
+        {
+            if (GameStart.gameMode2 == "Nomal")
+            {
+                if (ShowHighScore.multiHighScore[GameStart.stage - 1] == 0) { ShowHighScore.multiHighScore[GameStart.stage - 1] = (int)(GameMode.clearTime[0]); }
+                ShowHighScore.multiHighScore[GameStart.stage - 1] = Mathf.Min((int)(GameMode.clearTime[0]), (int)(ShowHighScore.multiHighScore[GameStart.stage - 1]));
+            }
+            else
+            {
+                ShowHighScore.multiArcadeHighScore[GameStart.stage - 1] = Mathf.Max((int)(GameMode.pointsInOrder[0]), (int)(ShowHighScore.multiHighScore[GameStart.stage - 1]));
             }
         }
     }

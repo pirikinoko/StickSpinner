@@ -16,7 +16,6 @@ public class NetWorkMain : MonoBehaviourPunCallbacks
     public Text[] playerNameText, winningsText;
     public Text modeText, stageText;
     string[] gameMode = { "Nomal", "Arcade" };
-    public bool isOffline = false;
     int setCount = 0, lastPlayerCount;
     IngameLog ingameLog;
     private void Start()
@@ -70,7 +69,7 @@ public class NetWorkMain : MonoBehaviourPunCallbacks
                 if (isLeader)
                 {                
                     leaderId = netWorkId;
-                    UpdateLeader(leaderId);
+                    SetCustomProps<int>("leaderId", leaderId);
                 }
 
                 // 配列の内容を表示
@@ -97,46 +96,11 @@ public class NetWorkMain : MonoBehaviourPunCallbacks
                         .Zip(winningsText, (winningsWithIndex, textField) => new { winningsWithIndex, textField }) //{Selectで作られた匿名オブジェクトのコレクションとwinningsText.textをペアにしてさらに匿名オブジェクトを作る}
                         .ToList() //クエリの結果をすぐに評価し、リストとして取得します。
                         .ForEach(pair => pair.textField.text = $"Win: {pair.winningsWithIndex.winnings}");
-                    //string[] winningsText = value.Select(winnings => $"Win: {winnings}").ToArray();           
                 }
                 setCount = 1;
             }
         }
-        else
-        {
-            isOffline = false;
-        }
-
-
     }
-    public void Connect()
-    {
-        isOnline = true;
-
-        if (!isOffline)
-        {
-            PhotonNetwork.ConnectUsingSettings();
-        }
-        else
-        {
-            PhotonNetwork.OfflineMode = true;
-        }
-    }
-
-    public void Disconnect()
-    {
-        isOnline = false;
-        Debug.Log("WentOffline");
-        if (!isOffline)
-        {
-            PhotonNetwork.Disconnect();
-        }
-        else
-        {
-            PhotonNetwork.OfflineMode = false;
-        }
-    }
-
 
     public override void OnConnectedToMaster()
     {
@@ -148,62 +112,29 @@ public class NetWorkMain : MonoBehaviourPunCallbacks
 
     public override void OnJoinedRoom()
     {
-
-        //var position = new Vector3(Random.Range(-3f, 3f), Random.Range(-3f, 3f));
-        //PhotonNetwork.Instantiate("Avatar", position, Quaternion.identity);
-
-        Photon.Realtime.Player[] playerArray = PhotonNetwork.PlayerList;
-        int[] actorNumbers = new int[4];
-        int tmpId = 0;
-        for (int i = 0; i < Mathf.Min(playerArray.Length, 4); i++)
-        {
-            actorNumbers[i] = playerArray[i].ActorNumber;
-            if (actorNumbers[i] == PhotonNetwork.LocalPlayer.ActorNumber)
-            {
-                tmpId = netWorkId;
-                netWorkId = i + 1;
-            }
-        }
         PhotonNetwork.NickName = InputName.TypedTextToString;
         Debug.Log(PhotonNetwork.NickName + "isConnected");
 
         var roomOptions = new RoomOptions();
 
+
         ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
-        if (customProps.ContainsKey("gameMode"))
+        //もともとCustomPropsが設定してある場合はそれらを取得して状態をルームのものと同期する
+        if (GetCustomProps<string>("gameMode", out string valueA)) { GameStart.gameMode2 = valueA; }
+        if (GetCustomProps<int>("stage", out int valueB)) { GameStart.stage = valueB; }
+        if (GetCustomProps<int[]>("playerTeam", out var valueC))
         {
-            GameStart.gameMode2 = customProps["gameMode"].ToString();
-            Debug.Log("GameModeを" + customProps["gameMode"].ToString() + "に設定しました");
+            for (int i = 0; i < valueC.Length; i++)
+            {
+                GameStart.playerTeam[i] = valueC[i];
+            }
         }
-        if (customProps.ContainsKey("winnings"))
+        if (GetCustomProps<string[]>("userName", out var valueD))
         {
-            int[] winningsLocal = (int[])customProps["winnings"];
-            for (int i = 0; i < GameStart.PlayerNumber && i < winningsLocal.Length; i++)
+            for (int i = 0; i < valueD.Length; i++)
             {
-                if (i < winningsText.Length)
-                {
-                    winningsText[i].text = "Win:" + winningsLocal[i].ToString();
-                }
+                playerNames[i] = valueD[i];
             }
-            if (customProps.ContainsKey("playerTeam"))
-            {
-                int[] playerTeamLocal = (int[])customProps["playerTeam"];
-                for (int i = 0; i < playerTeamLocal.Length; i++)
-                {
-                    GameStart.playerTeam[i] = playerTeamLocal[i];
-                }
-            }
-            int tmpNum = 0;
-                if (int.TryParse(customProps["stage"].ToString(), out tmpNum))
-                {
-                    GameStart.stage = tmpNum;
-                }
-
-
-                string[] userNameLocal = (string[])customProps["userName"];
-                userNameLocal[netWorkId - 1] = PhotonNetwork.NickName;
-                customProps["userName"] = userNameLocal;
-
         }
         else
         {
@@ -250,77 +181,14 @@ public class NetWorkMain : MonoBehaviourPunCallbacks
         }
 
         ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
-        if (customProps.ContainsKey("winnings"))
-        {
-            int[] winningsLocal = (int[])customProps["winnings"];
-            for (int i = 0; i < GameStart.PlayerNumber && i < winningsLocal.Length; i++)
-            {
-                if (i < winningsText.Length)
-                {
-                    winningsText[i].text = "Win:" + winningsLocal[i].ToString();
-                }
-            }
-        }
-        if (customProps.ContainsKey("leaderId"))
-        {
-            int idTmp = 1;
-            if (int.TryParse(customProps["leaderId"].ToString(), out idTmp))
-            {
-                leaderId = idTmp;
-            }
-        }
-    }
-
-    // ルームで値を共有する
-    public static void UpdateRoomStats(int updatedStage)
-    {
-        ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
-        if (customProps.ContainsKey("stage"))
-        {
-            int stageTmp;
-            if (int.TryParse(customProps["stage"].ToString(), out stageTmp))
-            {
-                customProps["stage"] = updatedStage;
-            }
-        }
-        PhotonNetwork.CurrentRoom.SetCustomProperties(customProps);
-    }
-
-    // ルームで値を共有する
-    public static void UpdateGameMode(string updatedMode)
-    {
-        ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
-        if (customProps.ContainsKey("gameMode"))
-        {
-            customProps["gameMode"] = updatedMode;
-        }
-        PhotonNetwork.CurrentRoom.SetCustomProperties(customProps);
-    }
-    // ルームで値を共有する
-    public static void UpdateLeader(int updatedId)
-    {
-        var customProps = PhotonNetwork.CurrentRoom.CustomProperties;
-
-        if (customProps.TryGetValue("leaderId", out var leaderId) && int.TryParse(leaderId.ToString(), out _))
-        {
-            customProps["leaderId"] = updatedId;
-            PhotonNetwork.CurrentRoom.SetCustomProperties(customProps);
-        }
+        if(GetCustomProps<int>("leaderId", out int value)) {leaderId = value;}
     }
 
     [PunRPC]
     void SetCustomPropsStage()
     {
-        ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
-        if (customProps.ContainsKey("stage"))
-        {
-            int stageTmp;
-            if (int.TryParse(customProps["stage"].ToString(), out stageTmp))
-            {
-                GameStart.stage = stageTmp;
-                Debug.Log("GameStart.Stageを" + stageTmp + "に設定しました");
-            }
-        }
+        GetCustomProps<int>("stage", out int value);
+        GameStart.stage = value;
     }
 
     public static void SetCustomProps<type>(string key, type toSet)
