@@ -37,7 +37,7 @@ public class Controller : MonoBehaviourPunCallbacks
     SpriteRenderer parentSprite;      // プレイヤーの顔
     private Vector3 playerPos, pausedPos, latestPos; 　　　　　　　　 　//プレイヤー,棒の位置
     private Vector2 Playerspeed, speedWhenPaused, deadPlayerPos;　　　　//プレイヤー速度,ポーズ直前のプレイヤー速度
-    private float saveCount = 0; 　　　　　　　　　　　　　　　　　   // ポーズ処理に使用
+    private bool isSaveDone; 　　　　　　　　　　　　　　　　　   // ポーズ処理に使用
     private Body body;
     GameObject bodyObj;
     int startTrigger= 0;
@@ -67,6 +67,7 @@ public class Controller : MonoBehaviourPunCallbacks
         coolTime = 0.0f;
         startTrigger = 0;
         onSurface = false;
+        isSaveDone = false;
         onPlayer = false;
         onStick = false;
         inCoroutine = false;
@@ -245,24 +246,23 @@ public class Controller : MonoBehaviourPunCallbacks
         if (GameStart.gameMode1 == "Online") { return; }
         // プレイヤー速度取得
         Playerspeed = ((transform.parent.gameObject.transform.position - latestPos) / Time.deltaTime);
-        if (gameSetting.isPaused && saveCount == 0)
+        if (gameSetting.isPaused && !isSaveDone)
         {
             pausedPos = transform.parent.gameObject.transform.position;
             speedWhenPaused = Playerspeed;
-            saveCount = 1;
+            isSaveDone = true; 
         }
         if (gameSetting.isPaused)
         {
             stickRb.velocity = new Vector2(0, 0);
             transform.parent.gameObject.transform.position = pausedPos;
         }
-        if (gameSetting.isPaused && saveCount == 1)
+        if (gameSetting.isPaused && isSaveDone)
         {
             stickRb.velocity = new Vector2(speedWhenPaused.x * 2.1f, speedWhenPaused.y * 2.1f);
-            saveCount = 0;
+            isSaveDone = false;
         }
         latestPos = transform.parent.gameObject.transform.position;
-
     }
 
 
@@ -283,8 +283,8 @@ public class Controller : MonoBehaviourPunCallbacks
                 bool jumpKey = Input.GetKeyDown(KeyJump);
                 if (onFloor && (jumpKey || ControllerInput.jump[id - 1] ) )
                 {
-
-                    float jumpDirection;                        // 棒の回転値に合わせて飛ぶ方向を求める
+                    // 棒の回転値に合わせて飛ぶ方向を求める
+                    float jumpDirection;                       
                     if (rotZ < 180) { jumpDirection = 6; }
                     else { jumpDirection = 18; }
                     jumpDirection = (jumpDirection - rotZ / 15) * 1.15f;
@@ -313,7 +313,6 @@ public class Controller : MonoBehaviourPunCallbacks
         stickRb = GameObject.Find("Stick" + id).GetComponent<Rigidbody2D>();
         stickRb.MoveRotation(rot);
         stickRots[id - 1] = rot;    
-       // Debug.Log("Player" + id + "のStickRotsを" + rot);
     }
 
 
@@ -326,7 +325,6 @@ public class Controller : MonoBehaviourPunCallbacks
             {
                 if (Input.GetKey(KeyRight) || ControllerInput.LstickX[id - 1] > 0) { stickRot -= rotSpeed * Time.deltaTime; }
                 if (Input.GetKey(KeyLeft) || ControllerInput.LstickX[id - 1] < 0) { stickRot += rotSpeed * Time.deltaTime; }
-
             }
             else
             {
@@ -508,7 +506,8 @@ public class Controller : MonoBehaviourPunCallbacks
     }
     private void OnCollisionStay2D(Collision2D other)
     {
-        ContactPoint2D contactPoint = other.GetContact(0); // 最初の接触点を取得
+        // 最初の接触点を取得
+        ContactPoint2D contactPoint = other.GetContact(0);
         Vector2 contactPosition = contactPoint.point;
         float distance = 0.2f;
         int layer = 1 << LayerMask.NameToLayer("Default");

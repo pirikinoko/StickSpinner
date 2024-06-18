@@ -322,7 +322,6 @@ public class GameSetting : MonoBehaviourPunCallbacks
                 {
                     for (int i = 0; i < GameStart.PlayerNumber; i++)
                     {
-                        //Debug.Log(isJoinedLocal[0] + "  " + isJoinedLocal[1]);
                         if (ValueArrayA[i] == false)
                         {
                             allJoin = false;

@@ -423,14 +423,11 @@ public class GameMode : MonoBehaviourPunCallbacks
                                 playerRank[i] = j;
                                 if (GameStart.gameMode1 == "Online" && j == 0)
                                 {
-                                    ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
-                                    if (customProps.ContainsKey("winnings"))
+                                    if (NetWorkMain.GetCustomProps<int[]>("winnings", out var ValueCArray))
                                     {
-                                        int[] winningsLocal = (int[])customProps["winnings"];
-                                        winningsLocal[i]++;
-                                        customProps["winnings"] = winningsLocal;
+                                        ValueCArray[i]++;
+                                        NetWorkMain.SetCustomProps<int[]>("winnings", ValueCArray);
                                     }
-                                    PhotonNetwork.CurrentRoom.SetCustomProperties(customProps);
                                 }
                             }
                         }
