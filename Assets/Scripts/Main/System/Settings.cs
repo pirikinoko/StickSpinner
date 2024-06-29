@@ -35,7 +35,6 @@ public class Settings : MonoBehaviour
         Time.timeScale = 1;
         lastScreenNum = screenMode;
         SetScreenMode();
-        Debug.Log(languageNum);
         SettingPanelActive = false;
         exitPanelActive = false;
         GetComponent<Canvas>().worldCamera = GameObject.Find("Main Camera").GetComponent<Camera>();
@@ -53,7 +52,6 @@ public class Settings : MonoBehaviour
             Time.timeScale = 1;
             lastScreenNum = screenMode;
             SetScreenMode();
-            Debug.Log(languageNum);
             SettingPanelActive = false;
             exitPanelActive = false;
             GetComponent<Canvas>().worldCamera = GameObject.Find("Main Camera").GetComponent<Camera>();
@@ -342,7 +340,6 @@ public class Settings : MonoBehaviour
             switchLanguage.texts[0] = "ゲーム終了";
             switchLanguage.texts[1] = "QuitGame";
             exitButton.onClick.AddListener(() => exitPanelActive = true);
-            Debug.Log("タイトルボタン");
         }
         else
         {
@@ -352,7 +349,6 @@ public class Settings : MonoBehaviour
             switchLanguage.texts[0] = "タイトルに戻る";
             switchLanguage.texts[1] = "BackToTitle";
             exitButton.onClick.AddListener(() => item[5].GetComponent<ButtonClick>().BackToTitle());
-            Debug.Log("タイトルボタン");
         }
     }
 

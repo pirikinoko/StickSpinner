@@ -11810,7 +11810,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &848770240
 RectTransform:
   m_ObjectHideFlags: 0
@@ -15393,7 +15393,7 @@ GameObject:
   - component: {fileID: 1077732976}
   - component: {fileID: 1077732975}
   - component: {fileID: 1077732974}
-  - component: {fileID: 1077732973}
+  - component: {fileID: 1077732978}
   m_Layer: 0
   m_Name: ResumeInGame
   m_TagString: Button
@@ -15410,7 +15410,7 @@ RectTransform:
   m_GameObject: {fileID: 1077732971}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 24.829594, y: 24.829594, z: 24.829594}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 848770240}
@@ -15418,20 +15418,8 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -887, y: 471.7}
-  m_SizeDelta: {x: 4, y: 4}
+  m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1077732973
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1077732971}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 06fc9be62a4bc11458ad97a4e20a7e21, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!61 &1077732974
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -15521,9 +15509,21 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1077732973}
+      - m_Target: {fileID: 1077732978}
         m_TargetAssemblyTypeName: ButtonClick, Assembly-CSharp
-        m_MethodName: RestartButton
+        m_MethodName: RestartGame
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1077732978}
+        m_TargetAssemblyTypeName: ButtonClick, Assembly-CSharp
+        m_MethodName: SettingPanelTrigger
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -15571,6 +15571,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1077732971}
   m_CullTransparentMesh: 1
+--- !u!114 &1077732978
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1077732971}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15c59912ca0ed2b4f9facae9210b1a63, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  keyBind: 0
+  selectedButton: 0
 --- !u!1 &1081172406
 GameObject:
   m_ObjectHideFlags: 0
@@ -16958,13 +16972,13 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1228085909}
-        m_TargetAssemblyTypeName: TitleButtonClick, Assembly-CSharp
-        m_MethodName: PrevPhase
-        m_Mode: 1
+        m_TargetAssemblyTypeName: ButtonClick, Assembly-CSharp
+        m_MethodName: PhaseSwitch
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
+          m_IntArgument: -1
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -18161,7 +18175,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1292644477
 RectTransform:
   m_ObjectHideFlags: 0
@@ -18171,7 +18185,7 @@ RectTransform:
   m_GameObject: {fileID: 1292644476}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 24.829594, y: 24.829594, z: 24.829594}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 848770240}
@@ -18179,7 +18193,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -887, y: 471.7}
-  m_SizeDelta: {x: 4, y: 4}
+  m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1292644478
 MonoBehaviour:
@@ -18432,13 +18446,13 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1300184780}
-        m_TargetAssemblyTypeName: TitleButtonClick, Assembly-CSharp
-        m_MethodName: NextPhase
-        m_Mode: 1
+        m_TargetAssemblyTypeName: ButtonClick, Assembly-CSharp
+        m_MethodName: PhaseSwitch
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
+          m_IntArgument: 1
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -22034,13 +22048,13 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1710276553}
-        m_TargetAssemblyTypeName: TitleButtonClick, Assembly-CSharp
-        m_MethodName: PrevPhase
-        m_Mode: 1
+        m_TargetAssemblyTypeName: ButtonClick, Assembly-CSharp
+        m_MethodName: PhaseSwitch
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
+          m_IntArgument: -1
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -28291,6 +28305,7 @@ MonoBehaviour:
   KeyDown: 274
   rotSpeed: 160
   CoolTime_: 0.2
+  circleIndicatorImage: {fileID: 0}
 --- !u!114 &338176857625670416
 MonoBehaviour:
   m_ObjectHideFlags: 0

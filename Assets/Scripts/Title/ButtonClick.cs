@@ -44,6 +44,16 @@ public class ButtonClick : MonoBehaviourPunCallbacks　//クリック用ボタ�
 
     void Start()
     {
+        Initialize();
+    }
+
+    void Update()
+    {
+        controllerPushButton();
+    }
+
+    void Initialize() 
+    {
         //どのボタンを押されたときに処理を行うかを決定（Falseが選ばれた場合はコントローラーボタンに対応しない）
         controllerButton = selectedButton.ToString();
         if (SceneManager.GetActiveScene().name == "Title")
@@ -51,12 +61,10 @@ public class ButtonClick : MonoBehaviourPunCallbacks　//クリック用ボタ�
             gameStart = GameObject.Find("Systems").GetComponent<GameStart>();
             selectButton = GameObject.Find("Systems").GetComponent<SelectButton>();
         }
-
-    }
-
-    void Update()
-    {
-        controllerPushButton();
+        if (SceneManager.GetActiveScene().name == "Stage")
+        {
+            gameSetting = GameObject.Find("Scripts").GetComponent<GameSetting>();
+        }
     }
     // このスクリプトが有効になったときにイベントリスナーを登録
     void OnEnable()
@@ -70,9 +78,11 @@ public class ButtonClick : MonoBehaviourPunCallbacks　//クリック用ボタ�
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
+    void OnPressed() 
+    { }
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        gameSetting = GameObject.Find("Scripts").GetComponent<GameSetting>();
+        Initialize();
     }
     void controllerPushButton()
     {
@@ -352,7 +362,7 @@ public class ButtonClick : MonoBehaviourPunCallbacks　//クリック用ボタ�
     //ポーズ処理
     public void PauseGame()
     {
-        if (GameSetting.startTime < 0 && GameMode.Finished == false && GameMode.Goaled == false)
+        if (gameSetting.isCountDownEnded && !gameSetting.isPaused && GameMode.Finished == false && GameMode.Goaled == false)
         {
             gameSetting.isPaused = true;
             GameSetting.Playable = false;
@@ -368,8 +378,8 @@ public class ButtonClick : MonoBehaviourPunCallbacks　//クリック用ボタ�
 
     public void RestartGame()
     {
+        if (!gameSetting.isPaused) { return; }
         gameSetting.isPaused = false;
-        GameSetting.startTime = -1;
         GameSetting.Playable = true;
         Time.timeScale = 1;
     }

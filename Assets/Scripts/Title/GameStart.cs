@@ -12,9 +12,9 @@ public class GameStart : MonoBehaviourPunCallbacks
 {
     [SerializeField] int minFlagTime, maxFlagTime;
     public int maxStageNomal;     // 総ステージ数
-
-    
-    float difficulty, timeFromLastAction, cycle = 0.3f;
+    float difficultyl;
+    float timeFromLastAction;
+    float cycle = 0.3f;
     public GameObject mainTitle, startPanel, changePlayerNumber, stageSelect, selectGameMode, setArcadeGame, keyBoardMouseUI, selectOnlineLobby, onlineLobby, loadScreen, cursor;
     public GameObject[] controllerUI, playerIcon, playerSlot;
     IngameLog ingameLog;
@@ -22,7 +22,8 @@ public class GameStart : MonoBehaviourPunCallbacks
     public Vector2[] playerIconPos { get; set; } = new Vector2[4];
     public Vector2[] slot1Pos = new Vector2[4];
 
-    int lastPlayerNum, lastPhase;
+    int lastPlayerNum;
+    int lastPhase;
     public Text playerNumberText, stageNumberText, flagTimeLimitTx;
     //画像
     public Image stageImage;
@@ -33,15 +34,16 @@ public class GameStart : MonoBehaviourPunCallbacks
     //static変数
     public static string gameMode1 = "Single";
     public static string gameMode2 = "Nomal";
-    public static string teamMode = "FreeForAll"; //対戦チーム分け 
+    public static string teamMode = "FreeForAll"; 
     public static int phase = 0;
-    public static int PlayerNumber { get; set; } = 1;     // 参加プレイヤー数
+    public static int PlayerNumber { get; set; } = 1;   
     public static int stage = 1;
     public static int flagTimeLimit = 90;
     public static int[] playerTeam { get; set; } = { 0, 1, 2, 3 }; // {p1, p2, p3, p4}が TeamA, TeamB, TeamC, TeamDにいることを示す。ex..a = 1, c =3
-    public static int[] teamSize = new int[4]; // チーム　A, B, C, Dにいるプレイヤーの人数
-    public static int teamCount = 0; //チームの数
-    public static int maxPlayer = 4, minPlayer;     // 総プレイヤー数
+    public static int[] teamSize = new int[4];
+    public static int teamCount = 0;
+    public static int maxPlayer = 4;
+    public static int minPlayer;
     public static bool buttonPushable = true;
 
     //ロード画面
@@ -104,7 +106,7 @@ public class GameStart : MonoBehaviourPunCallbacks
         }
         timeFromLastAction += Time.deltaTime;
         //プレイヤー数制限
-        PlayerNumber = Mathf.Clamp(PlayerNumber, 1, maxPlayer);
+        PlayerNumber = Mathf.Clamp(PlayerNumber, minPlayer, maxPlayer);
         //フラッグモード時間範囲
         flagTimeLimit = Mathf.Clamp(flagTimeLimit, minFlagTime, maxFlagTime);
     }
@@ -113,23 +115,20 @@ public class GameStart : MonoBehaviourPunCallbacks
 
     void SwichStageMaterial() //選択ステージ毎に情報切り替え
     {
-        stageNumberText.text = "Stage" + stage.ToString();
         switch (gameMode1)
         {
-
             case "Single":
-                stageNumberText.text = singleArcadeText[Settings.languageNum];
+                stageNumberText.text = (gameMode2 == "Arcade") ? singleArcadeText[Settings.languageNum] : "Stage" + stage.ToString();
                 imageSprite = Resources.Load<Sprite>(gameMode1 + gameMode2 + stage);
                 break;
             case "Multi":
-                stageNumberText.text = MultiArcadeText[stage + (2 * Settings.languageNum)];
+                stageNumberText.text = (gameMode2 == "Arcade") ? MultiArcadeText[stage + (2 * Settings.languageNum)] : "Stage" + stage.ToString();
                 imageSprite = Resources.Load<Sprite>(gameMode1 + gameMode2 + stage);
                 break;
             case "Online":
-                stageNumberText.text = MultiArcadeText[stage + (2 * Settings.languageNum)];
+                stageNumberText.text = (gameMode2 == "Arcade") ? MultiArcadeText[stage + (2 * Settings.languageNum)] : "Stage" + stage.ToString();
                 imageSprite = Resources.Load<Sprite>("Multi" + gameMode2 + stage);
                 break;
-
         }
      
         stageImage.sprite = imageSprite;
@@ -151,6 +150,7 @@ public class GameStart : MonoBehaviourPunCallbacks
                             mainTitle.gameObject.SetActive(true);
                             break;
                         case 1:
+                            minPlayer = 1;
                             GameStart.PlayerNumber = 1;
                             selectGameMode.gameObject.SetActive(true);
                             break;
@@ -173,6 +173,7 @@ public class GameStart : MonoBehaviourPunCallbacks
                             break;
                         case 1:
                             GameStart.PlayerNumber = 2;
+                            minPlayer = 2;
                             changePlayerNumber.gameObject.SetActive(true);
                             break;
                         case 2:
@@ -209,6 +210,7 @@ public class GameStart : MonoBehaviourPunCallbacks
                             StartCoroutine(Reconnect());
                             break;
                         case 2:
+                            minPlayer = 1;
                             selectOnlineLobby.gameObject.SetActive(true);
                             joinedLobby = false;
                             break;

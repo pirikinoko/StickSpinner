@@ -48,10 +48,7 @@ public class ControllerInput : MonoBehaviour
             start[i] = false;
             nextHold[i] = false;
             backHold[i] = false;
-
         }
-
-
     }
 
     void Update()
@@ -103,7 +100,6 @@ public class ControllerInput : MonoBehaviour
         for (int i = 0; i < joystickNames.Length; i++)
         {
             controller[i] = CheckControllerName(joystickNames[i]);  //コントローラーの種類を検知
-                                                                    // Debug.Log(" "+connected + "台接続 " +(i+1)+" 台目:" +joystickNames[i] + " " + controller[i]);
         }
 
     }

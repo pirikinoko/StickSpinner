@@ -7,13 +7,19 @@ using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.Tilemaps;
 using Photon.Pun;
+using Cysharp.Threading.Tasks;
+using DG.Tweening;
+using System.Threading;
+using Cysharp.Threading.Tasks.Linq;
+
 public class GameSetting : MonoBehaviourPunCallbacks
 {
     //基本
     [SerializeField] Text countDown, playTimeTx;
     [SerializeField] Text[] nameTagTexts;
     [SerializeField] GameObject canvas, frontCanvas, quickStartingPanel, pauseButton;
-    [HideInInspector] public GameObject[] players = new GameObject[GameStart.maxPlayer];
+    [SerializeField] CameraControl cameraControl;
+    [HideInInspector] public GameObject[]? players = new GameObject[GameStart.maxPlayer];
     [HideInInspector] public GameObject[] sticks = new GameObject[GameStart.maxPlayer];
     [HideInInspector] public GameObject[] nameTags = new GameObject[GameStart.maxPlayer];
     [HideInInspector] public GameObject[] deadTimer = new GameObject[GameStart.maxPlayer];
@@ -25,11 +31,11 @@ public class GameSetting : MonoBehaviourPunCallbacks
     public bool isPaused = false;
     //タイム
     float elapsedTime;
+    public bool isCountDownEnded;
     public static float playTime;
-    public static float startTime = 6;
-    float SoundTime = 1f;
-    bool StartFlag, coroutineEnded;
-    int startTrigger = 0;
+    bool coroutineEnded;
+    bool gameStartMethodInvoked = false;
+    bool startTimerInvoked = false; 
     //ステージ切り替え用
     [SerializeField] GameObject[] stageObjectSingle, stageObjectSingleArcade, stageObjectMulti, stageObjectMultiArcade;
     [SerializeField] GameObject[] keyBoardMouseUI, controllerUI, battleModeUI;
@@ -65,19 +71,21 @@ public class GameSetting : MonoBehaviourPunCallbacks
 
 
 
-    void Start()
+    void Awake()
     {
         if (GameStart.gameMode1 == "Online")
         {
             PhotonNetwork.IsMessageQueueRunning = true;
         }
-        Debug.Log("Pnum == " + GameStart.PlayerNumber);
-        startTrigger = 0;
+        gameStartMethodInvoked = false;
         allJoin = false;
         setupEnded = false;
         isPaused = false;
         coroutineEnded = false;
         Playable = false;
+        startTimerInvoked = false;  
+        isCountDownEnded = false;
+        countDown.text = null;
         ingameLog = GameObject.Find("Scripts").GetComponent<IngameLog>();
         for (int i = 0; i < 4; i++)
         {
@@ -139,7 +147,7 @@ public class GameSetting : MonoBehaviourPunCallbacks
         }
     }
     //すべてのプレイヤーがそろってから行う処理
-    void AfterAllJoin()
+    private void AfterAllJoin()
     {
         //プレイヤー生成
         if (GameStart.gameMode1 == "Online")
@@ -206,7 +214,8 @@ public class GameSetting : MonoBehaviourPunCallbacks
                 ballObj.name = "SoccerBall";
             }
         }
-        else //オフライン時のプレイヤー生成処理
+        //オフライン時のプレイヤー生成処理
+        else
         {
             for (int i = 0; i < 4; i++)
             {
@@ -229,9 +238,8 @@ public class GameSetting : MonoBehaviourPunCallbacks
         data = GetComponent<DataManager>().data;
         canvas.gameObject.SetActive(true);
         frontCanvas.gameObject.SetActive(true);
-        playTimeTx.color = new Color32(255, 255, 255, 255); // 例: 赤色
+        playTimeTx.color = new Color32(255, 255, 255, 255); 
         Debug.Log("PlayerNumber: " + GameStart.PlayerNumber + " stage: " + GameStart.stage);
-        countDown = GameObject.Find("CountDown").GetComponent<Text>();
         playTimeTx = GameObject.Find("TimeText").GetComponent<Text>();
         playTimeTx.text = "";
         for (int i = 0; i < GameStart.maxPlayer; i++) 
@@ -242,16 +250,11 @@ public class GameSetting : MonoBehaviourPunCallbacks
             deadTimer[i].SetActive(false);
         }
 
-        SoundTime = 1f;
-        startTime = 6;
         Playable = false;
-        StartFlag = true;
-        countDown.text = ("3");
 
         //プレイヤー人数の反映
         if (GameStart.gameMode1 != "Online")
         {
-
             for (int i = 0; i < GameStart.PlayerNumber; i++)
             {
                 nameTags[i].gameObject.SetActive(true);
@@ -299,10 +302,42 @@ public class GameSetting : MonoBehaviourPunCallbacks
         NameTag();
     }
 
-    void Update()
+    private async UniTask Update()
+    {
+        CheckAllPlayersJoined();    
+
+        if (GameStart.gameMode1 == "Online" && !allJoin)
+        {
+            return;
+        }
+        if (gameStartMethodInvoked == false)
+        {
+            if (GameStart.gameMode1 == "Online")
+            {
+                if (!coroutineEnded) 
+                {
+                    return;
+                }
+            }
+            quickStartingPanel.gameObject.SetActive(false);
+            gameStartMethodInvoked = true;
+            AfterAllJoin();
+        }
+        if (cameraControl.isFirstAnimationEnded && !startTimerInvoked)
+        {
+            startTimerInvoked = true;
+            await StartTimer(); 
+        }
+        CheckPlayersLeft();
+        SwichUI();
+        GameTimeManagement();
+
+    }
+
+    private void CheckAllPlayersJoined() 
     {
         //プレイヤーのシーン遷移確認
-        if (GameStart.gameMode1 == "Online") 
+        if (GameStart.gameMode1 == "Online")
         {
             if (NetWorkMain.GetCustomProps<bool[]>("isJoined", out var ValueArrayA))
             {
@@ -313,12 +348,12 @@ public class GameSetting : MonoBehaviourPunCallbacks
 
         if (!allJoin)
         {
-            //全員ジョインするまでゲーム説明パネルを表示しておく
-            StartCoroutine(OpenQuickPanel());
             if (GameStart.gameMode1 == "Online")
             {
+                //全員ジョインするまでゲーム説明パネルを表示しておく
+                StartCoroutine(OpenQuickPanel());
                 allJoin = true;
-                if (NetWorkMain.GetCustomProps<bool[]>("isJoined", out var ValueArrayA)) 
+                if (NetWorkMain.GetCustomProps<bool[]>("isJoined", out var ValueArrayA))
                 {
                     for (int i = 0; i < GameStart.PlayerNumber; i++)
                     {
@@ -326,7 +361,7 @@ public class GameSetting : MonoBehaviourPunCallbacks
                         {
                             allJoin = false;
                         }
-                    }           
+                    }
                 }
                 else
                 {
@@ -341,92 +376,37 @@ public class GameSetting : MonoBehaviourPunCallbacks
             }
 
         }
-
-        if (GameStart.gameMode1 == "Online" && !allJoin)
+    }
+    private async UniTask StartTimer()
+    {
+        countDown.text = null;
+        for (int i = 3; i > 0; i--)
         {
-            return;
+            countDown.text = i.ToString();
+            SoundEffect.soundTrigger[3] = 1;
+            await UniTask.Delay(1000);
         }
-        if (startTrigger == 0)
-        {
-            if (GameStart.gameMode1 == "Online")
-            {
-                if (!coroutineEnded) 
-                {
-                    return;
-                }
-            }
-            quickStartingPanel.gameObject.SetActive(false);
-            Debug.Log("StartInUpdateTriggered");
-            AfterAllJoin();
-            startTrigger = 1;
-        }
-        CheckPlayersLeft();
-        SwichUI();
-        StartTimer();
-
+        countDown.text = startText[Settings.languageNum];
+        SoundEffect.soundTrigger[3] = 1;
+        await UniTask.Delay(1000);
+        CountDownGO.gameObject.SetActive(false);
+        isCountDownEnded = true;
     }
 
-
-    void StartTimer()
+    void GameTimeManagement() 
     {
-        //3・2・1カウントダウン　→　スタート
-        if (StartFlag)
-        {
-            startTime -= Time.deltaTime;
-            SoundTime -= Time.deltaTime;
-            if (startTime > 3)
-            {
-                countDown.text = null;
-                return;
-            }
-            else if (startTime > 2)
-            {
-                CountDownGO.gameObject.SetActive(true);
-                countDown.text = ("3");
-            }
-            else if (startTime > 1)
-            {
-                countDown.text = ("2");
-            }
-            else if (startTime > 0)
-            {
-                countDown.text = ("1");
-            }
-            else if (startTime < 0 && startTime > -0.5f)
-            {
-                countDown.text = startText[Settings.languageNum];
-            }
-            else if (startTime < 0.9f)
-            {
-                countDown.text = ("");
-                CountDownGO.gameObject.SetActive(false);
-                StartFlag = false;
-            }
-            if (SoundTime < 0)
-            {
-                SoundEffect.soundTrigger[3] = 1;
-                SoundTime = 1;
-            }
-        }
-        if (startTime < 0 && (!isPaused || GameStart.gameMode1 == "Online")) //ゲーム開始
-        {
+        if (!isCountDownEnded) { return; }
 
+        if (!isPaused || GameStart.gameMode1 == "Online") 
+        {
             if(!GameMode.Finished && !GameMode.Goaled) 
             {
                 Playable = true;
             }
 
-            if (playTime > 99)
-            {
-                playTime = elapsedTime;
-                playTime = Mathf.Floor(playTime);
-            }
-            else
-            {
-                playTime = elapsedTime * 10;
-                playTime = Mathf.Floor(playTime) / 10;
-            }
+            playTime = (playTime > 99) ? Mathf.Floor(elapsedTime) : Mathf.Floor(elapsedTime * 10) / 10;
 
+            //それぞれのモードごとの時間の形式を設定
             if ((GameStart.gameMode1 == "Multi" || GameStart.gameMode1 == "Online") && GameStart.gameMode2 == "Arcade" && playTime > 0)
             {
                 elapsedTime -= Time.deltaTime;
@@ -436,16 +416,17 @@ public class GameSetting : MonoBehaviourPunCallbacks
                 }
                 playTimeTx.text = (playTime.ToString());
             }
-            else if (GameStart.gameMode1 == "Single" && GameStart.gameMode2 == "Arcade") 
+
+            if (GameStart.gameMode1 == "Single" && GameStart.gameMode2 == "Arcade") 
             {
                 playTimeTx.text = (int)GenerateStage.maxHeight + "m";
             }
-            else if (GameStart.gameMode2 != "Arcade")
+
+             if (GameStart.gameMode2 == "Nomal")
             {
                 elapsedTime += Time.deltaTime;
                 playTimeTx.text = (playTime.ToString());
             }
-            else { playTimeTx.text = "--"; }
         }
     }
     //他のプレイヤー切断時

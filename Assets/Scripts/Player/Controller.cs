@@ -6,19 +6,28 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using UnityEditor;
 using Photon.Pun;
-
+using Cysharp.Threading.Tasks;
+using DG.Tweening;
+using System.Threading;
+using Cysharp.Threading.Tasks.Linq;
 
 public class Controller : MonoBehaviourPunCallbacks
 {
+    // プレイヤー番号(1～4)
     [SerializeField]
-    public int id;                                      // プレイヤー番号(1～4)
+    public int id;                              
+    // キー(キーボード使用時)
     [SerializeField]
-    KeyCode KeyLeft, KeyRight, KeyJump, KeyDown;                          // 左右キー(キーボード使用時)
-    [SerializeField]float rotSpeed = 160f;                              // 棒の回転速度
+    KeyCode KeyLeft, KeyRight, KeyJump, KeyDown;                       
+    // 棒の回転速度
     [SerializeField]
-    float CoolTime_ = 0.2f;                             // ジャンプのクールタイム初期化用
+    float rotSpeed = 160f;                              
+    // ジャンプのクールタイム初期化用
+    [SerializeField]
+    float CoolTime_ = 0.2f;
+    [SerializeField]
+    Image circleIndicatorImage;
     float coolTime = 0.2f;                              // ジャンプのクールタイム
-    Text SensText;
     GameSetting gameSetting;
     float stickRot = 0f;                                　　　// 棒の角度
     float[] stickRots = new float[GameStart.maxPlayer];
@@ -26,7 +35,7 @@ public class Controller : MonoBehaviourPunCallbacks
     bool onFloor, onSurface, onPlayer, onStick;   // 接触している時は true
     bool inputCrossX;                               　　　 　// 十字ボタンの入力があるときはtrue
     float delay = 0.15f;
-    float selfDeathTimer = 1.0f;
+    float selfDeathDuration = 1.0f;
     public float rotZ { get; set; }
     bool delayFlag = false;
     bool isRespowing = false;
@@ -46,6 +55,8 @@ public class Controller : MonoBehaviourPunCallbacks
     Vector2 ghostStartPos;
     bool inCoroutine = false;
     Collider2D ghostCollider;
+    private CancellationTokenSource cts;
+    Tween fillAmoutTween;
     void Start()
     {
         if (GameStart.gameMode1 == "Online" && SceneManager.GetActiveScene().name != "Title")
@@ -71,6 +82,7 @@ public class Controller : MonoBehaviourPunCallbacks
         onPlayer = false;
         onStick = false;
         inCoroutine = false;
+        cts = new CancellationTokenSource();
         stickRb = GetComponent<Rigidbody2D>();
 
 
@@ -160,7 +172,7 @@ public class Controller : MonoBehaviourPunCallbacks
     }
 
     // 入力は Update で行う
-    void Update()
+    async void Update()
     {
         if (GameSetting.allJoin)
         {
@@ -209,17 +221,40 @@ public class Controller : MonoBehaviourPunCallbacks
         {
             if (GameSetting.Playable && !gameSetting.isPaused)
             {
-                selfDeath();
                 Jump();
+                if (Input.GetKeyDown(KeyDown) || ControllerInput.back[id - 1])
+                {
+                    if(fillAmoutTween == null && !(GameStart.gameMode1 == "Single" && GameStart.gameMode2 == "Arcade")) 
+                    {
+                        TweenFillAmountAsync(cts.Token);
+                    }
+                }        
             }
-            Move();
+            if (fillAmoutTween != null && (Input.GetKeyUp(KeyDown) || !ControllerInput.back[id - 1])) 
+            {
+                cts.Cancel();
+            }
+                Move();
         }   
         ExitDelay();
-
-
-  
     }
+    private async UniTask TweenFillAmountAsync(CancellationToken cancellationToken)
+    {
+        cts.Cancel();
+        fillAmoutTween = circleIndicatorImage.DOFillAmount(1.0f, selfDeathDuration)
+           .SetEase(Ease.Linear)
+            .OnComplete(() => StartDead());
+        try
+        {
+            await fillAmoutTween.ToUniTask(cancellationToken: cts.Token);
+        }
+        catch (OperationCanceledException)
+        {
+            // キャンセルされた場合の処理
+            Debug.Log("Tween was cancelled");
+        }
 
+    }
     // 移動は FixedUpdateで行う※Inputの入力が入りにくくなる
     void FixedUpdate()
     {
@@ -243,7 +278,7 @@ public class Controller : MonoBehaviourPunCallbacks
             stickRb = GetComponent<Rigidbody2D>();
             stickRb.MoveRotation(stickRot);            // 角度反映 これはポーズ時も行う
         }
-        if (GameStart.gameMode1 == "Online") { return; }
+        if (GameStart.gameMode1 == "Online" || gameSetting == null) { return; }
         // プレイヤー速度取得
         Playerspeed = ((transform.parent.gameObject.transform.position - latestPos) / Time.deltaTime);
         if (gameSetting.isPaused && !isSaveDone)
@@ -274,9 +309,9 @@ public class Controller : MonoBehaviourPunCallbacks
         if (coolTime > 0)
         {
             coolTime -= Time.deltaTime;
-            return;   //処理中断
+            return;   
         }
-        if (GameSetting.Playable && !gameSetting.isPaused) //プレイヤー数選択画面でも操作可能
+        if (GameSetting.Playable && !gameSetting.isPaused) 
         {
             if (!NetWorkMain.isOnline || (NetWorkMain.isOnline && photonView.IsMine))
             {
@@ -297,10 +332,8 @@ public class Controller : MonoBehaviourPunCallbacks
                         //効果音鳴らす
                         SoundEffect.soundTrigger[5] = 1;
                     }
-
                     // クールタイム(この時間は入力を受け付けない)
                     coolTime = CoolTime_;
-
                 }
             }
         
@@ -319,7 +352,8 @@ public class Controller : MonoBehaviourPunCallbacks
     // 移動
     void Move()
     {
-        if (GameSetting.Playable && !gameSetting.isPaused) //プレイヤー数選択画面でも操作可能
+        //プレイヤー数選択画面でも操作可能
+        if (GameSetting.Playable && !gameSetting.isPaused) 
         {
             if (!NetWorkMain.isOnline)
             {
@@ -441,62 +475,6 @@ public class Controller : MonoBehaviourPunCallbacks
         GameMode.isDead[id - 1] = false;
         isRespowing = false;
     }
-
-    bool animActive;
-    void selfDeath()
-    {
-        if (GameStart.gameMode1 == "Single" && GameStart.gameMode2 == "Arcade")
-        {
-            return;
-        }
-        Vector2 animPos = this.transform.position;
-        animPos.y += 1;
-        if (Input.GetKey(KeyDown) || ControllerInput.backHold[id - 1])
-        {
-            selfDeathTimer -= Time.deltaTime;
-        }
-        else
-        {
-            selfDeathTimer = 1.0f;
-        }
-
-        if (selfDeathTimer < 0)
-        {
-            StartDead();
-            GameObject objToDelete = GameObject.Find("HoldAnim" + id.ToString());
-            if (objToDelete != null)
-            {
-                Destroy(objToDelete);
-            }
-        }
-
-        if (Input.GetKeyDown(KeyDown) || ControllerInput.back[id - 1])
-        {
-            GameObject animPrefab = (GameObject)Resources.Load("HoldDeathEffect");
-            GameObject animObj = Instantiate(animPrefab, animPos, Quaternion.identity);
-            animObj.name = "HoldAnim" + id.ToString();
-            animActive = true;
-            return;
-        }
-
-        GameObject targetObj = GameObject.Find("HoldAnim" + id.ToString());
-        if (targetObj != null)
-        {
-            targetObj.transform.position = animPos;
-        }
-
-        if (Input.GetKeyUp(KeyDown) || (ControllerInput.usingController && animActive == true && ControllerInput.backHold[id - 1] == false))
-        {
-            GameObject objToDelete = GameObject.Find("HoldAnim" + id.ToString());
-            if (objToDelete != null)
-            {
-                Destroy(objToDelete);
-            }
-            animActive = false;
-        }
-
-    }
-
 
     // コリジョン
     private void OnCollisionEnter2D(Collision2D other)

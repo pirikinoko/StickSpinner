@@ -23,6 +23,7 @@ public class GenerateStage : MonoBehaviour
     Vector3[] objPos = new Vector3[objUnit];
     Vector2 checkLinePos;
     public float deadLine { get; set; }
+    bool isCalucurateEnded;
     int[] objectType = new int[objUnit];
     int currentObj = 0, prev, prev2, count = 0, target = 0, objLength, objLengthPrev, objDirection = 0, enemyCount = 0, startCount, startTrigger;
     public static float[] collisionPos = new float[30];
@@ -31,6 +32,7 @@ public class GenerateStage : MonoBehaviour
     void Start()
     {
         startTrigger = 0;
+
     }
     void AfterAllJoin() 
     {
@@ -44,10 +46,45 @@ public class GenerateStage : MonoBehaviour
         thorns.gameObject.SetActive(false);
         leftWallPos = leftWall.transform.position;
         rightWallPos = rightWall.transform.position;
-        //ステージの端
         leftLimit = leftWall.transform.position.x;
         rightLimit = rightWall.transform.position.x;
-
+        playerYPrev = gameSetting.players[0].transform.position.y; ;
+        currentObj = 0;
+        objectType[0] = 0;
+        count = 0;
+        target = 0;
+        enemyCount = 0;
+        isCalucurateEnded = false;
+        deadLine = -10;
+        SetObjectsForCalucuratingObjectLength();    
+        for (int i = 0; i < 20; i++)
+        {
+            objActive[i] = false;
+        }
+    }
+    // Update is called once per frame
+    void Update()
+    {
+        if (GameStart.gameMode1 != "Single" || GameStart.gameMode2 != "Arcade")
+        {
+            return;
+        }
+        if(GameSetting.allJoin && startTrigger == 0) 
+        {
+                AfterAllJoin();
+                startTrigger = 1;
+        }
+        StartCalucurating();
+        if (gameSetting.isCountDownEnded)
+        {
+            DeleteObject();
+            SetNumbers();
+            DecideNextObject();
+        }
+        PlayerHeightManagement();
+    }
+    void SetObjectsForCalucuratingObjectLength() 
+    {
         //生成するオブジェクトの長さを測る
         int length1 = objNames.GetLength(0);
         int length2 = objNames.GetLength(1);
@@ -93,40 +130,17 @@ public class GenerateStage : MonoBehaviour
                 }
             }
         }
-
-        playerYPrev = gameSetting.players[0].transform.position.y; ;
-        currentObj = 0;
-        objectType[0] = 0;
-        startCount = 0;
-        count = 0;
-        target = 0;
-        enemyCount = 0;
-        deadLine = -10;
-        for (int i = 0; i < 20; i++)
-        {
-            objActive[i] = false;
-        }
     }
-    // Update is called once per frame
-    void Update()
+    void StartCalucurating() 
     {
-        if (GameStart.gameMode1 != "Single" || GameStart.gameMode2 != "Arcade")
-        {
-            return;
-        }
-        if(GameSetting.allJoin && startTrigger == 0) 
-        {
-                AfterAllJoin();
-                startTrigger = 1;
-        }
         //長さを計測
-        if (GameSetting.startTime > 0)
+        if (gameSetting.isCountDownEnded)
         {
             checkLinePos.x -= 1.0f * Time.deltaTime;
             checkLine.transform.position = checkLinePos;
             int length1 = objNames.GetLength(0);
             int length2 = objNames.GetLength(1);
-            if (GameSetting.startTime < 0.5f && startCount == 0)
+            if (!isCalucurateEnded)
             {
                 for (int i = 0; i < 1; i++)
                 {
@@ -138,40 +152,19 @@ public class GenerateStage : MonoBehaviour
                         Destroy(objForCheckLength[(i * 4) + j]);
                     }
                 }
-                startCount++;
-            }
-
-        }
-        else
-        {
-            DeleteObject();
-            SetNumbers();
-            if (objActive[currentObj] == false)
-            {
-                // 次に生成するオブジェクトの種類を決定
-                objectType[currentObj] = UnityEngine.Random.Range(0, 1); 　//床のみ;
-                int maxLength = 3;
-                if (objectType[currentObj] == Floor)
-                {
-                    maxLength = 4;
-                }
-                objLength = UnityEngine.Random.Range(1, maxLength + 1);
-                SetObjectPos(currentObj);
-                GenerateObjects(currentObj);
-                objActive[currentObj] = true;
-                currentObj++;
-                if (currentObj == objUnit) { currentObj = 0; }
-                count++;
-                objLengthPrev = objLength;
+                isCalucurateEnded = true;
             }
         }
+    }
+    void PlayerHeightManagement() 
+    {
         playerPos = GameObject.Find("Player1").transform.position;
         leftWallPos.y = playerPos.y;
         rightWallPos.y = playerPos.y;
-        if (playerPos.y > 2.5f) 
+        if (playerPos.y > 2.5f)
         {
             thorns.gameObject.SetActive(true);
-            surfacePos.y +=  0.6f * Time.deltaTime;
+            surfacePos.y += 0.6f * Time.deltaTime;
             surface.transform.position = surfacePos;
         }
         if (playerPos.y > 10)
@@ -180,10 +173,31 @@ public class GenerateStage : MonoBehaviour
             leftWall.transform.position = leftWallPos;
             rightWall.transform.position = rightWallPos;
         }
-        if (GameMode.isGameOver == false && playerPos.y > maxHeight + startHeight) 
+        if (GameMode.isGameOver == false && playerPos.y > maxHeight + startHeight)
         {
             maxHeight = playerPos.y;
             maxHeight -= startHeight;
+        }
+    }
+    void DecideNextObject() 
+    {
+        if (objActive[currentObj] == false)
+        {
+            // 次に生成するオブジェクトの種類を決定
+            objectType[currentObj] = UnityEngine.Random.Range(0, 1);  //床のみ;
+            int maxLength = 3;
+            if (objectType[currentObj] == Floor)
+            {
+                maxLength = 4;
+            }
+            objLength = UnityEngine.Random.Range(1, maxLength + 1);
+            SetObjectPos(currentObj);
+            GenerateObjects(currentObj);
+            objActive[currentObj] = true;
+            currentObj++;
+            if (currentObj == objUnit) { currentObj = 0; }
+            count++;
+            objLengthPrev = objLength;
         }
     }
     void GenerateObjects(int targetNum)

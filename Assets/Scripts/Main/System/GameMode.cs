@@ -10,62 +10,130 @@ using Photon.Pun;
 
 public class GameMode : MonoBehaviourPunCallbacks
 {
-    //基本
+    // 基本
     GameSetting gameSetting;
+
     public static string[] goaledPlayer { get; set; } = new string[GameStart.maxPlayer];
-    [SerializeField] GameObject[] resultTextGO = new GameObject[GameStart.maxPlayer], icons;
+
+    [SerializeField]
+    GameObject[] resultTextGO = new GameObject[GameStart.maxPlayer];
+
+    [SerializeField]
+    GameObject[] icons;
+
+    [SerializeField]
+    GameObject[] battleModeUIs;
+
+    [SerializeField]
+    GameObject ResultPanel;
+
+    [SerializeField]
+    GameObject ResultPanelFront;
+
+    [SerializeField]
+    GameObject TextCanvas;
+
+    [SerializeField]
+    GameObject backTitleButton;
+
+    [SerializeField]
+    GameObject ResultPanelArcade;
+
     Text[] resultText = new Text[GameStart.maxPlayer];
-    [SerializeField] GameObject ResultPanel, ResultPanelFront, TextCanvas, backTitleButton, ResultPanelArcade;
+
     bool showResultTriggerd = false;
-    //通常ステージ
+
+    // 通常ステージ
     public static byte Goals = 0;
+
     public static float[] clearTime = new float[GameStart.maxPlayer];
+
     public static bool Goaled;
     //バトルモード
-    public GameObject KillLogBack, Plus1, Plus5,drawTextGO;
-    GameObject[] pointTextGO = new GameObject[4], pointFrame = new GameObject[4], crownObj = new GameObject[4];
-    [SerializeField] GameObject[] teamTag;
-    [SerializeField] private Text[] teamTagText;
-    string[] teamTagName = { "A", "B", "C", "D" }, teamsInOrder = new string[4];
-    private Color[] teamColors = { Color.white, Color.red, Color.blue, Color.green };
-    public static bool[] isDead = { false, false, false, false };
-    public static float[] points = new float[4], pointsInOrder = new float[4], teamPoints = new float[4];
-    public static float  KillLogTimer;
-    public static string[] playerNameByRank = new string[4];
-    int[] playerRank = new int[4];
-    Text[] pointText = new Text[4];
-    public static string killer, died;
-    public Text KillLogText = null;
-    public static byte[] playParticle = new byte[4];
-    Vector2[] framePos = new Vector2[4];
-    public static bool Finished;
-    byte count = 0;
-    bool isDraw = true;
-    float frameSpace = 10;
-    private Vector2[] particlePos = new Vector2[4];
-    public static float[,] killTimer = new float[4, 4];       // プレイヤー同士の衝突を記録(プレイヤー1～4とプレイヤー1～4の衝突)
+    [SerializeField]
+    GameObject KillLogBack;
 
-    //サッカーモード
-   
+    [SerializeField]
+    GameObject Plus1;
+
+    [SerializeField]
+    GameObject drawTextGO;
+
+    [SerializeField]
+    GameObject Plus5;
+
+    GameObject[] pointTextGO = new GameObject[4];
+    GameObject[] pointFrame = new GameObject[4];
+    GameObject[] crownObj = new GameObject[4];
+
+    [SerializeField]
+    GameObject[] teamTag;
+
+    [SerializeField]
+    private Text[] teamTagText;
+
+    string[] teamTagName = { "A", "B", "C", "D" };
+    string[] teamsInOrder = new string[4];
+
+    private Color[] teamColors = { Color.white, Color.red, Color.blue, Color.green };
+
+    public static bool[] isDead = { false, false, false, false };
+    public static float[] points = new float[4];
+    public static float[] pointsInOrder = new float[4];
+    public static float[] teamPoints = new float[4];
+    public static float KillLogTimer;
+
+    public static string[] playerNameByRank = new string[4];
+
+    int[] playerRank = new int[4];
+
+    Text[] pointText = new Text[4];
+
+    public static string killer;
+    public static string died;
+
+    public Text KillLogText = null;
+
+    public static byte[] playParticle = new byte[4];
+
+    Vector2[] framePos = new Vector2[4];
+
+    public static bool Finished;
+
+    byte count = 0;
+
+    bool isDraw = true;
+
+    float frameSpace = 10;
+
+    private Vector2[] particlePos = new Vector2[4];
+
+    public static float[,] killTimer = new float[4, 4];  // プレイヤー同士の衝突を記録(プレイヤー1～4とプレイヤー1～4の衝突)
+
+    // サッカーモード
     [SerializeField]
     Text ballCountText;
+
     Vector2 ballPosDefault = new Vector2(0, -2f);
-    //無限モード
+
+    // 無限モード
     public static bool isGameOver;
+
     int startTrigger = 0;
+
 
     void Start()
     {
         gameSetting = GameObject.Find("Scripts").GetComponent<GameSetting>();
         startTrigger = 0;
         backTitleButton.gameObject.SetActive(false);
-        //ResultPanelArcade.gameObject.SetActive(false);
         showResultTriggerd = false;
         isDraw = true;
     }
+
     void StartInUpdate()
-    {   //基本
-        for (int i = 0; i < GameStart.maxPlayer; i++) //初期化処理
+    {   
+        for (int i = 0; i < GameStart.maxPlayer; i++)
         {
             resultText[i] = resultTextGO[i].GetComponent<Text>();
             teamTag[i].gameObject.SetActive(false);
@@ -79,7 +147,7 @@ public class GameMode : MonoBehaviourPunCallbacks
         ResultPanel.gameObject.SetActive(false);
         ResultPanelFront.gameObject.SetActive(false);
         TextCanvas.gameObject.SetActive(false);
-
+        KillLogBack.gameObject.SetActive(false);
         ballCountText = GameObject.Find("BallSpownCount").GetComponent<Text>();
         ballCountText.text = null;
         Finished = false;
@@ -89,22 +157,20 @@ public class GameMode : MonoBehaviourPunCallbacks
         // 通常ステージ
         if (GameStart.gameMode2 != "Arcade")
         {
-            for (int i = 0; i < GameStart.maxPlayer; i++) //初期化処理
-            {
+            for (int i = 0; i < GameStart.maxPlayer; i++)
+            { 
                 clearTime[i] = 0;
                 goaledPlayer[i] = null;
             }
+            for (int j = 0; j < battleModeUIs.Length; j++)
+            {
+                battleModeUIs[j].SetActive(false);
+            }
         }
-
-
-
-
 
         //アーケード
         if ((GameStart.gameMode1 == "Multi" || GameStart.gameMode1 == "Online") && GameStart.gameMode2 == "Arcade")
         {
-            if(GameStart.gameMode2 != "Arcade") { return; }
-            //リセット等
             for (int i = 0; i < 4; i++)
             {
                 playerNameByRank[i] = null;
@@ -123,11 +189,14 @@ public class GameMode : MonoBehaviourPunCallbacks
                     pointFrame[i] = GameObject.Find("TeamFrame" + (i + 1).ToString());
                     GameObject.Find("PointFrame" + (i + 1).ToString()).SetActive(false);
                 }
+                pointFrame[i].SetActive(false);
+                pointTextGO[i].SetActive(false);
                 pointText[i] = pointTextGO[i].GetComponent<Text>();
-
             }
             count = 0;
             KillLogTimer = 0;
+
+            AdjustTeamFramePos();
 
             //チームタグ表示
             for (int i = 0; i < GameStart.PlayerNumber; i++)
@@ -139,9 +208,7 @@ public class GameMode : MonoBehaviourPunCallbacks
                     teamTagText[i].color = teamColors[GameStart.playerTeam[i]];
                 }
             }
-            AdjustTeamFramePos();
-            // 画面上部スコア表示リセット
-            for (int i = 0; i < 4; i++) { pointFrame[i].gameObject.SetActive(false); }
+
             //旗取りモード
             if (GameStart.stage == 1)
             {
