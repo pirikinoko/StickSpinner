@@ -15,7 +15,7 @@ using Cysharp.Threading.Tasks.Linq;
 public class GameSetting : MonoBehaviourPunCallbacks
 {
     //基本
-    [SerializeField] Text countDown, playTimeTx;
+    [SerializeField] Text countDownText, playTimeTx;
     [SerializeField] Text[] nameTagTexts;
     [SerializeField] GameObject canvas, frontCanvas, quickStartingPanel, pauseButton;
     [SerializeField] CameraControl cameraControl;
@@ -35,7 +35,7 @@ public class GameSetting : MonoBehaviourPunCallbacks
     public static float playTime;
     bool coroutineEnded;
     bool gameStartMethodInvoked = false;
-    bool startTimerInvoked = false; 
+    bool startTimerInvoked = false;
     //ステージ切り替え用
     [SerializeField] GameObject[] stageObjectSingle, stageObjectSingleArcade, stageObjectMulti, stageObjectMultiArcade;
     [SerializeField] GameObject[] keyBoardMouseUI, controllerUI, battleModeUI;
@@ -65,11 +65,7 @@ public class GameSetting : MonoBehaviourPunCallbacks
                 sticks[i].transform.position = GameObject.Find("Player" + playerID.ToString()).transform.position;
             }
         }
-
     }
-
-
-
 
     void Awake()
     {
@@ -83,21 +79,29 @@ public class GameSetting : MonoBehaviourPunCallbacks
         isPaused = false;
         coroutineEnded = false;
         Playable = false;
-        startTimerInvoked = false;  
+        startTimerInvoked = false;
         isCountDownEnded = false;
-        countDown.text = null;
+        countDownText.text = null;
         ingameLog = GameObject.Find("Scripts").GetComponent<IngameLog>();
+
         for (int i = 0; i < 4; i++)
         {
             playerLeft[i] = false;
             nameTags[i] = GameObject.Find("P" + (i + 1).ToString() + "NameTag");
         }
+
         //ステージを非アクティブ化
         new[] { stageObjectSingle, stageObjectMulti, stageObjectSingleArcade, stageObjectMultiArcade }
                   .SelectMany(array => array)
                   .ToList()
                   .ForEach(obj => obj.gameObject.SetActive(false));
 
+        if (SingletonSettingCanvas.Instance == null)
+        {
+            Instantiate((GameObject)Resources.Load("SettingCanvas"));
+        }
+
+        //ステージのアクティブ管理
         if (GameStart.gameMode1 == "Single")
         {
             quickStartingPanel.SetActive(false);
@@ -206,7 +210,7 @@ public class GameSetting : MonoBehaviourPunCallbacks
             var position = respownPos[NetWorkMain.netWorkId - 1];
             PhotonNetwork.Instantiate("Player" + NetWorkMain.netWorkId, position, Quaternion.identity);
             photonView.RPC("RPCSetStickPos", RpcTarget.All);
-            if(GameStart.gameMode2 == "Arcade" && GameStart.stage == 2 && NetWorkMain.netWorkId == NetWorkMain.leaderId)
+            if (GameStart.gameMode2 == "Arcade" && GameStart.stage == 2 && NetWorkMain.netWorkId == NetWorkMain.leaderId)
             {
                 Transform parentTrans = GameObject.Find("Soccer").GetComponent<Transform>().transform;
                 GameObject ballObj = PhotonNetwork.Instantiate("SoccerBall", new Vector2(0, -2f), Quaternion.identity);
@@ -225,24 +229,24 @@ public class GameSetting : MonoBehaviourPunCallbacks
                 players[i] = GameObject.Find("Player" + PlayerId + "(Clone)");
                 players[i].name = "Player" + PlayerId;
             }
-            if (GameStart.gameMode1 == "Multi" && GameStart.gameMode2 == "Arcade" && GameStart.stage == 2) 
+            if (GameStart.gameMode1 == "Multi" && GameStart.gameMode2 == "Arcade" && GameStart.stage == 2)
             {
                 Transform parentTrans = GameObject.Find("Soccer").GetComponent<Transform>().transform;
                 GameObject ballObj = Instantiate(Resources.Load("SoccerBall") as GameObject, new Vector2(0, -2f), Quaternion.identity);
                 ballObj.GetComponent<Transform>().transform.SetParent(parentTrans);
                 ballObj.name = "SoccerBall";
-            }    
+            }
         }
 
 
         data = GetComponent<DataManager>().data;
         canvas.gameObject.SetActive(true);
         frontCanvas.gameObject.SetActive(true);
-        playTimeTx.color = new Color32(255, 255, 255, 255); 
+        playTimeTx.color = new Color32(255, 255, 255, 255);
         Debug.Log("PlayerNumber: " + GameStart.PlayerNumber + " stage: " + GameStart.stage);
         playTimeTx = GameObject.Find("TimeText").GetComponent<Text>();
         playTimeTx.text = "";
-        for (int i = 0; i < GameStart.maxPlayer; i++) 
+        for (int i = 0; i < GameStart.maxPlayer; i++)
         {
             nameTags[i].gameObject.SetActive(false);
             sticks[i] = GameObject.Find("Stick" + (i + 1).ToString());
@@ -304,7 +308,7 @@ public class GameSetting : MonoBehaviourPunCallbacks
 
     private async UniTask Update()
     {
-        CheckAllPlayersJoined();    
+        CheckAllPlayersJoined();
 
         if (GameStart.gameMode1 == "Online" && !allJoin)
         {
@@ -314,7 +318,7 @@ public class GameSetting : MonoBehaviourPunCallbacks
         {
             if (GameStart.gameMode1 == "Online")
             {
-                if (!coroutineEnded) 
+                if (!coroutineEnded)
                 {
                     return;
                 }
@@ -326,7 +330,7 @@ public class GameSetting : MonoBehaviourPunCallbacks
         if (cameraControl.isFirstAnimationEnded && !startTimerInvoked)
         {
             startTimerInvoked = true;
-            await StartTimer(); 
+            await StartTimer();
         }
         CheckPlayersLeft();
         SwichUI();
@@ -334,7 +338,7 @@ public class GameSetting : MonoBehaviourPunCallbacks
 
     }
 
-    private void CheckAllPlayersJoined() 
+    private void CheckAllPlayersJoined()
     {
         //プレイヤーのシーン遷移確認
         if (GameStart.gameMode1 == "Online")
@@ -379,27 +383,37 @@ public class GameSetting : MonoBehaviourPunCallbacks
     }
     private async UniTask StartTimer()
     {
-        countDown.text = null;
+        countDownText.text = null;
         for (int i = 3; i > 0; i--)
         {
-            countDown.text = i.ToString();
+            countDownText.text = i.ToString();
             SoundEffect.soundTrigger[3] = 1;
+            CountDownGO.gameObject.transform.DOScale(1.2f, 1f);
+            countDownText.DOFade(0, 1f)
+                .OnComplete(() =>
+                {
+                    CountDownGO.gameObject.transform.localScale = new Vector3(1, 1, 1);
+                    Color color = countDownText.color;
+                    color.a = 1f; // 透明度を1に設定
+                    countDownText.color = color;
+                });
             await UniTask.Delay(1000);
         }
-        countDown.text = startText[Settings.languageNum];
+        countDownText.DOFade(0, 1f);
+        countDownText.text = startText[Settings.languageNum];
         SoundEffect.soundTrigger[3] = 1;
+        isCountDownEnded = true;
         await UniTask.Delay(1000);
         CountDownGO.gameObject.SetActive(false);
-        isCountDownEnded = true;
     }
 
-    void GameTimeManagement() 
+    void GameTimeManagement()
     {
-        if (!isCountDownEnded) { return; }
+        if (!isCountDownEnded || GameMode.isGameEnded) { return; }
 
-        if (!isPaused || GameStart.gameMode1 == "Online") 
+        if (!isPaused || GameStart.gameMode1 == "Online")
         {
-            if(!GameMode.Finished && !GameMode.Goaled) 
+            if (!GameMode.isTimeFinished && !GameMode.isGoaled)
             {
                 Playable = true;
             }
@@ -417,12 +431,12 @@ public class GameSetting : MonoBehaviourPunCallbacks
                 playTimeTx.text = (playTime.ToString());
             }
 
-            if (GameStart.gameMode1 == "Single" && GameStart.gameMode2 == "Arcade") 
+            if (GameStart.gameMode1 == "Single" && GameStart.gameMode2 == "Arcade")
             {
                 playTimeTx.text = (int)GenerateStage.maxHeight + "m";
             }
 
-             if (GameStart.gameMode2 == "Nomal")
+            if (GameStart.gameMode2 == "Nomal")
             {
                 elapsedTime += Time.deltaTime;
                 playTimeTx.text = (playTime.ToString());
@@ -517,7 +531,7 @@ public class GameSetting : MonoBehaviourPunCallbacks
         {
             iconObjects[i] = quickStartingPanel.transform.GetChild(i).gameObject;
             playerNameTexts[i] = iconObjects[i].transform.GetChild(0).gameObject.GetComponent<Text>();
-            if(i < GameStart.PlayerNumber) 
+            if (i < GameStart.PlayerNumber)
             {
                 playerNameTexts[i].text = PhotonNetwork.PlayerList[i].NickName;
             }

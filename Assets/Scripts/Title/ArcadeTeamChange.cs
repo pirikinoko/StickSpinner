@@ -31,7 +31,6 @@ public class ArcadeTeamChange : MonoBehaviourPunCallbacks
 
     void TeamChange()
     {
-        ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
         int targetId = NetWorkMain.netWorkId - 1;
         if (GameStart.PlayerNumber == 2) { return; }
         if (GameStart.stage == 1)

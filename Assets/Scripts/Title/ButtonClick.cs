@@ -78,8 +78,6 @@ public class ButtonClick : MonoBehaviourPunCallbacks　//クリック用ボタ�
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
-    void OnPressed() 
-    { }
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         Initialize();
@@ -193,19 +191,6 @@ public class ButtonClick : MonoBehaviourPunCallbacks　//クリック用ボタ�
                 break;
         }
 
-        //設定画面オンオフ
-        if (Input.GetKeyDown(KeyCode.Escape) || ControllerInput.start[0])
-        {
-            if (Settings.SettingPanelActive && this.name.Contains("Resume"))
-            {
-                SettingPanelTrigger();
-            }
-            else if (!Settings.SettingPanelActive && this.name.Contains("Pause"))
-            {
-                SettingPanelTrigger();
-            }
-            return;
-        }
         //ボタンをクリックしたことに
         if ((inputButton || Input.GetKeyDown(keyBind)) && GameStart.buttonPushable)
         {
@@ -213,8 +198,6 @@ public class ButtonClick : MonoBehaviourPunCallbacks　//クリック用ボタ�
             GameStart.buttonPushable = false;
             this.GetComponent<Button>().onClick.Invoke();
         }
-
-
 
         //初期化
         lastLstickX = ControllerInput.LstickX[0];
@@ -362,7 +345,7 @@ public class ButtonClick : MonoBehaviourPunCallbacks　//クリック用ボタ�
     //ポーズ処理
     public void PauseGame()
     {
-        if (gameSetting.isCountDownEnded && !gameSetting.isPaused && GameMode.Finished == false && GameMode.Goaled == false)
+        if (gameSetting.isCountDownEnded && !gameSetting.isPaused && GameMode.isGameEnded == false)
         {
             gameSetting.isPaused = true;
             GameSetting.Playable = false;

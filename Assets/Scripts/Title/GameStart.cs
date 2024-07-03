@@ -48,6 +48,14 @@ public class GameStart : MonoBehaviourPunCallbacks
 
     //ロード画面
     bool reconnectable, joinedLobby = false;
+
+    private void Awake()
+    {
+        if (SingletonSettingCanvas.Instance == null)
+        {
+            Instantiate(Resources.Load("SettingCanvas"));
+        }
+    }
     void Start()
     {
 
@@ -75,17 +83,17 @@ public class GameStart : MonoBehaviourPunCallbacks
     }
     void Update()
     {
-        //Debug.Log(phase);
         SwichUI();
         SwichStageMaterial();
         playerNumberText.text = PlayerNumber.ToString();
+
         if(timeFromLastAction > cycle) 
         {
             PhaseControll();
             buttonPushable = true;
             timeFromLastAction = 0;
         }
-        //PhaseControll();
+
         //上限下限の設定
         phase = Mathf.Clamp(phase, 0, 9);
         if (gameMode1 == "Single" && gameMode2 == "Nomal")
@@ -104,6 +112,7 @@ public class GameStart : MonoBehaviourPunCallbacks
         {
             stage = Mathf.Clamp(stage, 1, 2);
         }
+
         timeFromLastAction += Time.deltaTime;
         //プレイヤー数制限
         PlayerNumber = Mathf.Clamp(PlayerNumber, minPlayer, maxPlayer);

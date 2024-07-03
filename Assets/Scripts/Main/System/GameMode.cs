@@ -43,12 +43,16 @@ public class GameMode : MonoBehaviourPunCallbacks
 
     bool showResultTriggerd = false;
 
+    public static bool gameEnded;
+
     // 通常ステージ
     public static byte Goals = 0;
 
     public static float[] clearTime = new float[GameStart.maxPlayer];
 
-    public static bool Goaled;
+    public static bool isGoaled;
+
+    public static bool isGameEnded;
     //バトルモード
     [SerializeField]
     GameObject KillLogBack;
@@ -98,7 +102,7 @@ public class GameMode : MonoBehaviourPunCallbacks
 
     Vector2[] framePos = new Vector2[4];
 
-    public static bool Finished;
+    public static bool isTimeFinished;
 
     byte count = 0;
 
@@ -150,8 +154,9 @@ public class GameMode : MonoBehaviourPunCallbacks
         KillLogBack.gameObject.SetActive(false);
         ballCountText = GameObject.Find("BallSpownCount").GetComponent<Text>();
         ballCountText.text = null;
-        Finished = false;
-        Goaled = false;
+        isTimeFinished = false;
+        isGameEnded = false;
+        isGoaled = false;
         isGameOver = false;
         Goals = 0;
         // 通常ステージ
@@ -190,7 +195,6 @@ public class GameMode : MonoBehaviourPunCallbacks
                     GameObject.Find("PointFrame" + (i + 1).ToString()).SetActive(false);
                 }
                 pointFrame[i].SetActive(false);
-                pointTextGO[i].SetActive(false);
                 pointText[i] = pointTextGO[i].GetComponent<Text>();
             }
             count = 0;
@@ -302,7 +306,7 @@ public class GameMode : MonoBehaviourPunCallbacks
     {
         if (Goals == GameStart.PlayerNumber)
         {
-            Goaled = true;
+            isGameEnded = true;
             GameSetting.Playable = false;
             TextCanvas.gameObject.SetActive(true);
             ResultPanel.gameObject.SetActive(true);
@@ -354,7 +358,6 @@ public class GameMode : MonoBehaviourPunCallbacks
                 NetWorkMain.SetCustomProps<int[]>("winnings", ValueBArray);
             }
         }
-        Debug.Log("playerId == " + playerid);
         if (gameSetting.players[playerid - 1].activeSelf)
         {
             Debug.Log("player" + playerid + "がゴールしました");
@@ -367,7 +370,10 @@ public class GameMode : MonoBehaviourPunCallbacks
             gameSetting.sticks[playerid - 1].gameObject.SetActive(false);
             gameSetting.nameTags[playerid - 1].gameObject.SetActive(false);
         }
-
+        if(playerid == NetWorkMain.netWorkId)
+        {
+            isGoaled = true;
+        } 
 
     }
 
@@ -443,9 +449,10 @@ public class GameMode : MonoBehaviourPunCallbacks
     }
     void checkResult()
     {
-        if (GameSetting.playTime <= 0 && !Finished)
+        if (GameSetting.playTime <= 0 && !isTimeFinished)
         {
-            Finished = true;
+            isTimeFinished = true;
+            isGameEnded = true;
             GameSetting.Playable = false;
             if (GameStart.gameMode2 != "Arcade") 
             {
@@ -614,7 +621,7 @@ public class GameMode : MonoBehaviourPunCallbacks
     }
     void ShowResult()
     {
-        if (Finished && !showResultTriggerd)
+        if (isTimeFinished && !showResultTriggerd)
         {
             //リザルト表示
             Vector2[] iconPos = new Vector2[GameStart.maxPlayer];

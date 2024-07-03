@@ -15,48 +15,80 @@ public class Controller : MonoBehaviourPunCallbacks
 {
     // プレイヤー番号(1～4)
     [SerializeField]
-    public int id;                              
+    public int id;
+
     // キー(キーボード使用時)
     [SerializeField]
-    KeyCode KeyLeft, KeyRight, KeyJump, KeyDown;                       
+    KeyCode KeyLeft;
+
+    [SerializeField]
+    KeyCode KeyRight;
+
+    [SerializeField]
+    KeyCode KeyJump;
+
+    [SerializeField]
+    KeyCode KeyDown;
+
     // 棒の回転速度
     [SerializeField]
-    float rotSpeed = 160f;                              
+    float rotSpeed = 160f;
+
     // ジャンプのクールタイム初期化用
     [SerializeField]
     float CoolTime_ = 0.2f;
+
     [SerializeField]
     Image circleIndicatorImage;
+
     float coolTime = 0.2f;                              // ジャンプのクールタイム
     GameSetting gameSetting;
-    float stickRot = 0f;                                　　　// 棒の角度
+    float stickRot = 0f;                                // 棒の角度
     float[] stickRots = new float[GameStart.maxPlayer];
-    float jumpforce = 8.3f;                            　　　 // Y軸ジャンプ力
-    bool onFloor, onSurface, onPlayer, onStick;   // 接触している時は true
-    bool inputCrossX;                               　　　 　// 十字ボタンの入力があるときはtrue
+    float jumpforce = 8.3f;                             // Y軸ジャンプ力
+
+    bool onFloor;                                       // 接触している時は true
+    bool onSurface;                                     // 接触している時は true
+    bool onPlayer;                                      // 接触している時は true
+    bool onStick;                                       // 接触している時は true
+
+    bool inputCrossX;                                   // 十字ボタンの入力があるときはtrue
     float delay = 0.15f;
     float selfDeathDuration = 1.0f;
     public float rotZ { get; set; }
     bool delayFlag = false;
     bool isRespowing = false;
+
     private Coroutine countdownCoroutine;
-    private GameObject nameTag;        //ネームタグ
-    SpriteRenderer stickSprite;       // 棒スプライト
-    Rigidbody2D stickRb;              // 棒のRigidbody  
-    SpriteRenderer parentSprite;      // プレイヤーの顔
-    private Vector3 playerPos, pausedPos, latestPos; 　　　　　　　　 　//プレイヤー,棒の位置
-    private Vector2 Playerspeed, speedWhenPaused, deadPlayerPos;　　　　//プレイヤー速度,ポーズ直前のプレイヤー速度
-    private bool isSaveDone; 　　　　　　　　　　　　　　　　　   // ポーズ処理に使用
+    private GameObject nameTag;                         //ネームタグ
+
+    SpriteRenderer stickSprite;                         // 棒スプライト
+    Rigidbody2D stickRb;                                // 棒のRigidbody  
+    SpriteRenderer parentSprite;                        // プレイヤーの顔
+
+    private Vector3 playerPos;                          //プレイヤー,棒の位置
+    private Vector3 pausedPos;                          //プレイヤー,棒の位置
+    private Vector3 latestPos;                          //プレイヤー,棒の位置
+
+    private Vector2 Playerspeed;                        //プレイヤー速度,ポーズ直前のプレイヤー速度
+    private Vector2 speedWhenPaused;                    //プレイヤー速度,ポーズ直前のプレイヤー速度
+    private Vector2 deadPlayerPos;                      //プレイヤー速度,ポーズ直前のプレイヤー速度
+
+    private bool isSaveDone;                            // ポーズ処理に使用
+
     private Body body;
     GameObject bodyObj;
-    int startTrigger= 0;
+
+    int startTrigger = 0;
     float coolDown = 0.1f;
+
     //ゴースト
     Vector2 ghostStartPos;
     bool inCoroutine = false;
     Collider2D ghostCollider;
     private CancellationTokenSource cts;
     Tween fillAmoutTween;
+
     void Start()
     {
         if (GameStart.gameMode1 == "Online" && SceneManager.GetActiveScene().name != "Title")
@@ -437,6 +469,7 @@ public class Controller : MonoBehaviourPunCallbacks
     {
         //他のプレイヤーの邪魔にならないよう当たり判定OFF
         this.GetComponent<BoxCollider2D>().enabled = false;
+
         bodyObj.GetComponent<BoxCollider2D>().enabled = false;
         //位置固定
         Rigidbody2D bodyRb2D = bodyObj.GetComponent<Rigidbody2D>();

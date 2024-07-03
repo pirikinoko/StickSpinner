@@ -4,6 +4,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 //using System.Numerics;
 using UnityEngine;
+using Cysharp.Threading.Tasks;
+using DG.Tweening;
+using System.Threading;
+using Cysharp.Threading.Tasks.Linq;
 
 public class GenerateStage : MonoBehaviour
 {
@@ -16,7 +20,7 @@ public class GenerateStage : MonoBehaviour
     const int Floor = 0, Wall = 1, Right = 0, Left = 1, objUnit = 30;
     public static float maxHeight;
     float rightLimit = 10f, leftLimit = -2f, startHeight;
-    string[,] objNames = { { "Floor1", "Floor2", "Floor3", "Floor4" }, { "Wall1", "Wall2", "Wall3", "Wall4" } };
+    string[,] objects = { { "Floor1", "Floor2", "Floor3", "Floor4" }, { "Wall1", "Wall2", "Wall3", "Wall4" } };
     float[,] eachLength = new float[2, 4];
     float xMax = 0, xMin = 0, yMax = 0, yMin = 0, playerYPrev, sizeX, sizeY, posX = -30, posY = 0;
     bool[] objActive = new bool[objUnit];
@@ -26,14 +30,14 @@ public class GenerateStage : MonoBehaviour
     bool isCalucurateEnded;
     int[] objectType = new int[objUnit];
     int currentObj = 0, prev, prev2, count = 0, target = 0, objLength, objLengthPrev, objDirection = 0, enemyCount = 0, startCount, startTrigger;
-    public static float[] collisionPos = new float[30];
+    public static float[] collisionPos = new float[4];
 
     // Start is called before the first frame update
     void Start()
     {
         startTrigger = 0;
-
     }
+
     void AfterAllJoin() 
     {
         if (GameStart.gameMode1 != "Single") { return; }
@@ -61,6 +65,11 @@ public class GenerateStage : MonoBehaviour
         {
             objActive[i] = false;
         }
+        // 二次元配列をdefault値で初期化する
+        for (int i = 0; i < collisionPos.Length; i++)
+        {
+            collisionPos[i] = 0;    
+        }
     }
     // Update is called once per frame
     void Update()
@@ -71,8 +80,8 @@ public class GenerateStage : MonoBehaviour
         }
         if(GameSetting.allJoin && startTrigger == 0) 
         {
-                AfterAllJoin();
-                startTrigger = 1;
+            AfterAllJoin();
+            startTrigger = 1;
         }
         StartCalucurating();
         if (gameSetting.isCountDownEnded)
@@ -85,16 +94,18 @@ public class GenerateStage : MonoBehaviour
     }
     void SetObjectsForCalucuratingObjectLength() 
     {
-        //生成するオブジェクトの長さを測る
-        int length1 = objNames.GetLength(0);
-        int length2 = objNames.GetLength(1);
-        int totalObjects = objNames.Length - 4; //床のみ
+        //生成するオブジェクト数を保存
+        int length1 = objects.GetLength(0);
+        int length2 = objects.GetLength(1);
+        int totalFloors = objects.GetLength(1); 
+        //オブジェクト計測用の枠を設ける
         sizeX = 2.5f;
-        sizeY = totalObjects * 1f + 1;
+        sizeY = totalFloors * 1f + 1;
         float thickness = 0.05f;
         checkLinePos = new Vector2(posX + (sizeX / 2), posY - (sizeY / 2));
         checkLine.transform.position = checkLinePos;
         checkLine.transform.localScale = new Vector2(thickness, sizeY);
+        //枠の４辺の位置と大きさをセット
         Vector2[] frameSet =
         {
             //フレーム位置
@@ -113,33 +124,40 @@ public class GenerateStage : MonoBehaviour
             frames[i].transform.position = frameSet[i];
             frames[i].transform.localScale = frameSet[i + 4];
         }
-        //オブジェクトを生成し長さを計測
-        objForCheckLength = new GameObject[totalObjects];
+        //上から順番にオブジェクトを配置し，計測の準備をする
+        int spacing = 4;
+        objForCheckLength = new GameObject[totalFloors];
         for (int j = 0; j < 1; j++)
         {
             for (int k = 0; k < length2; k++)
             {
-                Vector2 generatePos = new Vector2(posX, (posY - (j * 4) - (k + 1)));
-                GameObject testPrefab = (GameObject)Resources.Load(objNames[j, k]);
-                objForCheckLength[(j * 4) + k] = Instantiate(testPrefab, generatePos, Quaternion.identity);
+                Vector2 generatePos = new Vector2(posX, (posY - (j * spacing) - (k + 1)));
+                objForCheckLength[(j * 4) + k] = Instantiate((GameObject)Resources.Load(objects[j, k]), generatePos, Quaternion.identity);
                 if (j == 1)
                 {
-                    Transform wallTransform = objForCheckLength[(j * 4) + k].GetComponent<Transform>();
-                    wallTransform.Rotate(0f, 0f, 90f);
-
+                    objForCheckLength[(j * 4) + k].GetComponent<Transform>().Rotate(0f, 0f, 90f);
                 }
             }
         }
     }
     void StartCalucurating() 
     {
-        //長さを計測
-        if (gameSetting.isCountDownEnded)
+        //チェックラインを動かしてそれぞれのオブジェクトの長さを計測
+        if (!gameSetting.isCountDownEnded)
         {
             checkLinePos.x -= 1.0f * Time.deltaTime;
             checkLine.transform.position = checkLinePos;
-            int length1 = objNames.GetLength(0);
-            int length2 = objNames.GetLength(1);
+            int length1 = objects.GetLength(0);
+            int length2 = objects.GetLength(1);
+
+            for (int i = 0; i < collisionPos.Length; i++)
+            {
+                if (collisionPos[i] == 0)
+                {
+                    return;
+                }
+            }
+
             if (!isCalucurateEnded)
             {
                 for (int i = 0; i < 1; i++)
@@ -149,7 +167,7 @@ public class GenerateStage : MonoBehaviour
                         //衝突位置をもとにオブジェクトの長さを求める
                         float distansFromRightFrame = (posX + (sizeX / 2)) - collisionPos[(i * 4) + j];
                         eachLength[i, j] = sizeX - (distansFromRightFrame * 2);
-                        Destroy(objForCheckLength[(i * 4) + j]);
+                        UnityEngine.Debug.Log($"eachLength:{eachLength[i, j]}");
                     }
                 }
                 isCalucurateEnded = true;
@@ -202,18 +220,18 @@ public class GenerateStage : MonoBehaviour
     }
     void GenerateObjects(int targetNum)
     {
-        GameObject prefabObj = (GameObject)Resources.Load(objNames[objectType[targetNum], objLength - 1]);
+        GameObject prefabObj = (GameObject)Resources.Load(objects[objectType[targetNum], objLength - 1]);
         obj[targetNum] = Instantiate(prefabObj, objPos[targetNum], Quaternion.identity);
         string[] objDirectionName = { "Right", "Left" };
-        obj[targetNum].name = objNames[objectType[targetNum], objLength - 1] + objDirectionName[objDirection] + "-" + targetNum.ToString();
+        obj[targetNum].name = objects[objectType[targetNum], objLength - 1] + objDirectionName[objDirection] + "-" + targetNum.ToString();
     }
     void SetObjectPos(int targetNum)
     {
-        //一番最初のオブジェクトの設定
+        //一番最初のオブジェクト場合の設定
         if (count == 0)
         {
             objectType[targetNum] = Floor;　//最初は床オブジェクトを生成
-            objPos[targetNum] = new Vector3(-6, -3.8f, 0);
+            objPos[targetNum] = new Vector3(-6, -5f, 0);
             objectType[0] = 0;
             return;
         }
@@ -221,9 +239,14 @@ public class GenerateStage : MonoBehaviour
         //次に生成するオブジェクトの方向を決定
         objDirection = UnityEngine.Random.Range(0, 2);  //0・・Left  1・・Right 
 
+        int attempt = 0; // 追加: ループカウンタ
+        const int maxAttempts = 100; // 追加: 最大試行回数
+
         while (true)
         {
-            //前のオブジェクトとの距離を設定
+            attempt++;
+
+            //前のオブジェクトからどれだけ離れた位置に次のオブジェクトを生成するか決定
             switch (objectType[targetNum])
             {
                 case Floor: //床        
@@ -234,19 +257,10 @@ public class GenerateStage : MonoBehaviour
                     break;
             }
 
-
-            //UnityEngine.Debug.Log(eachLength[0, 3]);
-            float x, y;
-            float sum;
-            do
-            {
-                x = UnityEngine.Random.Range(xMin, xMax);
-                y = UnityEngine.Random.Range(yMin, yMax);
-                sum = x + y;
-            } while (sum > (2.7f +  (objLength * 0.1f)) ||  sum  < 2.6f + (objLength * 0.1f));
             // 新しいオブジェクトの位置を計算
             Vector3 newObjPos = new Vector3();
             newObjPos.y = UnityEngine.Random.Range(objPos[prev].y + yMin, objPos[prev].y + yMax);
+
             if (objDirection == Right)
             {
                 newObjPos.x = UnityEngine. Random.Range(objPos[prev].x + xMin, objPos[prev].x + xMax);
@@ -267,6 +281,11 @@ public class GenerateStage : MonoBehaviour
             else
             {
                 objPos[targetNum] = newObjPos;
+                break;
+            }
+            if(attempt > 20) 
+            {
+                UnityEngine.Debug.Log("無限ループです");
                 break;
             }
         }

@@ -250,7 +250,7 @@ public class CameraControl : MonoBehaviour
         if (NetWorkMain.isOnline)
         {
             //ゴールしていなければ自身の位置にカメラを
-            if (!GameMode.Goaled)
+            if (!GameMode.isGoaled)
             {
                 if (gameSetting.players[NetWorkMain.netWorkId - 1] != null && gameSetting.players[NetWorkMain.netWorkId - 1].activeSelf)
                 {
@@ -293,7 +293,7 @@ public class CameraControl : MonoBehaviour
     //ゴールしたプレイヤーをカメラの対象から外す
     void RejectGoaldPlayerFromTarget()
     {
-        if (GameStart.gameMode2 == "Nomal" && !(GameMode.Goaled))
+        if (GameStart.gameMode2 == "Nomal" && !(GameMode.isGoaled))
         {
             if (GameMode.goaledPlayer[goals] != null)
             {

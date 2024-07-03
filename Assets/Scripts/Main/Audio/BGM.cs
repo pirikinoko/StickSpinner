@@ -6,7 +6,6 @@ using UnityEngine.SceneManagement;
 public class BGM : MonoBehaviour //BGM音量調整スクリプト
 {
     [SerializeField] int maxVolume, volumeReducer;
-    public GameObject SettingPanel;
     public AudioClip titleBGM, gameBGM;
     AudioSource audioSource;
     public static float BGMStage = 10;
@@ -14,7 +13,6 @@ public class BGM : MonoBehaviour //BGM音量調整スクリプト
     // Start is called before the first frame update
     void Start()
     {
-        SettingPanel.gameObject.SetActive(false);
         //AudioSorceの取得
         audioSource = GetComponent<AudioSource>();
         //シーンによってのBGM切り替え
