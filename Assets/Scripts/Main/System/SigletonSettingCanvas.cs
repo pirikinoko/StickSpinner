@@ -1,12 +1,14 @@
 using UnityEngine;
+using Cysharp.Threading.Tasks.Linq;
+using Cysharp.Threading.Tasks;
 
 public class SingletonSettingCanvas : MonoBehaviour
 {
     // 静的インスタンスを保持する変数
-    private static SingletonSettingCanvas instance;
+    private static SingletonSettingCanvas? instance;
 
     // シングルトンのインスタンスへのアクセスプロパティ
-    public static SingletonSettingCanvas Instance
+    public static SingletonSettingCanvas? Instance
     {
         get
         {
@@ -17,9 +19,9 @@ public class SingletonSettingCanvas : MonoBehaviour
 
                 if (instance == null)
                 {
-                    // インスタンスがない場合は新しく作成
-                    GameObject singletonObject = new GameObject(typeof(SingletonSettingCanvas).Name);
-                    instance = singletonObject.AddComponent<SingletonSettingCanvas>();
+                    // インスタンスがない場合は新しく作成             
+                    GameObject singletonObject = (GameObject)Instantiate(Resources.Load("SingleTonCanvas"));
+                    instance = singletonObject.GetComponent<SingletonSettingCanvas>();
                 }
             }
             return instance;
@@ -29,17 +31,7 @@ public class SingletonSettingCanvas : MonoBehaviour
     // Awakeメソッドでシングルトンを設定
     private void Awake()
     {
-        if (instance == null)
-        {
-            // インスタンスがない場合はこのオブジェクトをインスタンスとして設定
-            instance = this;
-            // オブジェクトがシーンロードで破棄されないようにする
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            // すでにインスタンスが存在する場合は、このオブジェクトを破棄
-            Destroy(gameObject);
-        }
+        DontDestroyOnLoad(gameObject);
     }
+
 }

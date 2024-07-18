@@ -6,46 +6,89 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using UnityEditor;
 using Photon.Pun;
-
+using Cysharp.Threading.Tasks;
+using DG.Tweening;
+using System.Threading;
+using Cysharp.Threading.Tasks.Linq;
 
 public class Controller : MonoBehaviourPunCallbacks
 {
+    // プレイヤー番号(1～4)
     [SerializeField]
-    public int id;                                      // プレイヤー番号(1～4)
+    public int id;
+
+    // キー(キーボード使用時)
     [SerializeField]
-    KeyCode KeyLeft, KeyRight, KeyJump, KeyDown;                          // 左右キー(キーボード使用時)
-    [SerializeField]float rotSpeed = 160f;                              // 棒の回転速度
+    KeyCode KeyLeft;
+
     [SerializeField]
-    float CoolTime_ = 0.2f;                             // ジャンプのクールタイム初期化用
+    KeyCode KeyRight;
+
+    [SerializeField]
+    KeyCode KeyJump;
+
+    [SerializeField]
+    KeyCode KeyDown;
+
+    // 棒の回転速度
+    [SerializeField]
+    float rotSpeed = 160f;
+
+    // ジャンプのクールタイム初期化用
+    [SerializeField]
+    float CoolTime_ = 0.2f;
+
+    [SerializeField]
+    Image circleIndicatorImage;
+
     float coolTime = 0.2f;                              // ジャンプのクールタイム
-    Text SensText;
     GameSetting gameSetting;
-    float stickRot = 0f;                                　　　// 棒の角度
+    float stickRot = 0f;                                // 棒の角度
     float[] stickRots = new float[GameStart.maxPlayer];
-    float jumpforce = 8.3f;                            　　　 // Y軸ジャンプ力
-    bool onFloor, onSurface, onPlayer, onStick;   // 接触している時は true
-    bool inputCrossX;                               　　　 　// 十字ボタンの入力があるときはtrue
+    float jumpforce = 8.3f;                             // Y軸ジャンプ力
+
+    bool onFloor;                                       // 接触している時は true
+    bool onSurface;                                     // 接触している時は true
+    bool onPlayer;                                      // 接触している時は true
+    bool onStick;                                       // 接触している時は true
+
+    bool inputCrossX;                                   // 十字ボタンの入力があるときはtrue
     float delay = 0.15f;
-    float selfDeathTimer = 1.0f;
+    float selfDeathDuration = 1.0f;
     public float rotZ { get; set; }
     bool delayFlag = false;
     bool isRespowing = false;
+
     private Coroutine countdownCoroutine;
-    private GameObject nameTag;        //ネームタグ
-    SpriteRenderer stickSprite;       // 棒スプライト
-    Rigidbody2D stickRb;              // 棒のRigidbody  
-    SpriteRenderer parentSprite;      // プレイヤーの顔
-    private Vector3 playerPos, pausedPos, latestPos; 　　　　　　　　 　//プレイヤー,棒の位置
-    private Vector2 Playerspeed, speedWhenPaused, deadPlayerPos;　　　　//プレイヤー速度,ポーズ直前のプレイヤー速度
-    private float saveCount = 0; 　　　　　　　　　　　　　　　　　   // ポーズ処理に使用
+    private GameObject nameTag;                         //ネームタグ
+
+    SpriteRenderer stickSprite;                         // 棒スプライト
+    Rigidbody2D stickRb;                                // 棒のRigidbody  
+    SpriteRenderer parentSprite;                        // プレイヤーの顔
+
+    private Vector3 playerPos;                          //プレイヤー,棒の位置
+    private Vector3 pausedPos;                          //プレイヤー,棒の位置
+    private Vector3 latestPos;                          //プレイヤー,棒の位置
+
+    private Vector2 Playerspeed;                        //プレイヤー速度,ポーズ直前のプレイヤー速度
+    private Vector2 speedWhenPaused;                    //プレイヤー速度,ポーズ直前のプレイヤー速度
+    private Vector2 deadPlayerPos;                      //プレイヤー速度,ポーズ直前のプレイヤー速度
+
+    private bool isSaveDone;                            // ポーズ処理に使用
+
     private Body body;
     GameObject bodyObj;
-    int startTrigger= 0;
+
+    int startTrigger = 0;
     float coolDown = 0.1f;
+
     //ゴースト
     Vector2 ghostStartPos;
     bool inCoroutine = false;
     Collider2D ghostCollider;
+    private CancellationTokenSource cts;
+    Tween fillAmoutTween;
+
     void Start()
     {
         if (GameStart.gameMode1 == "Online" && SceneManager.GetActiveScene().name != "Title")
@@ -67,9 +110,11 @@ public class Controller : MonoBehaviourPunCallbacks
         coolTime = 0.0f;
         startTrigger = 0;
         onSurface = false;
+        isSaveDone = false;
         onPlayer = false;
         onStick = false;
         inCoroutine = false;
+        cts = new CancellationTokenSource();
         stickRb = GetComponent<Rigidbody2D>();
 
 
@@ -159,7 +204,7 @@ public class Controller : MonoBehaviourPunCallbacks
     }
 
     // 入力は Update で行う
-    void Update()
+    async void Update()
     {
         if (GameSetting.allJoin)
         {
@@ -208,17 +253,40 @@ public class Controller : MonoBehaviourPunCallbacks
         {
             if (GameSetting.Playable && !gameSetting.isPaused)
             {
-                selfDeath();
                 Jump();
+                if (Input.GetKeyDown(KeyDown) || ControllerInput.back[id - 1])
+                {
+                    if(fillAmoutTween == null && !(GameStart.gameMode1 == "Single" && GameStart.gameMode2 == "Arcade")) 
+                    {
+                        TweenFillAmountAsync(cts.Token);
+                    }
+                }        
             }
-            Move();
+            if (fillAmoutTween != null && (Input.GetKeyUp(KeyDown) || !ControllerInput.back[id - 1])) 
+            {
+                cts.Cancel();
+            }
+                Move();
         }   
         ExitDelay();
-
-
-  
     }
+    private async UniTask TweenFillAmountAsync(CancellationToken cancellationToken)
+    {
+        cts.Cancel();
+        fillAmoutTween = circleIndicatorImage.DOFillAmount(1.0f, selfDeathDuration)
+           .SetEase(Ease.Linear)
+            .OnComplete(() => StartDead());
+        try
+        {
+            await fillAmoutTween.ToUniTask(cancellationToken: cts.Token);
+        }
+        catch (OperationCanceledException)
+        {
+            // キャンセルされた場合の処理
+            Debug.Log("Tween was cancelled");
+        }
 
+    }
     // 移動は FixedUpdateで行う※Inputの入力が入りにくくなる
     void FixedUpdate()
     {
@@ -242,27 +310,26 @@ public class Controller : MonoBehaviourPunCallbacks
             stickRb = GetComponent<Rigidbody2D>();
             stickRb.MoveRotation(stickRot);            // 角度反映 これはポーズ時も行う
         }
-        if (GameStart.gameMode1 == "Online") { return; }
+        if (GameStart.gameMode1 == "Online" || gameSetting == null) { return; }
         // プレイヤー速度取得
         Playerspeed = ((transform.parent.gameObject.transform.position - latestPos) / Time.deltaTime);
-        if (gameSetting.isPaused && saveCount == 0)
+        if (gameSetting.isPaused && !isSaveDone)
         {
             pausedPos = transform.parent.gameObject.transform.position;
             speedWhenPaused = Playerspeed;
-            saveCount = 1;
+            isSaveDone = true; 
         }
         if (gameSetting.isPaused)
         {
             stickRb.velocity = new Vector2(0, 0);
             transform.parent.gameObject.transform.position = pausedPos;
         }
-        if (gameSetting.isPaused && saveCount == 1)
+        if (gameSetting.isPaused && isSaveDone)
         {
             stickRb.velocity = new Vector2(speedWhenPaused.x * 2.1f, speedWhenPaused.y * 2.1f);
-            saveCount = 0;
+            isSaveDone = false;
         }
         latestPos = transform.parent.gameObject.transform.position;
-
     }
 
 
@@ -274,17 +341,17 @@ public class Controller : MonoBehaviourPunCallbacks
         if (coolTime > 0)
         {
             coolTime -= Time.deltaTime;
-            return;   //処理中断
+            return;   
         }
-        if (GameSetting.Playable && !gameSetting.isPaused) //プレイヤー数選択画面でも操作可能
+        if (GameSetting.Playable && !gameSetting.isPaused) 
         {
             if (!NetWorkMain.isOnline || (NetWorkMain.isOnline && photonView.IsMine))
             {
                 bool jumpKey = Input.GetKeyDown(KeyJump);
                 if (onFloor && (jumpKey || ControllerInput.jump[id - 1] ) )
                 {
-
-                    float jumpDirection;                        // 棒の回転値に合わせて飛ぶ方向を求める
+                    // 棒の回転値に合わせて飛ぶ方向を求める
+                    float jumpDirection;                       
                     if (rotZ < 180) { jumpDirection = 6; }
                     else { jumpDirection = 18; }
                     jumpDirection = (jumpDirection - rotZ / 15) * 1.15f;
@@ -297,10 +364,8 @@ public class Controller : MonoBehaviourPunCallbacks
                         //効果音鳴らす
                         SoundEffect.soundTrigger[5] = 1;
                     }
-
                     // クールタイム(この時間は入力を受け付けない)
                     coolTime = CoolTime_;
-
                 }
             }
         
@@ -310,23 +375,26 @@ public class Controller : MonoBehaviourPunCallbacks
     [PunRPC]
     void MoveStickRotation(int id , float rot)
     {
-        stickRb = GameObject.Find("Stick" + id).GetComponent<Rigidbody2D>();
-        stickRb.MoveRotation(rot);
-        stickRots[id - 1] = rot;    
-       // Debug.Log("Player" + id + "のStickRotsを" + rot);
+        if (!GameSetting.setupEnded) { return; }
+        if (gameSetting.players[id - 1].activeSelf)
+        {
+            stickRb = GameObject.Find("Stick" + id).GetComponent<Rigidbody2D>();
+            stickRb.MoveRotation(rot);
+            stickRots[id - 1] = rot;
+        }
     }
 
 
     // 移動
     void Move()
     {
-        if (GameSetting.Playable && !gameSetting.isPaused) //プレイヤー数選択画面でも操作可能
+        //プレイヤー数選択画面でも操作可能
+        if (GameSetting.Playable && !gameSetting.isPaused) 
         {
             if (!NetWorkMain.isOnline)
             {
                 if (Input.GetKey(KeyRight) || ControllerInput.LstickX[id - 1] > 0) { stickRot -= rotSpeed * Time.deltaTime; }
                 if (Input.GetKey(KeyLeft) || ControllerInput.LstickX[id - 1] < 0) { stickRot += rotSpeed * Time.deltaTime; }
-
             }
             else
             {
@@ -405,6 +473,7 @@ public class Controller : MonoBehaviourPunCallbacks
     {
         //他のプレイヤーの邪魔にならないよう当たり判定OFF
         this.GetComponent<BoxCollider2D>().enabled = false;
+
         bodyObj.GetComponent<BoxCollider2D>().enabled = false;
         //位置固定
         Rigidbody2D bodyRb2D = bodyObj.GetComponent<Rigidbody2D>();
@@ -444,62 +513,6 @@ public class Controller : MonoBehaviourPunCallbacks
         isRespowing = false;
     }
 
-    bool animActive;
-    void selfDeath()
-    {
-        if (GameStart.gameMode1 == "Single" && GameStart.gameMode2 == "Arcade")
-        {
-            return;
-        }
-        Vector2 animPos = this.transform.position;
-        animPos.y += 1;
-        if (Input.GetKey(KeyDown) || ControllerInput.backHold[id - 1])
-        {
-            selfDeathTimer -= Time.deltaTime;
-        }
-        else
-        {
-            selfDeathTimer = 1.0f;
-        }
-
-        if (selfDeathTimer < 0)
-        {
-            StartDead();
-            GameObject objToDelete = GameObject.Find("HoldAnim" + id.ToString());
-            if (objToDelete != null)
-            {
-                Destroy(objToDelete);
-            }
-        }
-
-        if (Input.GetKeyDown(KeyDown) || ControllerInput.back[id - 1])
-        {
-            GameObject animPrefab = (GameObject)Resources.Load("HoldDeathEffect");
-            GameObject animObj = Instantiate(animPrefab, animPos, Quaternion.identity);
-            animObj.name = "HoldAnim" + id.ToString();
-            animActive = true;
-            return;
-        }
-
-        GameObject targetObj = GameObject.Find("HoldAnim" + id.ToString());
-        if (targetObj != null)
-        {
-            targetObj.transform.position = animPos;
-        }
-
-        if (Input.GetKeyUp(KeyDown) || (ControllerInput.usingController && animActive == true && ControllerInput.backHold[id - 1] == false))
-        {
-            GameObject objToDelete = GameObject.Find("HoldAnim" + id.ToString());
-            if (objToDelete != null)
-            {
-                Destroy(objToDelete);
-            }
-            animActive = false;
-        }
-
-    }
-
-
     // コリジョン
     private void OnCollisionEnter2D(Collision2D other)
     {
@@ -508,7 +521,8 @@ public class Controller : MonoBehaviourPunCallbacks
     }
     private void OnCollisionStay2D(Collision2D other)
     {
-        ContactPoint2D contactPoint = other.GetContact(0); // 最初の接触点を取得
+        // 最初の接触点を取得
+        ContactPoint2D contactPoint = other.GetContact(0);
         Vector2 contactPosition = contactPoint.point;
         float distance = 0.2f;
         int layer = 1 << LayerMask.NameToLayer("Default");

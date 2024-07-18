@@ -8,7 +8,7 @@ public class Ball : MonoBehaviourPunCallbacks
     GameMode gameMode;
     GameSetting gameSetting;
     int lastColId;
-    public  int count;
+    public int count;
     PhotonView photonView;
     // Start is called before the first frame update
     void Start()
@@ -32,14 +32,14 @@ public class Ball : MonoBehaviourPunCallbacks
         {
             gameMode = GameObject.Find("Scripts").GetComponent<GameMode>();
         }
-        if (GameStart.gameMode1 == "Online")
+        if (GameStart.gameMode1 == "Online" && PhotonNetwork.IsMasterClient)
         {
             if (!GameSetting.setupEnded) { return; }
             // 最も近いプレイヤーの初期化
             GameObject nearestPlayer = gameSetting.players[0];
             float minDistance = Vector2.Distance(this.transform.position, nearestPlayer.transform.position);
 
-            // 全てのプレイヤーをチェックして最も近いものを見つける
+            // 全てのプレイヤーをチェックして最も近いプレイヤーを見つける
             for (int i = 0; i < GameStart.PlayerNumber; i++)
             {
                 float distance = Vector2.Distance(this.transform.position, gameSetting.players[i].transform.position);
@@ -79,7 +79,7 @@ public class Ball : MonoBehaviourPunCallbacks
                 }
                 else
                 {
-                    if (photonView.IsMine)
+                      if (photonView.IsMine)
                     {
                         photonView.RPC("GoalProcess", RpcTarget.All, 1);
                     }
@@ -144,7 +144,7 @@ public class Ball : MonoBehaviourPunCallbacks
         }
     }
 
-    void PlayPaperCanon(int goalTeam) 
+    void PlayPaperCanon(int goalTeam ) 
     {
         gameSetting = GameObject.Find("Scripts").GetComponent<GameSetting>();
         //パーティクル再生
@@ -154,7 +154,7 @@ public class Ball : MonoBehaviourPunCallbacks
              particlePos[i] = gameSetting.players[i].gameObject.transform.position;
             if(GameStart.playerTeam[i] == goalTeam) 
             {
-                GameObject particleObj = (GameObject)Resources.Load("PaperCanon2");
+                GameObject particleObj = (GameObject)Resources.Load("PaperCanon");
                 Instantiate(particleObj, particlePos[i], Quaternion.identity); //パーティクル用ゲームオブジェクト生成
             }
         }
@@ -162,11 +162,12 @@ public class Ball : MonoBehaviourPunCallbacks
     [PunRPC] 
     void GoalProcess(int targetTeam) 
     {
-        if(count >= 1) { return; }
+        if (count >= 1) { return; }
+        GetComponent<PhotonRigidbody2DView>().enabled = false;
         count++;
         if (GameStart.teamMode == "FFA")
         {
-                GameMode.points[targetTeam]++;
+            GameMode.points[targetTeam]++;
         }
         else 
         {

@@ -6,14 +6,17 @@ using UnityEngine.UI;
 public class ShowHighScore : MonoBehaviour
 {
 
-    public Text highScoreText;
+    [SerializeField]
+    Text highScoreText;
+    SaveData data;
     public static int[] singleHighScore = new int[10], multiHighScore = new int[10], singleArcadeHighScore = new int[10], multiArcadeHighScore = new int[10];
     string[] text = { "ハイスコア", "HighScore" };
     string[] unit = { "秒", "Sec" };
-    SaveData data;
+    
+
     private void Start()
     {
-        data = GetComponent<DataManager>().data;
+        data = DataManager.Instance.data;
         for (int i = 0; i < 10; i++)
         {
             if (singleHighScore[i] == 0)
@@ -33,14 +36,6 @@ public class ShowHighScore : MonoBehaviour
                 multiArcadeHighScore[i] = data.multiArcadeHighScore[i];
             }
         }
-        if(GameStart.loadData == 0) 
-        {
-            Settings.languageNum = data.languageNum;
-            Settings.screenMode = data.screenModeNum;
-            BGM.BGMStage = data.BGM;
-            SoundEffect.SEStage = data.SE;
-        }
-      
     }
     private void Update()
     {

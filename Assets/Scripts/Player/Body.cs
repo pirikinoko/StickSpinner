@@ -69,6 +69,17 @@ public class Body : MonoBehaviour
     }
     void Update()
     {
+
+        SetEyePosition();
+        InPinballZone();    
+        if(GameSetting.allJoin) 
+        {
+            BoxCollider2D thisCollider = this.GetComponent<BoxCollider2D>();      
+        }
+    
+    }
+    void InPinballZone() 
+    {
         if (onPinball)　　//ピンボールゾーンでも摩擦、跳ね返りの調節
         {
             var material = GetComponent<Rigidbody2D>().sharedMaterial;
@@ -81,32 +92,8 @@ public class Body : MonoBehaviour
             material.friction = 0.3f;
             material.bounciness = 0;
         }
-        EyePosition();
-
-        if(GameSetting.allJoin) 
-        {
-            BoxCollider2D thisCollider = this.GetComponent<BoxCollider2D>();
-
-            if (ghostCollider == null) 
-            {
-
-                GameObject ghostObject = GameObject.Find("Ghost");
-                ghostCollider = ghostObject != null ? ghostObject.GetComponent<Collider2D>() : null;
-                GameObject ghostStickObject = GameObject.Find("Stick5");
-                Collider2D ghostStickCollider = ghostStickObject != null ? ghostStickObject.GetComponent<Collider2D>() : null;
-                if ((GameStart.gameMode2 == "Nomal" && GameStart.stage == 1) && thisCollider != null && ghostCollider != null)
-                {
-                    // IgnoreCollisionはCollider型を使用し、Physics2D.IgnoreCollisionを使用する
-                    Physics2D.IgnoreCollision(thisCollider, ghostCollider);
-                    Physics2D.IgnoreCollision(thisCollider, ghostStickCollider);
-                }
-            }
-          
-        }
-    
     }
-
-    void EyePosition() 
+    void SetEyePosition() 
     {
         controller = transform.GetChild(0).gameObject.GetComponent<Controller>();
         leftPosGoal = transform.position;

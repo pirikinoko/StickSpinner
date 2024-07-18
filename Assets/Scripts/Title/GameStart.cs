@@ -7,46 +7,124 @@ using UnityEngine.SceneManagement;
 using UnityEngine.Video;
 using System.Linq;
 using Photon.Pun;
+using System;
+using DG.Tweening;
 
 public class GameStart : MonoBehaviourPunCallbacks
 {
-    [SerializeField] int minFlagTime, maxFlagTime;
-    public int maxStageNomal;     // 総ステージ数
+    [SerializeField]
+    int minFlagTime;
 
-    
-    float difficulty, timeFromLastAction, cycle = 0.3f;
-    public GameObject mainTitle, startPanel, changePlayerNumber, stageSelect, selectGameMode, setArcadeGame, keyBoardMouseUI, selectOnlineLobby, onlineLobby, loadScreen, cursor;
-    public GameObject[] controllerUI, playerIcon, playerSlot;
+    [SerializeField]
+    int maxFlagTime;
+
+    [SerializeField]
+    Image fadePanel;
+
+    public int maxStageNomal;  // 総ステージ数
+
+    float difficultyl;
+
+    float timeFromLastAction;
+
+    float cycle = 0.3f;
+
+    public GameObject mainTitle;
+
+    public GameObject startPanel;
+
+    public GameObject changePlayerNumber;
+
+    public GameObject stageSelect;
+
+    public GameObject selectGameMode;
+
+    public GameObject setArcadeGame;
+
+    public GameObject keyBoardMouseUI;
+
+    public GameObject selectOnlineLobby;
+
+    public GameObject onlineLobby;
+
+    public GameObject loadScreen;
+
+    public GameObject cursor;
+
+    public GameObject[] controllerUI;
+
+    public GameObject[] playerIcon;
+
+    public GameObject[] playerSlot;
+
     IngameLog ingameLog;
-    //チーム選択
+
+    // チーム選択
     public Vector2[] playerIconPos { get; set; } = new Vector2[4];
+
     public Vector2[] slot1Pos = new Vector2[4];
 
-    int lastPlayerNum, lastPhase;
-    public Text playerNumberText, stageNumberText, flagTimeLimitTx;
-    //画像
+    int lastPlayerNum;
+
+    int lastPhase;
+
+    public Text playerNumberText;
+
+    public Text stageNumberText;
+
+    public Text flagTimeLimitTx;
+
+    // 画像
     public Image stageImage;
+
     private Sprite imageSprite;
-    //テキスト
+
+    // テキスト
     string[] singleArcadeText = { "無限の塔", "InfinityTower", };
+
     string[] MultiArcadeText = { "旗取りバトル", "FlagBattle", "サッカー", "FootBall", };
-    //static変数
+
+    // static変数
     public static string gameMode1 = "Single";
+
     public static string gameMode2 = "Nomal";
-    public static string teamMode = "FreeForAll"; //対戦チーム分け 
+
+    public static string teamMode = "FreeForAll";
+
     public static int phase = 0;
-    public static int PlayerNumber { get; set; } = 1;     // 参加プレイヤー数
+
+    public static int PlayerNumber { get; set; } = 1;
+
     public static int stage = 1;
-    public static int loadData = 0;
+
     public static int flagTimeLimit = 90;
+
     public static int[] playerTeam { get; set; } = { 0, 1, 2, 3 }; // {p1, p2, p3, p4}が TeamA, TeamB, TeamC, TeamDにいることを示す。ex..a = 1, c =3
-    public static int[] teamSize = new int[4]; // チーム　A, B, C, Dにいるプレイヤーの人数
-    public static int teamCount = 0; //チームの数
-    public static int maxPlayer = 4, minPlayer;     // 総プレイヤー数
+
+    public static int[] teamSize = new int[4];
+
+    public static int teamCount = 0;
+
+    public static int maxPlayer = 4;
+
+    public static int minPlayer;
+
     public static bool buttonPushable = true;
 
-    //ロード画面
-    bool reconnectable, joinedLobby = false;
+    // ロード画面
+    bool reconnectable;
+
+    bool joinedLobby = false;
+
+    private PlayerInput playerInput;
+
+    private void Awake()
+    {
+        if (SingletonSettingCanvas.Instance == null)
+        {
+            Instantiate(Resources.Load("SettingCanvas"));
+        }
+    }
     void Start()
     {
 
@@ -73,18 +151,18 @@ public class GameStart : MonoBehaviourPunCallbacks
         }
     }
     void Update()
-    {
-        //Debug.Log(phase);
+    { 
         SwichUI();
         SwichStageMaterial();
         playerNumberText.text = PlayerNumber.ToString();
+
         if(timeFromLastAction > cycle) 
         {
             PhaseControll();
             buttonPushable = true;
             timeFromLastAction = 0;
         }
-        //PhaseControll();
+
         //上限下限の設定
         phase = Mathf.Clamp(phase, 0, 9);
         if (gameMode1 == "Single" && gameMode2 == "Nomal")
@@ -103,9 +181,10 @@ public class GameStart : MonoBehaviourPunCallbacks
         {
             stage = Mathf.Clamp(stage, 1, 2);
         }
+
         timeFromLastAction += Time.deltaTime;
         //プレイヤー数制限
-        PlayerNumber = Mathf.Clamp(PlayerNumber, 1, maxPlayer);
+        PlayerNumber = Mathf.Clamp(PlayerNumber, minPlayer, maxPlayer);
         //フラッグモード時間範囲
         flagTimeLimit = Mathf.Clamp(flagTimeLimit, minFlagTime, maxFlagTime);
     }
@@ -114,23 +193,20 @@ public class GameStart : MonoBehaviourPunCallbacks
 
     void SwichStageMaterial() //選択ステージ毎に情報切り替え
     {
-        stageNumberText.text = "Stage" + stage.ToString();
         switch (gameMode1)
         {
-
             case "Single":
-                stageNumberText.text = singleArcadeText[Settings.languageNum];
+                stageNumberText.text = (gameMode2 == "Arcade") ? singleArcadeText[Settings.languageNum] : "Stage" + stage.ToString();
                 imageSprite = Resources.Load<Sprite>(gameMode1 + gameMode2 + stage);
                 break;
             case "Multi":
-                stageNumberText.text = MultiArcadeText[stage + (2 * Settings.languageNum)];
+                stageNumberText.text = (gameMode2 == "Arcade") ? MultiArcadeText[stage + (2 * Settings.languageNum)] : "Stage" + stage.ToString();
                 imageSprite = Resources.Load<Sprite>(gameMode1 + gameMode2 + stage);
                 break;
             case "Online":
-                stageNumberText.text = MultiArcadeText[stage + (2 * Settings.languageNum)];
+                stageNumberText.text = (gameMode2 == "Arcade") ? MultiArcadeText[stage + (2 * Settings.languageNum)] : "Stage" + stage.ToString();
                 imageSprite = Resources.Load<Sprite>("Multi" + gameMode2 + stage);
                 break;
-
         }
      
         stageImage.sprite = imageSprite;
@@ -152,6 +228,7 @@ public class GameStart : MonoBehaviourPunCallbacks
                             mainTitle.gameObject.SetActive(true);
                             break;
                         case 1:
+                            minPlayer = 1;
                             GameStart.PlayerNumber = 1;
                             selectGameMode.gameObject.SetActive(true);
                             break;
@@ -159,8 +236,7 @@ public class GameStart : MonoBehaviourPunCallbacks
                             stageSelect.gameObject.SetActive(true);
                             break;
                         case 3:
-                            SceneManager.LoadScene("Stage");
-                            loadScreen.gameObject.SetActive(true);
+                            FadeAndSwitchScene();
                             break;
 
                     }
@@ -174,6 +250,7 @@ public class GameStart : MonoBehaviourPunCallbacks
                             break;
                         case 1:
                             GameStart.PlayerNumber = 2;
+                            minPlayer = 2;
                             changePlayerNumber.gameObject.SetActive(true);
                             break;
                         case 2:
@@ -184,13 +261,13 @@ public class GameStart : MonoBehaviourPunCallbacks
                             stageSelect.gameObject.SetActive(true);
                             break;
                         case 4:
+                            //ノーマルモードならチーム選択画面はスキップ
                             if (gameMode2 == "Nomal") { phase++; return; }
                             setArcadeGame.gameObject.SetActive(true);
                             SetArcade();
                             break;
                         case 5:
-                            SceneManager.LoadScene("Stage");
-                            loadScreen.gameObject.SetActive(true);
+                            FadeAndSwitchScene();
                             break;
                     }
                     break;
@@ -209,39 +286,33 @@ public class GameStart : MonoBehaviourPunCallbacks
                             StartCoroutine(Reconnect());
                             break;
                         case 2:
+                            minPlayer = 1;
                             selectOnlineLobby.gameObject.SetActive(true);
                             joinedLobby = false;
                             break;
                         case 3:
+                            if (InputName.TypedTextToString == null) 
+                            {
+                                IngameLog.GenerateIngameLog("Please type player name");
+                                phase--;
+                                return;
+                            }
                             onlineLobby.gameObject.SetActive(true);
                             if (NetWorkMain.netWorkId == NetWorkMain.leaderId)
                             {
-                                NetWorkMain.UpdateRoomStats(GameStart.stage);
-                                photonView.RPC(nameof(SyncStage), RpcTarget.All);
                                 photonView.RPC(nameof(SyncPhase), RpcTarget.All, phase);
                             }
                             break;
                         case 4:
-
                             if (MatchmakingView.mode == "Quick" && NetWorkMain.netWorkId == NetWorkMain.leaderId)
                             {
+                                NetWorkMain.SetCustomProps<bool[]>("isReady", new bool[4] { true, true, true, true });
                                 photonView.RPC(nameof(SetDefaultArcade), RpcTarget.All, MatchmakingView.stageQuick);
-                                ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
-                                if (customProps.ContainsKey("isReady"))
-                                {
-                                    bool[] isReadyLocal = (bool[])PhotonNetwork.CurrentRoom.CustomProperties["isReady"];
-                                    for (int i = 0; i < maxPlayer; i++)
-                                    {
-                                        isReadyLocal[i] = true;
-                                    }
-                                    PhotonNetwork.CurrentRoom.SetCustomProperties(customProps);
-                                }
                                 photonView.RPC(nameof(RPCStartGame), RpcTarget.All);
                                 photonView.RPC(nameof(SyncArcadeTime), RpcTarget.All, flagTimeLimit);
                                 return;
                             }
                             photonView.RPC(nameof(SyncArcadeTime), RpcTarget.All, flagTimeLimit);
-                            photonView.RPC(nameof(SyncStage), RpcTarget.All);
                             photonView.RPC(nameof(RPCStartGame), RpcTarget.All);
                             phase = 3;
                             onlineLobby.gameObject.SetActive(true);
@@ -308,20 +379,6 @@ public class GameStart : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    void SyncStage()
-    {
-        ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
-        if (customProps.ContainsKey("stage"))
-        {
-            int stageTmp;
-            if (int.TryParse(customProps["stage"].ToString(), out stageTmp))
-            {
-                GameStart.stage = stageTmp;
-                Debug.Log("GameStart.Stageを" + stageTmp + "に設定しました");
-            }
-        }
-    }
-    [PunRPC]
     void SyncArcadeTime(int timeLimit)
     {
         flagTimeLimit = timeLimit;
@@ -331,6 +388,7 @@ public class GameStart : MonoBehaviourPunCallbacks
     {
         phase = phaseLocal;
     }
+
     [PunRPC]
     public void SetDefaultArcade(int updatedStage)
     {
@@ -342,12 +400,13 @@ public class GameStart : MonoBehaviourPunCallbacks
     {
         if (GameStart.PlayerNumber > 1)
         {
+            //全プレイヤーが準備完了か確認する
             bool allReady = true;
             ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
             if (customProps.ContainsKey("isReady"))
             {
                 bool[] isReadyLocal = (bool[])PhotonNetwork.CurrentRoom.CustomProperties["isReady"];
-                for (int i = 0; i < GameStart.PlayerNumber; i++)
+                for (int i = 0; i < PlayerNumber; i++)
                 {
                     if (isReadyLocal[i] == false)
                     {
@@ -356,14 +415,14 @@ public class GameStart : MonoBehaviourPunCallbacks
                 }
                 if (allReady)
                 {
-                    PhotonNetwork.IsMessageQueueRunning = false;
-                    SceneManager.LoadScene("Stage");
+                    //次のために全プレイヤーのreadyを解除しておく
                     for (int i = 0; i < maxPlayer; i++)
                     {
                         isReadyLocal[i] = false;
                     }
                     customProps["isReady"] = isReadyLocal;
                     PhotonNetwork.CurrentRoom.SetCustomProperties(customProps);
+                    FadeAndSwitchScene();
                 }
                 else
                 {
@@ -379,6 +438,7 @@ public class GameStart : MonoBehaviourPunCallbacks
 
     void SetArcade()
     {
+        //旗鳥モードのデフォルト設定
         if (stage == 1)
         {
             for (int i = 0; i < 4; i++)
@@ -394,19 +454,10 @@ public class GameStart : MonoBehaviourPunCallbacks
             }
             if (gameMode1 == "Online")
             {
-                ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
-                if (customProps.ContainsKey("playerTeam"))
-                {
-                    int[] playerTeamLocal = (int[])customProps["playerTeam"];
-                    for (int i = 0; i < 4; i++)
-                    { 
-                        playerTeamLocal[i] = i;
-                    }
-                    customProps["playerTeam"] = playerTeamLocal;
-                    PhotonNetwork.CurrentRoom.SetCustomProperties(customProps);
-                }
+                NetWorkMain.SetCustomProps<int[]>("playerTeam", new int[] { 0, 1, 2, 3 });
             }
         }
+        //サッカーモードのデフォルト設定
         if (stage == 2)
         {
             for (int i = 0; i < 4; i++)
@@ -430,36 +481,15 @@ public class GameStart : MonoBehaviourPunCallbacks
             playerSlot[1].gameObject.SetActive(true);
             if (gameMode1 == "Online")
             {
-                ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
-                if (customProps.ContainsKey("playerTeam"))
-                {
-                    int[] playerTeamLocal = (int[])customProps["playerTeam"];
-                    for (int i = 0; i < 4; i++)
-                    {
-                        if ((i + 1) % 2 == 0)
-                        {
-                            playerTeamLocal[i] = 1;
-                        }
-                        else
-                        {
-                            playerTeamLocal[i] = 0;
-                        }
-                    }
-                    customProps["playerTeam"] = playerTeamLocal;
-                    PhotonNetwork.CurrentRoom.SetCustomProperties(customProps);
-                }
+                NetWorkMain.SetCustomProps<int[]>("playerTeam", new int[] { 0, 1, 0, 1 });
             }
 
         }
         TeamSelect();
-
-
     }
     void TeamSelect()
     {
         flagTimeLimitTx.text = flagTimeLimit.ToString();
-
-
         for (int i = 0; i < PlayerNumber; i++)
         {
             playerIcon[i].transform.position = playerIconPos[i];
@@ -527,12 +557,14 @@ public class GameStart : MonoBehaviourPunCallbacks
         loadScreen.gameObject.SetActive(false);
     }
 
+    private void FadeAndSwitchScene() 
+    {
+        fadePanel.DOFade(1f, 1f)
+            .OnComplete(() => SceneManager.LoadScene("Stage"));
+    }
+
     void SwichUI()
     {
-
-
-        //キーボードマウス用UIとコントローラー用UIの切り替え
-
         //キーボード,マウスのとき
         if (!(ControllerInput.usingController))
         {

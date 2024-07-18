@@ -5,6 +5,8 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.Text.RegularExpressions;
 using Photon.Pun;
+using System.IO;
+using Cysharp.Threading.Tasks;
 public class ButtonClick : MonoBehaviourPunCallbacks　//クリック用ボタン
 {
     public static int[] sensChange = new int[4];
@@ -13,6 +15,8 @@ public class ButtonClick : MonoBehaviourPunCallbacks　//クリック用ボタ�
     GameSetting gameSetting;
     //コントローラー対応 
     bool inputButton;
+    float oneSecCount;
+    bool inCoolDown;
     [SerializeField] KeyCode keyBind;
     string controllerButton;
     bool inputCrossXPlus, inputCrossXMinus, inputCrossYPlus, inputCrossYMinus, inputLstickXPlus, inputLstickXMinus, inputLstickYPlus, inputLstickYMinus;
@@ -44,6 +48,26 @@ public class ButtonClick : MonoBehaviourPunCallbacks　//クリック用ボタ�
 
     void Start()
     {
+        Initialize();
+        oneSecCount = 1;
+    }
+
+    void Update()
+    {
+        controllerPushButton();
+        if (inCoolDown) 
+        {
+            oneSecCount -= Time.deltaTime;
+            if(oneSecCount < 0) 
+            {
+                inCoolDown = false;
+                oneSecCount = 1;
+            }
+        }
+    }
+
+    void Initialize() 
+    {
         //どのボタンを押されたときに処理を行うかを決定（Falseが選ばれた場合はコントローラーボタンに対応しない）
         controllerButton = selectedButton.ToString();
         if (SceneManager.GetActiveScene().name == "Title")
@@ -51,12 +75,10 @@ public class ButtonClick : MonoBehaviourPunCallbacks　//クリック用ボタ�
             gameStart = GameObject.Find("Systems").GetComponent<GameStart>();
             selectButton = GameObject.Find("Systems").GetComponent<SelectButton>();
         }
-
-    }
-
-    void Update()
-    {
-        controllerPushButton();
+        if (SceneManager.GetActiveScene().name == "Stage")
+        {
+            gameSetting = GameObject.Find("Scripts").GetComponent<GameSetting>();
+        }
     }
     // このスクリプトが有効になったときにイベントリスナーを登録
     void OnEnable()
@@ -72,7 +94,7 @@ public class ButtonClick : MonoBehaviourPunCallbacks　//クリック用ボタ�
 
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        gameSetting = GameObject.Find("Scripts").GetComponent<GameSetting>();
+        Initialize();
     }
     void controllerPushButton()
     {
@@ -183,28 +205,12 @@ public class ButtonClick : MonoBehaviourPunCallbacks　//クリック用ボタ�
                 break;
         }
 
-        //設定画面オンオフ
-        if (Input.GetKeyDown(KeyCode.Escape) || ControllerInput.start[0])
-        {
-            if (Settings.SettingPanelActive && this.name.Contains("Resume"))
-            {
-                SettingPanelTrigger();
-            }
-            else if (!Settings.SettingPanelActive && this.name.Contains("Pause"))
-            {
-                SettingPanelTrigger();
-            }
-            return;
-        }
         //ボタンをクリックしたことに
-        if ((inputButton || Input.GetKeyDown(keyBind)) && GameStart.buttonPushable)
+        if ((inputButton || Input.GetKeyDown(keyBind))) //&& GameStart.buttonPushable)
         {
-            if (Settings.SettingPanelActive) { return; }
             GameStart.buttonPushable = false;
             this.GetComponent<Button>().onClick.Invoke();
         }
-
-
 
         //初期化
         lastLstickX = ControllerInput.LstickX[0];
@@ -251,7 +257,7 @@ public class ButtonClick : MonoBehaviourPunCallbacks　//クリック用ボタ�
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;//ゲームプレイ終了
 #else
-        Application.Quit();//ゲームプレイ終了
+        Application.Quit();
 #endif
     }
     public void noBack()
@@ -270,41 +276,51 @@ public class ButtonClick : MonoBehaviourPunCallbacks　//クリック用ボタ�
         SoundEffect.soundTrigger[2] = 1;
         GameStart.phase += difference;
     }
-
+    //ルームのプレイヤーたちのステージをリーダーの値と同期
+    public void SyncStage() 
+    {
+        if (!NetWorkMain.isOnline) { return; }
+        NetWorkMain.SetCustomProps<int>("stage", GameStart.stage);
+        photonView.RPC(nameof(GetCPStage), RpcTarget.All);
+    }
+    public void SetCustomPropsGameMode()
+    {
+        if (!NetWorkMain.isOnline) { return; }
+        NetWorkMain.SetCustomProps<string>("gamemode", GameStart.gameMode2);
+    }
+    [PunRPC]
+    void GetCPStage()
+    {
+        if (NetWorkMain.GetCustomProps<int>("stage", out var stageValue))
+        {
+            GameStart.stage = stageValue;
+        }
+    }
     //モード変更
     public void SetAndSyncGameMode(string gameMode)
     {
+        //ゲームモード変更の際ステージを１にリセットする
         GameStart.gameMode2 = gameMode;
-        NetWorkMain.UpdateRoomStats(1);
-        photonView.RPC(nameof(SetCustomPropsStage), RpcTarget.All);
-        NetWorkMain.UpdateGameMode(gameMode);
-        photonView.RPC(nameof(SetCustomPropsGameMode), RpcTarget.All);
+        NetWorkMain.SetCustomProps<int>("stage", 1);
+        photonView.RPC(nameof(GetCustomPropsStage), RpcTarget.All);
+        NetWorkMain.SetCustomProps<string>("gameMode", gameMode);
+        photonView.RPC(nameof(GetCustomPropsGameMode), RpcTarget.All);
     }
 
-
-
     [PunRPC]
-    void SetCustomPropsStage()
+    void GetCustomPropsStage()
     {
-        ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
-        if (customProps.ContainsKey("stage"))
+        if (NetWorkMain.GetCustomProps<int>("stage", out int valueA))
         {
-            int stageTmp;
-            if (int.TryParse(customProps["stage"].ToString(), out stageTmp))
-            {
-                GameStart.stage = stageTmp;
-                Debug.Log("GameStart.Stageを" + stageTmp + "に設定しました");
-            }
+            GameStart.stage = valueA;
         }
     }
     [PunRPC]
-    void SetCustomPropsGameMode()
+    void GetCustomPropsGameMode()
     {
-        ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
-        if (customProps.ContainsKey("gameMode"))
+        if (NetWorkMain.GetCustomProps<string>("gameMode", out string valueB))
         {
-            GameStart.gameMode2 = customProps["gameMode"].ToString();
-            Debug.Log("GameModeを" + customProps["gameMode"].ToString() + "に設定しました");
+            GameStart.gameMode2 = valueB;
         }
     }
 
@@ -329,7 +345,6 @@ public class ButtonClick : MonoBehaviourPunCallbacks　//クリック用ボタ�
         SoundEffect.soundTrigger[3] = 1;
     }
 
-
     //プレイヤー数増減
     public void ChangePlayerNum(int difference)
     {
@@ -337,16 +352,15 @@ public class ButtonClick : MonoBehaviourPunCallbacks　//クリック用ボタ�
         SoundEffect.soundTrigger[3] = 1;
     }
 
-
-
     public void SettingPanelTrigger()    //設定画面の表示
     {
         Settings.SettingPanelActive = !(Settings.SettingPanelActive);
     }
+
     //ポーズ処理
     public void PauseGame()
     {
-        if (GameSetting.startTime < 0 && GameMode.Finished == false && GameMode.Goaled == false)
+        if (gameSetting.isCountDownEnded && !gameSetting.isPaused && GameMode.isGameEnded == false)
         {
             gameSetting.isPaused = true;
             GameSetting.Playable = false;
@@ -363,16 +377,18 @@ public class ButtonClick : MonoBehaviourPunCallbacks　//クリック用ボタ�
     public void RestartGame()
     {
         gameSetting.isPaused = false;
-        GameSetting.startTime = -1;
         GameSetting.Playable = true;
         Time.timeScale = 1;
     }
+
+
     public void BackToTitle()
     {
         SoundEffect.soundTrigger[2] = 1;
         if (GameStart.gameMode1 == "Online")
         {
-            photonView.RPC("DeleatPlayer", RpcTarget.All, NetWorkMain.netWorkId);
+            gameSetting = GameObject.Find("Scripts").GetComponent<GameSetting>();
+            gameSetting.CallDeletePlayerRPC();
             if (MatchmakingView.gameModeQuick == "Quick")
             {
                 PhotonNetwork.LeaveRoom();
@@ -382,13 +398,15 @@ public class ButtonClick : MonoBehaviourPunCallbacks　//クリック用ボタ�
         SceneManager.LoadScene("Title");
     }
 
-    [PunRPC]
-    void DeleatPlayer(int id)
+    public void SaveSettingData()
     {
-        GameSetting.playerLeft[id - 1] = true;
+        //データ保存
+        SaveData data = DataManager.Instance.data;
+        data.languageNum = Settings.languageNum;
+        data.screenModeNum = Settings.screenMode;
+        data.BGM = BGM.BGMStage;
+        data.SE = SoundEffect.SEStage;
     }
-
-
 
     public void ChangeFlagTime(int difference)
     {
@@ -406,7 +424,7 @@ public class ButtonClick : MonoBehaviourPunCallbacks　//クリック用ボタ�
     [PunRPC]
     void RPCChangeFlagTime(int difference)
     {
-        GameStart.flagTimeLimit -= difference;
+        GameStart.flagTimeLimit += difference;
     }
 
 
@@ -441,7 +459,7 @@ public class ButtonClick : MonoBehaviourPunCallbacks　//クリック用ボタ�
     }
 
 
-    public void RPCsyncLeader()
+    public void SyncLeader()
     {
         photonView.RPC(nameof(syncLeader), RpcTarget.All);
     }
@@ -493,16 +511,18 @@ public class ButtonClick : MonoBehaviourPunCallbacks　//クリック用ボタ�
     }
     public void ReadyButton()
     {
+        if (inCoolDown) 
+        {
+            return;
+        }
+        inCoolDown = true;  
         int targetId = int.Parse(Regex.Replace(this.gameObject.name, @"[^0-9]", ""));
         if (NetWorkMain.netWorkId != targetId) { return; }
-        ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
-        if (customProps.ContainsKey("isReady"))
+        if (NetWorkMain.GetCustomProps<bool[]>("isReady", out var arrayValue1))
         {
-            bool[] isReadyLocal = (bool[])PhotonNetwork.CurrentRoom.CustomProperties["isReady"];
-            isReadyLocal[targetId - 1] = !isReadyLocal[targetId - 1];
-            customProps["isReady"] = isReadyLocal;
-            PhotonNetwork.CurrentRoom.SetCustomProperties(customProps);
-            if (isReadyLocal[targetId - 1] == true)
+            arrayValue1[targetId - 1] = !arrayValue1[targetId - 1];
+            NetWorkMain.SetCustomProps<bool[]>("isReady", arrayValue1);
+            if (arrayValue1[targetId - 1] == true)
             {
                 SoundEffect.soundTrigger[10] = 1;
             }

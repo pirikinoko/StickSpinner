@@ -10,62 +10,140 @@ using Photon.Pun;
 
 public class GameMode : MonoBehaviourPunCallbacks
 {
-    //基本
+    // 基本
     GameSetting gameSetting;
-    public static string[] goaledPlayer { get; set; } = new string[GameStart.maxPlayer];
-    [SerializeField] GameObject[] resultTextGO = new GameObject[GameStart.maxPlayer], icons;
-    Text[] resultText = new Text[GameStart.maxPlayer];
-    [SerializeField] GameObject ResultPanel, ResultPanelFront, TextCanvas, backTitleButton, ResultPanelArcade;
-    bool showResultTriggerd = false;
-    //通常ステージ
-    public static byte Goals = 0;
-    public static float[] clearTime = new float[GameStart.maxPlayer];
-    public static bool Goaled;
-    //バトルモード
-    public GameObject KillLogBack, Plus1, Plus5,drawTextGO;
-    GameObject[] pointTextGO = new GameObject[4], pointFrame = new GameObject[4], crownObj = new GameObject[4];
-    [SerializeField] GameObject[] teamTag;
-    [SerializeField] private Text[] teamTagText;
-    string[] teamTagName = { "A", "B", "C", "D" }, teamsInOrder = new string[4];
-    private Color[] teamColors = { Color.white, Color.red, Color.blue, Color.green };
-    public static bool[] isDead = { false, false, false, false };
-    public static float[] points = new float[4], pointsInOrder = new float[4], teamPoints = new float[4];
-    public static float  KillLogTimer;
-    public static string[] playerNameByRank = new string[4];
-    int[] playerRank = new int[4];
-    Text[] pointText = new Text[4];
-    public static string killer, died;
-    public Text KillLogText = null;
-    public static byte[] playParticle = new byte[4];
-    Vector2[] framePos = new Vector2[4];
-    public static bool Finished;
-    byte count = 0;
-    bool isDraw = true;
-    float frameSpace = 10;
-    private Vector2[] particlePos = new Vector2[4];
-    public static float[,] killTimer = new float[4, 4];       // プレイヤー同士の衝突を記録(プレイヤー1～4とプレイヤー1～4の衝突)
 
-    //サッカーモード
-   
+    public static string[] goaledPlayer { get; set; } = new string[GameStart.maxPlayer];
+
+    [SerializeField]
+    GameObject[] resultTextGO = new GameObject[GameStart.maxPlayer];
+
+    [SerializeField]
+    GameObject[] icons;
+
+    [SerializeField]
+    GameObject[] battleModeUIs;
+
+    [SerializeField]
+    GameObject ResultPanel;
+
+    [SerializeField]
+    GameObject ResultPanelFront;
+
+    [SerializeField]
+    GameObject TextCanvas;
+
+    [SerializeField]
+    GameObject backTitleButton;
+
+    [SerializeField]
+    GameObject ResultPanelArcade;
+
+    GameObject[] crownObjects = new GameObject[3];
+ 
+    Text[] resultText = new Text[GameStart.maxPlayer];
+
+    bool showResultTriggerd = false;
+
+    public static bool gameEnded;
+
+    // 通常ステージ
+    public static byte Goals = 0;
+
+    public static float[] clearTime = new float[GameStart.maxPlayer];
+
+    public static bool isGoaled;
+
+    public static bool isGameEnded;
+    //バトルモード
+    [SerializeField]
+    GameObject KillLogBack;
+
+    [SerializeField]
+    GameObject Plus1;
+
+    [SerializeField]
+    GameObject drawTextGO;
+
+    [SerializeField]
+    GameObject Plus5;
+
+    GameObject[] pointTextGO = new GameObject[4];
+    GameObject[] pointFrame = new GameObject[4];
+    GameObject[] crownObj = new GameObject[4];
+
+    [SerializeField]
+    GameObject[] teamTag;
+
+    [SerializeField]
+    private Text[] teamTagText;
+
+    string[] teamTagName = { "A", "B", "C", "D" };
+    string[] teamsInOrder = new string[4];
+
+    private Color[] teamColors = { Color.white, Color.red, Color.blue, Color.green };
+
+    public static bool[] isDead = { false, false, false, false };
+    public static float[] points = new float[4];
+    public static float[] pointsInOrder = new float[4];
+    public static float[] teamPoints = new float[4];
+    public static float KillLogTimer;
+
+    public static string[] playerNameByRank = new string[4];
+
+    int[] playerRank = new int[4];
+
+    Text[] pointText = new Text[4];
+
+    public static string killer;
+    public static string died;
+
+    public Text KillLogText = null;
+
+    public static byte[] playParticle = new byte[4];
+
+    Vector2[] framePos = new Vector2[4];
+
+    public static bool isTimeFinished;
+
+    byte count = 0;
+
+    bool isDraw = true;
+
+    float frameSpace = 10;
+
+    private Vector2[] particlePos = new Vector2[4];
+
+    public static float[,] killTimer = new float[4, 4];  // プレイヤー同士の衝突を記録(プレイヤー1～4とプレイヤー1～4の衝突)
+
+    // サッカーモード
     [SerializeField]
     Text ballCountText;
+
     Vector2 ballPosDefault = new Vector2(0, -2f);
-    //無限モード
+
+    // 無限モード
     public static bool isGameOver;
+
     int startTrigger = 0;
+
 
     void Start()
     {
         gameSetting = GameObject.Find("Scripts").GetComponent<GameSetting>();
+        for (int i = 0; i < crownObjects.Length; i++)
+        {
+            crownObjects[i] = (GameObject)Resources.Load("Crown" + (i + 1).ToString());
+        }
         startTrigger = 0;
         backTitleButton.gameObject.SetActive(false);
-        //ResultPanelArcade.gameObject.SetActive(false);
         showResultTriggerd = false;
         isDraw = true;
     }
+
     void StartInUpdate()
-    {   //基本
-        for (int i = 0; i < GameStart.maxPlayer; i++) //初期化処理
+    {   
+        for (int i = 0; i < GameStart.maxPlayer; i++)
         {
             resultText[i] = resultTextGO[i].GetComponent<Text>();
             teamTag[i].gameObject.SetActive(false);
@@ -79,32 +157,31 @@ public class GameMode : MonoBehaviourPunCallbacks
         ResultPanel.gameObject.SetActive(false);
         ResultPanelFront.gameObject.SetActive(false);
         TextCanvas.gameObject.SetActive(false);
-
+        KillLogBack.gameObject.SetActive(false);
         ballCountText = GameObject.Find("BallSpownCount").GetComponent<Text>();
         ballCountText.text = null;
-        Finished = false;
-        Goaled = false;
+        isTimeFinished = false;
+        isGameEnded = false;
+        isGoaled = false;
         isGameOver = false;
         Goals = 0;
         // 通常ステージ
         if (GameStart.gameMode2 != "Arcade")
         {
-            for (int i = 0; i < GameStart.maxPlayer; i++) //初期化処理
-            {
+            for (int i = 0; i < GameStart.maxPlayer; i++)
+            { 
                 clearTime[i] = 0;
                 goaledPlayer[i] = null;
             }
+            for (int j = 0; j < battleModeUIs.Length; j++)
+            {
+                battleModeUIs[j].SetActive(false);
+            }
         }
-
-
-
-
 
         //アーケード
         if ((GameStart.gameMode1 == "Multi" || GameStart.gameMode1 == "Online") && GameStart.gameMode2 == "Arcade")
         {
-            if(GameStart.gameMode2 != "Arcade") { return; }
-            //リセット等
             for (int i = 0; i < 4; i++)
             {
                 playerNameByRank[i] = null;
@@ -123,11 +200,13 @@ public class GameMode : MonoBehaviourPunCallbacks
                     pointFrame[i] = GameObject.Find("TeamFrame" + (i + 1).ToString());
                     GameObject.Find("PointFrame" + (i + 1).ToString()).SetActive(false);
                 }
+                pointFrame[i].SetActive(false);
                 pointText[i] = pointTextGO[i].GetComponent<Text>();
-
             }
             count = 0;
             KillLogTimer = 0;
+
+            AdjustTeamFramePos();
 
             //チームタグ表示
             for (int i = 0; i < GameStart.PlayerNumber; i++)
@@ -139,9 +218,7 @@ public class GameMode : MonoBehaviourPunCallbacks
                     teamTagText[i].color = teamColors[GameStart.playerTeam[i]];
                 }
             }
-            AdjustTeamFramePos();
-            // 画面上部スコア表示リセット
-            for (int i = 0; i < 4; i++) { pointFrame[i].gameObject.SetActive(false); }
+
             //旗取りモード
             if (GameStart.stage == 1)
             {
@@ -170,9 +247,7 @@ public class GameMode : MonoBehaviourPunCallbacks
                 //チームライト
                 pointFrame[1].gameObject.SetActive(true);
             }
-
         }
-
     }
 
     void Update()
@@ -217,7 +292,7 @@ public class GameMode : MonoBehaviourPunCallbacks
         // 無限モード
         if (GameStart.gameMode1 == "Single" && GameStart.gameMode2 == "Arcade")
         {
-            InfinityMode();
+            SettingInfinityMode();
         }
     }
     private void FixedUpdate()
@@ -237,7 +312,7 @@ public class GameMode : MonoBehaviourPunCallbacks
     {
         if (Goals == GameStart.PlayerNumber)
         {
-            Goaled = true;
+            isGameEnded = true;
             GameSetting.Playable = false;
             TextCanvas.gameObject.SetActive(true);
             ResultPanel.gameObject.SetActive(true);
@@ -280,24 +355,17 @@ public class GameMode : MonoBehaviourPunCallbacks
     }
     public void GoalProcess(int playerid)
     {
+        //（オンライン）1位の時winningsプラス１
         if (GameStart.gameMode1 == "Online" && Goals == 0)
         {
-            ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
-            if (customProps.ContainsKey("winnings"))
+            if(NetWorkMain.GetCustomProps<int[]>("winnings", out var ValueBArray))
             {
-                int[] winningsLocal = (int[])customProps["winnings"];
-                winningsLocal[playerid - 1]++;
-                customProps["winnings"] = winningsLocal;
-                Debug.Log("   customProps[winnings] " + winningsLocal[0]);
+                ValueBArray[playerid - 1]++;
+                NetWorkMain.SetCustomProps<int[]>("winnings", ValueBArray);
             }
-            PhotonNetwork.CurrentRoom.SetCustomProperties(customProps);
-
         }
-        Debug.Log("playerId == " + playerid);
         if (gameSetting.players[playerid - 1].activeSelf)
         {
-            Debug.Log("player" + playerid + "がゴールしました");
-            // ゴールしたプレイヤーを表示する
             clearTime[Goals] = GameSetting.playTime;
             goaledPlayer[Goals] = "Player" + playerid.ToString();
             SoundEffect.soundTrigger[2] = 1;
@@ -306,7 +374,10 @@ public class GameMode : MonoBehaviourPunCallbacks
             gameSetting.sticks[playerid - 1].gameObject.SetActive(false);
             gameSetting.nameTags[playerid - 1].gameObject.SetActive(false);
         }
-
+        if(playerid == NetWorkMain.netWorkId)
+        {
+            isGoaled = true;
+        } 
 
     }
 
@@ -380,13 +451,13 @@ public class GameMode : MonoBehaviourPunCallbacks
         yield return new WaitForSeconds(3.0f);
         backTitleButton.gameObject.SetActive(true);
     }
+
     void checkResult()
     {
-
-
-        if (GameSetting.playTime <= 0 && !Finished)
+        if (GameSetting.playTime <= 0 && !isTimeFinished)
         {
-            Finished = true;
+            isTimeFinished = true;
+            isGameEnded = true;
             GameSetting.Playable = false;
             if (GameStart.gameMode2 != "Arcade") 
             {
@@ -431,14 +502,11 @@ public class GameMode : MonoBehaviourPunCallbacks
                                 playerRank[i] = j;
                                 if (GameStart.gameMode1 == "Online" && j == 0)
                                 {
-                                    ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
-                                    if (customProps.ContainsKey("winnings"))
+                                    if (NetWorkMain.GetCustomProps<int[]>("winnings", out var ValueCArray))
                                     {
-                                        int[] winningsLocal = (int[])customProps["winnings"];
-                                        winningsLocal[i]++;
-                                        customProps["winnings"] = winningsLocal;
+                                        ValueCArray[i]++;
+                                        NetWorkMain.SetCustomProps<int[]>("winnings", ValueCArray);
                                     }
-                                    PhotonNetwork.CurrentRoom.SetCustomProperties(customProps);
                                 }
                             }
                         }
@@ -506,13 +574,10 @@ public class GameMode : MonoBehaviourPunCallbacks
                 {
                     if (playerRank[i] < 3)
                     {
-                        GameObject crownPrefab = (GameObject)Resources.Load("Crown" + (playerRank[i] + 1).ToString());
                         Vector2 crownPos = gameSetting.players[i].transform.position;
                         crownPos.y += 1f;
-                        crownObj[i] = Instantiate(crownPrefab, crownPos, Quaternion.identity);
+                        crownObj[i] = Instantiate(crownObjects[playerRank[i]], crownPos, Quaternion.identity);
                         crownObj[i].name = "Crown" + (playerRank[i] + 1).ToString();
-                        GameObject smokeAnim = (GameObject)Resources.Load("SmokeEffect");
-                        Instantiate(smokeAnim, crownPos, Quaternion.identity);
                     }
                 }
                 else 
@@ -558,7 +623,7 @@ public class GameMode : MonoBehaviourPunCallbacks
     }
     void ShowResult()
     {
-        if (Finished && !showResultTriggerd)
+        if (isTimeFinished && !showResultTriggerd)
         {
             //リザルト表示
             Vector2[] iconPos = new Vector2[GameStart.maxPlayer];
@@ -571,9 +636,7 @@ public class GameMode : MonoBehaviourPunCallbacks
                     iconPos[pId - 1] = resultTextGO[i].transform.position;
                     iconPos[pId - 1].x -= 0.7f;
                     icons[pId - 1].transform.position = iconPos[pId - 1];
-                    resultText[i].text = "#" + (i + 1) + "     " + pointsInOrder[i] + "point";
-
-                   
+                    resultText[i].text = "#" + (i + 1) + "     " + pointsInOrder[i] + "point";          
                 }
             }
             else
@@ -585,10 +648,11 @@ public class GameMode : MonoBehaviourPunCallbacks
 
             }
         }
+        SetHighScore();
         showResultTriggerd = true;
     }
 
-    void InfinityMode()
+    void SettingInfinityMode()
     {
         if (isGameOver)
         {
@@ -612,49 +676,85 @@ public class GameMode : MonoBehaviourPunCallbacks
 
         Vector2 textPos = ballPosDefault;
         ballCountText.transform.position = textPos;
-        float countdown = 3.0f; // 開始するカウントダウンの数
+        // 開始するカウントダウンの数
+        float countdown = 3.0f;
         while (countdown > 0)
         {
             if (Mathf.Floor(countdown) < Mathf.Floor(countdown + Time.deltaTime))
             {
                 SoundEffect.soundTrigger[3] = 1;
             }
-            ballCountText.text = Mathf.Ceil(countdown).ToString(); // カウントダウンの整数部分を表示
-            countdown -= Time.deltaTime; // Time.deltaTime を使用して時間を減少させる
-            yield return null; // 次のフレームまで待機
+            // カウントダウンの整数部分を表示
+            ballCountText.text = Mathf.Ceil(countdown).ToString();
+            // Time.deltaTime を使用して時間を減少させる
+            countdown -= Time.deltaTime;
+            // 次のフレームまで待機
+            yield return null; 
         }
         ballCountText.text = null;
+
         ball.GetComponent<CircleCollider2D>().enabled = true;
         ballRb.constraints = RigidbodyConstraints2D.None;
         ballRb.constraints = RigidbodyConstraints2D.FreezeRotation;
         ballRb.AddForce(new Vector2(0, -0.1f));
+        ball.GetComponent<PhotonRigidbody2DView>().enabled = true;
         ball.GetComponent<Ball>().count = 0;
     }
 
     void AdjustTeamFramePos()
     {
+        //フラッグモードの時
         if (GameStart.stage == 1)
         {
             for (int i = 0; i < pointFrame.Length; i++)
             {
-                //チームフレーム位置設定
-                //初期位置に設定
+                //チームフレームを初期位置に設定
                 framePos[i] = pointFrame[0].transform.position;
                 //右にずらす
                 framePos[i].x += (i * (frameSpace / (-1 + (float)GameStart.PlayerNumber)));
                 pointFrame[i].transform.position = framePos[i];
             }
         }
+        //サッカーモードの時
         if (GameStart.stage == 2)
         {
             for (int i = 0; i < 2; i++)
             {
-                //チームフレーム位置設定
-                //初期位置に設定
+                //チームフレームを初期位置に設定
                 framePos[i] = pointFrame[0].transform.position;
                 //右にずらす
                 framePos[i].x += frameSpace * i;
                 pointFrame[i].transform.position = framePos[i];
+            }
+        }
+    }
+
+
+     void SetHighScore()
+    {
+        if (GameStart.gameMode1 == "Single")
+        {
+            if (GameStart.gameMode2 == "Nomal")
+            {
+                if (ShowHighScore.singleHighScore[GameStart.stage - 1] == 0) { ShowHighScore.singleHighScore[GameStart.stage - 1] = (int)(GameMode.clearTime[0]); }
+                ShowHighScore.singleHighScore[GameStart.stage - 1] = Mathf.Min((int)(GameMode.clearTime[0]), (int)(ShowHighScore.singleHighScore[GameStart.stage - 1]));
+            }
+            else
+            {
+                if (ShowHighScore.singleHighScore[GameStart.stage - 1] == 0) { ShowHighScore.singleArcadeHighScore[GameStart.stage - 1] = (int)(GenerateStage.maxHeight); }
+                ShowHighScore.singleArcadeHighScore[GameStart.stage - 1] = Mathf.Max((int)(GenerateStage.maxHeight), (int)(ShowHighScore.singleArcadeHighScore[GameStart.stage - 1]));
+            }
+        }
+        else
+        {
+            if (GameStart.gameMode2 == "Nomal")
+            {
+                if (ShowHighScore.multiHighScore[GameStart.stage - 1] == 0) { ShowHighScore.multiHighScore[GameStart.stage - 1] = (int)(GameMode.clearTime[0]); }
+                ShowHighScore.multiHighScore[GameStart.stage - 1] = Mathf.Min((int)(GameMode.clearTime[0]), (int)(ShowHighScore.multiHighScore[GameStart.stage - 1]));
+            }
+            else
+            {
+                ShowHighScore.multiArcadeHighScore[GameStart.stage - 1] = Mathf.Max((int)(GameMode.pointsInOrder[0]), (int)(ShowHighScore.multiHighScore[GameStart.stage - 1]));
             }
         }
     }
