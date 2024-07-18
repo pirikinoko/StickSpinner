@@ -162,11 +162,12 @@ public class PlayerCollisionEvent :MonoBehaviourPunCallbacks
         {
             if(other.gameObject.CompareTag("Player") || other.gameObject.CompareTag("Stick"))
             {
-                //敵に触れてから5秒間キル判定            
+                //自分以外に対象のプレイヤーのキル判定が入らないように全員分のキルタイマーを一度リセットする     
                 for (int i = 0; i < 4; i++)
                 {
-                    GameMode.killTimer[i, other.gameObject.GetComponent<PlayerCollisionEvent>().playerId - 1] = 0;  //一人死亡時にキルポイントを得られるのは最後に触れていた一人のみ
+                    GameMode.killTimer[i, other.gameObject.GetComponent<PlayerCollisionEvent>().playerId - 1] = 0; 
                 }
+
                 GameMode.killTimer[playerId - 1, other.gameObject.GetComponent<PlayerCollisionEvent>().playerId - 1] = 3.0f;
             }       
         }

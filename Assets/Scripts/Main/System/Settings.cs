@@ -4,30 +4,85 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.Linq;
+using UnityEngine.EventSystems;
 public class Settings : MonoBehaviour
 {
-    [SerializeField] Text confirmText, yesText, noText, BGMText, SEText;
-    [SerializeField] GameObject yesButton, noButton, resumeBtnTitle, resumeBtnGame;
-    [SerializeField] GameObject[] controllerUI;
+    [SerializeField]
+    Text confirmText;
+
+    [SerializeField]
+    Text yesText;
+
+    [SerializeField]
+    Text noText;
+
+    [SerializeField]
+    Text BGMText;
+
+    [SerializeField]
+    Text SEText;
+
+    [SerializeField]
+    GameObject yesButton;
+
+    [SerializeField]
+    GameObject noButton;
+
+    [SerializeField]
+    GameObject resumeBtnTitle;
+
+    [SerializeField]
+    GameObject resumeBtnGame;
+
+    [SerializeField]
+    GameObject[] controllerUI;
+
+    [SerializeField]
+    Button quitButton;
+
     Controller controller;
-    public GameObject SettingPanel, exitPanel;
-    public Text languageText, screenText, guideText;
+
+    public GameObject SettingPanel;
+    public GameObject exitPanel;
+    public Text languageText;
+    public Text screenText;
+    public Text guideText;
+
     public static bool SettingPanelActive = false;
-    bool InputCrossX, InputCrossY;
-    int Selected = 0, buttonSelect = 0, itemLength  , lastScreenNum;
-    public static int languageNum = 0, guideMode = 0, screenMode = 0;
+
+    bool InputCrossX;
+    bool InputCrossY;
+
+    int Selected = 0;
+    int buttonSelect = 0;
+    int itemLength;
+    int lastScreenNum;
+
+    public static int languageNum = 0;
+    public static int guideMode = 0;
+    public static int screenMode = 0;
+
     string[] languages = { "JP", "EN" };
     string[] screenModeValues = { "ウィンドウ", "フルスクリーン", "Window", "FullScreen" };
     string[] guide = { "On", "Off" };
-    float[] settingStages = new float[5]; //設定項目の数
+
+    float[] settingStages = new float[5]; // 設定項目の数
+
     public GameObject[] item = new GameObject[3];
+
     Vector2[] itemPos = new Vector2[10];
-    float lastLstickX, lastLstickY;
+
+    float lastLstickX;
+    float lastLstickY;
+
     string sceneName;
+
     private Button[] activeButtons;
-    //OnExitPanel
+
+    // OnExitPanel
     public static bool exitPanelActive = false;
-    public static bool isDataLoaded = false;                
+    public static bool isDataLoaded = false;
+
     void Start()
     {
         
@@ -59,17 +114,11 @@ public class Settings : MonoBehaviour
             sceneName = SceneManager.GetActiveScene().name;
             SwitchButtonFunction();
         }
-        //データ保存
-        SaveData data = new SaveData();
-        data.languageNum = languageNum;
-        data.screenModeNum = screenMode;
-        data.BGM = BGM.BGMStage;
-        data.SE = SoundEffect.SEStage;
+
     }
 
     void Update()
     {
-
         if (SettingPanelActive)
         {
             SettingPanel.gameObject.SetActive(true);
@@ -83,24 +132,21 @@ public class Settings : MonoBehaviour
             guideText.text = guide[guideMode];
             BGMText.text = BGM.BGMStage.ToString(); 
             SEText.text = SoundEffect.SEStage.ToString();
-            if (languageNum == 0)
-            {
-                screenText.fontSize = 160;
-            }
-            else
-            {
-                screenText.fontSize = 200;
-            }
         }
-
-
         else
         {
             SettingPanel.gameObject.SetActive(false);
         }
+        //ウィンドウモード切替
+        if (lastScreenNum != screenMode)
+        {
+            SetScreenMode();
+        }
+        lastScreenNum = screenMode;
+
         //上限下限の制限
         languageNum = Mathf.Clamp(languageNum, 0, languages.Length - 1);
-        screenMode = Mathf.Clamp(screenMode, 0, screenModeValues.Length / languages.Length);
+        screenMode = Mathf.Clamp(screenMode, 0, screenModeValues.Length / languages.Length - 1);
         guideMode = Mathf.Clamp(guideMode, 0, 1);
     }
 
@@ -241,18 +287,10 @@ public class Settings : MonoBehaviour
                     }
                     /*数値変更*/
                     buttonSelect = Mathf.Clamp(buttonSelect, 0, 1);
-
                 }
                 /*ゲーム終了*/
             }
         }
-        //ウィンドウモード切替
-        if(lastScreenNum != screenMode)
-        {
-            SetScreenMode();
-        }
-        lastScreenNum = screenMode;
-        
     }
 
     private void SetScreenMode()
@@ -290,8 +328,17 @@ public class Settings : MonoBehaviour
                 itemText[i].color = Color.yellow;
             }
         }
+        quitButton.OnPointerExit(new PointerEventData(EventSystem.current));
+        Debug.Log(Selected);
         for (int i = 0; i < stageText.Length; i++)
         {
+            if (stageText[i].name == "Stage6")
+            {
+                if (Selected != 5) { return; }
+                EventSystem.current.SetSelectedGameObject(quitButton.gameObject);
+                quitButton.OnPointerEnter(new PointerEventData(EventSystem.current));
+                continue;
+            }
             stageText[i].color = Color.white;
             if (stageText[i].name.Contains((Selected + 1).ToString()))
             {

@@ -117,7 +117,6 @@ public class NetWorkMain : MonoBehaviourPunCallbacks
 
         var roomOptions = new RoomOptions();
 
-
         ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
         //もともとCustomPropsが設定してある場合はそれらを取得して状態をルームのものと同期する
         if (GetCustomProps<string>("gameMode", out string valueA)) { GameStart.gameMode2 = valueA; }

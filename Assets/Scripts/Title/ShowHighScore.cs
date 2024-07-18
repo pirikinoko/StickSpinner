@@ -8,14 +8,15 @@ public class ShowHighScore : MonoBehaviour
 
     [SerializeField]
     Text highScoreText;
+    SaveData data;
     public static int[] singleHighScore = new int[10], multiHighScore = new int[10], singleArcadeHighScore = new int[10], multiArcadeHighScore = new int[10];
     string[] text = { "ハイスコア", "HighScore" };
     string[] unit = { "秒", "Sec" };
-    SaveData data;
+    
+
     private void Start()
     {
-        //Jsonからデータを取得
-        data = GetComponent<DataManager>().data;
+        data = DataManager.Instance.data;
         for (int i = 0; i < 10; i++)
         {
             if (singleHighScore[i] == 0)

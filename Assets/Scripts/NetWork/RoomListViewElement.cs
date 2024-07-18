@@ -51,7 +51,12 @@ public class RoomListViewElement : MonoBehaviourPunCallbacks
 
     private void OnButtonClick()
     {
-            PhotonNetwork.JoinRoom(nameLabel.text);
+        if (InputName.TypedTextToString == null)
+        {
+            IngameLog.GenerateIngameLog("Please type player name");
+            return;
+        }
+        PhotonNetwork.JoinRoom(nameLabel.text);
     }
      
     public void Show(RoomInfo roomInfo)

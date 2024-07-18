@@ -20,6 +20,10 @@ public class ButtonActive : MonoBehaviourPunCallbacks
     // Update is called once per frame
     void Update()
     {
+        if (!PhotonNetwork.InRoom) 
+        {
+            return;
+        }
         if (this.gameObject.name.Contains("Star") && !this.gameObject.name.Contains("Game"))
         {
             int starID = int.Parse(Regex.Replace(this.gameObject.name, @"[^0-9]", ""));
@@ -42,15 +46,14 @@ public class ButtonActive : MonoBehaviourPunCallbacks
         }
         else if (this.gameObject.name.Contains("Ready")) 
         {
-            ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
-            int myId = int.Parse(Regex.Replace(this.gameObject.name, @"[^0-9]", ""));
-            if (customProps.ContainsKey("isReady"))
+            if (NetWorkMain.GetCustomProps<bool[]>("isReady", out var valueArrayA)) 
             {
-                bool[] isReadyLocal = (bool[])PhotonNetwork.CurrentRoom.CustomProperties["isReady"];
+                int myId = int.Parse(Regex.Replace(this.gameObject.name, @"[^0-9]", ""));
+
                 Material iconMat = new Material(this.GetComponent<Image>().material);
                 Color color = iconMat.color;
                 color.a = 0.2f;
-                if (isReadyLocal[myId - 1] == true) 
+                if (valueArrayA[myId - 1] == true)
                 {
                     color.a = 1;
                 }

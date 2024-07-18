@@ -7,6 +7,7 @@ using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using System.Threading;
 using Cysharp.Threading.Tasks.Linq;
+using static UnityEngine.Rendering.DebugUI;
 
 public class CameraControl : MonoBehaviour
 {
@@ -35,12 +36,10 @@ public class CameraControl : MonoBehaviour
     int spectateTarget;
     bool[] isGoaled = new bool[4];
     public bool isFirstAnimationEnded = false;
-
     private async UniTask Start()
     {
         gameSetting = GameObject.Find("Scripts").GetComponent<GameSetting>();
         goalFlag = null;
-
         for (int i = 0; i < 4; i++)
         {
             isGoaled[i] = false;
@@ -50,6 +49,7 @@ public class CameraControl : MonoBehaviour
         mainCamera = GetComponent<Camera>();
         cameraPos = Vector2.zero;
         cameraPos.z = -10;
+        centerPoint.z = -10;
         cameraSizeDefault = 1;
         cameraSpeedStart = 0.005f;
         //セットアップ終了後旗にズームインする
@@ -111,6 +111,11 @@ public class CameraControl : MonoBehaviour
                 {
                     playerPos[i] = gameSetting.players[i].transform.position;
                     if (isGoaled[i]) { continue; }
+                    //一人しかいない場合はそのプレイヤーを写す
+                    if(playerAlive == 1) 
+                    {
+                        centerPoint = gameSetting.players[i].transform.position;
+                    }
                     for (int j = i + 1; j < GameStart.PlayerNumber; j++)
                     {
                         //プレイヤーが死亡中やゴール済みの場合は計算に入れない
@@ -178,6 +183,7 @@ public class CameraControl : MonoBehaviour
         centerPoint.z = -10;
         // カメラの拡大率をプレイヤー同士の距離に応じて変更
         cameraSize = maxDistance / 1.3f;
+        cameraSize = Mathf.Clamp(cameraSize, minCameraSize, maxCameraSize);
     }
     private async UniTask ZoomOutFromFlagAsync(CancellationToken cancellationToken)
     {
@@ -191,7 +197,6 @@ public class CameraControl : MonoBehaviour
                     //カメラをゴールフラッグの位置まで移動し拡大しておく
                     cameraPos = goalFlag.transform.position;
                     cameraPos.z = -10;
-                    centerPoint.z = -10;    
                     transform.position = cameraPos;
                     isFirstAnimationEnded = false;
                     mainCamera.orthographicSize = cameraSizeDefault;
@@ -211,10 +216,15 @@ public class CameraControl : MonoBehaviour
             CountPlayersInTheScene();
             CalculateCameraPositionAndSize();
             OnePlayerCameraSetting();
+
             await UniTask.Delay(1000);
- 
+            cameraPos.z = -10;
+            centerPoint.z = -10;
+            float tmp_cameraSize = cameraSize;
+            transform.position = cameraPos;
+            Debug.Log(tmp_cameraSize);
             //ズームアウト
-            Tween cameraZoomOutTween = DOVirtual.Float(cameraSizeDefault, cameraSizeWhenSingle, zoomOutDuration, value =>
+            Tween cameraZoomOutTween = DOVirtual.Float(cameraSizeDefault, tmp_cameraSize, zoomOutDuration, value =>
             {
                 cameraSize = value;
                 mainCamera.orthographicSize = cameraSize;
@@ -226,7 +236,7 @@ public class CameraControl : MonoBehaviour
                 
             }).SetEase(Ease.InOutQuad);
             // Tweenの完了を待つ
-            await cameraMoveToDefaultTween.ToUniTask();
+            await UniTask.WhenAll(cameraZoomOutTween.ToUniTask(), cameraMoveToDefaultTween.ToUniTask());
             isFirstAnimationEnded = true;
         }
         else
@@ -240,7 +250,6 @@ public class CameraControl : MonoBehaviour
         if (GameStart.PlayerNumber == 1)
         {
             centerPoint = gameSetting.players[0].transform.position;
-            centerPoint.z = -10;
         }
         //一人しか未ゴールプレイヤーがいない，またはオンラインの時カメラは自分のみを写す
         if (playerAlive != 1 && !NetWorkMain.isOnline)
@@ -280,6 +289,7 @@ public class CameraControl : MonoBehaviour
     {
         if (isFirstAnimationEnded)
         {
+            centerPoint.z = -10;
             // カメラ計算されたcenterPointの位置に反映する処理
             cameraPos = Vector3.Lerp(transform.position, centerPoint, cameraSpeed);
             transform.position = cameraPos;

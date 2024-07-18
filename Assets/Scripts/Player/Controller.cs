@@ -375,9 +375,13 @@ public class Controller : MonoBehaviourPunCallbacks
     [PunRPC]
     void MoveStickRotation(int id , float rot)
     {
-        stickRb = GameObject.Find("Stick" + id).GetComponent<Rigidbody2D>();
-        stickRb.MoveRotation(rot);
-        stickRots[id - 1] = rot;    
+        if (!GameSetting.setupEnded) { return; }
+        if (gameSetting.players[id - 1].activeSelf)
+        {
+            stickRb = GameObject.Find("Stick" + id).GetComponent<Rigidbody2D>();
+            stickRb.MoveRotation(rot);
+            stickRots[id - 1] = rot;
+        }
     }
 
 

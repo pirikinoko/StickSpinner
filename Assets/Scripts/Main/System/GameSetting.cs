@@ -11,6 +11,8 @@ using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using System.Threading;
 using Cysharp.Threading.Tasks.Linq;
+using ExitGames.Client.Photon;
+using Photon.Realtime;
 
 public class GameSetting : MonoBehaviourPunCallbacks
 {
@@ -33,6 +35,7 @@ public class GameSetting : MonoBehaviourPunCallbacks
     float elapsedTime;
     public bool isCountDownEnded;
     public static float playTime;
+    public const byte StartTimerEventCode = 1;
     bool coroutineEnded;
     bool gameStartMethodInvoked = false;
     bool startTimerInvoked = false;
@@ -69,10 +72,6 @@ public class GameSetting : MonoBehaviourPunCallbacks
 
     void Awake()
     {
-        if (GameStart.gameMode1 == "Online")
-        {
-            PhotonNetwork.IsMessageQueueRunning = true;
-        }
         gameStartMethodInvoked = false;
         allJoin = false;
         setupEnded = false;
@@ -239,7 +238,7 @@ public class GameSetting : MonoBehaviourPunCallbacks
         }
 
 
-        data = GetComponent<DataManager>().data;
+        data = DataManager.Instance.data;
         canvas.gameObject.SetActive(true);
         frontCanvas.gameObject.SetActive(true);
         playTimeTx.color = new Color32(255, 255, 255, 255);
@@ -282,8 +281,9 @@ public class GameSetting : MonoBehaviourPunCallbacks
             }
             photonView.RPC(nameof(GetPlayers), RpcTarget.All, NetWorkMain.netWorkId);
         }
-        setupEnded = true;
+
     }
+
     [PunRPC]
     void GetPlayers(int id)
     {
@@ -300,6 +300,17 @@ public class GameSetting : MonoBehaviourPunCallbacks
             Debug.Log("players[" + i + "]の名前をPlayer" + id + "に設定しました。");
         }
     }
+    void CheckIsSetUpEnded() 
+    {
+        setupEnded = true;
+        for (int i = 0; i < GameStart.PlayerNumber; i++)
+        {
+            if (players[i] == null) 
+            {
+                setupEnded = false;
+            }
+        }
+    }
     void FixedUpdate()
     {
         if (!allJoin) { return; }
@@ -309,7 +320,10 @@ public class GameSetting : MonoBehaviourPunCallbacks
     private async UniTask Update()
     {
         CheckAllPlayersJoined();
-
+        if (!setupEnded) 
+        {
+            CheckIsSetUpEnded();
+        }
         if (GameStart.gameMode1 == "Online" && !allJoin)
         {
             return;
@@ -329,13 +343,22 @@ public class GameSetting : MonoBehaviourPunCallbacks
         }
         if (cameraControl.isFirstAnimationEnded && !startTimerInvoked)
         {
+            if(GameStart.gameMode1 == "Online") 
+            {
+                if (PhotonNetwork.IsMasterClient)
+                {
+                    RaiseStartTimerEvent();
+                }
+                startTimerInvoked = true;
+                return;
+            }
             startTimerInvoked = true;
             await StartTimer();
         }
-        CheckPlayersLeft();
+       // CheckPlayersLeft();
         SwichUI();
         GameTimeManagement();
-
+        CheckPlayersLeft(); 
     }
 
     private void CheckAllPlayersJoined()
@@ -409,7 +432,11 @@ public class GameSetting : MonoBehaviourPunCallbacks
 
     void GameTimeManagement()
     {
-        if (!isCountDownEnded || GameMode.isGameEnded) { return; }
+        if (!isCountDownEnded || GameMode.isGameEnded) 
+        {
+            playTimeTx.text = "";
+            return; 
+        }
 
         if (!isPaused || GameStart.gameMode1 == "Online")
         {
@@ -443,9 +470,10 @@ public class GameSetting : MonoBehaviourPunCallbacks
             }
         }
     }
-    //他のプレイヤー切断時
+    //他のプレイヤーが「ルーム」切断時
     public override void OnPlayerLeftRoom(Photon.Realtime.Player otherPlayer)
     {
+        Debug.Log("Player left: " + otherPlayer.NickName);
         int disconnectedId = otherPlayer.ActorNumber;
         if (players[disconnectedId - 1] == true)
         {
@@ -455,6 +483,63 @@ public class GameSetting : MonoBehaviourPunCallbacks
             nameTags[disconnectedId - 1].gameObject.SetActive(false);
         }
     }
+
+    private void RaiseStartTimerEvent()
+    {
+        PhotonNetwork.RaiseEvent(StartTimerEventCode, null, new RaiseEventOptions { Receivers = ReceiverGroup.All }, SendOptions.SendReliable);
+    }
+
+    private void OnEnable()
+    {
+        PhotonNetwork.NetworkingClient.EventReceived += OnEvent;
+    }
+
+    private void OnDisable()
+    {
+        PhotonNetwork.NetworkingClient.EventReceived -= OnEvent;
+    }
+
+    private void OnEvent(EventData photonEvent)
+    {
+        if (photonEvent.Code == StartTimerEventCode)
+        {
+            // StartTimerイベントを受信
+            StartCoroutine(StartTimerCoroutine());
+        }
+    }
+
+    private IEnumerator StartTimerCoroutine()
+    {
+        yield return StartTimer();
+    }
+
+    void CheckPlayersLeft()
+    {
+        for (int i = 0; i < GameStart.PlayerNumber; i++)
+        {
+            if (playerLeft[i] == true)
+            {
+                Debug.Log("Player" + i + 1 + " has left");
+                GameStart.PlayerNumber--;
+                players[i].SetActive(false);
+                nameTags[i].gameObject.SetActive(false);
+                playerLeft[i] = false;
+            }
+        }
+    }
+
+    public void CallDeletePlayerRPC()
+    {
+        photonView.RPC("DeleatPlayer", RpcTarget.All, NetWorkMain.netWorkId);
+    }
+
+    [PunRPC]
+    void DeleatPlayer(int id)
+    {
+        Debug.Log("DeleatPlayerOccored");
+        GameSetting.playerLeft[id - 1] = true;
+    }
+
     void NameTag()
     {
 
@@ -508,20 +593,8 @@ public class GameSetting : MonoBehaviourPunCallbacks
         pauseButton.SetActive(!isPaused);
     }
 
-    void CheckPlayersLeft()
-    {
-        for (int i = 0; i < GameStart.PlayerNumber; i++)
-        {
-            if (playerLeft[i] == true)
-            {
-                Debug.Log("Player" + i + 1 + " has left");
-                GameStart.PlayerNumber--;
-                players[i].SetActive(false);
-                nameTags[i].gameObject.SetActive(false);
-                playerLeft[i] = false;
-            }
-        }
-    }
+
+
     IEnumerator OpenQuickPanel()
     {
         quickStartingPanel.SetActive(true);

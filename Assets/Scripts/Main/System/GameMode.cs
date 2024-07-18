@@ -39,6 +39,8 @@ public class GameMode : MonoBehaviourPunCallbacks
     [SerializeField]
     GameObject ResultPanelArcade;
 
+    GameObject[] crownObjects = new GameObject[3];
+ 
     Text[] resultText = new Text[GameStart.maxPlayer];
 
     bool showResultTriggerd = false;
@@ -129,6 +131,10 @@ public class GameMode : MonoBehaviourPunCallbacks
     void Start()
     {
         gameSetting = GameObject.Find("Scripts").GetComponent<GameSetting>();
+        for (int i = 0; i < crownObjects.Length; i++)
+        {
+            crownObjects[i] = (GameObject)Resources.Load("Crown" + (i + 1).ToString());
+        }
         startTrigger = 0;
         backTitleButton.gameObject.SetActive(false);
         showResultTriggerd = false;
@@ -360,8 +366,6 @@ public class GameMode : MonoBehaviourPunCallbacks
         }
         if (gameSetting.players[playerid - 1].activeSelf)
         {
-            Debug.Log("player" + playerid + "がゴールしました");
-            // ゴールしたプレイヤーを表示する
             clearTime[Goals] = GameSetting.playTime;
             goaledPlayer[Goals] = "Player" + playerid.ToString();
             SoundEffect.soundTrigger[2] = 1;
@@ -447,6 +451,7 @@ public class GameMode : MonoBehaviourPunCallbacks
         yield return new WaitForSeconds(3.0f);
         backTitleButton.gameObject.SetActive(true);
     }
+
     void checkResult()
     {
         if (GameSetting.playTime <= 0 && !isTimeFinished)
@@ -569,13 +574,10 @@ public class GameMode : MonoBehaviourPunCallbacks
                 {
                     if (playerRank[i] < 3)
                     {
-                        GameObject crownPrefab = (GameObject)Resources.Load("Crown" + (playerRank[i] + 1).ToString());
                         Vector2 crownPos = gameSetting.players[i].transform.position;
                         crownPos.y += 1f;
-                        crownObj[i] = Instantiate(crownPrefab, crownPos, Quaternion.identity);
+                        crownObj[i] = Instantiate(crownObjects[playerRank[i]], crownPos, Quaternion.identity);
                         crownObj[i].name = "Crown" + (playerRank[i] + 1).ToString();
-                        GameObject smokeAnim = (GameObject)Resources.Load("SmokeEffect");
-                        Instantiate(smokeAnim, crownPos, Quaternion.identity);
                     }
                 }
                 else 
@@ -690,10 +692,12 @@ public class GameMode : MonoBehaviourPunCallbacks
             yield return null; 
         }
         ballCountText.text = null;
+
         ball.GetComponent<CircleCollider2D>().enabled = true;
         ballRb.constraints = RigidbodyConstraints2D.None;
         ballRb.constraints = RigidbodyConstraints2D.FreezeRotation;
         ballRb.AddForce(new Vector2(0, -0.1f));
+        ball.GetComponent<PhotonRigidbody2DView>().enabled = true;
         ball.GetComponent<Ball>().count = 0;
     }
 

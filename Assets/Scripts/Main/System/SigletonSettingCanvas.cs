@@ -20,7 +20,7 @@ public class SingletonSettingCanvas : MonoBehaviour
                 if (instance == null)
                 {
                     // インスタンスがない場合は新しく作成             
-                    GameObject singletonObject = (GameObject)Instantiate(Resources.Load("SettingCanvas"));
+                    GameObject singletonObject = (GameObject)Instantiate(Resources.Load("SingleTonCanvas"));
                     instance = singletonObject.GetComponent<SingletonSettingCanvas>();
                 }
             }

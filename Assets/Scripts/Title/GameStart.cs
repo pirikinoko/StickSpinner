@@ -7,47 +7,116 @@ using UnityEngine.SceneManagement;
 using UnityEngine.Video;
 using System.Linq;
 using Photon.Pun;
+using System;
+using DG.Tweening;
 
 public class GameStart : MonoBehaviourPunCallbacks
 {
-    [SerializeField] int minFlagTime, maxFlagTime;
-    public int maxStageNomal;     // 総ステージ数
+    [SerializeField]
+    int minFlagTime;
+
+    [SerializeField]
+    int maxFlagTime;
+
+    [SerializeField]
+    Image fadePanel;
+
+    public int maxStageNomal;  // 総ステージ数
+
     float difficultyl;
+
     float timeFromLastAction;
+
     float cycle = 0.3f;
-    public GameObject mainTitle, startPanel, changePlayerNumber, stageSelect, selectGameMode, setArcadeGame, keyBoardMouseUI, selectOnlineLobby, onlineLobby, loadScreen, cursor;
-    public GameObject[] controllerUI, playerIcon, playerSlot;
+
+    public GameObject mainTitle;
+
+    public GameObject startPanel;
+
+    public GameObject changePlayerNumber;
+
+    public GameObject stageSelect;
+
+    public GameObject selectGameMode;
+
+    public GameObject setArcadeGame;
+
+    public GameObject keyBoardMouseUI;
+
+    public GameObject selectOnlineLobby;
+
+    public GameObject onlineLobby;
+
+    public GameObject loadScreen;
+
+    public GameObject cursor;
+
+    public GameObject[] controllerUI;
+
+    public GameObject[] playerIcon;
+
+    public GameObject[] playerSlot;
+
     IngameLog ingameLog;
-    //チーム選択
+
+    // チーム選択
     public Vector2[] playerIconPos { get; set; } = new Vector2[4];
+
     public Vector2[] slot1Pos = new Vector2[4];
 
     int lastPlayerNum;
+
     int lastPhase;
-    public Text playerNumberText, stageNumberText, flagTimeLimitTx;
-    //画像
+
+    public Text playerNumberText;
+
+    public Text stageNumberText;
+
+    public Text flagTimeLimitTx;
+
+    // 画像
     public Image stageImage;
+
     private Sprite imageSprite;
-    //テキスト
+
+    // テキスト
     string[] singleArcadeText = { "無限の塔", "InfinityTower", };
+
     string[] MultiArcadeText = { "旗取りバトル", "FlagBattle", "サッカー", "FootBall", };
-    //static変数
+
+    // static変数
     public static string gameMode1 = "Single";
+
     public static string gameMode2 = "Nomal";
-    public static string teamMode = "FreeForAll"; 
+
+    public static string teamMode = "FreeForAll";
+
     public static int phase = 0;
-    public static int PlayerNumber { get; set; } = 1;   
+
+    public static int PlayerNumber { get; set; } = 1;
+
     public static int stage = 1;
+
     public static int flagTimeLimit = 90;
+
     public static int[] playerTeam { get; set; } = { 0, 1, 2, 3 }; // {p1, p2, p3, p4}が TeamA, TeamB, TeamC, TeamDにいることを示す。ex..a = 1, c =3
+
     public static int[] teamSize = new int[4];
+
     public static int teamCount = 0;
+
     public static int maxPlayer = 4;
+
     public static int minPlayer;
+
     public static bool buttonPushable = true;
 
-    //ロード画面
-    bool reconnectable, joinedLobby = false;
+    // ロード画面
+    bool reconnectable;
+
+    bool joinedLobby = false;
+
+    private PlayerInput playerInput;
 
     private void Awake()
     {
@@ -82,7 +151,7 @@ public class GameStart : MonoBehaviourPunCallbacks
         }
     }
     void Update()
-    {
+    { 
         SwichUI();
         SwichStageMaterial();
         playerNumberText.text = PlayerNumber.ToString();
@@ -167,8 +236,7 @@ public class GameStart : MonoBehaviourPunCallbacks
                             stageSelect.gameObject.SetActive(true);
                             break;
                         case 3:
-                            SceneManager.LoadScene("Stage");
-                            loadScreen.gameObject.SetActive(true);
+                            FadeAndSwitchScene();
                             break;
 
                     }
@@ -199,8 +267,7 @@ public class GameStart : MonoBehaviourPunCallbacks
                             SetArcade();
                             break;
                         case 5:
-                            SceneManager.LoadScene("Stage");
-                            loadScreen.gameObject.SetActive(true);
+                            FadeAndSwitchScene();
                             break;
                     }
                     break;
@@ -224,6 +291,12 @@ public class GameStart : MonoBehaviourPunCallbacks
                             joinedLobby = false;
                             break;
                         case 3:
+                            if (InputName.TypedTextToString == null) 
+                            {
+                                IngameLog.GenerateIngameLog("Please type player name");
+                                phase--;
+                                return;
+                            }
                             onlineLobby.gameObject.SetActive(true);
                             if (NetWorkMain.netWorkId == NetWorkMain.leaderId)
                             {
@@ -315,6 +388,7 @@ public class GameStart : MonoBehaviourPunCallbacks
     {
         phase = phaseLocal;
     }
+
     [PunRPC]
     public void SetDefaultArcade(int updatedStage)
     {
@@ -346,10 +420,9 @@ public class GameStart : MonoBehaviourPunCallbacks
                     {
                         isReadyLocal[i] = false;
                     }
-                    PhotonNetwork.IsMessageQueueRunning = false;
-                    SceneManager.LoadScene("Stage");
                     customProps["isReady"] = isReadyLocal;
                     PhotonNetwork.CurrentRoom.SetCustomProperties(customProps);
+                    FadeAndSwitchScene();
                 }
                 else
                 {
@@ -482,6 +555,12 @@ public class GameStart : MonoBehaviourPunCallbacks
         selectOnlineLobby.gameObject.SetActive(false);
         onlineLobby.gameObject.SetActive(false);
         loadScreen.gameObject.SetActive(false);
+    }
+
+    private void FadeAndSwitchScene() 
+    {
+        fadePanel.DOFade(1f, 1f)
+            .OnComplete(() => SceneManager.LoadScene("Stage"));
     }
 
     void SwichUI()

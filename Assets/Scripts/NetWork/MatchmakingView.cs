@@ -142,7 +142,12 @@ public class MatchmakingView : MonoBehaviourPunCallbacks
     {
         if (isCCUNotOver() == false)
         {
-            IngameLog.GenerateIngameLog("現在サーバーが混雑しています");
+            IngameLog.GenerateIngameLog("The server is full right now!");
+            return;
+        }
+        if (InputName.TypedTextToString == null) 
+        {
+            IngameLog.GenerateIngameLog("Please type player name");
             return;
         }
         PhotonNetwork.JoinRoom(roomNameInputField.text);
@@ -152,7 +157,12 @@ public class MatchmakingView : MonoBehaviourPunCallbacks
     {
         if (isCCUNotOver() == false)
         {
-            IngameLog.GenerateIngameLog("現在サーバーが混雑しています");
+            IngameLog.GenerateIngameLog("The server is full right now!");
+            return;
+        }
+        if (InputName.TypedTextToString == null)
+        {
+            IngameLog.GenerateIngameLog("Please type player name");
             return;
         }
         string roomName = roomNameInputField.text + "!Locked!";
@@ -169,12 +179,12 @@ public class MatchmakingView : MonoBehaviourPunCallbacks
     {
         if(isCCUNotOver() == false) 
         {
-            IngameLog.GenerateIngameLog("現在サーバーが混雑しています");
+            IngameLog.GenerateIngameLog("The server is full right now!");
             return;
         }
         if (InputName.TypedTextToString.Length == 0) 
         {
-            IngameLog.GenerateIngameLog("名前を入力してください");
+            IngameLog.GenerateIngameLog("Please type player name");
             return;
         }
         mode = "Nomal";
@@ -211,7 +221,12 @@ public class MatchmakingView : MonoBehaviourPunCallbacks
         }
         if (isCCUNotOver() == false)
         {
-            IngameLog.GenerateIngameLog("現在サーバーが混雑しています");
+            IngameLog.GenerateIngameLog("The server is full right now!");
+            return;
+        }
+        if (InputName.TypedTextToString == null) 
+        {
+            IngameLog.GenerateIngameLog("Please type player name");
             return;
         }
         string roomName = "!Quick!" + roomListView.quickRoomCount;
