@@ -44,7 +44,6 @@ public class DataManager : MonoBehaviour
     // jsonとしてデータを保存
     void Save(SaveData data)
     {
-        Debug.Log(data.BGM);
         string json = JsonUtility.ToJson(data);                 // jsonとして変換
         Debug.Log(json);
         StreamWriter wr = new StreamWriter(filepath, false);    // ファイル書き込み指定

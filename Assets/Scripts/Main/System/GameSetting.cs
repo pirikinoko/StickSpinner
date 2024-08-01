@@ -17,20 +17,58 @@ using Photon.Realtime;
 public class GameSetting : MonoBehaviourPunCallbacks
 {
     //基本
-    [SerializeField] Text countDownText, playTimeTx;
-    [SerializeField] Text[] nameTagTexts;
-    [SerializeField] GameObject canvas, frontCanvas, quickStartingPanel, pauseButton;
-    [SerializeField] CameraControl cameraControl;
-    [HideInInspector] public GameObject[]? players = new GameObject[GameStart.maxPlayer];
-    [HideInInspector] public GameObject[] sticks = new GameObject[GameStart.maxPlayer];
-    [HideInInspector] public GameObject[] nameTags = new GameObject[GameStart.maxPlayer];
-    [HideInInspector] public GameObject[] deadTimer = new GameObject[GameStart.maxPlayer];
+    [SerializeField]
+    Text countDownText;
+
+    [SerializeField]
+    Text playTimeTx;
+
+    [SerializeField]
+    Text[] nameTagTexts;
+
+    [SerializeField]
+    GameObject canvas;
+
+    [SerializeField]
+    GameObject frontCanvas;
+
+    [SerializeField]
+    GameObject worldCanvas;
+
+    [SerializeField]
+    GameObject quickStartingPanel;
+
+    [SerializeField]
+    GameObject pauseButton;
+
+    [SerializeField]
+    CameraControl cameraControl;
+
+    [HideInInspector]
+    public GameObject[]? players = new GameObject[GameStart.maxPlayer];
+
+    [HideInInspector]
+    public GameObject[] sticks = new GameObject[GameStart.maxPlayer];
+
+    [HideInInspector]
+    public GameObject[] nameTags = new GameObject[GameStart.maxPlayer];
+
+    [HideInInspector]
+    public GameObject[] deadTimer = new GameObject[GameStart.maxPlayer];
+
     Vector2[] nameTagPos = new Vector2[GameStart.maxPlayer];
     Vector2[,] startPos = new Vector2[GameStart.maxPlayer, GameStart.maxPlayer];
+
     string[] startText = { "スタート", "Start" };
-    public static bool Playable = false, allJoin = false, setupEnded = false;
+
+    public static bool Playable = false;
+    public static bool allJoin = false;
+    public static bool setupEnded = false;
+
     public static bool[] playerLeft = new bool[4];
+
     public bool isPaused = false;
+
     //タイム
     float elapsedTime;
     public bool isCountDownEnded;
@@ -39,12 +77,35 @@ public class GameSetting : MonoBehaviourPunCallbacks
     bool coroutineEnded;
     bool gameStartMethodInvoked = false;
     bool startTimerInvoked = false;
+
     //ステージ切り替え用
-    [SerializeField] GameObject[] stageObjectSingle, stageObjectSingleArcade, stageObjectMulti, stageObjectMultiArcade;
-    [SerializeField] GameObject[] keyBoardMouseUI, controllerUI, battleModeUI;
+    [SerializeField]
+    GameObject[] stageObjectSingle;
+
+    [SerializeField]
+    GameObject[] stageObjectSingleArcade;
+
+    [SerializeField]
+    GameObject[] stageObjectMulti;
+
+    [SerializeField]
+    GameObject[] stageObjectMultiArcade;
+
+    [SerializeField]
+    GameObject[] keyBoardMouseUI;
+
+    [SerializeField]
+    GameObject[] controllerUI;
+
+    [SerializeField]
+    GameObject[] battleModeUI;
+
     //背景色
-    [SerializeField] Tilemap tilemap;
+    [SerializeField]
+    Tilemap tilemap;
+
     public GameObject CountDownGO;
+
     //UI切り替え用
     int UIMode;
     const int KeyboardMode = 5;
@@ -55,6 +116,7 @@ public class GameSetting : MonoBehaviourPunCallbacks
 
     SaveData data;
     private IngameLog ingameLog;
+
 
     [PunRPC]
     private void RPCSetStickPos()
@@ -81,6 +143,9 @@ public class GameSetting : MonoBehaviourPunCallbacks
         startTimerInvoked = false;
         isCountDownEnded = false;
         countDownText.text = null;
+        canvas.gameObject.SetActive(true);
+        frontCanvas.gameObject.SetActive(true);
+        worldCanvas.gameObject.SetActive(true);
         ingameLog = GameObject.Find("Scripts").GetComponent<IngameLog>();
 
         for (int i = 0; i < 4; i++)
@@ -239,8 +304,6 @@ public class GameSetting : MonoBehaviourPunCallbacks
 
 
         data = DataManager.Instance.data;
-        canvas.gameObject.SetActive(true);
-        frontCanvas.gameObject.SetActive(true);
         playTimeTx.color = new Color32(255, 255, 255, 255);
         Debug.Log("PlayerNumber: " + GameStart.PlayerNumber + " stage: " + GameStart.stage);
         playTimeTx = GameObject.Find("TimeText").GetComponent<Text>();

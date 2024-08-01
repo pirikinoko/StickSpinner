@@ -529,7 +529,7 @@ public class Controller : MonoBehaviourPunCallbacks
         Vector2 rayOrigin = contactPosition;
         rayOrigin.y -= 0.05f;
         Vector2 rayDirectionDown = Vector2.down;
-        // Raycast の結果を格納する RaycastHit2D 変数
+
         RaycastHit2D hitVertical = Physics2D.Raycast(rayOrigin, rayDirectionDown, distance, layer);
 
         if (hitVertical.collider != null)

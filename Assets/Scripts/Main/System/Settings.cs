@@ -329,7 +329,6 @@ public class Settings : MonoBehaviour
             }
         }
         quitButton.OnPointerExit(new PointerEventData(EventSystem.current));
-        Debug.Log(Selected);
         for (int i = 0; i < stageText.Length; i++)
         {
             if (stageText[i].name == "Stage6")
