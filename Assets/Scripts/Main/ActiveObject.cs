@@ -123,7 +123,7 @@ public class ActiveObject : MonoBehaviour  //動く床などのオブジェク�
             {
                 LimitMove();
             }
-            if (this.gameObject.name.Contains("MoveFloorY"))
+            if (this.gameObject.name.Contains("Y"))
             {
                 LimitMoveY();
             }

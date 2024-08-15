@@ -70,7 +70,7 @@ public class LogMotion : MonoBehaviour
         if (rectTransform != null)
         {
             // 文字数に応じて横幅を調整
-            float newFrameWidth = CalculateTextWidth();
+            float newFrameWidth = CalculateTextWidth() * 3.2f;
             float newTextWidth = newFrameWidth * 33;
             rectTransform.sizeDelta = new Vector2(newFrameWidth, rectTransform.sizeDelta.y);
             logTxRectTransform.sizeDelta = new Vector2(newTextWidth, logTxRectTransform.sizeDelta.y);

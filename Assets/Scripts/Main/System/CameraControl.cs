@@ -221,7 +221,7 @@ public class CameraControl : MonoBehaviour
             cameraPos.z = -10;
             centerPoint.z = -10;
             float tmp_cameraSize = cameraSize;
-            transform.position = cameraPos;
+            transform.position = cameraPos; 
             //ズームアウト
             Tween cameraZoomOutTween = DOVirtual.Float(cameraSizeDefault, tmp_cameraSize, zoomOutDuration, value =>
             {

@@ -267,6 +267,14 @@ public class GameSetting : MonoBehaviourPunCallbacks
             defaultPosGO[0] = GameObject.Find("DefaultPlayerPos1");
             respownPos[0] = defaultPosGO[0].gameObject.transform.position;
             defaultPosGO[0].GetComponent<SpriteRenderer>().enabled = false;
+            for (int i = 0; i < GameStart.maxPlayer; i++)
+            {
+                GameObject tmpGO = GameObject.Find("DefaultPlayerPos" + (i + 1).ToString());
+                if (tmpGO != null)
+                {
+                    tmpGO.GetComponent<SpriteRenderer>().enabled = false;
+                }     
+            }
         }
         //オンライン　ネットワークオブジェクトとしてプレイヤー生成
         if (GameStart.gameMode1 == "Online")
