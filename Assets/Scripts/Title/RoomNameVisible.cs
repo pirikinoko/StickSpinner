@@ -6,21 +6,29 @@ using Photon.Pun;
 public class RoomNameVisible : MonoBehaviourPunCallbacks
 {
     Text roomNameText;
-    string hiddenTextStr;
+    string roomName;
+    string hiddenText;
     [SerializeField]
     Button toggleVisibleButton;
+    string lockSymbol = "!Locked!";
     // Start is called before the first frame update
     void Start()
     {
+        roomName = PhotonNetwork.CurrentRoom.Name;
         roomNameText = this.GetComponent<Text>();
+        if (roomNameText.text.Contains("!Locked!")) 
+        {
+            roomName.Replace(lockSymbol, "");
+        }
+
         toggleVisibleButton.onClick.AddListener(toggleVisible);
 
-        int roomNameLength = PhotonNetwork.CurrentRoom.Name.Length;
+        int roomNameLength = roomName.Length;
         for (int i = 0; i < roomNameLength; i++)
         {
-            hiddenTextStr = hiddenTextStr + "*";
+            hiddenText = hiddenText + "*";
         }
-        roomNameText.text = hiddenTextStr;  
+        roomNameText.text = hiddenText;  
     }
 
     // Update is called once per frame
@@ -31,14 +39,13 @@ public class RoomNameVisible : MonoBehaviourPunCallbacks
 
     void toggleVisible() 
     {
-
-        if (roomNameText.text == PhotonNetwork.CurrentRoom.Name)
+        if (roomNameText.text == roomName)
         {
-            roomNameText.text = hiddenTextStr;
+            roomNameText.text = hiddenText;
         }
         else 
         {
-            roomNameText.text = PhotonNetwork.CurrentRoom.Name;
+            roomNameText.text = roomName;
         }
     }
 }

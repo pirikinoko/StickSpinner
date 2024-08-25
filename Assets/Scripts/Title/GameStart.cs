@@ -60,9 +60,9 @@ public class GameStart : MonoBehaviourPunCallbacks
     IngameLog ingameLog;
 
     // チーム選択
-    public Vector2[] playerIconPos { get; set; } = new Vector2[4];
+    public Vector3[] playerIconPos { get; set; } = new Vector3[4];
 
-    public Vector2[] slot1Pos = new Vector2[4];
+    public Vector3[] slot1Pos = new Vector3[4];
 
     int lastPlayerNum;
 
@@ -308,12 +308,12 @@ public class GameStart : MonoBehaviourPunCallbacks
                             {
                                 NetWorkMain.SetCustomProps<bool[]>("isReady", new bool[4] { true, true, true, true });
                                 photonView.RPC(nameof(SetDefaultArcade), RpcTarget.All, MatchmakingView.stageQuick);
-                                photonView.RPC(nameof(RPCStartGame), RpcTarget.All);
+                                CallStartIfReady();
                                 photonView.RPC(nameof(SyncArcadeTime), RpcTarget.All, flagTimeLimit);
                                 return;
                             }
                             photonView.RPC(nameof(SyncArcadeTime), RpcTarget.All, flagTimeLimit);
-                            photonView.RPC(nameof(RPCStartGame), RpcTarget.All);
+                            CallStartIfReady();
                             phase = 3;
                             onlineLobby.gameObject.SetActive(true);
                             break;
@@ -396,19 +396,17 @@ public class GameStart : MonoBehaviourPunCallbacks
         SetArcade();
     }
     [PunRPC]
-    void RPCStartGame()
+    void CallStartIfReady()
     {
         if (GameStart.PlayerNumber > 1)
         {
             //全プレイヤーが準備完了か確認する
             bool allReady = true;
-            ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
-            if (customProps.ContainsKey("isReady"))
+            if (NetWorkMain.GetCustomProps<bool[]>("isReady", out bool[] isReadyValueArray)) 
             {
-                bool[] isReadyLocal = (bool[])PhotonNetwork.CurrentRoom.CustomProperties["isReady"];
                 for (int i = 0; i < PlayerNumber; i++)
                 {
-                    if (isReadyLocal[i] == false)
+                    if (isReadyValueArray[i] == false)
                     {
                         allReady = false;
                     }
@@ -418,22 +416,27 @@ public class GameStart : MonoBehaviourPunCallbacks
                     //次のために全プレイヤーのreadyを解除しておく
                     for (int i = 0; i < maxPlayer; i++)
                     {
-                        isReadyLocal[i] = false;
+                        isReadyValueArray[i] = false;
                     }
-                    customProps["isReady"] = isReadyLocal;
-                    PhotonNetwork.CurrentRoom.SetCustomProperties(customProps);
-                    FadeAndSwitchScene();
+                    NetWorkMain.SetCustomProps<bool[]>("isReady", isReadyValueArray);
+                    photonView.RPC(nameof(SwitchScene), RpcTarget.All);
                 }
                 else
                 {
                     IngameLog.GenerateIngameLog("全てのプレイヤーの準備が完了していません");
                 }
-            }    
+            }
         }
         else
         {
             IngameLog.GenerateIngameLog("プレイヤー数が足りていません");
         }
+    }
+
+    [PunRPC]
+    void SwitchScene()
+    {
+        FadeAndSwitchScene();
     }
 
     void SetArcade()
@@ -492,22 +495,25 @@ public class GameStart : MonoBehaviourPunCallbacks
         flagTimeLimitTx.text = flagTimeLimit.ToString();
         for (int i = 0; i < PlayerNumber; i++)
         {
-            playerIcon[i].transform.position = playerIconPos[i];
+            RectTransform rectTransform = playerIcon[i].GetComponent<RectTransform>();
+            float spacing = rectTransform.sizeDelta.x + 10f;
+            rectTransform.localPosition = playerIconPos[i];
+            Debug.Log(playerIcon[i].transform.position.z);
 
             for (int j = 0; j < PlayerNumber; j++)
             {
                 if (playerTeam[i] == j)
                 {
                     playerIconPos[i] = slot1Pos[j];
-                    int count = 0;
+                    int iconsInSlot = 0;
                     for (int k = 0; k < PlayerNumber; k++)
                     {
                         if (k != i)
                         {
                             if (playerTeam[k] == playerTeam[i] && k < i)
                             {
-                                count++;
-                                playerIconPos[i].x = slot1Pos[playerTeam[i]].x + (1.2f * count);
+                                iconsInSlot++;
+                                playerIconPos[i].x = slot1Pos[playerTeam[i]].x + (spacing * iconsInSlot);               
                             }
                         }
                     }

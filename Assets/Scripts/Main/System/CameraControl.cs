@@ -61,11 +61,6 @@ public class CameraControl : MonoBehaviour
 
     private void Update()
     {
-        if (NetWorkMain.isOnline && !isGoaled[NetWorkMain.netWorkId - 1] && Input.GetMouseButtonDown(0))
-        {
-            Debug.Log("spectateTarget   " + spectateTarget + "PlayerNumber   " + GameStart.PlayerNumber);
-        }
-
         if (!GameSetting.setupEnded || !isFirstAnimationEnded)
         {
             return;
@@ -110,14 +105,16 @@ public class CameraControl : MonoBehaviour
                 if (gameSetting.players[i] != null)
                 {
                     playerPos[i] = gameSetting.players[i].transform.position;
-                    if (isGoaled[i]) { continue; }
-                    //一人しかいない場合はそのプレイヤーを写す
-                    if(playerAlive == 1) 
-                    {
-                        centerPoint = gameSetting.players[i].transform.position;
-                    }
+                  
                     for (int j = i + 1; j < GameStart.PlayerNumber; j++)
                     {
+                        //一人しかいない場合はそのプレイヤーを写す
+                        if (playerAlive == 1 && gameSetting.players[j].activeSelf)
+                        {
+                            centerPoint = gameSetting.players[j].transform.position;
+                            return;
+                        }
+                        if (isGoaled[i]) { continue; }
                         //プレイヤーが死亡中やゴール済みの場合は計算に入れない
                         if (gameSetting.players[j] == null)
                         {
@@ -221,8 +218,7 @@ public class CameraControl : MonoBehaviour
             cameraPos.z = -10;
             centerPoint.z = -10;
             float tmp_cameraSize = cameraSize;
-            transform.position = cameraPos;
-            Debug.Log(tmp_cameraSize);
+            transform.position = cameraPos; 
             //ズームアウト
             Tween cameraZoomOutTween = DOVirtual.Float(cameraSizeDefault, tmp_cameraSize, zoomOutDuration, value =>
             {
@@ -246,7 +242,6 @@ public class CameraControl : MonoBehaviour
     }
     void OnePlayerCameraSetting()
     {
-
         if (GameStart.PlayerNumber == 1)
         {
             centerPoint = gameSetting.players[0].transform.position;

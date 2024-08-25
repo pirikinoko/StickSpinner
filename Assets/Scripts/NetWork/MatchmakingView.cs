@@ -145,7 +145,7 @@ public class MatchmakingView : MonoBehaviourPunCallbacks
             IngameLog.GenerateIngameLog("The server is full right now!");
             return;
         }
-        if (InputName.TypedTextToString == null) 
+        if (InputName.TypedTextToString == "" || InputName.TypedTextToString.Contains(" ")) 
         {
             IngameLog.GenerateIngameLog("Please type player name");
             return;
@@ -160,7 +160,7 @@ public class MatchmakingView : MonoBehaviourPunCallbacks
             IngameLog.GenerateIngameLog("The server is full right now!");
             return;
         }
-        if (InputName.TypedTextToString == null)
+        if (InputName.TypedTextToString == "" || InputName.TypedTextToString.Contains(" "))
         {
             IngameLog.GenerateIngameLog("Please type player name");
             return;

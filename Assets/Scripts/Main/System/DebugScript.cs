@@ -12,7 +12,7 @@ public class DebugScript : MonoBehaviour　//デバッグ用スクリプト
     [SerializeField] string targetMode2;
     [SerializeField] string teamMode;
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         GameStart.gameMode1 = targetMode1;
         GameStart.gameMode2 = targetMode2;

@@ -8,18 +8,19 @@ using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using System.Threading;
 using Cysharp.Threading.Tasks.Linq;
+using UnityEngine.Tilemaps;
 
 public class GenerateStage : MonoBehaviour
 {
     GameSetting gameSetting;
-    [SerializeField] GameObject  checkLine, leftWall, rightWall, surface, thorns;
+    [SerializeField] GameObject  checkLine, surface, thorns, parentObject, leftWall, rightWall;
     [SerializeField] GameObject[] frames;
     GameObject[] obj = new GameObject[objUnit];
     GameObject[] objForCheckLength;
     Vector2 playerPos, leftWallPos, rightWallPos, surfacePos;
     const int Floor = 0, Wall = 1, Right = 0, Left = 1, objUnit = 30;
     public static float maxHeight;
-    float rightLimit = 10f, leftLimit = -2f, startHeight;
+    float startHeight;
     string[,] objects = { { "Floor1", "Floor2", "Floor3", "Floor4" }, { "Wall1", "Wall2", "Wall3", "Wall4" } };
     float[,] eachLength = new float[2, 4];
     float xMax = 0, xMin = 0, yMax = 0, yMin = 0, playerYPrev, sizeX, sizeY, posX = -30, posY = 0;
@@ -49,9 +50,7 @@ public class GenerateStage : MonoBehaviour
         surfacePos = surface.transform.position;
         thorns.gameObject.SetActive(false);
         leftWallPos = leftWall.transform.position;
-        rightWallPos = rightWall.transform.position;
-        leftLimit = leftWall.transform.position.x;
-        rightLimit = rightWall.transform.position.x;
+        rightWallPos = rightWall.transform.position;    
         playerYPrev = gameSetting.players[0].transform.position.y; ;
         currentObj = 0;
         objectType[0] = 0;
@@ -221,7 +220,7 @@ public class GenerateStage : MonoBehaviour
     void GenerateObjects(int targetNum)
     {
         GameObject prefabObj = (GameObject)Resources.Load(objects[objectType[targetNum], objLength - 1]);
-        obj[targetNum] = Instantiate(prefabObj, objPos[targetNum], Quaternion.identity);
+        obj[targetNum] = Instantiate(prefabObj, objPos[targetNum], Quaternion.identity, parentObject.transform);
         string[] objDirectionName = { "Right", "Left" };
         obj[targetNum].name = objects[objectType[targetNum], objLength - 1] + objDirectionName[objDirection] + "-" + targetNum.ToString();
     }
@@ -231,7 +230,7 @@ public class GenerateStage : MonoBehaviour
         if (count == 0)
         {
             objectType[targetNum] = Floor;　//最初は床オブジェクトを生成
-            objPos[targetNum] = new Vector3(-6, -5f, 0);
+            objPos[targetNum] = new Vector3(-6, surfacePos.y -1.1f, 0);
             objectType[0] = 0;
             return;
         }
@@ -270,11 +269,11 @@ public class GenerateStage : MonoBehaviour
                 newObjPos.x = UnityEngine. Random.Range(objPos[prev].x - xMin, objPos[prev].x - xMax);
             }
 
-            if (newObjPos.x > rightLimit - (eachLength[objectType[targetNum], objLength - 1] / 2))
+            if (newObjPos.x > rightWallPos.x - (eachLength[objectType[targetNum], objLength - 1] / 2))
             {
                 objDirection = Left;
             }
-            else if (newObjPos.x < leftLimit + (eachLength[objectType[targetNum], objLength - 1] / 2))
+            else if (newObjPos.x < leftWallPos.x + (eachLength[objectType[targetNum], objLength - 1] / 2))
             {
                 objDirection = Right;
             }

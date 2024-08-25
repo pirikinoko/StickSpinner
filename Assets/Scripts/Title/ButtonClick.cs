@@ -388,6 +388,7 @@ public class ButtonClick : MonoBehaviourPunCallbacks　//クリック用ボタ�
         if (GameStart.gameMode1 == "Online")
         {
             gameSetting = GameObject.Find("Scripts").GetComponent<GameSetting>();
+            
             gameSetting.CallDeletePlayerRPC();
             if (MatchmakingView.gameModeQuick == "Quick")
             {
@@ -444,17 +445,20 @@ public class ButtonClick : MonoBehaviourPunCallbacks　//クリック用ボタ�
     public void ChangeLanguage(int difference)
     {
         Settings.languageNum += difference;
+        Settings.ClampFields();
         SoundEffect.soundTrigger[3] = 1;
     }
 
     public void ChangeScreenMode(int difference)
     {
         Settings.screenMode += difference;
+        Settings.ClampFields();
         SoundEffect.soundTrigger[3] = 1;
     }
     public void ChangeGuideMode(int difference)
     {
         Settings.guideMode += difference;
+        Settings.ClampFields();
         SoundEffect.soundTrigger[3] = 1;
     }
 
