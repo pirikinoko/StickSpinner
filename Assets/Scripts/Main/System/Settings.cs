@@ -62,9 +62,9 @@ public class Settings : MonoBehaviour
     public static int guideMode = 0;
     public static int screenMode = 0;
 
-    string[] languages = { "JP", "EN" };
-    string[] screenModeValues = { "ウィンドウ", "フルスクリーン", "Window", "FullScreen" };
-    string[] guide = { "On", "Off" };
+    public static string[] languages = { "JP", "EN" };
+    public static string[] screenModeValues = { "ウィンドウ", "フルスクリーン", "Window", "FullScreen" };
+    public static string[] guide = { "On", "Off" };
 
     float[] settingStages = new float[5]; // 設定項目の数
 
@@ -248,9 +248,9 @@ public class Settings : MonoBehaviour
                         if (ControllerInput.jump[0] || ControllerInput.next[0] || Input.GetKeyDown(KeyCode.Return))
                         {
 #if UNITY_EDITOR
-                            UnityEditor.EditorApplication.isPlaying = false;//ゲームプレイ終了
+                            UnityEditor.EditorApplication.isPlaying = false;
 #else
-                            Application.Quit();//ゲームプレイ終了
+                            Application.Quit();
 #endif
                         }
                         else if (ControllerInput.back[0] )
@@ -356,7 +356,13 @@ public class Settings : MonoBehaviour
             }    
         }
     }
-
+    public static void ClampFields()
+    {
+        //上限下限の制限
+        languageNum = Mathf.Clamp(languageNum, 0, languages.Length - 1);
+        screenMode = Mathf.Clamp(screenMode, 0, screenModeValues.Length / languages.Length - 1);
+        guideMode = Mathf.Clamp(guideMode, 0, 1);
+    }
     void SwitchUIMode() 
     {
         //キーボード,マウスのとき

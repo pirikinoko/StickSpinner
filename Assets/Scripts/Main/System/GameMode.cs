@@ -353,6 +353,8 @@ public class GameMode : MonoBehaviourPunCallbacks
             }
         }
     }
+
+    [PunRPC]
     public void GoalProcess(int playerid)
     {
         //（オンライン）1位の時winningsプラス１
@@ -378,7 +380,11 @@ public class GameMode : MonoBehaviourPunCallbacks
         {
             isGoaled = true;
         } 
+    }
 
+    public void CallGoalProcessRPC(int playerId)
+    {
+        photonView.RPC(nameof(GoalProcess), RpcTarget.All, playerId);
     }
 
     //バトルモード
@@ -574,9 +580,10 @@ public class GameMode : MonoBehaviourPunCallbacks
                 {
                     if (playerRank[i] < 3)
                     {
-                        Vector2 crownPos = gameSetting.players[i].transform.position;
-                        crownPos.y += 1f;
-                        crownObj[i] = Instantiate(crownObjects[playerRank[i]], crownPos, Quaternion.identity);
+                        Vector2 Pos = gameSetting.players[i].transform.position;
+                        if (playerRank[i] == 0) { Instantiate((GameObject)Resources.Load("PaperCanon"), Pos, Quaternion.identity); }
+                        Pos.y += 1f;
+                        crownObj[i] = Instantiate(crownObjects[playerRank[i]], Pos, Quaternion.identity);
                         crownObj[i].name = "Crown" + (playerRank[i] + 1).ToString();
                     }
                 }
@@ -695,7 +702,6 @@ public class GameMode : MonoBehaviourPunCallbacks
 
         ball.GetComponent<CircleCollider2D>().enabled = true;
         ballRb.constraints = RigidbodyConstraints2D.None;
-        ballRb.constraints = RigidbodyConstraints2D.FreezeRotation;
         ballRb.AddForce(new Vector2(0, -0.1f));
         ball.GetComponent<PhotonRigidbody2DView>().enabled = true;
         ball.GetComponent<Ball>().count = 0;

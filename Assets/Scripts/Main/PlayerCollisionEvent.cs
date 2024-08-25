@@ -84,11 +84,6 @@ public class PlayerCollisionEvent :MonoBehaviourPunCallbacks
         }
     }
 
-    [PunRPC]
-    private void GoalProcessRPC(int playerID)
-    {
-        gamemode.GoalProcess(playerID);
-    }
     void OnTriggerEnter2D(Collider2D other)
     {
         if (GameStart.gameMode2 != "Arcade")　　//対戦モードを除き
@@ -101,14 +96,12 @@ public class PlayerCollisionEvent :MonoBehaviourPunCallbacks
                     int playerID = other.gameObject.GetComponent<Body>().id; ;
                     if (GameStart.gameMode1 == "Online") 
                     {
-                        // PhotonのRPCで全プレイヤーにGoalProcess関数を呼び出す
-                        photonView.RPC(nameof(GoalProcessRPC), RpcTarget.All, playerID);
+                        gamemode.CallGoalProcessRPC(playerID);
                     }
                     else 
                     {
                         gamemode.GoalProcess(playerID);
-                    }
-                  
+                    }      
                 }
             }
         }

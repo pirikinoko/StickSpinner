@@ -430,8 +430,8 @@ public class Controller : MonoBehaviourPunCallbacks
         {
             if (photonView.IsMine)
             {
+                isRespowing = true;
                 photonView.RPC(nameof(RPCStartDead), RpcTarget.All);
-                photonView.RPC(nameof(MoveStickRotation), RpcTarget.All, id, 0);
             }
         }
         else 
