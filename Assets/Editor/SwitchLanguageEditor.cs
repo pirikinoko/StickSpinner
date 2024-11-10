@@ -6,7 +6,7 @@ public class SwitchLanguageEditor : Editor
 {
     public override void OnInspectorGUI()
     {
-        // base.OnInspectorGUI(); // デフォルトのインスペクタを描画
+        base.OnInspectorGUI(); // デフォルトのインスペクタを描画
 
         SwitchLanguage switchLanguage = (SwitchLanguage)target;
 

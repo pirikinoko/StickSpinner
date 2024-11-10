@@ -19,7 +19,7 @@ public class TextActive : MonoBehaviour
         if (this.gameObject.activeSelf)
         {
             float newAlpha = 1f;
-            if (NetWorkMain.netWorkId != NetWorkMain.leaderId)
+            if (NetWorkMain.NetWorkId != NetWorkMain.leaderId)
             {
                 newAlpha = 0.3f;
             }

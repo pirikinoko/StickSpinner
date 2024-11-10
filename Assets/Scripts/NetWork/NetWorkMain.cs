@@ -3,6 +3,8 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 using Photon.Realtime;
+using R3;
+using Cysharp.Threading.Tasks;
 using ExitGames.Client.Photon;
 using System.Linq;
 
@@ -11,18 +13,23 @@ public class NetWorkMain : MonoBehaviourPunCallbacks
     public static string[] playerNames = new string[4];
     public static int leaderId = 1;
     public static bool isOnline;
-    public static int netWorkId = 0;
+    public static int NetWorkId = 0;
     public GameObject[] playerConfigs, leaderIcons;
     public Text[] playerNameText, winningsText;
     public Text modeText, stageText;
     string[] gameMode = { "Nomal", "Arcade" };
     int setCount = 0, lastPlayerCount;
+    private Subject<Unit> _onPlayerCountChange = new Subject<Unit>();
     IngameLog ingameLog;
     private void Start()
     {
         ingameLog = GameObject.Find("Systems").GetComponent<IngameLog>();
         setCount = 0;
         PhotonNetwork.ConnectUsingSettings();
+
+        _onPlayerCountChange
+            .Subscribe(_ => OnChangePlayerCount());
+
         if (PhotonNetwork.InRoom) 
         {
             if(GetCustomProps<string>("gameMode", out var gameModeCP))
@@ -45,60 +52,64 @@ public class NetWorkMain : MonoBehaviourPunCallbacks
     {
         modeText.text = GameStart.gameMode2;
         stageText.text = "stage" + GameStart.stage;
+
         if (GameStart.gameMode1 == "Online" && PhotonNetwork.InRoom)
         {
-            GameStart.PlayerNumber = PhotonNetwork.CurrentRoom.PlayerCount;
-            if (lastPlayerCount != GameStart.PlayerNumber)
+            GameStart.PlayerCount = PhotonNetwork.CurrentRoom.PlayerCount;
+            if (lastPlayerCount != GameStart.PlayerCount)
             {
-                ConfigActive();
-                Photon.Realtime.Player[] playerArray = PhotonNetwork.PlayerList;
-                int[] actorNumbers = new int[4];
-                int tmpId = 0;
-                bool isLeader = false;
-                if(leaderId == netWorkId) { isLeader = true; }
-                for (int i = 0; i < Mathf.Min(playerArray.Length, 4); i++)
-                {
-                    actorNumbers[i] = playerArray[i].ActorNumber;
-                    if (actorNumbers[i] == PhotonNetwork.LocalPlayer.ActorNumber)
-                    {
-                        tmpId = netWorkId;
-                        netWorkId = i + 1;
-                    }
-                }
-                //leaderId再設定
-                if (isLeader)
-                {                
-                    leaderId = netWorkId;
-                    SetCustomProps<int>("leaderId", leaderId);
-                }
-
-                // 配列の内容を表示
-                Debug.Log("ActorNumbers: " + string.Join(", ", actorNumbers));
+                _onPlayerCountChange.OnNext(Unit.Default);
             }
-            lastPlayerCount = GameStart.PlayerNumber;
+            lastPlayerCount = GameStart.PlayerCount;
 
             isOnline = true;
-            for (int i = 0; i < GameStart.PlayerNumber; i++)
+            for (int i = 0; i < GameStart.PlayerCount; i++)
             {
                 playerConfigs[i].gameObject.SetActive(true);
                 playerNameText[i].text = PhotonNetwork.PlayerList[i].NickName;
             }
             if (setCount == 0) //一度のみ実行する項目
             {
-                Debug.Log("NetWorkID == " + netWorkId);
                 photonView.RPC("SetPlayerNumber", RpcTarget.All);
-                photonView.RPC("ConfigActive", RpcTarget.All);
+                photonView.RPC("UpdateConfig", RpcTarget.All);
 
                 if (GetCustomProps<int[]>("winnings", out var value))
                 {
                     value
-                        .Select((winnings, index) => new { winnings, index }) // 各要素とそのインデックスをペアにする
-                        .Zip(winningsText, (winningsWithIndex, textField) => new { winningsWithIndex, textField }) //{Selectで作られた匿名オブジェクトのコレクションとwinningsText.textをペアにしてさらに匿名オブジェクトを作る}
-                        .ToList() //クエリの結果をすぐに評価し、リストとして取得します。
+                        .Select((winnings, index) => new { winnings, index })
+                        .Zip(winningsText, (winningsWithIndex, textField) => new { winningsWithIndex, textField })
+                        .ToList() 
                         .ForEach(pair => pair.textField.text = $"Win: {pair.winningsWithIndex.winnings}");
                 }
                 setCount = 1;
             }
+        }
+    }
+
+    private void OnChangePlayerCount() 
+    {
+        UpdateConfig();
+        Photon.Realtime.Player[] playerArray = PhotonNetwork.PlayerList;
+  
+        // 自身のIDを再取得
+        for (int i = 0; i < Mathf.Min(playerArray.Length, 4); i++)
+        {
+            if (playerArray[i].ActorNumber == PhotonNetwork.LocalPlayer.ActorNumber)
+            {
+                NetWorkId = i + 1;
+            }
+        }
+
+        if(leaderId > PhotonNetwork.CurrentRoom.PlayerCount)
+        {
+            leaderId = 1;
+        }
+            
+        //leaderId再設定
+        if (leaderId == NetWorkId)
+        {
+            leaderId = NetWorkId;
+            SetCustomProps<int>("leaderId", leaderId);
         }
     }
 
@@ -109,11 +120,18 @@ public class NetWorkMain : MonoBehaviourPunCallbacks
         Debug.Log("マスターサーバーに接続しました");
     }
 
-
     public override void OnJoinedRoom()
     {
         PhotonNetwork.NickName = InputName.TypedTextToString;
-        Debug.Log(PhotonNetwork.NickName + "isConnected");
+
+        // 自身のIDを再取得
+        for (int i = 0; i < Mathf.Min(PhotonNetwork.PlayerList.Length, 4); i++)
+        {
+            if (PhotonNetwork.PlayerList[i].ActorNumber == PhotonNetwork.LocalPlayer.ActorNumber)
+            {
+                NetWorkId = i + 1;
+            }
+        }
 
         var roomOptions = new RoomOptions();
 
@@ -148,9 +166,8 @@ public class NetWorkMain : MonoBehaviourPunCallbacks
             customProps["userName"] = new string[] { "", "", "", "", };
         }
 
-        
         PhotonNetwork.CurrentRoom.SetCustomProperties(customProps);
-
+        UpdateConfig();
     }
 
     // Photonのサーバーから切断された時に呼ばれるコールバック
@@ -162,17 +179,18 @@ public class NetWorkMain : MonoBehaviourPunCallbacks
     [PunRPC]
     private void SetPlayerNumber()
     {
-        GameStart.PlayerNumber = PhotonNetwork.CurrentRoom.PlayerCount;
+        GameStart.PlayerCount = PhotonNetwork.CurrentRoom.PlayerCount;
         Debug.Log(PhotonNetwork.CurrentRoom.PlayerCount + "名がルームに存在します");
     }
+
     [PunRPC]
-    private void ConfigActive()
+    private void UpdateConfig()
     {
-        for (int i = 3; i >= GameStart.PlayerNumber; i--)
+        for (int i = 3; i >= GameStart.PlayerCount; i--)
         {
             playerConfigs[i].gameObject.SetActive(false);
         }
-        for (int i = 0; i < GameStart.PlayerNumber; i++)
+        for (int i = 0; i < GameStart.PlayerCount; i++)
         {
             playerConfigs[i].gameObject.SetActive(true);
             playerNameText[i].text = PhotonNetwork.PlayerList[i].NickName;

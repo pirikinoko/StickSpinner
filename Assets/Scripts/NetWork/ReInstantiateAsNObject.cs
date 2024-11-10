@@ -21,7 +21,7 @@ public class ReInstantiateAsNObject : MonoBehaviour
         pos = transform.position;
         name = gameObject.name;
 
-        if(NetWorkMain.leaderId == NetWorkMain.netWorkId) 
+        if(NetWorkMain.leaderId == NetWorkMain.NetWorkId) 
         {
             // オブジェクトをネットワーク上で生成
             GameObject instantiatedObject = PhotonNetwork.Instantiate(name, pos, Quaternion.identity);

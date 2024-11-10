@@ -12,7 +12,7 @@ public class ArcadeTeamChange : MonoBehaviourPunCallbacks
     // Start is called before the first frame update
     void Start()
     {
-        lastTeam = GameStart.playerTeam[NetWorkMain.netWorkId];
+        lastTeam = GameStart.playerTeam[NetWorkMain.NetWorkId];
     }
 
     // Update is called once per frame
@@ -31,8 +31,8 @@ public class ArcadeTeamChange : MonoBehaviourPunCallbacks
 
     void TeamChange()
     {
-        int targetId = NetWorkMain.netWorkId - 1;
-        if (GameStart.PlayerNumber == 2) { return; }
+        int targetId = NetWorkMain.NetWorkId - 1;
+        if (GameStart.PlayerCount == 2) { return; }
         if (GameStart.stage == 1)
         {
             /*ボタン選択（縦）*/
@@ -44,7 +44,7 @@ public class ArcadeTeamChange : MonoBehaviourPunCallbacks
                 {
                     GameStart.playerTeam[targetId]++;
                     SoundEffect.soundTrigger[3] = 1;
-                    if (GameStart.teamSize[GameStart.playerTeam[targetId]] > GameStart.PlayerNumber - 2)
+                    if (GameStart.teamSize[GameStart.playerTeam[targetId]] > GameStart.PlayerCount - 2)
                     {
                         GameStart.playerTeam[targetId] -= 1;
                     }
@@ -56,7 +56,7 @@ public class ArcadeTeamChange : MonoBehaviourPunCallbacks
                 {
                     GameStart.playerTeam[targetId]--;
                     SoundEffect.soundTrigger[3] = 1;
-                    if (GameStart.teamSize[GameStart.playerTeam[targetId]] > GameStart.PlayerNumber - 2)
+                    if (GameStart.teamSize[GameStart.playerTeam[targetId]] > GameStart.PlayerCount - 2)
                     {
                         GameStart.playerTeam[targetId] += 1;
                     }
@@ -71,7 +71,7 @@ public class ArcadeTeamChange : MonoBehaviourPunCallbacks
                 {
                     GameStart.playerTeam[targetId] -= 2;
                     SoundEffect.soundTrigger[3] = 1;
-                    if (GameStart.teamSize[GameStart.playerTeam[targetId]] > GameStart.PlayerNumber - 2)
+                    if (GameStart.teamSize[GameStart.playerTeam[targetId]] > GameStart.PlayerCount - 2)
                     {
                         GameStart.playerTeam[targetId] += 2;
                     }
@@ -83,7 +83,7 @@ public class ArcadeTeamChange : MonoBehaviourPunCallbacks
                 {
                     GameStart.playerTeam[targetId] += 2;
                     SoundEffect.soundTrigger[3] = 1;
-                    if (GameStart.teamSize[GameStart.playerTeam[targetId]] > GameStart.PlayerNumber - 2)
+                    if (GameStart.teamSize[GameStart.playerTeam[targetId]] > GameStart.PlayerCount - 2)
                     {
                         GameStart.playerTeam[targetId] -= 2;
                     }
@@ -103,7 +103,7 @@ public class ArcadeTeamChange : MonoBehaviourPunCallbacks
                 {
                     GameStart.playerTeam[targetId]++;
                     SoundEffect.soundTrigger[3] = 1;
-                    if (GameStart.teamSize[GameStart.playerTeam[targetId]] > GameStart.PlayerNumber - 2)
+                    if (GameStart.teamSize[GameStart.playerTeam[targetId]] > GameStart.PlayerCount - 2)
                     {
                         GameStart.playerTeam[targetId] -= 1;
                     }
@@ -115,7 +115,7 @@ public class ArcadeTeamChange : MonoBehaviourPunCallbacks
                 {
                     GameStart.playerTeam[targetId]--;
                     SoundEffect.soundTrigger[3] = 1;
-                    if (GameStart.teamSize[GameStart.playerTeam[targetId]] > GameStart.PlayerNumber - 2)
+                    if (GameStart.teamSize[GameStart.playerTeam[targetId]] > GameStart.PlayerCount - 2)
                     {
                         GameStart.playerTeam[targetId] += 1;
                     }
@@ -144,10 +144,10 @@ public class ArcadeTeamChange : MonoBehaviourPunCallbacks
     }
     void ArcadeControll()
     {
-        if(GameStart.PlayerNumber == 2) { return; }
+        if(GameStart.PlayerCount == 2) { return; }
 
             //チーム選択
-            for (int i = 0; i < GameStart.PlayerNumber; i++)
+            for (int i = 0; i < GameStart.PlayerCount; i++)
             {
                 /*ボタン選択（縦）*/
                 if (lastLstickX[i] > 0.1f || lastLstickX[i] < -0.1f || lastLstickY[i] > 0.1f || lastLstickY[i] < -0.1f) { return; }
@@ -158,7 +158,7 @@ public class ArcadeTeamChange : MonoBehaviourPunCallbacks
                     {
                         GameStart.playerTeam[i]++;
                         SoundEffect.soundTrigger[3] = 1;
-                        if (GameStart.teamSize[GameStart.playerTeam[i]] > GameStart.PlayerNumber - 2)
+                        if (GameStart.teamSize[GameStart.playerTeam[i]] > GameStart.PlayerCount - 2)
                         {
                             GameStart.playerTeam[i] -= 1;
                         }
@@ -170,7 +170,7 @@ public class ArcadeTeamChange : MonoBehaviourPunCallbacks
                     {
                         GameStart.playerTeam[i]--;
                         SoundEffect.soundTrigger[3] = 1;
-                        if (GameStart.teamSize[GameStart.playerTeam[i]] > GameStart.PlayerNumber - 2)
+                        if (GameStart.teamSize[GameStart.playerTeam[i]] > GameStart.PlayerCount - 2)
                         {
                             GameStart.playerTeam[i] += 1;
                         }
@@ -189,7 +189,7 @@ public class ArcadeTeamChange : MonoBehaviourPunCallbacks
                     {
                         GameStart.playerTeam[i] -= 2;
                         SoundEffect.soundTrigger[3] = 1;
-                        if (GameStart.teamSize[GameStart.playerTeam[i]] > GameStart.PlayerNumber - 2)
+                        if (GameStart.teamSize[GameStart.playerTeam[i]] > GameStart.PlayerCount - 2)
                         {
                             GameStart.playerTeam[i] += 2;
                         }
@@ -201,7 +201,7 @@ public class ArcadeTeamChange : MonoBehaviourPunCallbacks
                     {
                         GameStart.playerTeam[i] += 2;
                         SoundEffect.soundTrigger[3] = 1;
-                        if (GameStart.teamSize[GameStart.playerTeam[i]] > GameStart.PlayerNumber - 2)
+                        if (GameStart.teamSize[GameStart.playerTeam[i]] > GameStart.PlayerCount - 2)
                         {
                             GameStart.playerTeam[i] -= 2;
                         }

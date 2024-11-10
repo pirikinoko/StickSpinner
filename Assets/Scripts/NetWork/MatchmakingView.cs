@@ -82,7 +82,7 @@ public class MatchmakingView : MonoBehaviourPunCallbacks
         imageFrame.transform.GetChild(1).gameObject.GetComponent<TextSwicher>().num =  GameStart.stage;
         imageFrame.transform.GetChild(2).gameObject.GetComponent<TextSwicher>().num = GameStart.stage;
         yield return new WaitForSeconds(3.0f);
-        if (NetWorkMain.netWorkId == NetWorkMain.leaderId)
+        if (NetWorkMain.NetWorkId == NetWorkMain.leaderId)
         {
             photonView.RPC(nameof(StartQuickGame), RpcTarget.All, stageQuick, gameModeQuick);
         }

@@ -9,6 +9,7 @@ using System.Linq;
 using Photon.Pun;
 using System;
 using DG.Tweening;
+using Cysharp.Threading.Tasks;
 
 public class GameStart : MonoBehaviourPunCallbacks
 {
@@ -93,7 +94,7 @@ public class GameStart : MonoBehaviourPunCallbacks
 
     public static int phase = 0;
 
-    public static int PlayerNumber { get; set; } = 1;
+    public static int PlayerCount { get; set; } = 1;
 
     public static int stage = 1;
 
@@ -111,6 +112,8 @@ public class GameStart : MonoBehaviourPunCallbacks
 
     public static bool buttonPushable = true;
 
+    private bool isPhaseProcessing;
+
     // ロード画面
     bool reconnectable;
 
@@ -127,13 +130,13 @@ public class GameStart : MonoBehaviourPunCallbacks
     }
     void Start()
     {
-
         ingameLog = GameObject.Find("Systems").GetComponent<IngameLog>();
         Time.timeScale = 1;
         GameSetting.Playable = false;
         reconnectable = false;
+        isPhaseProcessing = false;
         stage = 1;
-        PlayerNumber = 1;
+        PlayerCount = 1;
         teamMode = "FFA";
         phase = 0;
         lastPhase = -1;
@@ -150,15 +153,21 @@ public class GameStart : MonoBehaviourPunCallbacks
             phase = 3;
         }
     }
-    void Update()
+    private async UniTask Update()
     { 
         SwichUI();
         SwichStageMaterial();
-        playerNumberText.text = PlayerNumber.ToString();
-
-        if(timeFromLastAction > cycle) 
+        playerNumberText.text = PlayerCount.ToString();
+        if (setArcadeGame.gameObject.activeSelf)
         {
-            PhaseControll();
+            TeamSelect();
+        }
+        if (timeFromLastAction > cycle) 
+        {
+            if (lastPhase != phase)
+            {
+                await PhaseControll(); 
+            }
             buttonPushable = true;
             timeFromLastAction = 0;
         }
@@ -184,7 +193,7 @@ public class GameStart : MonoBehaviourPunCallbacks
 
         timeFromLastAction += Time.deltaTime;
         //プレイヤー数制限
-        PlayerNumber = Mathf.Clamp(PlayerNumber, minPlayer, maxPlayer);
+        PlayerCount = Mathf.Clamp(PlayerCount, minPlayer, maxPlayer);
         //フラッグモード時間範囲
         flagTimeLimit = Mathf.Clamp(flagTimeLimit, minFlagTime, maxFlagTime);
     }
@@ -212,143 +221,134 @@ public class GameStart : MonoBehaviourPunCallbacks
         stageImage.sprite = imageSprite;
     }
 
-    void PhaseControll()　　　//タイトル画面のフェーズごとの処理
+    private async UniTask PhaseControll()　　　//タイトル画面のフェーズごとの処理
     {
-        if (lastPhase != phase)
+        StopCoroutine(Reconnect());
+        DisablePanel();
+        switch (gameMode1)
         {
-            StopCoroutine(Reconnect());
-            DisablePanel();
-            switch (gameMode1)
-            {
-                case "Single":
-                    minPlayer = 1;
-                    switch (phase)
-                    {
-                        case 0:
-                            mainTitle.gameObject.SetActive(true);
-                            break;
-                        case 1:
-                            minPlayer = 1;
-                            GameStart.PlayerNumber = 1;
-                            selectGameMode.gameObject.SetActive(true);
-                            break;
-                        case 2:
-                            stageSelect.gameObject.SetActive(true);
-                            break;
-                        case 3:
-                            FadeAndSwitchScene();
-                            break;
+            case "Single":
+                minPlayer = 1;
+                switch (phase)
+                {
+                    case 0:
+                        mainTitle.gameObject.SetActive(true);
+                        break;
+                    case 1:
+                        minPlayer = 1;
+                        GameStart.PlayerCount = 1;
+                        selectGameMode.gameObject.SetActive(true);
+                        break;
+                    case 2:
+                        stageSelect.gameObject.SetActive(true);
+                        break;
+                    case 3:
+                        FadeAndSwitchScene();
+                        break;
 
-                    }
-                    break;
-                case "Multi":
-                    minPlayer = 2;
-                    switch (phase)
-                    {
-                        case 0:
-                            mainTitle.gameObject.SetActive(true);
-                            break;
-                        case 1:
-                            GameStart.PlayerNumber = 2;
-                            minPlayer = 2;
-                            changePlayerNumber.gameObject.SetActive(true);
-                            break;
-                        case 2:
-                            selectGameMode.gameObject.SetActive(true);
-                            lastPlayerNum = PlayerNumber;
-                            break;
-                        case 3:
-                            stageSelect.gameObject.SetActive(true);
-                            break;
-                        case 4:
-                            //ノーマルモードならチーム選択画面はスキップ
-                            if (gameMode2 == "Nomal") { phase++; return; }
-                            setArcadeGame.gameObject.SetActive(true);
-                            SetArcade();
-                            break;
-                        case 5:
-                            FadeAndSwitchScene();
-                            break;
-                    }
-                    break;
-                case "Online":
-                    switch (phase)
-                    {
-                        case 0:
-                            mainTitle.gameObject.SetActive(true);
-                            NetWorkMain.isOnline = false;
-                            StopCoroutine(Reconnect());
-                            reconnectable = true;
-                            break;
-                        case 1:
-                            if (lastPhase > phase) { phase = 0; return; }
-                            loadScreen.gameObject.SetActive(true);
-                            StartCoroutine(Reconnect());
-                            break;
-                        case 2:
-                            minPlayer = 1;
-                            selectOnlineLobby.gameObject.SetActive(true);
-                            joinedLobby = false;
-                            break;
-                        case 3:
-                            if (InputName.TypedTextToString == null) 
-                            {
-                                IngameLog.GenerateIngameLog("Please type player name");
-                                phase--;
-                                return;
-                            }
-                            onlineLobby.gameObject.SetActive(true);
-                            if (NetWorkMain.netWorkId == NetWorkMain.leaderId)
-                            {
-                                photonView.RPC(nameof(SyncPhase), RpcTarget.All, phase);
-                            }
-                            break;
-                        case 4:
-                            if (MatchmakingView.mode == "Quick" && NetWorkMain.netWorkId == NetWorkMain.leaderId)
-                            {
-                                NetWorkMain.SetCustomProps<bool[]>("isReady", new bool[4] { true, true, true, true });
-                                photonView.RPC(nameof(SetDefaultArcade), RpcTarget.All, MatchmakingView.stageQuick);
-                                CallStartIfReady();
-                                photonView.RPC(nameof(SyncArcadeTime), RpcTarget.All, flagTimeLimit);
-                                return;
-                            }
-                            photonView.RPC(nameof(SyncArcadeTime), RpcTarget.All, flagTimeLimit);
-                            CallStartIfReady();
-                            phase = 3;
-                            onlineLobby.gameObject.SetActive(true);
-                            break;
-                        case 5:
-                            phase = 3;
-                            photonView.RPC(nameof(SetDefaultArcade), RpcTarget.All, stage);
+                }
+                break;
+            case "Multi":
+                minPlayer = 2;
+                switch (phase)
+                {
+                    case 0:
+                        mainTitle.gameObject.SetActive(true);
+                        break;
+                    case 1:
+                        GameStart.PlayerCount = 2;
+                        minPlayer = 2;
+                        changePlayerNumber.gameObject.SetActive(true);
+                        break;
+                    case 2:
+                        selectGameMode.gameObject.SetActive(true);
+                        lastPlayerNum = PlayerCount;
+                        break;
+                    case 3:
+                        stageSelect.gameObject.SetActive(true);
+                        break;
+                    case 4:
+                        //ノーマルモードならチーム選択画面はスキップ
+                        if (gameMode2 == "Nomal") { phase++; return; }
+                        setArcadeGame.gameObject.SetActive(true);
+                        SetArcade();
+                        break;
+                    case 5:
+                        FadeAndSwitchScene();
+                        break;
+                }
+                break;
+            case "Online":
+                Debug.Log("Phase == " + phase);
+                switch (phase)
+                {
+                    case 0:
+                        mainTitle.gameObject.SetActive(true);
+                        NetWorkMain.isOnline = false;
+                        StopCoroutine(Reconnect());
+                        reconnectable = true;
+                        break;
+                    case 1:
+                        if (lastPhase > phase) { phase = 0; return; }
+                        loadScreen.gameObject.SetActive(true);
+                        StartCoroutine(Reconnect());
+                        break;
+                    case 2:
+                        minPlayer = 1;
+                        selectOnlineLobby.gameObject.SetActive(true);
+                        joinedLobby = false;
+                        break;
+                    case 3:
+                        if (InputName.TypedTextToString == null)
+                        {
+                            IngameLog.GenerateIngameLog("Please type player name");
+                            phase--;
                             return;
-                            break;
-                        case 6:
-                            stageSelect.gameObject.SetActive(true);  
-                            break;
-                        case 7:
-                            phase = 3;
-                            photonView.RPC(nameof(SetDefaultArcade), RpcTarget.All, stage);
-                            return;
-                            break;
-                        case 8:
-                            setArcadeGame.gameObject.SetActive(true);
+                        }
+                        onlineLobby.gameObject.SetActive(true);
+                        if (NetWorkMain.NetWorkId == NetWorkMain.leaderId)
+                        {
                             photonView.RPC(nameof(SyncPhase), RpcTarget.All, phase);
-                            SetArcade();
-                            break;
-                        case 9:
-                            phase = 3;
+                        }
+                        break;
+                    case 4:
+                        if (MatchmakingView.mode == "Quick" && NetWorkMain.NetWorkId == NetWorkMain.leaderId)
+                        {
+                            NetWorkMain.SetCustomProps<bool[]>("isReady", new bool[4] { true, true, true, true });
+                            photonView.RPC(nameof(SetDefaultArcade), RpcTarget.All, MatchmakingView.stageQuick);
+                            CallStartIfReady();
+                            photonView.RPC(nameof(SyncArcadeTime), RpcTarget.All, flagTimeLimit);
                             return;
-                            break;
-                    }
-                    break;
+                        }
+                        photonView.RPC(nameof(SyncArcadeTime), RpcTarget.All, flagTimeLimit);
+                        CallStartIfReady();
+                        phase = 3;
+                        onlineLobby.gameObject.SetActive(true);
+                        break;
+                    case 5:
+                        phase = 3;
+                        photonView.RPC(nameof(SetDefaultArcade), RpcTarget.All, stage);
+                        return;
+                    case 6:
+                        stageSelect.gameObject.SetActive(true);
+                        break;
+                    case 7:
+                        phase = 3;
+                        photonView.RPC(nameof(SetDefaultArcade), RpcTarget.All, stage);
+                        return;
+                    case 8:
+                        setArcadeGame.gameObject.SetActive(true);
+                        photonView.RPC(nameof(SyncPhase), RpcTarget.All, phase);
+                        SetArcade();
+                        break;
+                    case 9:
+                        phase = 3;
+                        return;
+                }
+                break;
             }
 
-            lastPhase = phase;
-        }
-        if (setArcadeGame.gameObject.activeSelf)
-        {
-            TeamSelect();
-        }
+        lastPhase = phase;
     }
     IEnumerator Reconnect()
     {
@@ -398,13 +398,13 @@ public class GameStart : MonoBehaviourPunCallbacks
     [PunRPC]
     void CallStartIfReady()
     {
-        if (GameStart.PlayerNumber > 1)
+        if (GameStart.PlayerCount > 1)
         {
             //全プレイヤーが準備完了か確認する
             bool allReady = true;
             if (NetWorkMain.GetCustomProps<bool[]>("isReady", out bool[] isReadyValueArray)) 
             {
-                for (int i = 0; i < PlayerNumber; i++)
+                for (int i = 0; i < PlayerCount; i++)
                 {
                     if (isReadyValueArray[i] == false)
                     {
@@ -449,7 +449,7 @@ public class GameStart : MonoBehaviourPunCallbacks
                 playerIcon[i].gameObject.SetActive(false);
                 playerSlot[i].gameObject.SetActive(false);
             }
-            for (int i = 0; i < PlayerNumber; i++)
+            for (int i = 0; i < PlayerCount; i++)
             {
                 playerIcon[i].gameObject.SetActive(true);
                 playerSlot[i].gameObject.SetActive(true);
@@ -476,7 +476,7 @@ public class GameStart : MonoBehaviourPunCallbacks
                     playerTeam[i] = 0;
                 }
             }
-            for (int i = 0; i < PlayerNumber; i++)
+            for (int i = 0; i < PlayerCount; i++)
             {
                 playerIcon[i].gameObject.SetActive(true);
             }
@@ -493,20 +493,20 @@ public class GameStart : MonoBehaviourPunCallbacks
     void TeamSelect()
     {
         flagTimeLimitTx.text = flagTimeLimit.ToString();
-        for (int i = 0; i < PlayerNumber; i++)
+        for (int i = 0; i < PlayerCount; i++)
         {
             RectTransform rectTransform = playerIcon[i].GetComponent<RectTransform>();
             float spacing = rectTransform.sizeDelta.x + 10f;
             rectTransform.localPosition = playerIconPos[i];
             Debug.Log(playerIcon[i].transform.position.z);
 
-            for (int j = 0; j < PlayerNumber; j++)
+            for (int j = 0; j < PlayerCount; j++)
             {
                 if (playerTeam[i] == j)
                 {
                     playerIconPos[i] = slot1Pos[j];
                     int iconsInSlot = 0;
-                    for (int k = 0; k < PlayerNumber; k++)
+                    for (int k = 0; k < PlayerCount; k++)
                     {
                         if (k != i)
                         {
@@ -522,11 +522,11 @@ public class GameStart : MonoBehaviourPunCallbacks
             teamSize[i] = 0;
         }
 
-        for (int i = 0; i < PlayerNumber; i++)
+        for (int i = 0; i < PlayerCount; i++)
         {
-            playerTeam[i] = Mathf.Clamp(playerTeam[i], 0, PlayerNumber - 1);
+            playerTeam[i] = Mathf.Clamp(playerTeam[i], 0, PlayerCount - 1);
         }
-        bool allOtherTeam = playerTeam.Take(PlayerNumber).Distinct().Count() == PlayerNumber;
+        bool allOtherTeam = playerTeam.Take(PlayerCount).Distinct().Count() == PlayerCount;
 
         if (allOtherTeam)
         {
@@ -536,11 +536,11 @@ public class GameStart : MonoBehaviourPunCallbacks
         {
             teamMode = "Team";
             teamCount = 0;
-            for (int i = 0; i < PlayerNumber; i++)
+            for (int i = 0; i < PlayerCount; i++)
             {
                 teamSize[playerTeam[i]]++;
             }
-            for (int j = 0; j < PlayerNumber; j++)
+            for (int j = 0; j < PlayerCount; j++)
             {
                 if (teamSize[j] != 0)
                 {

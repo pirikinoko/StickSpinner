@@ -47,6 +47,7 @@ public class CameraControl : MonoBehaviour
         spectateTarget = 1;
         goals = 0;
         mainCamera = GetComponent<Camera>();
+        spectateUI.SetActive(false);
         cameraPos = Vector2.zero;
         cameraPos.z = -10;
         centerPoint.z = -10;
@@ -95,18 +96,18 @@ public class CameraControl : MonoBehaviour
         maxDistanceX = 0f;
         maxDistanceY = 0f;
         yIsZero = true;
-        if (GameStart.PlayerNumber == 1) { return; }
+        if (GameStart.PlayerCount == 1) { return; }
         if (!NetWorkMain.isOnline || (GameStart.gameMode1 == "Online" && GameStart.gameMode2 == "Arcade" && GameStart.stage == 2))
         {
             // i(プレイヤー１～３とj(プレイヤー2~4)のxとyの距離を見て一番遠いxとyを採用してカメラの位置とする)
-            for (int i = 0; i < GameStart.PlayerNumber - 1; i++)
+            for (int i = 0; i < GameStart.PlayerCount - 1; i++)
             {
                 //プレイヤーが死亡中やゴール済みの場合は計算に入れない
                 if (gameSetting.players[i] != null)
                 {
                     playerPos[i] = gameSetting.players[i].transform.position;
                   
-                    for (int j = i + 1; j < GameStart.PlayerNumber; j++)
+                    for (int j = i + 1; j < GameStart.PlayerCount; j++)
                     {
                         //一人しかいない場合はそのプレイヤーを写す
                         if (playerAlive == 1 && gameSetting.players[j].activeSelf)
@@ -242,7 +243,7 @@ public class CameraControl : MonoBehaviour
     }
     void OnePlayerCameraSetting()
     {
-        if (GameStart.PlayerNumber == 1)
+        if (GameStart.PlayerCount == 1)
         {
             centerPoint = gameSetting.players[0].transform.position;
         }
@@ -256,15 +257,16 @@ public class CameraControl : MonoBehaviour
             //ゴールしていなければ自身の位置にカメラを
             if (!GameMode.isGoaled)
             {
-                if (gameSetting.players[NetWorkMain.netWorkId - 1] != null && gameSetting.players[NetWorkMain.netWorkId - 1].activeSelf)
+                if (gameSetting.players[NetWorkMain.NetWorkId - 1] != null && gameSetting.players[NetWorkMain.NetWorkId - 1].activeSelf)
                 {
-                    centerPoint = gameSetting.players[NetWorkMain.netWorkId - 1].transform.position;
+                    centerPoint = gameSetting.players[NetWorkMain.NetWorkId - 1].transform.position;
                 }
             }
             //ゴール済みであれば観戦できるようにする
-            if (gameSetting.players[NetWorkMain.netWorkId - 1].activeSelf == false)
+            if (gameSetting.players[NetWorkMain.NetWorkId - 1].activeSelf == false)
             {
-                OnlineSpectate();
+                spectateUI.SetActive(true);    
+                SetSpectateTarget();
                 if (gameSetting.players[spectateTarget - 1] == true)
                 {
                     centerPoint = gameSetting.players[spectateTarget - 1].transform.position;
@@ -309,13 +311,13 @@ public class CameraControl : MonoBehaviour
         }
     }
 
-    void OnlineSpectate() 
+    void SetSpectateTarget() 
     {
         if (Input.GetMouseButtonDown(0)) 
         {
             spectateTarget++;
         }
-        if(spectateTarget > GameStart.PlayerNumber) 
+        if(spectateTarget > GameStart.PlayerCount) 
         {
             spectateTarget = 1;
         }
@@ -323,5 +325,10 @@ public class CameraControl : MonoBehaviour
         {
             spectateTarget++;
         }
+    }
+
+    void UpdateSpectateUi() 
+    {
+
     }
 }

@@ -40,7 +40,7 @@ public class Ball : MonoBehaviourPunCallbacks
             float minDistance = Vector2.Distance(this.transform.position, nearestPlayer.transform.position);
 
             // 全てのプレイヤーをチェックして最も近いプレイヤーを見つける
-            for (int i = 0; i < GameStart.PlayerNumber; i++)
+            for (int i = 0; i < GameStart.PlayerCount; i++)
             {
                 float distance = Vector2.Distance(this.transform.position, gameSetting.players[i].transform.position);
                 if (distance < minDistance)
@@ -50,7 +50,11 @@ public class Ball : MonoBehaviourPunCallbacks
                 }
             }
             int id = int.Parse(Regex.Replace(nearestPlayer.name, @"[^0-9]", ""));
-            photonView.TransferOwnership(id);
+            var nearestPhotonView = nearestPlayer.gameObject.GetComponent<PhotonView>();
+            if (nearestPhotonView != null)
+            {
+                photonView.TransferOwnership(nearestPhotonView.OwnerActorNr);
+            }
         }
   }
     private void OnCollisionStay2D(Collision2D col) 
@@ -148,7 +152,7 @@ public class Ball : MonoBehaviourPunCallbacks
     {
         gameSetting = GameObject.Find("Scripts").GetComponent<GameSetting>();
         //パーティクル再生
-        for (int i = 0; i < GameStart.PlayerNumber; i++)
+        for (int i = 0; i < GameStart.PlayerCount; i++)
         {
             Vector2[] particlePos = new Vector2[4];
              particlePos[i] = gameSetting.players[i].gameObject.transform.position;
