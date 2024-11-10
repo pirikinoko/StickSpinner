@@ -127,7 +127,7 @@ public class Controller : MonoBehaviourPunCallbacks
             gameSetting = GameObject.Find("Scripts").GetComponent<GameSetting>();
             nameTag = gameSetting.nameTags[id - 1];
         }
-        for (int i = 0; i < GameStart.PlayerNumber; i++)
+        for (int i = 0; i < GameStart.PlayerCount; i++)
         {
             stickRb.MoveRotation(0);
         }

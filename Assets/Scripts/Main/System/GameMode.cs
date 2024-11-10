@@ -209,7 +209,7 @@ public class GameMode : MonoBehaviourPunCallbacks
             AdjustTeamFramePos();
 
             //チームタグ表示
-            for (int i = 0; i < GameStart.PlayerNumber; i++)
+            for (int i = 0; i < GameStart.PlayerCount; i++)
             {
                 if (GameStart.teamMode != "FFA")
                 {
@@ -224,12 +224,12 @@ public class GameMode : MonoBehaviourPunCallbacks
             {
                 if (GameStart.teamMode == "FFA")
                 {
-                    for (int i = 0; i < GameStart.PlayerNumber; i++) { pointFrame[i].gameObject.SetActive(true);  }
-                    for (int i = 3; i >= GameStart.PlayerNumber; i--) { pointFrame[i].gameObject.SetActive(false);}
+                    for (int i = 0; i < GameStart.PlayerCount; i++) { pointFrame[i].gameObject.SetActive(true);  }
+                    for (int i = 3; i >= GameStart.PlayerCount; i--) { pointFrame[i].gameObject.SetActive(false);}
                 }
                 else
                 {
-                    for (int i = 0; i < GameStart.PlayerNumber; i++)
+                    for (int i = 0; i < GameStart.PlayerCount; i++)
                     {
                         if (GameStart.teamSize[i] >= 1)
                         {
@@ -310,7 +310,7 @@ public class GameMode : MonoBehaviourPunCallbacks
     //通常ステージ
     void CheckFinish()
     {
-        if (Goals == GameStart.PlayerNumber)
+        if (Goals == GameStart.PlayerCount)
         {
             isGameEnded = true;
             GameSetting.Playable = false;
@@ -318,7 +318,7 @@ public class GameMode : MonoBehaviourPunCallbacks
             ResultPanel.gameObject.SetActive(true);
             ResultPanelFront.gameObject.SetActive(true);
             Vector2[] iconPos = new Vector2[GameStart.maxPlayer];
-            for (int i = 0; i < GameStart.PlayerNumber; i++)
+            for (int i = 0; i < GameStart.PlayerCount; i++)
             {
                 int pId = int.Parse(Regex.Replace(goaledPlayer[i], @"[^0-9]", ""));
                 icons[pId - 1].SetActive(true);
@@ -334,7 +334,7 @@ public class GameMode : MonoBehaviourPunCallbacks
     {
         if (GameStart.teamMode != "FFA")
         {
-            for (int i = 0; i < GameStart.PlayerNumber; i++)
+            for (int i = 0; i < GameStart.PlayerCount; i++)
             {
                 if (isDead[i])
                 {
@@ -345,7 +345,7 @@ public class GameMode : MonoBehaviourPunCallbacks
                     teamTag[i].gameObject.SetActive(true);
                 }
             }
-            for (int i = 0; i < GameStart.PlayerNumber; i++)
+            for (int i = 0; i < GameStart.PlayerCount; i++)
             {
                 Vector2 tagPos = gameSetting.players[i].transform.position;
                 tagPos.y += 0.68f;
@@ -376,7 +376,7 @@ public class GameMode : MonoBehaviourPunCallbacks
             gameSetting.sticks[playerid - 1].gameObject.SetActive(false);
             gameSetting.nameTags[playerid - 1].gameObject.SetActive(false);
         }
-        if(playerid == NetWorkMain.netWorkId)
+        if(playerid == NetWorkMain.NetWorkId)
         {
             isGoaled = true;
         } 
@@ -391,9 +391,9 @@ public class GameMode : MonoBehaviourPunCallbacks
     void KillSystem()
     {
         //タイマー減少
-        for (int i = 0; i < GameStart.PlayerNumber; i++)
+        for (int i = 0; i < GameStart.PlayerCount; i++)
         {
-            for (int j = 0; j < GameStart.PlayerNumber; j++)
+            for (int j = 0; j < GameStart.PlayerCount; j++)
             {
                 if (killTimer[i, j] >= 0)
                 {
@@ -421,7 +421,7 @@ public class GameMode : MonoBehaviourPunCallbacks
 
         if (GameStart.teamMode == "FFA")
         {
-            for (int i = 0; i < GameStart.PlayerNumber; i++)
+            for (int i = 0; i < GameStart.PlayerCount; i++)
             {
                 pointText[i].text = String.Format("{0:#}", points[i].ToString());
             }
@@ -436,11 +436,11 @@ public class GameMode : MonoBehaviourPunCallbacks
                     teamPoints[i] = 0;
                 }           
             }
-            for (int i = 0; i < GameStart.PlayerNumber; i++)
+            for (int i = 0; i < GameStart.PlayerCount; i++)
             {
                 teamPoints[GameStart.playerTeam[i]] += points[i];
             }
-            for (int i = 0; i < GameStart.PlayerNumber; i++)
+            for (int i = 0; i < GameStart.PlayerCount; i++)
             {
                 if (GameStart.teamSize[i] >= 1)
                 {
@@ -467,7 +467,7 @@ public class GameMode : MonoBehaviourPunCallbacks
             GameSetting.Playable = false;
             if (GameStart.gameMode2 != "Arcade") 
             {
-                for (int i = 0; i < GameStart.PlayerNumber; i++)
+                for (int i = 0; i < GameStart.PlayerCount; i++)
                 {
                     gameSetting.players[i].gameObject.SetActive(false);
                     gameSetting.sticks[i].gameObject.SetActive(false);
@@ -493,12 +493,12 @@ public class GameMode : MonoBehaviourPunCallbacks
                     points.CopyTo(pointsInOrder, 0);
                     Array.Sort(pointsInOrder);
                     Array.Reverse(pointsInOrder);
-                    int num = GameStart.PlayerNumber - 1;
+                    int num = GameStart.PlayerCount - 1;
                     bool[] ignore = { false, false, false, false };
                     //順位計測
-                    for (int i = GameStart.PlayerNumber - 1; i >= 0; i--)
+                    for (int i = GameStart.PlayerCount - 1; i >= 0; i--)
                     {
-                        for (int j = GameStart.PlayerNumber - 1; j >= 0; j--)
+                        for (int j = GameStart.PlayerCount - 1; j >= 0; j--)
                         {
                             Debug.Log("j==" + j);
                             if (pointsInOrder[j] == points[i])
@@ -517,7 +517,7 @@ public class GameMode : MonoBehaviourPunCallbacks
                             }
                         }
                     }
-                    for (int i = GameStart.PlayerNumber - 1; i >= 0; i--)
+                    for (int i = GameStart.PlayerCount - 1; i >= 0; i--)
                     {
                             if (points[i] != points[0])
                             {
@@ -535,7 +535,7 @@ public class GameMode : MonoBehaviourPunCallbacks
                     int num = GameStart.teamCount - 1;
                     bool[] ignore = { false, false, false, false };
                     //順位計測
-                    for (int i = GameStart.PlayerNumber - 1; i >= 0; i--)
+                    for (int i = GameStart.PlayerCount - 1; i >= 0; i--)
                     {
                         if (GameStart.teamSize[i] >= 1)
                         {
@@ -544,7 +544,7 @@ public class GameMode : MonoBehaviourPunCallbacks
                                     if (pointsInOrder[j] == teamPoints[i])
                                     {
                                         teamsInOrder[j] = "Team" + teamTagName[i];
-                                        for (int l = 0; l < GameStart.PlayerNumber; l++)
+                                        for (int l = 0; l < GameStart.PlayerCount; l++)
                                         {
                                             if (GameStart.playerTeam[l] == i)
                                             {
@@ -556,7 +556,7 @@ public class GameMode : MonoBehaviourPunCallbacks
                             }
                         }
                         float firstValue = -1;
-                        for (int k = GameStart.PlayerNumber - 1; k >= 0; k--)
+                        for (int k = GameStart.PlayerCount - 1; k >= 0; k--)
                         {
                             if (GameStart.teamSize[k] >= 1)
                             {
@@ -573,7 +573,7 @@ public class GameMode : MonoBehaviourPunCallbacks
                 }
                 count = 1;
             }
-            for (int i = 0; i < GameStart.PlayerNumber; i++)
+            for (int i = 0; i < GameStart.PlayerCount; i++)
             {
                 //王冠表示
                 if (!isDraw) 
@@ -595,7 +595,7 @@ public class GameMode : MonoBehaviourPunCallbacks
         }
         if (count == 1 && !isDraw)
         {
-            for (int h = 0; h < GameStart.PlayerNumber; h++)
+            for (int h = 0; h < GameStart.PlayerCount; h++)
             {
                 if (playerRank[h] < 3) 
                 {
@@ -611,7 +611,7 @@ public class GameMode : MonoBehaviourPunCallbacks
     void PlayParticle()
     {
         //パーティクル再生
-        for (int i = 0; i < GameStart.PlayerNumber; i++)
+        for (int i = 0; i < GameStart.PlayerCount; i++)
         {
             particlePos[i] = gameSetting.nameTags[i].gameObject.transform.position;
             particlePos[i].y += 0.3f;
@@ -636,7 +636,7 @@ public class GameMode : MonoBehaviourPunCallbacks
             Vector2[] iconPos = new Vector2[GameStart.maxPlayer];
             if (GameStart.teamMode == "FFA")
             {
-                for (int i = 0; i < GameStart.PlayerNumber; i++)
+                for (int i = 0; i < GameStart.PlayerCount; i++)
                 {
                     int pId = int.Parse(Regex.Replace(playerNameByRank[i], @"[^0-9]", ""));
                     icons[pId - 1].SetActive(true);
@@ -717,7 +717,7 @@ public class GameMode : MonoBehaviourPunCallbacks
                 //チームフレームを初期位置に設定
                 framePos[i] = pointFrame[0].transform.position;
                 //右にずらす
-                framePos[i].x += (i * (frameSpace / (-1 + (float)GameStart.PlayerNumber)));
+                framePos[i].x += (i * (frameSpace / (-1 + (float)GameStart.PlayerCount)));
                 pointFrame[i].transform.position = framePos[i];
             }
         }

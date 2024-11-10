@@ -25171,6 +25171,7 @@ GameObject:
   - component: {fileID: 4352306174136410185}
   - component: {fileID: 7770587446222970280}
   - component: {fileID: 2569323444582846363}
+  - component: {fileID: 6950479119001543867}
   m_Layer: 0
   m_Name: Thorn
   m_TagString: Surface
@@ -25702,6 +25703,18 @@ CompositeCollider2D:
   m_OffsetDistance: 0.00005
   m_UseDelaunayMesh: 0
   m_CompositeGameObject: {fileID: 6367427625768617520}
+--- !u!114 &6950479119001543867
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6367427625768617520}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f97448797874354eb3c6ce385154ac8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6492208489160858483
 GameObject:
   m_ObjectHideFlags: 0

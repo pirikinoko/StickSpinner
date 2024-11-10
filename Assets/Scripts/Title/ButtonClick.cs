@@ -9,14 +9,22 @@ using System.IO;
 using Cysharp.Threading.Tasks;
 public class ButtonClick : MonoBehaviourPunCallbacks　//クリック用ボタン
 {
+    [SerializeField]
+    bool haveCooldown = false;
+    [SerializeField]
+    bool isLeaderOnly = false;
     public static int[] sensChange = new int[4];
+    Image image;
+    Color imageColor;
     SelectButton selectButton;
     GameStart gameStart;
     GameSetting gameSetting;
+    Button button;
+    int cooldownMills = 500;
+
     //コントローラー対応 
     bool inputButton;
-    float oneSecCount;
-    bool inCoolDown;
+    bool onCooldown;
     [SerializeField] KeyCode keyBind;
     string controllerButton;
     bool inputCrossXPlus, inputCrossXMinus, inputCrossYPlus, inputCrossYMinus, inputLstickXPlus, inputLstickXMinus, inputLstickYPlus, inputLstickYMinus;
@@ -49,27 +57,22 @@ public class ButtonClick : MonoBehaviourPunCallbacks　//クリック用ボタ�
     void Start()
     {
         Initialize();
-        oneSecCount = 1;
     }
 
-    void Update()
+    async UniTask Update()
     {
         controllerPushButton();
-        if (inCoolDown) 
-        {
-            oneSecCount -= Time.deltaTime;
-            if(oneSecCount < 0) 
-            {
-                inCoolDown = false;
-                oneSecCount = 1;
-            }
-        }
+        OnlineRoomButtonBehavior();
     }
 
     void Initialize() 
     {
         //どのボタンを押されたときに処理を行うかを決定（Falseが選ばれた場合はコントローラーボタンに対応しない）
         controllerButton = selectedButton.ToString();
+        button = GetComponent<Button>();
+        button.onClick.AddListener(() => OnButtonClick().Forget());
+        image = this.gameObject.GetComponent<Image>();
+        imageColor = image.color;
         if (SceneManager.GetActiveScene().name == "Title")
         {
             gameStart = GameObject.Find("Systems").GetComponent<GameStart>();
@@ -80,6 +83,16 @@ public class ButtonClick : MonoBehaviourPunCallbacks　//クリック用ボタ�
             gameSetting = GameObject.Find("Scripts").GetComponent<GameSetting>();
         }
     }
+    async UniTask OnButtonClick() 
+    {
+        if (!haveCooldown) 
+        {
+            return;
+        }
+        button.interactable = false;
+        await UniTask.Delay(cooldownMills);
+        button.interactable = true;
+    }
     // このスクリプトが有効になったときにイベントリスナーを登録
     void OnEnable()
     {
@@ -89,6 +102,7 @@ public class ButtonClick : MonoBehaviourPunCallbacks　//クリック用ボタ�
     // このスクリプトが無効になったときにイベントリスナーを解除
     void OnDisable()
     {
+        onCooldown = false;
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
@@ -251,7 +265,79 @@ public class ButtonClick : MonoBehaviourPunCallbacks　//クリック用ボタ�
         GameObject imageObj = (GameObject)Resources.Load(buttonName);
         Instantiate(imageObj, generatePos, Quaternion.identity, rootTransform);
     }
+
+    void OnlineRoomButtonBehavior()
+    {
+        if (!PhotonNetwork.InRoom || SceneManager.GetActiveScene().name != "Title")
+        {
+            return;
+        }
+        if (this.gameObject.name.Contains("Star") && !this.gameObject.name.Contains("Game"))
+        {
+            int starID = int.Parse(Regex.Replace(this.gameObject.name, @"[^0-9]", ""));
+
+            // オリジナルのマテリアルをコピー
+            Material iconMat = new Material(this.GetComponent<Image>().material);
+
+            Color color = iconMat.color;
+
+            color.a = 0.2f;
+            if (starID == NetWorkMain.leaderId)
+            {
+                color.a = 1;
+            }
+
+            iconMat.color = color;
+
+            // 新しいマテリアルをImageコンポーネントに設定
+            this.GetComponent<Image>().material = iconMat;
+        }
+        else if (this.gameObject.name.Contains("Ready"))
+        {
+            if (NetWorkMain.GetCustomProps<bool[]>("isReady", out var valueArrayA))
+            {
+                int myId = int.Parse(Regex.Replace(this.gameObject.name, @"[^0-9]", ""));
+
+                Material iconMat = new Material(this.GetComponent<Image>().material);
+                Color color = iconMat.color;
+                color.a = 0.2f;
+                if (valueArrayA[myId - 1] == true)
+                {
+                    color.a = 1;
+                }
+                iconMat.color = color;
+                this.GetComponent<Image>().material = iconMat;
+            }
+        }
+
+        //チームセレクトボタンのアクティブ
+        if (this.name.Contains("TeamSelect"))
+        {
+            if (GameStart.gameMode2 == "Arcade" && GameStart.PlayerCount > 1)
+            {
+                button.interactable = true;
+            }
+            else { button.interactable = false; }
+        }
+
+        if (GameStart.gameMode1 == "Online" && this.gameObject.activeSelf)
+        {
+            if (!isLeaderOnly)
+            {
+                return;
+            }
+            if (NetWorkMain.NetWorkId != NetWorkMain.leaderId)
+            {
+                button.interactable = false;
+            }
+            else
+            {
+                button.interactable = true;
+            }
+        }
+    }
     /*↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ボタンにアタッチするスクリプト↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓*/
+
     public void yesExit()
     {
 #if UNITY_EDITOR
@@ -348,7 +434,7 @@ public class ButtonClick : MonoBehaviourPunCallbacks　//クリック用ボタ�
     //プレイヤー数増減
     public void ChangePlayerNum(int difference)
     {
-        GameStart.PlayerNumber += difference;
+        GameStart.PlayerCount += difference;
         SoundEffect.soundTrigger[3] = 1;
     }
 
@@ -384,10 +470,15 @@ public class ButtonClick : MonoBehaviourPunCallbacks　//クリック用ボタ�
 
     public void BackToTitle()
     {
+        if(SceneManager.GetActiveScene().name == "Title")
+        {
+            return;
+        }
+
         SoundEffect.soundTrigger[2] = 1;
         if (GameStart.gameMode1 == "Online")
         {
-            gameSetting = GameObject.Find("Scripts").GetComponent<GameSetting>();
+            gameSetting = FindAnyObjectByType<GameSetting>();
             
             gameSetting.CallDeletePlayerRPC();
             if (MatchmakingView.gameModeQuick == "Quick")
@@ -413,7 +504,7 @@ public class ButtonClick : MonoBehaviourPunCallbacks　//クリック用ボタ�
     {
         SoundEffect.soundTrigger[3] = 1;
         //オンラインならRPCで全体に適用する
-        if (PhotonNetwork.InRoom && NetWorkMain.leaderId == NetWorkMain.netWorkId)
+        if (PhotonNetwork.InRoom && NetWorkMain.leaderId == NetWorkMain.NetWorkId)
         {
             photonView.RPC(nameof(RPCChangeFlagTime), RpcTarget.All, difference);
             return;
@@ -471,12 +562,12 @@ public class ButtonClick : MonoBehaviourPunCallbacks　//クリック用ボタ�
     public void RPCSetTeam()
     {
         SoundEffect.soundTrigger[3] = 1;
-        photonView.RPC(nameof(SetTeam), RpcTarget.All, NetWorkMain.netWorkId);
+        photonView.RPC(nameof(SetTeam), RpcTarget.All, NetWorkMain.NetWorkId);
     }
 
     public void RPCSetLeader()
     {
-        if (NetWorkMain.netWorkId != NetWorkMain.leaderId)
+        if (NetWorkMain.NetWorkId != NetWorkMain.leaderId)
         {
             return;
         }
@@ -501,27 +592,13 @@ public class ButtonClick : MonoBehaviourPunCallbacks　//クリック用ボタ�
     {
         int newLeaderId = int.Parse(Regex.Replace(this.gameObject.name, @"[^0-9]", ""));
         NetWorkMain.leaderId = newLeaderId;
-
-        ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
-        int idTmp = 0;
-        if (customProps.ContainsKey("leaderId"))
-        {
-            if (int.TryParse(customProps["leaderId"].ToString(), out idTmp))
-            {
-                customProps["leaderId"] = newLeaderId;
-            }
-        }
-        PhotonNetwork.CurrentRoom.SetCustomProperties(customProps);
+        NetWorkMain.SetCustomProps<int>("leaederId", newLeaderId);
     }
+
     public void ReadyButton()
     {
-        if (inCoolDown) 
-        {
-            return;
-        }
-        inCoolDown = true;  
         int targetId = int.Parse(Regex.Replace(this.gameObject.name, @"[^0-9]", ""));
-        if (NetWorkMain.netWorkId != targetId) { return; }
+        if (NetWorkMain.NetWorkId != targetId) { return; }
         if (NetWorkMain.GetCustomProps<bool[]>("isReady", out var arrayValue1))
         {
             arrayValue1[targetId - 1] = !arrayValue1[targetId - 1];
