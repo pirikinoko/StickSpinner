@@ -154,11 +154,11 @@ public class ActiveObject : MonoBehaviour  //動く床などのオブジェク�
     {
         if (gameSetting.isPaused)
         {
-            rbody2D.velocity = new Vector2(0f, 0f);
+            rbody2D.linearVelocity = new Vector2(0f, 0f);
         }
         else
         {
-            rbody2D.velocity = new Vector2(speed, 0f);
+            rbody2D.linearVelocity = new Vector2(speed, 0f);
         }
     }
 
@@ -179,7 +179,7 @@ public class ActiveObject : MonoBehaviour  //動く床などのオブジェク�
     }
     void LimitMove()
     {
-        rbody2D.velocity = new Vector2(speed, 0f);
+        rbody2D.linearVelocity = new Vector2(speed, 0f);
         if (reverse == false)
         {
             ReverseCoolDown -= Time.deltaTime;
@@ -199,7 +199,7 @@ public class ActiveObject : MonoBehaviour  //動く床などのオブジェク�
 
     void LimitMoveY()
     {
-        rbody2D.velocity = new Vector2(0, speed);
+        rbody2D.linearVelocity = new Vector2(0, speed);
         if (reverse == false)
         {
             ReverseCoolDown -= Time.deltaTime;
@@ -228,7 +228,7 @@ public class ActiveObject : MonoBehaviour  //動く床などのオブジェク�
 
     void WaveObj()
     {
-        rbody2D.velocity = new Vector2(speed, 0f);
+        rbody2D.linearVelocity = new Vector2(speed, 0f);
         if (this.gameObject.transform.position.x > StartPos.x + RightLimit  || this.gameObject.transform.position.x < StartPos.x - LeftLimit )
         {
             StartCoroutine(DelaySpawn());

@@ -676,7 +676,7 @@ public class GameMode : MonoBehaviourPunCallbacks
     {
         ball.transform.position = ballPosDefault;
         Rigidbody2D ballRb = ball.GetComponent<Rigidbody2D>();
-        ballRb.velocity = Vector2.zero;
+        ballRb.linearVelocity = Vector2.zero;
         ballRb.angularVelocity = 0;
         ballRb.constraints = RigidbodyConstraints2D.FreezeAll;
         ball.GetComponent<CircleCollider2D>().enabled = false;

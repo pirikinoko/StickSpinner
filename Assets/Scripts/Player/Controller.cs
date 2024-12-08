@@ -139,7 +139,7 @@ public class Controller : MonoBehaviourPunCallbacks
         if (rotZ < 180) { jumpDirection = 6; }
         else { jumpDirection = 18; }
         jumpDirection = (jumpDirection - rotZ / 15) * 1.15f;
-        stickRb.velocity = new Vector2(jumpDirection, jumpforce);
+        stickRb.linearVelocity = new Vector2(jumpDirection, jumpforce);
     }
 
     IEnumerator GhostMove()
@@ -321,12 +321,12 @@ public class Controller : MonoBehaviourPunCallbacks
         }
         if (gameSetting.isPaused)
         {
-            stickRb.velocity = new Vector2(0, 0);
+            stickRb.linearVelocity = new Vector2(0, 0);
             transform.parent.gameObject.transform.position = pausedPos;
         }
         if (gameSetting.isPaused && isSaveDone)
         {
-            stickRb.velocity = new Vector2(speedWhenPaused.x * 2.1f, speedWhenPaused.y * 2.1f);
+            stickRb.linearVelocity = new Vector2(speedWhenPaused.x * 2.1f, speedWhenPaused.y * 2.1f);
             isSaveDone = false;
         }
         latestPos = transform.parent.gameObject.transform.position;
@@ -359,7 +359,7 @@ public class Controller : MonoBehaviourPunCallbacks
                     //棒が真横を向いているときはジャンプできない
                     if (!(rotZ > 179) && !(rotZ < 1))
                     {
-                        stickRb.velocity = new Vector2(jumpDirection, jumpforce);
+                        stickRb.linearVelocity = new Vector2(jumpDirection, jumpforce);
                         onFloor = false; onPlayer = false; onStick = false; onSurface = false; body.onSurface = false; body.onPlayer = false; body.onStick = false; 
                         //効果音鳴らす
                         SoundEffect.soundTrigger[5] = 1;

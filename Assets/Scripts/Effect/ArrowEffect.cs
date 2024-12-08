@@ -88,7 +88,7 @@ public class ArrowEffect : MonoBehaviour
 
     void WaveObj()
     {
-        rbody2D.velocity = new Vector2(speed, 0f);
+        rbody2D.linearVelocity = new Vector2(speed, 0f);
         if (this.gameObject.transform.position.x > StartPos.x + RightLimit || this.gameObject.transform.position.x < StartPos.x - LeftLimit)
         {
             StartCoroutine(DelaySpawn());

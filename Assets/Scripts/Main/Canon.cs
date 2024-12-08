@@ -28,7 +28,7 @@ public class Canon : MonoBehaviour
         float xForce = Random.Range(xMin, xMax);
         float yForce = Random.Range(-yMin, yMax);
         fireForce = new Vector3(-xForce, yForce);  // 力を設定
-        ballRb.velocity = fireForce;
+        ballRb.linearVelocity = fireForce;
 
         Destroy(obj, 5f);
         time = cycle;
