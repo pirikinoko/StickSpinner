@@ -1,10 +1,9 @@
-using Photon.Pun;
-using Photon.Realtime;
+using Fusion;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using ExitGames.Client.Photon;
-public class RoomButton : MonoBehaviourPunCallbacks
+public class RoomButton : NetworkBehaviour
 {
     private const int MaxPlayers = 4;
 

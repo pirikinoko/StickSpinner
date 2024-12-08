@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Text.RegularExpressions;
-using Photon.Pun;
+using Fusion;
 
 public class PlayerCollisionEvent :MonoBehaviourPunCallbacks
 {

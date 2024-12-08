@@ -6,7 +6,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.Video;
 using System.Linq;
-using Photon.Pun;
+using Fusion;
 using System;
 using DG.Tweening;
 using Cysharp.Threading.Tasks;

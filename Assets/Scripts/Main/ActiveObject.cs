@@ -1,8 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Photon.Pun;
-public class ActiveObject : MonoBehaviour  //動く床などのオブジェクト制御用
+using Fusion;
+public class ActiveObject : MonoBehaviour
 {
     //基本
     bool isAnimationStarted;

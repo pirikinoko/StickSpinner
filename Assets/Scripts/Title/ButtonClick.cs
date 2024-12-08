@@ -4,10 +4,10 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.Text.RegularExpressions;
-using Photon.Pun;
+using Fusion;
 using System.IO;
 using Cysharp.Threading.Tasks;
-public class ButtonClick : MonoBehaviourPunCallbacks　//クリック用ボタン
+public class ButtonClick : NetworkBehaviour
 {
     [SerializeField]
     bool haveCooldown = false;

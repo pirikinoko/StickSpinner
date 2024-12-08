@@ -1,13 +1,12 @@
-    
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
-using Photon.Pun;
+using Fusion;
 using System.Linq;
-public class SelectButton : MonoBehaviourPunCallbacks
+public class SelectButton : NetworkBehaviour
 {
     // ボタンの長押し時間
     [SerializeField]

@@ -6,15 +6,14 @@ using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.Tilemaps;
-using Photon.Pun;
+using Fusion;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using System.Threading;
 using Cysharp.Threading.Tasks.Linq;
 using ExitGames.Client.Photon;
-using Photon.Realtime;
 
-public class GameSetting : MonoBehaviourPunCallbacks
+public class GameSetting : NetworkBehaviour
 {
     //基本
     [SerializeField]

@@ -1,9 +1,8 @@
 using UnityEngine;
 using UnityEngine.UI;
-using Photon.Pun;
-using Photon.Realtime;
+using Fusion;
 using ExitGames.Client.Photon;
-public class ChangePassWord : MonoBehaviourPunCallbacks
+public class ChangePassWord : NetworkBehaviour
 {
      InputField passwordInputField;
     [SerializeField]

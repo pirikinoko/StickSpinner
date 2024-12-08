@@ -1,6 +1,6 @@
 using System;
 using System.Text;
-using Photon.Pun;
+using Fusion;
 using TMPro;
 using UnityEngine;
 

@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using UnityEditor;
-using Photon.Pun;
+using Fusion;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using System.Threading;

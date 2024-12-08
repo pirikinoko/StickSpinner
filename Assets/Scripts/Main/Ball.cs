@@ -1,9 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Photon.Pun;
+using Fusion;
 using System.Text.RegularExpressions;
-public class Ball : MonoBehaviourPunCallbacks
+public class Ball : NetworkBehaviour
 {
     GameMode gameMode;
     GameSetting gameSetting;

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using Photon.Pun;
+using Fusion;
 using System.Text.RegularExpressions;
 using Cysharp.Threading.Tasks;
 public class ButtonActive : MonoBehaviourPunCallbacks

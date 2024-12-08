@@ -1,10 +1,9 @@
-    using Photon.Pun;
-using Photon.Realtime;
+using Fusion;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class NetWorkIngame : MonoBehaviourPunCallbacks
+public class NetWorkIngame : NetworkBehaviour
 {
     void Start()
     {

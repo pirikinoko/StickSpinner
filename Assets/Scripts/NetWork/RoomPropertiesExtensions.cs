@@ -1,5 +1,5 @@
 using ExitGames.Client.Photon;
-using Photon.Realtime;
+using Fusion;
 
 public static class RoomPropertiesExtensions
 {

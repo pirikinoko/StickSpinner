@@ -1,9 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
-using Photon.Pun;
+using Fusion;
 using UnityEngine;
-using Photon.Realtime;
-public class ArcadeTeamChange : MonoBehaviourPunCallbacks
+public class ArcadeTeamChange : NetworkBehaviour
 {
     [SerializeField] KeyCode[] keyLeft, keyRight;
     float[] lastLstickX = new float[4], lastLstickY = new float[4];

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using Photon.Pun;
+using Fusion;
 public class RoomNameVisible : MonoBehaviourPunCallbacks
 {
     Text roomNameText;

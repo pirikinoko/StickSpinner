@@ -1,6 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using Photon.Realtime;
+using Fusion;
 using UnityEngine;
 using UnityEngine.UI;
 // IEnumerable<RoomInfo>インターフェースを実装して、foreachでルーム情報を列挙できるようにする

@@ -1,11 +1,10 @@
-using Photon.Pun;
-using Photon.Realtime;
+using Fusion;
 using TMPro;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class RoomListViewElement : MonoBehaviourPunCallbacks
+public class RoomListViewElement : NetworkBehaviour
 {
     [SerializeField]
     private TextMeshProUGUI nameLabel = default;

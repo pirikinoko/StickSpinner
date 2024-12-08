@@ -1,10 +1,9 @@
 using System.Collections.Generic;
-using Photon.Pun;
-using Photon.Realtime;
+using Fusion;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class RoomListView : MonoBehaviourPunCallbacks
+public class RoomListView : NetworkBehaviour
 {
     private const int MaxElements = 20;
 

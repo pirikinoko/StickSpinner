@@ -1,14 +1,13 @@
-using Photon.Pun;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
-using Photon.Realtime;
+using Fusion;
 using R3;
 using Cysharp.Threading.Tasks;
 using ExitGames.Client.Photon;
 using System.Linq;
 
-public class NetWorkMain : MonoBehaviourPunCallbacks
+public class NetWorkMain : NetworkBehaviour
 {
     public static string[] playerNames = new string[4];
     public static int leaderId = 1;

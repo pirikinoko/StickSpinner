@@ -6,7 +6,7 @@ using UnityEngine.UI;
 using System.Linq;
 using System;
 using System.Text.RegularExpressions;
-using Photon.Pun;
+using Fusion;
 
 public class GameMode : MonoBehaviourPunCallbacks
 {

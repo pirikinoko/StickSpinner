@@ -1,12 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
-using Photon.Pun;
-using Photon.Realtime;
+using Fusion;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-public class MatchmakingView : MonoBehaviourPunCallbacks
+public class MatchmakingView : NetworkBehaviour
 {
     [SerializeField]
     private RoomListView roomListView = default;

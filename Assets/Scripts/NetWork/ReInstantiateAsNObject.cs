@@ -1,7 +1,6 @@
-using Photon.Pun;
+using Fusion;
 using System;
 using UnityEngine;
-using Photon.Realtime;
 using ExitGames.Client.Photon;
 
 public class ReInstantiateAsNObject : MonoBehaviour

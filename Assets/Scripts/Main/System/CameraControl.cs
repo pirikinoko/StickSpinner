@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
-using Photon.Pun;
+using Fusion;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using System.Threading;
