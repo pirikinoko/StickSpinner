@@ -1,40 +1,36 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using Fusion;
-using System.Text.RegularExpressions;
+using UnityEngine;
+
 public class Ball : NetworkBehaviour
 {
     GameMode gameMode;
     GameSetting gameSetting;
     int lastColId;
     public int count;
-    PhotonView photonView;
-    // Start is called before the first frame update
+
+    [Networked]
+    public bool IsOwned { get; set; } // オーナーシップ管理
+
+    [Networked]
+    public int OwnerPlayerId { get; set; } // 所有プレイヤーID
+
     void Start()
     {
         count = 0;
         gameSetting = GameObject.Find("Scripts").GetComponent<GameSetting>();
-        if (GameStart.gameMode1 != "Online") 
-        {
-            this.GetComponent<PhotonRigidbody2DView>().enabled = false;
-        }
-        else
-        {
-            photonView = GetComponent<PhotonView>();
-        }
     }
 
-    // Update is called once per frame
     void Update()
     {
-        if(gameMode == null) 
+        if (gameMode == null)
         {
             gameMode = GameObject.Find("Scripts").GetComponent<GameMode>();
         }
-        if (GameStart.gameMode1 == "Online" && PhotonNetwork.IsMasterClient)
+
+        if (GameStart.gameMode1 == "Online" && Runner.IsServer)
         {
             if (!GameSetting.setupEnded) { return; }
+
             // 最も近いプレイヤーの初期化
             GameObject nearestPlayer = gameSetting.players[0];
             float minDistance = Vector2.Distance(this.transform.position, nearestPlayer.transform.position);
@@ -49,17 +45,23 @@ public class Ball : NetworkBehaviour
                     nearestPlayer = gameSetting.players[i];
                 }
             }
-            int id = int.Parse(Regex.Replace(nearestPlayer.name, @"[^0-9]", ""));
-            var nearestPhotonView = nearestPlayer.gameObject.GetComponent<PhotonView>();
-            if (nearestPhotonView != null)
-            {
-                photonView.TransferOwnership(nearestPhotonView.OwnerActorNr);
-            }
+
+            int id = nearestPlayer.GetComponent<NetworkObject>().Owner.PlayerId;
+            TransferOwnership(id);
         }
-  }
-    private void OnCollisionStay2D(Collision2D col) 
+    }
+
+    private void TransferOwnership(int newOwnerId)
     {
-        if (col.gameObject.CompareTag("Player")) 
+        if (Runner.IsServer)
+        {
+            OwnerPlayerId = newOwnerId;
+        }
+    }
+
+    private void OnCollisionStay2D(Collision2D col)
+    {
+        if (col.gameObject.CompareTag("Player"))
         {
             lastColId = col.gameObject.GetComponent<Body>().id;
         }
@@ -72,113 +74,68 @@ public class Ball : NetworkBehaviour
     private void OnTriggerStay2D(Collider2D col)
     {
         if (!GameSetting.Playable) { return; }
-         if(col.gameObject.name == "GoalZoneLeft")
-        {
 
-            if(GameStart.teamMode == "FFA") 
-            {
-                if (GameStart.gameMode1 != "Online")
-                {
-                    GameMode.points[1]++;
-                }
-                else
-                {
-                      if (photonView.IsMine)
-                    {
-                        photonView.RPC("GoalProcess", RpcTarget.All, 1);
-                    }
-                }
-            }
-            else 
-            {
-                if (GameStart.gameMode1 != "Online")
-                {
-                    GameMode.teamPoints[1]++;
-                }
-                else
-                {
-                    if (photonView.IsMine)
-                    {
-                        photonView.RPC("GoalProcess", RpcTarget.All, 1);
-                    }
-                }
-            }
-            SoundEffect.soundTrigger[8] = 1;
-            StartCoroutine(GameObject.Find("Scripts").GetComponent<GameMode>().BallReset(this.gameObject));
-            PlayPaperCanon(1);
+        if (col.gameObject.name == "GoalZoneLeft")
+        {
+            HandleGoal(1);
         }
-        if (col.gameObject.name == "GoalZoneRight")
+        else if (col.gameObject.name == "GoalZoneRight")
         {
-            if (GameStart.teamMode == "FFA")
-            {
-                if (GameStart.gameMode1 != "Online")
-                {
-                    GameMode.points[0]++;
-                }
-                else 
-                {
-                    if (photonView.IsMine)
-                    {
-                        photonView.RPC("GoalProcess", RpcTarget.All, 0);
-                    }
-                }
-            }
-            else
-            {
-                if (GameStart.gameMode1 != "Online")
-                {
-                    GameMode.teamPoints[0]++;
-                }
-
-                else 
-                {
-                    if (photonView.IsMine)
-                    {
-                        photonView.RPC("GoalProcess", RpcTarget.All, 0);
-                    }
-                }
-            }
-            if (GameStart.gameMode1 != "Online")
-            {
-                SoundEffect.soundTrigger[8] = 1;
-                StartCoroutine(GameObject.Find("Scripts").GetComponent<GameMode>().BallReset(this.gameObject));
-                PlayPaperCanon(0);
-            }
-
+            HandleGoal(0);
         }
     }
 
-    void PlayPaperCanon(int goalTeam ) 
+    private void HandleGoal(int targetTeam)
     {
-        gameSetting = GameObject.Find("Scripts").GetComponent<GameSetting>();
-        //パーティクル再生
-        for (int i = 0; i < GameStart.PlayerCount; i++)
+        if (GameStart.gameMode1 == "Online" && Runner.IsServer)
         {
-            Vector2[] particlePos = new Vector2[4];
-             particlePos[i] = gameSetting.players[i].gameObject.transform.position;
-            if(GameStart.playerTeam[i] == goalTeam) 
-            {
-                GameObject particleObj = (GameObject)Resources.Load("PaperCanon");
-                Instantiate(particleObj, particlePos[i], Quaternion.identity); //パーティクル用ゲームオブジェクト生成
-            }
+            Runner.SendRpc(nameof(GoalProcess), RpcTarget.All, targetTeam);
         }
+        else
+        {
+            ProcessGoal(targetTeam);
+        }
+
+        SoundEffect.soundTrigger[8] = 1;
+        StartCoroutine(GameObject.Find("Scripts").GetComponent<GameMode>().BallReset(this.gameObject));
     }
-    [PunRPC] 
-    void GoalProcess(int targetTeam) 
+
+    [Rpc(RpcSources.All, RpcTargets.All)]
+    private void GoalProcess(int targetTeam, RpcInfo info = default)
     {
         if (count >= 1) { return; }
-        GetComponent<PhotonRigidbody2DView>().enabled = false;
         count++;
+
+        ProcessGoal(targetTeam);
+    }
+
+    private void ProcessGoal(int targetTeam)
+    {
         if (GameStart.teamMode == "FFA")
         {
             GameMode.points[targetTeam]++;
         }
-        else 
+        else
         {
             GameMode.teamPoints[targetTeam]++;
-        }  
+        }
+
         PlayPaperCanon(targetTeam);
-        SoundEffect.soundTrigger[8] = 1;
-        StartCoroutine(GameObject.Find("Scripts").GetComponent<GameMode>().BallReset(this.gameObject));
+    }
+
+    void PlayPaperCanon(int goalTeam)
+    {
+        gameSetting = GameObject.Find("Scripts").GetComponent<GameSetting>();
+        // パーティクル再生
+        for (int i = 0; i < GameStart.PlayerCount; i++)
+        {
+            Vector2[] particlePos = new Vector2[4];
+            particlePos[i] = gameSetting.players[i].gameObject.transform.position;
+            if (GameStart.playerTeam[i] == goalTeam)
+            {
+                GameObject particleObj = (GameObject)Resources.Load("PaperCanon");
+                Instantiate(particleObj, particlePos[i], Quaternion.identity); // パーティクル用ゲームオブジェクト生成
+            }
+        }
     }
 }
