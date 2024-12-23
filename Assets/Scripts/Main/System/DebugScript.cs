@@ -14,13 +14,13 @@ public class DebugScript : MonoBehaviour　//デバッグ用スクリプト
     // Start is called before the first frame update
     void Awake()
     {
-        GameStart.gameMode1 = targetMode1;
-        GameStart.gameMode2 = targetMode2;
-        GameStart.stage = targetStage;
-        GameStart.flagTimeLimit  = timeLimit;
-        GameStart.PlayerCount = playerNumber;
-        GameStart.teamMode = teamMode;
-        GameStart.teamSize = teamSize;
+        GameStartHandler.GameMode1 = targetMode1;
+        GameStartHandler.GameMode2 = targetMode2;
+        GameStartHandler.Stage = targetStage;
+        GameStartHandler.FlagTimeLimit  = timeLimit;
+        GameStartHandler.PlayerCount = playerNumber;
+        GameStartHandler.TeamMode = teamMode;
+        GameStartHandler.TeamSize = teamSize;
     }
 
 }

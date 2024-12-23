@@ -22,7 +22,7 @@ public class Thorn : MonoBehaviour
             //当たったプレイヤーを死亡させる
             cnt.StartDead();
             int id = bdy.id;
-            if(GameStart.gameMode1 == "Single" && GameStart.gameMode2 == "Arcade") 
+            if(GameStartHandler.GameMode1 == "Single" && GameStartHandler.GameMode2 == "Arcade") 
             {
                 //無限モードの場合はゲームオーバー
                 GameMode.isGameOver = true;

@@ -96,18 +96,18 @@ public class CameraControl : MonoBehaviour
         maxDistanceX = 0f;
         maxDistanceY = 0f;
         yIsZero = true;
-        if (GameStart.PlayerCount == 1) { return; }
-        if (!NetWorkMain.isOnline || (GameStart.gameMode1 == "Online" && GameStart.gameMode2 == "Arcade" && GameStart.stage == 2))
+        if (GameStartHandler.PlayerCount == 1) { return; }
+        if (!NetWorkMain.isOnline || (GameStartHandler.GameMode1 == "Online" && GameStartHandler.GameMode2 == "Arcade" && GameStartHandler.Stage == 2))
         {
             // i(プレイヤー１～３とj(プレイヤー2~4)のxとyの距離を見て一番遠いxとyを採用してカメラの位置とする)
-            for (int i = 0; i < GameStart.PlayerCount - 1; i++)
+            for (int i = 0; i < GameStartHandler.PlayerCount - 1; i++)
             {
                 //プレイヤーが死亡中やゴール済みの場合は計算に入れない
                 if (gameSetting.players[i] != null)
                 {
                     playerPos[i] = gameSetting.players[i].transform.position;
                   
-                    for (int j = i + 1; j < GameStart.PlayerCount; j++)
+                    for (int j = i + 1; j < GameStartHandler.PlayerCount; j++)
                     {
                         //一人しかいない場合はそのプレイヤーを写す
                         if (playerAlive == 1 && gameSetting.players[j].activeSelf)
@@ -131,7 +131,7 @@ public class CameraControl : MonoBehaviour
                         float distanceY = (float)Math.Sqrt(Math.Pow(playerPos[i].y - playerPos[j].y, 2));
 
                         //サッカーボールもカメラに含める
-                        if (GameStart.gameMode1 != "Single" && GameStart.gameMode2 == "Arcade" && GameStart.stage == 2)
+                        if (GameStartHandler.GameMode1 != "Single" && GameStartHandler.GameMode2 == "Arcade" && GameStartHandler.Stage == 2)
                         {
                             GameObject ballObj = Utility.FindObjectWithContainingName("SoccerBall");
 
@@ -185,7 +185,7 @@ public class CameraControl : MonoBehaviour
     }
     private async UniTask ZoomOutFromFlagAsync(CancellationToken cancellationToken)
     {
-        if ((GameStart.gameMode1 == "Multi" && GameStart.stage == 1) || (GameStart.gameMode1 == "Single" && GameStart.gameMode2 == "Nomal"))
+        if ((GameStartHandler.GameMode1 == "Multi" && GameStartHandler.Stage == 1) || (GameStartHandler.GameMode1 == "Single" && GameStartHandler.GameMode2 == "Nomal"))
         {
             while (true)
             {
@@ -243,7 +243,7 @@ public class CameraControl : MonoBehaviour
     }
     void OnePlayerCameraSetting()
     {
-        if (GameStart.PlayerCount == 1)
+        if (GameStartHandler.PlayerCount == 1)
         {
             centerPoint = gameSetting.players[0].transform.position;
         }
@@ -300,7 +300,7 @@ public class CameraControl : MonoBehaviour
     //ゴールしたプレイヤーをカメラの対象から外す
     void RejectGoaldPlayerFromTarget()
     {
-        if (GameStart.gameMode2 == "Nomal" && !(GameMode.isGoaled))
+        if (GameStartHandler.GameMode2 == "Nomal" && !(GameMode.isGoaled))
         {
             if (GameMode.goaledPlayer[goals] != null)
             {
@@ -317,7 +317,7 @@ public class CameraControl : MonoBehaviour
         {
             spectateTarget++;
         }
-        if(spectateTarget > GameStart.PlayerCount) 
+        if(spectateTarget > GameStartHandler.PlayerCount) 
         {
             spectateTarget = 1;
         }

@@ -27,7 +27,7 @@ public class Ball : NetworkBehaviour
             gameMode = GameObject.Find("Scripts").GetComponent<GameMode>();
         }
 
-        if (GameStart.gameMode1 == "Online" && Runner.IsServer)
+        if (GameStartHandler.GameMode1 == "Online" && Runner.IsServer)
         {
             if (!GameSetting.setupEnded) { return; }
 
@@ -36,7 +36,7 @@ public class Ball : NetworkBehaviour
             float minDistance = Vector2.Distance(this.transform.position, nearestPlayer.transform.position);
 
             // 全てのプレイヤーをチェックして最も近いプレイヤーを見つける
-            for (int i = 0; i < GameStart.PlayerCount; i++)
+            for (int i = 0; i < GameStartHandler.PlayerCount; i++)
             {
                 float distance = Vector2.Distance(this.transform.position, gameSetting.players[i].transform.position);
                 if (distance < minDistance)
@@ -87,7 +87,7 @@ public class Ball : NetworkBehaviour
 
     private void HandleGoal(int targetTeam)
     {
-        if (GameStart.gameMode1 == "Online" && Runner.IsServer)
+        if (GameStartHandler.GameMode1 == "Online" && Runner.IsServer)
         {
             Runner.SendRpc(nameof(GoalProcess), RpcTarget.All, targetTeam);
         }
@@ -111,7 +111,7 @@ public class Ball : NetworkBehaviour
 
     private void ProcessGoal(int targetTeam)
     {
-        if (GameStart.teamMode == "FFA")
+        if (GameStartHandler.TeamMode == "FFA")
         {
             GameMode.points[targetTeam]++;
         }
@@ -127,11 +127,11 @@ public class Ball : NetworkBehaviour
     {
         gameSetting = GameObject.Find("Scripts").GetComponent<GameSetting>();
         // パーティクル再生
-        for (int i = 0; i < GameStart.PlayerCount; i++)
+        for (int i = 0; i < GameStartHandler.PlayerCount; i++)
         {
             Vector2[] particlePos = new Vector2[4];
             particlePos[i] = gameSetting.players[i].gameObject.transform.position;
-            if (GameStart.playerTeam[i] == goalTeam)
+            if (GameStartHandler.PlayerTeam[i] == goalTeam)
             {
                 GameObject particleObj = (GameObject)Resources.Load("PaperCanon");
                 Instantiate(particleObj, particlePos[i], Quaternion.identity); // パーティクル用ゲームオブジェクト生成

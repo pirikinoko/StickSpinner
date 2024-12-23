@@ -1,83 +1,101 @@
-using System;
-using UnityEngine;
-using UnityEngine.UI;
+using Cysharp.Threading.Tasks;
 using Fusion;
 using R3;
-using Cysharp.Threading.Tasks;
-using ExitGames.Client.Photon;
+using System;
 using System.Linq;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class NetWorkMain : NetworkBehaviour
 {
     public static string[] playerNames = new string[4];
+
     public static int leaderId = 1;
+
     public static bool isOnline;
+
     public static int NetWorkId = 0;
-    public GameObject[] playerConfigs, leaderIcons;
-    public Text[] playerNameText, winningsText;
-    public Text modeText, stageText;
+
+    public GameObject[] playerConfigs;
+
+    public GameObject[] leaderIcons;
+
+    public Text[] playerNameText;
+
+    public Text[] winningsText;
+
+    public Text modeText;
+
+    public Text stageText;
+
     string[] gameMode = { "Nomal", "Arcade" };
+
     int setCount = 0, lastPlayerCount;
+
     private Subject<Unit> _onPlayerCountChange = new Subject<Unit>();
+
     IngameLog ingameLog;
+
     private void Start()
     {
         ingameLog = GameObject.Find("Systems").GetComponent<IngameLog>();
+
         setCount = 0;
+
         PhotonNetwork.ConnectUsingSettings();
 
         _onPlayerCountChange
             .Subscribe(_ => OnChangePlayerCount());
 
-        if (PhotonNetwork.InRoom) 
+        if (PhotonNetwork.InRoom)
         {
-            if(GetCustomProps<string>("gameMode", out var gameModeCP))
+            if (GetCustomProps<string>("gameMode", out var gameModeCP))
             {
-                GameStart.gameMode2 = gameModeCP;
-            } 
-            if(GetCustomProps<int>("stage", out var stageCP))
+                GameStartHandler.GameMode2 = gameModeCP;
+            }
+            if (GetCustomProps<int>("stage", out var stageCP))
             {
-                GameStart.stage = stageCP;
+                GameStartHandler.Stage = stageCP;
             }
             if (GetCustomProps<int[]>("playerTeam", out var playerTeamCP))
             {
-                GameStart.playerTeam = playerTeamCP;
+                GameStartHandler.PlayerTeam = playerTeamCP;
             }
         }
-     
+
     }
 
     void Update()
     {
-        modeText.text = GameStart.gameMode2;
-        stageText.text = "stage" + GameStart.stage;
+        modeText.text = GameStartHandler.GameMode2;
+        stageText.text = "stage" + GameStartHandler.Stage;
 
-        if (GameStart.gameMode1 == "Online" && PhotonNetwork.InRoom)
+        if (GameStartHandler.GameMode1 == "Online" && Runner.IsInSession)
         {
-            GameStart.PlayerCount = PhotonNetwork.CurrentRoom.PlayerCount;
-            if (lastPlayerCount != GameStart.PlayerCount)
+            GameStartHandler.PlayerCount = Runner.ActivePlayers.Count;
+            if (lastPlayerCount != GameStartHandler.PlayerCount)
             {
                 _onPlayerCountChange.OnNext(Unit.Default);
             }
-            lastPlayerCount = GameStart.PlayerCount;
+            lastPlayerCount = GameStartHandler.PlayerCount;
 
             isOnline = true;
-            for (int i = 0; i < GameStart.PlayerCount; i++)
+            for (int i = 0; i < GameStartHandler.PlayerCount; i++)
             {
                 playerConfigs[i].gameObject.SetActive(true);
                 playerNameText[i].text = PhotonNetwork.PlayerList[i].NickName;
             }
             if (setCount == 0) //一度のみ実行する項目
             {
-                photonView.RPC("SetPlayerNumber", RpcTarget.All);
-                photonView.RPC("UpdateConfig", RpcTarget.All);
+                SetPlayerNumber();
+                UpdateConfig();
 
                 if (GetCustomProps<int[]>("winnings", out var value))
                 {
                     value
                         .Select((winnings, index) => new { winnings, index })
                         .Zip(winningsText, (winningsWithIndex, textField) => new { winningsWithIndex, textField })
-                        .ToList() 
+                        .ToList()
                         .ForEach(pair => pair.textField.text = $"Win: {pair.winningsWithIndex.winnings}");
                 }
                 setCount = 1;
@@ -85,12 +103,12 @@ public class NetWorkMain : NetworkBehaviour
         }
     }
 
-    private void OnChangePlayerCount() 
+    private void OnChangePlayerCount()
     {
         UpdateConfig();
-        Photon.Realtime.Player[] playerArray = PhotonNetwork.PlayerList;
-  
-        // 自身のIDを再取得
+        var playerArray = Runner.ActivePlayers;
+
+        // 自身のIDを再取得                                                                            
         for (int i = 0; i < Mathf.Min(playerArray.Length, 4); i++)
         {
             if (playerArray[i].ActorNumber == PhotonNetwork.LocalPlayer.ActorNumber)
@@ -99,11 +117,11 @@ public class NetWorkMain : NetworkBehaviour
             }
         }
 
-        if(leaderId > PhotonNetwork.CurrentRoom.PlayerCount)
+        if (leaderId > PhotonNetwork.CurrentRoom.PlayerCount)
         {
             leaderId = 1;
         }
-            
+
         //leaderId再設定
         if (leaderId == NetWorkId)
         {
@@ -112,14 +130,7 @@ public class NetWorkMain : NetworkBehaviour
         }
     }
 
-    public override void OnConnectedToMaster()
-    {
-        setCount = 0;
-        PhotonNetwork.JoinLobby();
-        Debug.Log("マスターサーバーに接続しました");
-    }
-
-    public override void OnJoinedRoom()
+    public override void OnJoinedSession()
     {
         PhotonNetwork.NickName = InputName.TypedTextToString;
 
@@ -136,13 +147,13 @@ public class NetWorkMain : NetworkBehaviour
 
         ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
         //もともとCustomPropsが設定してある場合はそれらを取得して状態をルームのものと同期する
-        if (GetCustomProps<string>("gameMode", out string valueA)) { GameStart.gameMode2 = valueA; }
-        if (GetCustomProps<int>("stage", out int valueB)) { GameStart.stage = valueB; }
+        if (GetCustomProps<string>("gameMode", out string valueA)) { GameStartHandler.GameMode2 = valueA; }
+        if (GetCustomProps<int>("stage", out int valueB)) { GameStartHandler.Stage = valueB; }
         if (GetCustomProps<int[]>("playerTeam", out var valueC))
         {
             for (int i = 0; i < valueC.Length; i++)
             {
-                GameStart.playerTeam[i] = valueC[i];
+                GameStartHandler.PlayerTeam[i] = valueC[i];
             }
         }
         if (GetCustomProps<string[]>("userName", out var valueD))
@@ -156,7 +167,7 @@ public class NetWorkMain : NetworkBehaviour
         {
             customProps["leaderId"] = 1;
             customProps["stage"] = 1;
-            customProps["gameMode"] = GameStart.gameMode2;
+            customProps["gameMode"] = GameStartHandler.GameMode2;
             customProps["Password"] = "";
             customProps["isJoined"] = new bool[] { false, false, false, false };
             customProps["isReady"] = new bool[] { false, false, false, false };
@@ -175,21 +186,21 @@ public class NetWorkMain : NetworkBehaviour
         photonView.RPC("ConfigActive", RpcTarget.All);
     }
 
-    [PunRPC]
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     private void SetPlayerNumber()
     {
-        GameStart.PlayerCount = PhotonNetwork.CurrentRoom.PlayerCount;
+        GameStartHandler.PlayerCount = PhotonNetwork.CurrentRoom.PlayerCount;
         Debug.Log(PhotonNetwork.CurrentRoom.PlayerCount + "名がルームに存在します");
     }
 
-    [PunRPC]
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     private void UpdateConfig()
     {
-        for (int i = 3; i >= GameStart.PlayerCount; i--)
+        for (int i = 3; i >= GameStartHandler.PlayerCount; i--)
         {
             playerConfigs[i].gameObject.SetActive(false);
         }
-        for (int i = 0; i < GameStart.PlayerCount; i++)
+        for (int i = 0; i < GameStartHandler.PlayerCount; i++)
         {
             playerConfigs[i].gameObject.SetActive(true);
             playerNameText[i].text = PhotonNetwork.PlayerList[i].NickName;
@@ -197,14 +208,13 @@ public class NetWorkMain : NetworkBehaviour
         }
 
         ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
-        if(GetCustomProps<int>("leaderId", out int value)) {leaderId = value;}
+        if (GetCustomProps<int>("leaderId", out int value)) { leaderId = value; }
     }
 
-    [PunRPC]
     void SetCustomPropsStage()
     {
         GetCustomProps<int>("stage", out int value);
-        GameStart.stage = value;
+        GameStartHandler.Stage = value;
     }
 
     public static void SetCustomProps<type>(string key, type toSet)
@@ -213,7 +223,7 @@ public class NetWorkMain : NetworkBehaviour
         switch (toSet)
         {
             case int i:
-                if (customProps.TryGetValue(key,  out _))
+                if (customProps.TryGetValue(key, out _))
                 {
                     customProps[key] = toSet;
                 }
@@ -247,7 +257,7 @@ public class NetWorkMain : NetworkBehaviour
                 break;
             case bool[] boolArray:
                 customProps[key] = toSet;
-                break ;
+                break;
             default:
                 throw new Exception($"Unsupported type: {typeof(type)}");
                 break;

@@ -11,7 +11,7 @@ public class ReInstantiateAsNObject : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
-        if (GameStart.gameMode1 != "Online" || this.GetComponent<PhotonView>() != null)
+        if (GameStartHandler.GameMode1 != "Online" || this.GetComponent<PhotonView>() != null)
         {
             return;
         }

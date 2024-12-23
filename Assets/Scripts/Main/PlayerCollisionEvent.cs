@@ -1,13 +1,11 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using System.Text.RegularExpressions;
 using Fusion;
+using System.Text.RegularExpressions;
+using UnityEngine;
 
-public class PlayerCollisionEvent :MonoBehaviourPunCallbacks
+public class PlayerCollisionEvent : NetworkBehaviour
 {
 
-    float   pointTimer;
+    float pointTimer;
     int playerId;                   // プレイヤー番号(1～4)      
     GameMode gamemode;
     GameSetting gameSetting;
@@ -19,15 +17,15 @@ public class PlayerCollisionEvent :MonoBehaviourPunCallbacks
 
         // ボディかスティックより ID を得る
         Controller cnt = GetComponent<Controller>();
-        if (cnt)
-		{   // Controller.cs
+        if (cnt != null)
+        {   // Controller.cs
             playerId = cnt.id;
-		}
-        else if(this.name.Contains("Player"))
+        }
+        else if (this.name.Contains("Player"))
         {   // Body.cs
             Body bdy = GetComponent<Body>();
             playerId = bdy.id;
-		}
+        }
         pointTimer = 0;
     }
 
@@ -63,14 +61,14 @@ public class PlayerCollisionEvent :MonoBehaviourPunCallbacks
                         pointTimer += Time.deltaTime;
                         if (pointTimer > 1)
                         {
-                            if(GameStart.gameMode1 == "Online") 
+                            if (GameStartHandler.GameMode1 == "Online")
                             {
-                                if (photonView.IsMine) 
+                                if (photonView.IsMine)
                                 {
                                     photonView.RPC(nameof(RPCAddFlagPoints), RpcTarget.All, playerId);
                                 }
                             }
-                            else 
+                            else
                             {
                                 SoundEffect.soundTrigger[6] = 1;
                                 GameMode.points[playerId - 1] += 1;
@@ -86,22 +84,22 @@ public class PlayerCollisionEvent :MonoBehaviourPunCallbacks
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (GameStart.gameMode2 != "Arcade")　　//対戦モードを除き
+        if (GameStartHandler.GameMode2 != "Arcade")　　//対戦モードを除き
         {
             //自身がプレイヤーならゴール処理
-            if (this.gameObject.name == "GoalFlag") 
+            if (this.gameObject.name == "GoalFlag")
             {
-                if(other.gameObject.CompareTag("Player"))
+                if (other.gameObject.CompareTag("Player"))
                 {
                     int playerID = other.gameObject.GetComponent<Body>().id; ;
-                    if (GameStart.gameMode1 == "Online") 
+                    if (GameStartHandler.GameMode1 == "Online")
                     {
                         gamemode.CallGoalProcessRPC(playerID);
                     }
-                    else 
+                    else
                     {
                         gamemode.GoalProcess(playerID);
-                    }      
+                    }
                 }
             }
         }
@@ -111,14 +109,14 @@ public class PlayerCollisionEvent :MonoBehaviourPunCallbacks
             {
                 if (GameMode.killTimer[i, playerId - 1] > 0) //トゲに当たったプレイヤーに最後に5秒以内に触れていたプレイヤーにポイント付与
                 {
-                    if(GameStart.gameMode1 == "Online" )
+                    if (GameStartHandler.GameMode1 == "Online")
                     {
                         if (photonView.IsMine)
                         {
                             photonView.RPC(nameof(RPCAddKillPoints), RpcTarget.All, i, playerId);
                         }
                     }
-                    else 
+                    else
                     {
                         GameMode.points[i] += 5;
                         GameMode.playParticle[i] = 2;
@@ -127,13 +125,15 @@ public class PlayerCollisionEvent :MonoBehaviourPunCallbacks
                         GameMode.killTimer[i, playerId - 1] = 0;
                         GameMode.KillLogTimer = 5.0f;
                     }
- 
+
                 }
             }
         }
 
     }
-    [PunRPC] void RPCAddKillPoints(int target, int myId) 
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    void RPCAddKillPoints(int target, int myId)
     {
         GameMode.points[target] += 5;
         GameMode.playParticle[target] = 2;
@@ -142,7 +142,8 @@ public class PlayerCollisionEvent :MonoBehaviourPunCallbacks
         GameMode.killTimer[target, myId - 1] = 0;
         GameMode.KillLogTimer = 5.0f;
     }
-    [PunRPC]
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     void RPCAddFlagPoints(int myId)
     {
         SoundEffect.soundTrigger[6] = 1;
@@ -151,18 +152,18 @@ public class PlayerCollisionEvent :MonoBehaviourPunCallbacks
     }
     private void OnCollisionStay2D(Collision2D other)
     {
-        if(GameStart.gameMode2 == "Arcade")
+        if (GameStartHandler.GameMode2 == "Arcade")
         {
-            if(other.gameObject.CompareTag("Player") || other.gameObject.CompareTag("Stick"))
+            if (other.gameObject.CompareTag("Player") || other.gameObject.CompareTag("Stick"))
             {
                 //自分以外に対象のプレイヤーのキル判定が入らないように全員分のキルタイマーを一度リセットする     
                 for (int i = 0; i < 4; i++)
                 {
-                    GameMode.killTimer[i, other.gameObject.GetComponent<PlayerCollisionEvent>().playerId - 1] = 0; 
+                    GameMode.killTimer[i, other.gameObject.GetComponent<PlayerCollisionEvent>().playerId - 1] = 0;
                 }
 
                 GameMode.killTimer[playerId - 1, other.gameObject.GetComponent<PlayerCollisionEvent>().playerId - 1] = 3.0f;
-            }       
+            }
         }
     }
 }

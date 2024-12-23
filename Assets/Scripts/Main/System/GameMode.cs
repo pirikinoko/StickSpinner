@@ -1,22 +1,20 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.UI;
-using System.Linq;
-using System;
-using System.Text.RegularExpressions;
+using Cysharp.Threading.Tasks;
 using Fusion;
+using System;
+using System.Collections;
+using System.Text.RegularExpressions;
+using UnityEngine;
+using UnityEngine.UI;
 
-public class GameMode : MonoBehaviourPunCallbacks
+public class GameMode : NetworkBehaviour
 {
     // 基本
     GameSetting gameSetting;
 
-    public static string[] goaledPlayer { get; set; } = new string[GameStart.maxPlayer];
+    public static string[] goaledPlayer { get; set; } = new string[GameStartHandler.MaxPlayer];
 
     [SerializeField]
-    GameObject[] resultTextGO = new GameObject[GameStart.maxPlayer];
+    GameObject[] resultTextGO = new GameObject[GameStartHandler.MaxPlayer];
 
     [SerializeField]
     GameObject[] icons;
@@ -40,8 +38,8 @@ public class GameMode : MonoBehaviourPunCallbacks
     GameObject ResultPanelArcade;
 
     GameObject[] crownObjects = new GameObject[3];
- 
-    Text[] resultText = new Text[GameStart.maxPlayer];
+
+    Text[] resultText = new Text[GameStartHandler.MaxPlayer];
 
     bool showResultTriggerd = false;
 
@@ -50,7 +48,7 @@ public class GameMode : MonoBehaviourPunCallbacks
     // 通常ステージ
     public static byte Goals = 0;
 
-    public static float[] clearTime = new float[GameStart.maxPlayer];
+    public static float[] clearTime = new float[GameStartHandler.MaxPlayer];
 
     public static bool isGoaled;
 
@@ -142,8 +140,8 @@ public class GameMode : MonoBehaviourPunCallbacks
     }
 
     void StartInUpdate()
-    {   
-        for (int i = 0; i < GameStart.maxPlayer; i++)
+    {
+        for (int i = 0; i < GameStartHandler.MaxPlayer; i++)
         {
             resultText[i] = resultTextGO[i].GetComponent<Text>();
             teamTag[i].gameObject.SetActive(false);
@@ -166,10 +164,10 @@ public class GameMode : MonoBehaviourPunCallbacks
         isGameOver = false;
         Goals = 0;
         // 通常ステージ
-        if (GameStart.gameMode2 != "Arcade")
+        if (GameStartHandler.GameMode2 != "Arcade")
         {
-            for (int i = 0; i < GameStart.maxPlayer; i++)
-            { 
+            for (int i = 0; i < GameStartHandler.MaxPlayer; i++)
+            {
                 clearTime[i] = 0;
                 goaledPlayer[i] = null;
             }
@@ -180,7 +178,7 @@ public class GameMode : MonoBehaviourPunCallbacks
         }
 
         //アーケード
-        if ((GameStart.gameMode1 == "Multi" || GameStart.gameMode1 == "Online") && GameStart.gameMode2 == "Arcade")
+        if ((GameStartHandler.GameMode1 == "Multi" || GameStartHandler.GameMode1 == "Online") && GameStartHandler.GameMode2 == "Arcade")
         {
             for (int i = 0; i < 4; i++)
             {
@@ -188,7 +186,7 @@ public class GameMode : MonoBehaviourPunCallbacks
                 points[i] = 0;
                 teamPoints[i] = 0;
                 pointsInOrder[i] = 0;
-                if (GameStart.teamMode == "FFA")
+                if (GameStartHandler.TeamMode == "FFA")
                 {
                     pointTextGO[i] = GameObject.Find("P" + (i + 1).ToString() + "Point");
                     pointFrame[i] = GameObject.Find("PointFrame" + (i + 1).ToString());
@@ -209,29 +207,29 @@ public class GameMode : MonoBehaviourPunCallbacks
             AdjustTeamFramePos();
 
             //チームタグ表示
-            for (int i = 0; i < GameStart.PlayerCount; i++)
+            for (int i = 0; i < GameStartHandler.PlayerCount; i++)
             {
-                if (GameStart.teamMode != "FFA")
+                if (GameStartHandler.TeamMode != "FFA")
                 {
                     teamTag[i].gameObject.SetActive(true);
-                    teamTagText[i].text = teamTagName[GameStart.playerTeam[i]];
-                    teamTagText[i].color = teamColors[GameStart.playerTeam[i]];
+                    teamTagText[i].text = teamTagName[GameStartHandler.PlayerTeam[i]];
+                    teamTagText[i].color = teamColors[GameStartHandler.PlayerTeam[i]];
                 }
             }
 
             //旗取りモード
-            if (GameStart.stage == 1)
+            if (GameStartHandler.Stage == 1)
             {
-                if (GameStart.teamMode == "FFA")
+                if (GameStartHandler.TeamMode == "FFA")
                 {
-                    for (int i = 0; i < GameStart.PlayerCount; i++) { pointFrame[i].gameObject.SetActive(true);  }
-                    for (int i = 3; i >= GameStart.PlayerCount; i--) { pointFrame[i].gameObject.SetActive(false);}
+                    for (int i = 0; i < GameStartHandler.PlayerCount; i++) { pointFrame[i].gameObject.SetActive(true); }
+                    for (int i = 3; i >= GameStartHandler.PlayerCount; i--) { pointFrame[i].gameObject.SetActive(false); }
                 }
                 else
                 {
-                    for (int i = 0; i < GameStart.PlayerCount; i++)
+                    for (int i = 0; i < GameStartHandler.PlayerCount; i++)
                     {
-                        if (GameStart.teamSize[i] >= 1)
+                        if (GameStartHandler.TeamSize[i] >= 1)
                         {
                             pointFrame[i].gameObject.SetActive(true);
                         }
@@ -240,7 +238,7 @@ public class GameMode : MonoBehaviourPunCallbacks
 
             }
             //サッカーモード
-            if (GameStart.stage == 2)
+            if (GameStartHandler.Stage == 2)
             {
                 //チームレフト
                 pointFrame[0].gameObject.SetActive(true);
@@ -252,7 +250,7 @@ public class GameMode : MonoBehaviourPunCallbacks
 
     void Update()
     {
-        if (GameStart.gameMode1 == "Online" && !GameSetting.allJoin)
+        if (GameStartHandler.GameMode1 == "Online" && !GameSetting.allJoin)
         {
             return;
         }
@@ -263,15 +261,15 @@ public class GameMode : MonoBehaviourPunCallbacks
         }
 
         // 通常ステージ
-        if (GameStart.gameMode2 != "Arcade")
+        if (GameStartHandler.GameMode2 != "Arcade")
         {
             CheckFinish();
         }
         //アーケード
-        if ((GameStart.gameMode1 == "Multi" || GameStart.gameMode1 == "Online") && GameStart.gameMode2 == "Arcade")
+        if ((GameStartHandler.GameMode1 == "Multi" || GameStartHandler.GameMode1 == "Online") && GameStartHandler.GameMode2 == "Arcade")
         {
             //旗取りモード
-            if (GameStart.stage == 1)
+            if (GameStartHandler.Stage == 1)
             {
                 KillSystem();
                 PointDisplay();
@@ -280,7 +278,7 @@ public class GameMode : MonoBehaviourPunCallbacks
                 ShowResult();
             }
             //サッカーモード
-            if (GameStart.stage == 2)
+            if (GameStartHandler.Stage == 2)
             {
                 PointDisplay();
                 checkResult();
@@ -290,7 +288,7 @@ public class GameMode : MonoBehaviourPunCallbacks
         }
 
         // 無限モード
-        if (GameStart.gameMode1 == "Single" && GameStart.gameMode2 == "Arcade")
+        if (GameStartHandler.GameMode1 == "Single" && GameStartHandler.GameMode2 == "Arcade")
         {
             SettingInfinityMode();
         }
@@ -301,7 +299,7 @@ public class GameMode : MonoBehaviourPunCallbacks
         {
             return;
         }
-        if(GameStart.gameMode1 != "Single" && GameStart.gameMode2 == "Arcade") 
+        if (GameStartHandler.GameMode1 != "Single" && GameStartHandler.GameMode2 == "Arcade")
         {
             ShowTeamTag();
         }
@@ -310,15 +308,15 @@ public class GameMode : MonoBehaviourPunCallbacks
     //通常ステージ
     void CheckFinish()
     {
-        if (Goals == GameStart.PlayerCount)
+        if (Goals == GameStartHandler.PlayerCount)
         {
             isGameEnded = true;
             GameSetting.Playable = false;
             TextCanvas.gameObject.SetActive(true);
             ResultPanel.gameObject.SetActive(true);
             ResultPanelFront.gameObject.SetActive(true);
-            Vector2[] iconPos = new Vector2[GameStart.maxPlayer];
-            for (int i = 0; i < GameStart.PlayerCount; i++)
+            Vector2[] iconPos = new Vector2[GameStartHandler.MaxPlayer];
+            for (int i = 0; i < GameStartHandler.PlayerCount; i++)
             {
                 int pId = int.Parse(Regex.Replace(goaledPlayer[i], @"[^0-9]", ""));
                 icons[pId - 1].SetActive(true);
@@ -332,9 +330,9 @@ public class GameMode : MonoBehaviourPunCallbacks
 
     void ShowTeamTag()
     {
-        if (GameStart.teamMode != "FFA")
+        if (GameStartHandler.TeamMode != "FFA")
         {
-            for (int i = 0; i < GameStart.PlayerCount; i++)
+            for (int i = 0; i < GameStartHandler.PlayerCount; i++)
             {
                 if (isDead[i])
                 {
@@ -345,7 +343,7 @@ public class GameMode : MonoBehaviourPunCallbacks
                     teamTag[i].gameObject.SetActive(true);
                 }
             }
-            for (int i = 0; i < GameStart.PlayerCount; i++)
+            for (int i = 0; i < GameStartHandler.PlayerCount; i++)
             {
                 Vector2 tagPos = gameSetting.players[i].transform.position;
                 tagPos.y += 0.68f;
@@ -354,13 +352,13 @@ public class GameMode : MonoBehaviourPunCallbacks
         }
     }
 
-    [PunRPC]
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     public void GoalProcess(int playerid)
     {
         //（オンライン）1位の時winningsプラス１
-        if (GameStart.gameMode1 == "Online" && Goals == 0)
+        if (GameStartHandler.GameMode1 == "Online" && Goals == 0)
         {
-            if(NetWorkMain.GetCustomProps<int[]>("winnings", out var ValueBArray))
+            if (NetWorkMain.GetCustomProps<int[]>("winnings", out var ValueBArray))
             {
                 ValueBArray[playerid - 1]++;
                 NetWorkMain.SetCustomProps<int[]>("winnings", ValueBArray);
@@ -376,24 +374,24 @@ public class GameMode : MonoBehaviourPunCallbacks
             gameSetting.sticks[playerid - 1].gameObject.SetActive(false);
             gameSetting.nameTags[playerid - 1].gameObject.SetActive(false);
         }
-        if(playerid == NetWorkMain.NetWorkId)
+        if (playerid == NetWorkMain.NetWorkId)
         {
             isGoaled = true;
-        } 
+        }
     }
 
     public void CallGoalProcessRPC(int playerId)
     {
-        photonView.RPC(nameof(GoalProcess), RpcTarget.All, playerId);
+        GoalProcess(playerId);
     }
 
     //バトルモード
     void KillSystem()
     {
         //タイマー減少
-        for (int i = 0; i < GameStart.PlayerCount; i++)
+        for (int i = 0; i < GameStartHandler.PlayerCount; i++)
         {
-            for (int j = 0; j < GameStart.PlayerCount; j++)
+            for (int j = 0; j < GameStartHandler.PlayerCount; j++)
             {
                 if (killTimer[i, j] >= 0)
                 {
@@ -413,15 +411,15 @@ public class GameMode : MonoBehaviourPunCallbacks
             KillLogBack.gameObject.SetActive(false);
             KillLogText.text = null;
         }
-        if (GameStart.stage == 2) { KillLogText.text = ""; KillLogBack.gameObject.SetActive(false); }
+        if (GameStartHandler.Stage == 2) { KillLogText.text = ""; KillLogBack.gameObject.SetActive(false); }
     }
 
     void PointDisplay() //ポイント小数点以下切り捨て＆表示
     {
 
-        if (GameStart.teamMode == "FFA")
+        if (GameStartHandler.TeamMode == "FFA")
         {
-            for (int i = 0; i < GameStart.PlayerCount; i++)
+            for (int i = 0; i < GameStartHandler.PlayerCount; i++)
             {
                 pointText[i].text = String.Format("{0:#}", points[i].ToString());
             }
@@ -431,18 +429,18 @@ public class GameMode : MonoBehaviourPunCallbacks
 
             for (int i = 0; i < 4; i++)
             {
-                if (GameStart.stage == 1)
+                if (GameStartHandler.Stage == 1)
                 {
                     teamPoints[i] = 0;
-                }           
+                }
             }
-            for (int i = 0; i < GameStart.PlayerCount; i++)
+            for (int i = 0; i < GameStartHandler.PlayerCount; i++)
             {
-                teamPoints[GameStart.playerTeam[i]] += points[i];
+                teamPoints[GameStartHandler.PlayerTeam[i]] += points[i];
             }
-            for (int i = 0; i < GameStart.PlayerCount; i++)
+            for (int i = 0; i < GameStartHandler.PlayerCount; i++)
             {
-                if (GameStart.teamSize[i] >= 1)
+                if (GameStartHandler.TeamSize[i] >= 1)
                 {
                     pointText[i].text = String.Format("{0:#}", teamPoints[i].ToString());
                 }
@@ -452,9 +450,9 @@ public class GameMode : MonoBehaviourPunCallbacks
 
     }
 
-    IEnumerator ShowBackToTitleButton() 
+    private async UniTask ShowBackToTitleButton()
     {
-        yield return new WaitForSeconds(3.0f);
+        await UniTask.Delay(3000);
         backTitleButton.gameObject.SetActive(true);
     }
 
@@ -465,9 +463,9 @@ public class GameMode : MonoBehaviourPunCallbacks
             isTimeFinished = true;
             isGameEnded = true;
             GameSetting.Playable = false;
-            if (GameStart.gameMode2 != "Arcade") 
+            if (GameStartHandler.GameMode2 != "Arcade")
             {
-                for (int i = 0; i < GameStart.PlayerCount; i++)
+                for (int i = 0; i < GameStartHandler.PlayerCount; i++)
                 {
                     gameSetting.players[i].gameObject.SetActive(false);
                     gameSetting.sticks[i].gameObject.SetActive(false);
@@ -477,28 +475,27 @@ public class GameMode : MonoBehaviourPunCallbacks
                 ResultPanelFront.gameObject.SetActive(true);
                 TextCanvas.gameObject.SetActive(true);
             }
-            else 
+            else
             {
-                //ResultPanelArcade.gameObject.SetActive(true);
-                StartCoroutine(ShowBackToTitleButton());
+                ShowBackToTitleButton().Forget();
             }
-          
+
 
 
             if (count == 0)
             {
-                if (GameStart.teamMode == "FFA")
+                if (GameStartHandler.TeamMode == "FFA")
                 {
                     //ポイント並び替え
                     points.CopyTo(pointsInOrder, 0);
                     Array.Sort(pointsInOrder);
                     Array.Reverse(pointsInOrder);
-                    int num = GameStart.PlayerCount - 1;
+                    int num = GameStartHandler.PlayerCount - 1;
                     bool[] ignore = { false, false, false, false };
                     //順位計測
-                    for (int i = GameStart.PlayerCount - 1; i >= 0; i--)
+                    for (int i = GameStartHandler.PlayerCount - 1; i >= 0; i--)
                     {
-                        for (int j = GameStart.PlayerCount - 1; j >= 0; j--)
+                        for (int j = GameStartHandler.PlayerCount - 1; j >= 0; j--)
                         {
                             Debug.Log("j==" + j);
                             if (pointsInOrder[j] == points[i])
@@ -506,7 +503,7 @@ public class GameMode : MonoBehaviourPunCallbacks
 
                                 playerNameByRank[j] = "Player" + (i + 1).ToString();
                                 playerRank[i] = j;
-                                if (GameStart.gameMode1 == "Online" && j == 0)
+                                if (GameStartHandler.GameMode1 == "Online" && j == 0)
                                 {
                                     if (NetWorkMain.GetCustomProps<int[]>("winnings", out var ValueCArray))
                                     {
@@ -517,13 +514,13 @@ public class GameMode : MonoBehaviourPunCallbacks
                             }
                         }
                     }
-                    for (int i = GameStart.PlayerCount - 1; i >= 0; i--)
+                    for (int i = GameStartHandler.PlayerCount - 1; i >= 0; i--)
                     {
-                            if (points[i] != points[0])
-                            {
-                                isDraw = false;
-                                break;
-                            }
+                        if (points[i] != points[0])
+                        {
+                            isDraw = false;
+                            break;
+                        }
                     }
                 }
                 else
@@ -532,33 +529,33 @@ public class GameMode : MonoBehaviourPunCallbacks
                     teamPoints.CopyTo(pointsInOrder, 0);
                     Array.Sort(pointsInOrder);
                     Array.Reverse(pointsInOrder);
-                    int num = GameStart.teamCount - 1;
+                    int num = GameStartHandler.TeamCount - 1;
                     bool[] ignore = { false, false, false, false };
                     //順位計測
-                    for (int i = GameStart.PlayerCount - 1; i >= 0; i--)
+                    for (int i = GameStartHandler.PlayerCount - 1; i >= 0; i--)
                     {
-                        if (GameStart.teamSize[i] >= 1)
+                        if (GameStartHandler.TeamSize[i] >= 1)
                         {
-                            for (int j = GameStart.teamCount - 1; j >= 0; j--)
+                            for (int j = GameStartHandler.TeamCount - 1; j >= 0; j--)
                             {
-                                    if (pointsInOrder[j] == teamPoints[i])
+                                if (pointsInOrder[j] == teamPoints[i])
+                                {
+                                    teamsInOrder[j] = "Team" + teamTagName[i];
+                                    for (int l = 0; l < GameStartHandler.PlayerCount; l++)
                                     {
-                                        teamsInOrder[j] = "Team" + teamTagName[i];
-                                        for (int l = 0; l < GameStart.PlayerCount; l++)
+                                        if (GameStartHandler.PlayerTeam[l] == i)
                                         {
-                                            if (GameStart.playerTeam[l] == i)
-                                            {
-                                                playerRank[l] = j;
-                                                Debug.Log("Player" + (l + 1).ToString() + "の順位を" + (j + 1).ToString() + "に");
-                                            }
+                                            playerRank[l] = j;
+                                            Debug.Log("Player" + (l + 1).ToString() + "の順位を" + (j + 1).ToString() + "に");
                                         }
                                     }
+                                }
                             }
                         }
                         float firstValue = -1;
-                        for (int k = GameStart.PlayerCount - 1; k >= 0; k--)
+                        for (int k = GameStartHandler.PlayerCount - 1; k >= 0; k--)
                         {
-                            if (GameStart.teamSize[k] >= 1)
+                            if (GameStartHandler.TeamSize[k] >= 1)
                             {
                                 if (firstValue == -1) { firstValue = teamPoints[k]; }
                                 if (teamPoints[k] != firstValue)
@@ -569,14 +566,14 @@ public class GameMode : MonoBehaviourPunCallbacks
                             }
                         }
                     }
- 
+
                 }
                 count = 1;
             }
-            for (int i = 0; i < GameStart.PlayerCount; i++)
+            for (int i = 0; i < GameStartHandler.PlayerCount; i++)
             {
                 //王冠表示
-                if (!isDraw) 
+                if (!isDraw)
                 {
                     if (playerRank[i] < 3)
                     {
@@ -587,7 +584,7 @@ public class GameMode : MonoBehaviourPunCallbacks
                         crownObj[i].name = "Crown" + (playerRank[i] + 1).ToString();
                     }
                 }
-                else 
+                else
                 {
                     drawTextGO.gameObject.SetActive(true);
                 }
@@ -595,9 +592,9 @@ public class GameMode : MonoBehaviourPunCallbacks
         }
         if (count == 1 && !isDraw)
         {
-            for (int h = 0; h < GameStart.PlayerCount; h++)
+            for (int h = 0; h < GameStartHandler.PlayerCount; h++)
             {
-                if (playerRank[h] < 3) 
+                if (playerRank[h] < 3)
                 {
                     Vector2 crownPos = gameSetting.players[h].transform.position;
                     crownPos.y += 1f;
@@ -611,7 +608,7 @@ public class GameMode : MonoBehaviourPunCallbacks
     void PlayParticle()
     {
         //パーティクル再生
-        for (int i = 0; i < GameStart.PlayerCount; i++)
+        for (int i = 0; i < GameStartHandler.PlayerCount; i++)
         {
             particlePos[i] = gameSetting.nameTags[i].gameObject.transform.position;
             particlePos[i].y += 0.3f;
@@ -633,22 +630,22 @@ public class GameMode : MonoBehaviourPunCallbacks
         if (isTimeFinished && !showResultTriggerd)
         {
             //リザルト表示
-            Vector2[] iconPos = new Vector2[GameStart.maxPlayer];
-            if (GameStart.teamMode == "FFA")
+            Vector2[] iconPos = new Vector2[GameStartHandler.MaxPlayer];
+            if (GameStartHandler.TeamMode == "FFA")
             {
-                for (int i = 0; i < GameStart.PlayerCount; i++)
+                for (int i = 0; i < GameStartHandler.PlayerCount; i++)
                 {
                     int pId = int.Parse(Regex.Replace(playerNameByRank[i], @"[^0-9]", ""));
                     icons[pId - 1].SetActive(true);
                     iconPos[pId - 1] = resultTextGO[i].transform.position;
                     iconPos[pId - 1].x -= 0.7f;
                     icons[pId - 1].transform.position = iconPos[pId - 1];
-                    resultText[i].text = "#" + (i + 1) + "     " + pointsInOrder[i] + "point";          
+                    resultText[i].text = "#" + (i + 1) + "     " + pointsInOrder[i] + "point";
                 }
             }
             else
             {
-                for (int i = 0; i < GameStart.teamCount; i++)
+                for (int i = 0; i < GameStartHandler.TeamCount; i++)
                 {
                     resultText[i].text = "#" + (i + 1) + "   " + teamsInOrder[i] + "   " + pointsInOrder[i] + "point";
                 }
@@ -696,7 +693,7 @@ public class GameMode : MonoBehaviourPunCallbacks
             // Time.deltaTime を使用して時間を減少させる
             countdown -= Time.deltaTime;
             // 次のフレームまで待機
-            yield return null; 
+            yield return null;
         }
         ballCountText.text = null;
 
@@ -710,19 +707,19 @@ public class GameMode : MonoBehaviourPunCallbacks
     void AdjustTeamFramePos()
     {
         //フラッグモードの時
-        if (GameStart.stage == 1)
+        if (GameStartHandler.Stage == 1)
         {
             for (int i = 0; i < pointFrame.Length; i++)
             {
                 //チームフレームを初期位置に設定
                 framePos[i] = pointFrame[0].transform.position;
                 //右にずらす
-                framePos[i].x += (i * (frameSpace / (-1 + (float)GameStart.PlayerCount)));
+                framePos[i].x += i * (frameSpace / (-1 + (float)GameStartHandler.PlayerCount));
                 pointFrame[i].transform.position = framePos[i];
             }
         }
         //サッカーモードの時
-        if (GameStart.stage == 2)
+        if (GameStartHandler.Stage == 2)
         {
             for (int i = 0; i < 2; i++)
             {
@@ -736,31 +733,31 @@ public class GameMode : MonoBehaviourPunCallbacks
     }
 
 
-     void SetHighScore()
+    void SetHighScore()
     {
-        if (GameStart.gameMode1 == "Single")
+        if (GameStartHandler.GameMode1 == "Single")
         {
-            if (GameStart.gameMode2 == "Nomal")
+            if (GameStartHandler.GameMode2 == "Nomal")
             {
-                if (ShowHighScore.singleHighScore[GameStart.stage - 1] == 0) { ShowHighScore.singleHighScore[GameStart.stage - 1] = (int)(GameMode.clearTime[0]); }
-                ShowHighScore.singleHighScore[GameStart.stage - 1] = Mathf.Min((int)(GameMode.clearTime[0]), (int)(ShowHighScore.singleHighScore[GameStart.stage - 1]));
+                if (ShowHighScore.singleHighScore[GameStartHandler.Stage - 1] == 0) { ShowHighScore.singleHighScore[GameStartHandler.Stage - 1] = (int)GameMode.clearTime[0]; }
+                ShowHighScore.singleHighScore[GameStartHandler.Stage - 1] = Mathf.Min((int)GameMode.clearTime[0], (int)ShowHighScore.singleHighScore[GameStartHandler.Stage - 1]);
             }
             else
             {
-                if (ShowHighScore.singleHighScore[GameStart.stage - 1] == 0) { ShowHighScore.singleArcadeHighScore[GameStart.stage - 1] = (int)(GenerateStage.maxHeight); }
-                ShowHighScore.singleArcadeHighScore[GameStart.stage - 1] = Mathf.Max((int)(GenerateStage.maxHeight), (int)(ShowHighScore.singleArcadeHighScore[GameStart.stage - 1]));
+                if (ShowHighScore.singleHighScore[GameStartHandler.Stage - 1] == 0) { ShowHighScore.singleArcadeHighScore[GameStartHandler.Stage - 1] = (int)GenerateStage.maxHeight; }
+                ShowHighScore.singleArcadeHighScore[GameStartHandler.Stage - 1] = Mathf.Max((int)GenerateStage.maxHeight, (int)ShowHighScore.singleArcadeHighScore[GameStartHandler.Stage - 1]);
             }
         }
         else
         {
-            if (GameStart.gameMode2 == "Nomal")
+            if (GameStartHandler.GameMode2 == "Nomal")
             {
-                if (ShowHighScore.multiHighScore[GameStart.stage - 1] == 0) { ShowHighScore.multiHighScore[GameStart.stage - 1] = (int)(GameMode.clearTime[0]); }
-                ShowHighScore.multiHighScore[GameStart.stage - 1] = Mathf.Min((int)(GameMode.clearTime[0]), (int)(ShowHighScore.multiHighScore[GameStart.stage - 1]));
+                if (ShowHighScore.multiHighScore[GameStartHandler.Stage - 1] == 0) { ShowHighScore.multiHighScore[GameStartHandler.Stage - 1] = (int)GameMode.clearTime[0]; }
+                ShowHighScore.multiHighScore[GameStartHandler.Stage - 1] = Mathf.Min((int)GameMode.clearTime[0], (int)ShowHighScore.multiHighScore[GameStartHandler.Stage - 1]);
             }
             else
             {
-                ShowHighScore.multiArcadeHighScore[GameStart.stage - 1] = Mathf.Max((int)(GameMode.pointsInOrder[0]), (int)(ShowHighScore.multiHighScore[GameStart.stage - 1]));
+                ShowHighScore.multiArcadeHighScore[GameStartHandler.Stage - 1] = Mathf.Max((int)GameMode.pointsInOrder[0], (int)ShowHighScore.multiHighScore[GameStartHandler.Stage - 1]);
             }
         }
     }

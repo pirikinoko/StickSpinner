@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using Fusion;
 using UnityEngine;
 public class ArcadeTeamChange : NetworkBehaviour
@@ -11,17 +9,17 @@ public class ArcadeTeamChange : NetworkBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        lastTeam = GameStart.playerTeam[NetWorkMain.NetWorkId];
+        lastTeam = GameStartHandler.PlayerTeam[NetWorkMain.NetWorkId];
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(GameStart.gameMode1 == "Multi") 
+        if (GameStartHandler.GameMode1 == "Multi")
         {
             ArcadeControll();
         }
-        else 
+        else
         {
             TeamChange();
         }
@@ -31,33 +29,33 @@ public class ArcadeTeamChange : NetworkBehaviour
     void TeamChange()
     {
         int targetId = NetWorkMain.NetWorkId - 1;
-        if (GameStart.PlayerCount == 2) { return; }
-        if (GameStart.stage == 1)
+        if (GameStartHandler.PlayerCount == 2) { return; }
+        if (GameStartHandler.Stage == 1)
         {
             /*ボタン選択（縦）*/
             if (lastLstickX[0] > 0.1f || lastLstickX[0] < -0.1f || lastLstickY[0] > 0.1f || lastLstickY[0] < -0.1f) { return; }
             /*Lスティック横*/
             if (ControllerInput.LstickX[0] > 0.5f || Input.GetKeyDown(keyRight[0]))
             {
-                if (GameStart.playerTeam[targetId] < 3)
+                if (GameStartHandler.PlayerTeam[targetId] < 3)
                 {
-                    GameStart.playerTeam[targetId]++;
+                    GameStartHandler.PlayerTeam[targetId]++;
                     SoundEffect.soundTrigger[3] = 1;
-                    if (GameStart.teamSize[GameStart.playerTeam[targetId]] > GameStart.PlayerCount - 2)
+                    if (GameStartHandler.TeamSize[GameStartHandler.PlayerTeam[targetId]] > GameStartHandler.PlayerCount - 2)
                     {
-                        GameStart.playerTeam[targetId] -= 1;
+                        GameStartHandler.PlayerTeam[targetId] -= 1;
                     }
                 }
             }
             else if (ControllerInput.LstickX[0] < -0.5f || Input.GetKeyDown(keyLeft[0]))
             {
-                if (GameStart.playerTeam[targetId] > 0)
+                if (GameStartHandler.PlayerTeam[targetId] > 0)
                 {
-                    GameStart.playerTeam[targetId]--;
+                    GameStartHandler.PlayerTeam[targetId]--;
                     SoundEffect.soundTrigger[3] = 1;
-                    if (GameStart.teamSize[GameStart.playerTeam[targetId]] > GameStart.PlayerCount - 2)
+                    if (GameStartHandler.TeamSize[GameStartHandler.PlayerTeam[targetId]] > GameStartHandler.PlayerCount - 2)
                     {
-                        GameStart.playerTeam[targetId] += 1;
+                        GameStartHandler.PlayerTeam[targetId] += 1;
                     }
                 }
             }
@@ -66,25 +64,25 @@ public class ArcadeTeamChange : NetworkBehaviour
             /*Lスティック縦*/
             if (ControllerInput.LstickY[0] > 0.5f)
             {
-                if (GameStart.playerTeam[targetId] > 1)
+                if (GameStartHandler.PlayerTeam[targetId] > 1)
                 {
-                    GameStart.playerTeam[targetId] -= 2;
+                    GameStartHandler.PlayerTeam[targetId] -= 2;
                     SoundEffect.soundTrigger[3] = 1;
-                    if (GameStart.teamSize[GameStart.playerTeam[targetId]] > GameStart.PlayerCount - 2)
+                    if (GameStartHandler.TeamSize[GameStartHandler.PlayerTeam[targetId]] > GameStartHandler.PlayerCount - 2)
                     {
-                        GameStart.playerTeam[targetId] += 2;
+                        GameStartHandler.PlayerTeam[targetId] += 2;
                     }
                 }
             }
             else if (ControllerInput.LstickY[0] < -0.5f)
             {
-                if (GameStart.playerTeam[targetId] < 2)
+                if (GameStartHandler.PlayerTeam[targetId] < 2)
                 {
-                    GameStart.playerTeam[targetId] += 2;
+                    GameStartHandler.PlayerTeam[targetId] += 2;
                     SoundEffect.soundTrigger[3] = 1;
-                    if (GameStart.teamSize[GameStart.playerTeam[targetId]] > GameStart.PlayerCount - 2)
+                    if (GameStartHandler.TeamSize[GameStartHandler.PlayerTeam[targetId]] > GameStartHandler.PlayerCount - 2)
                     {
-                        GameStart.playerTeam[targetId] -= 2;
+                        GameStartHandler.PlayerTeam[targetId] -= 2;
                     }
                 }
             }
@@ -98,115 +96,115 @@ public class ArcadeTeamChange : NetworkBehaviour
             /*Lスティック横*/
             if (ControllerInput.LstickX[0] > 0.5f || Input.GetKeyDown(keyRight[0]))
             {
-                if (GameStart.playerTeam[targetId] < 1)
+                if (GameStartHandler.PlayerTeam[targetId] < 1)
                 {
-                    GameStart.playerTeam[targetId]++;
+                    GameStartHandler.PlayerTeam[targetId]++;
                     SoundEffect.soundTrigger[3] = 1;
-                    if (GameStart.teamSize[GameStart.playerTeam[targetId]] > GameStart.PlayerCount - 2)
+                    if (GameStartHandler.TeamSize[GameStartHandler.PlayerTeam[targetId]] > GameStartHandler.PlayerCount - 2)
                     {
-                        GameStart.playerTeam[targetId] -= 1;
+                        GameStartHandler.PlayerTeam[targetId] -= 1;
                     }
                 }
             }
             else if (ControllerInput.LstickX[0] < -0.5f || Input.GetKeyDown(keyLeft[0]))
             {
-                if (GameStart.playerTeam[targetId] > 0)
+                if (GameStartHandler.PlayerTeam[targetId] > 0)
                 {
-                    GameStart.playerTeam[targetId]--;
+                    GameStartHandler.PlayerTeam[targetId]--;
                     SoundEffect.soundTrigger[3] = 1;
-                    if (GameStart.teamSize[GameStart.playerTeam[targetId]] > GameStart.PlayerCount - 2)
+                    if (GameStartHandler.TeamSize[GameStartHandler.PlayerTeam[targetId]] > GameStartHandler.PlayerCount - 2)
                     {
-                        GameStart.playerTeam[targetId] += 1;
+                        GameStartHandler.PlayerTeam[targetId] += 1;
                     }
                 }
             }
             /*Lスティック横*/
         }
-        Debug.Log("GameStart.playerTeam[targetId]:" + GameStart.playerTeam[targetId] + "   lastTeam:" + lastTeam);
-        if (GameStart.playerTeam[targetId] != lastTeam) 
+        Debug.Log("GameStart.playerTeam[targetId]:" + GameStartHandler.PlayerTeam[targetId] + "   lastTeam:" + lastTeam);
+        if (GameStartHandler.PlayerTeam[targetId] != lastTeam)
         {
-            NetWorkMain.SetCustomProps<int[]>("playerTeam", GameStart.playerTeam);
-            photonView.RPC(nameof(SyncPlayerTeam), RpcTarget.All);
-            lastTeam = GameStart.playerTeam[targetId];
+            NetWorkMain.SetCustomProps<int[]>("playerTeam", GameStartHandler.PlayerTeam);
+            SyncPlayerTeam();
+            lastTeam = GameStartHandler.PlayerTeam[targetId];
         }
-   
+
     }
 
-    [PunRPC]
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     void SyncPlayerTeam()
     {
         ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
         if (NetWorkMain.GetCustomProps<int[]>("playerTeam", out int[] valueA))
         {
-            GameStart.playerTeam = valueA;
+            GameStartHandler.PlayerTeam = valueA;
         }
     }
     void ArcadeControll()
     {
-        if(GameStart.PlayerCount == 2) { return; }
+        if (GameStartHandler.PlayerCount == 2) { return; }
 
-            //チーム選択
-            for (int i = 0; i < GameStart.PlayerCount; i++)
-            {
-                /*ボタン選択（縦）*/
-                if (lastLstickX[i] > 0.1f || lastLstickX[i] < -0.1f || lastLstickY[i] > 0.1f || lastLstickY[i] < -0.1f) { return; }
-                /*Lスティック横*/
-                if (ControllerInput.LstickX[i] > 0.5f || Input.GetKeyDown(keyRight[i]))
-                {
-                    if (GameStart.playerTeam[i] < 3)
-                    {
-                        GameStart.playerTeam[i]++;
-                        SoundEffect.soundTrigger[3] = 1;
-                        if (GameStart.teamSize[GameStart.playerTeam[i]] > GameStart.PlayerCount - 2)
-                        {
-                            GameStart.playerTeam[i] -= 1;
-                        }
-                    }
-                }
-                else if (ControllerInput.LstickX[i] < -0.5f || Input.GetKeyDown(keyLeft[i]))
-                {
-                    if (GameStart.playerTeam[i] > 0)
-                    {
-                        GameStart.playerTeam[i]--;
-                        SoundEffect.soundTrigger[3] = 1;
-                        if (GameStart.teamSize[GameStart.playerTeam[i]] > GameStart.PlayerCount - 2)
-                        {
-                            GameStart.playerTeam[i] += 1;
-                        }
-                    }
-                }
+        //チーム選択
+        for (int i = 0; i < GameStartHandler.PlayerCount; i++)
+        {
+            /*ボタン選択（縦）*/
+            if (lastLstickX[i] > 0.1f || lastLstickX[i] < -0.1f || lastLstickY[i] > 0.1f || lastLstickY[i] < -0.1f) { return; }
             /*Lスティック横*/
-            if (GameStart.stage == 2)
+            if (ControllerInput.LstickX[i] > 0.5f || Input.GetKeyDown(keyRight[i]))
+            {
+                if (GameStartHandler.PlayerTeam[i] < 3)
+                {
+                    GameStartHandler.PlayerTeam[i]++;
+                    SoundEffect.soundTrigger[3] = 1;
+                    if (GameStartHandler.TeamSize[GameStartHandler.PlayerTeam[i]] > GameStartHandler.PlayerCount - 2)
+                    {
+                        GameStartHandler.PlayerTeam[i] -= 1;
+                    }
+                }
+            }
+            else if (ControllerInput.LstickX[i] < -0.5f || Input.GetKeyDown(keyLeft[i]))
+            {
+                if (GameStartHandler.PlayerTeam[i] > 0)
+                {
+                    GameStartHandler.PlayerTeam[i]--;
+                    SoundEffect.soundTrigger[3] = 1;
+                    if (GameStartHandler.TeamSize[GameStartHandler.PlayerTeam[i]] > GameStartHandler.PlayerCount - 2)
+                    {
+                        GameStartHandler.PlayerTeam[i] += 1;
+                    }
+                }
+            }
+            /*Lスティック横*/
+            if (GameStartHandler.Stage == 2)
             {
                 //サッカーモードは2チームしかないため縦の入力を受け付けない
                 return;
             }
-                /*Lスティック縦*/
-                if (ControllerInput.LstickY[i] > 0.5f)
+            /*Lスティック縦*/
+            if (ControllerInput.LstickY[i] > 0.5f)
+            {
+                if (GameStartHandler.PlayerTeam[i] > 1)
                 {
-                    if (GameStart.playerTeam[i] > 1)
+                    GameStartHandler.PlayerTeam[i] -= 2;
+                    SoundEffect.soundTrigger[3] = 1;
+                    if (GameStartHandler.TeamSize[GameStartHandler.PlayerTeam[i]] > GameStartHandler.PlayerCount - 2)
                     {
-                        GameStart.playerTeam[i] -= 2;
-                        SoundEffect.soundTrigger[3] = 1;
-                        if (GameStart.teamSize[GameStart.playerTeam[i]] > GameStart.PlayerCount - 2)
-                        {
-                            GameStart.playerTeam[i] += 2;
-                        }
+                        GameStartHandler.PlayerTeam[i] += 2;
                     }
                 }
-                else if (ControllerInput.LstickY[i] < -0.5f)
+            }
+            else if (ControllerInput.LstickY[i] < -0.5f)
+            {
+                if (GameStartHandler.PlayerTeam[i] < 2)
                 {
-                    if (GameStart.playerTeam[i] < 2)
+                    GameStartHandler.PlayerTeam[i] += 2;
+                    SoundEffect.soundTrigger[3] = 1;
+                    if (GameStartHandler.TeamSize[GameStartHandler.PlayerTeam[i]] > GameStartHandler.PlayerCount - 2)
                     {
-                        GameStart.playerTeam[i] += 2;
-                        SoundEffect.soundTrigger[3] = 1;
-                        if (GameStart.teamSize[GameStart.playerTeam[i]] > GameStart.PlayerCount - 2)
-                        {
-                            GameStart.playerTeam[i] -= 2;
-                        }
+                        GameStartHandler.PlayerTeam[i] -= 2;
                     }
                 }
-                /*Lスティック縦*/
+            }
+            /*Lスティック縦*/
         }
     }
 }

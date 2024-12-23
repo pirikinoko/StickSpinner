@@ -50,7 +50,7 @@ public class RoomButton : NetworkBehaviour
         roomOptions.CustomRoomProperties = customRoomProperties;
         PhotonNetwork.JoinOrCreateRoom(RoomName, roomOptions, TypedLobby.Default);
         RoomNameToPass = RoomName;
-        GameStart.phase++;
+        GameStartHandler.Phase++;
     }
 
 /*    public void SetPlayerCount(int playerCount)

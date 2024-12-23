@@ -158,7 +158,7 @@ public class Settings : MonoBehaviour
             itemPos[i] = item[i].transform.position;
         }
 
-        for (int i = 0; i < GameStart.PlayerCount; i++)
+        for (int i = 0; i < GameStartHandler.PlayerCount; i++)
         {
             if (SettingPanelActive)
             {

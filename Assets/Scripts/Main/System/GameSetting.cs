@@ -1,17 +1,13 @@
+using Cysharp.Threading.Tasks;
+using Cysharp.Threading.Tasks.Linq;
+using DG.Tweening;
+using ExitGames.Client.Photon;
+using Fusion;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.InputSystem;
-using UnityEngine.SceneManagement;
 using UnityEngine.Tilemaps;
-using Fusion;
-using Cysharp.Threading.Tasks;
-using DG.Tweening;
-using System.Threading;
-using Cysharp.Threading.Tasks.Linq;
-using ExitGames.Client.Photon;
+using UnityEngine.UI;
 
 public class GameSetting : NetworkBehaviour
 {
@@ -44,19 +40,19 @@ public class GameSetting : NetworkBehaviour
     CameraControl cameraControl;
 
     [HideInInspector]
-    public GameObject[]? players = new GameObject[GameStart.maxPlayer];
+    public GameObject[]? players = new GameObject[GameStartHandler.MaxPlayer];
 
     [HideInInspector]
-    public GameObject[] sticks = new GameObject[GameStart.maxPlayer];
+    public GameObject[] sticks = new GameObject[GameStartHandler.MaxPlayer];
 
     [HideInInspector]
-    public GameObject[] nameTags = new GameObject[GameStart.maxPlayer];
+    public GameObject[] nameTags = new GameObject[GameStartHandler.MaxPlayer];
 
     [HideInInspector]
-    public GameObject[] deadTimer = new GameObject[GameStart.maxPlayer];
+    public GameObject[] deadTimer = new GameObject[GameStartHandler.MaxPlayer];
 
-    Vector2[] nameTagPos = new Vector2[GameStart.maxPlayer];
-    Vector2[,] startPos = new Vector2[GameStart.maxPlayer, GameStart.maxPlayer];
+    Vector2[] nameTagPos = new Vector2[GameStartHandler.MaxPlayer];
+    Vector2[,] startPos = new Vector2[GameStartHandler.MaxPlayer, GameStartHandler.MaxPlayer];
 
     string[] startText = { "スタート", "Start" };
 
@@ -110,17 +106,17 @@ public class GameSetting : NetworkBehaviour
     const int KeyboardMode = 5;
     const int ControllerMode = 6;
 
-    public static Vector2[] respownPos = new Vector2[GameStart.maxPlayer];
-    GameObject[] defaultPosGO = new GameObject[GameStart.maxPlayer];
+    public static Vector2[] respownPos = new Vector2[GameStartHandler.MaxPlayer];
+    GameObject[] defaultPosGO = new GameObject[GameStartHandler.MaxPlayer];
 
     SaveData data;
     private IngameLog ingameLog;
 
 
-    [PunRPC]
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     private void RPCSetStickPos()
     {
-        for (int i = 0; i < GameStart.PlayerCount; i++)
+        for (int i = 0; i < GameStartHandler.PlayerCount; i++)
         {
             int playerID = i + 1;
             if (GameObject.Find("Player" + playerID))
@@ -165,7 +161,7 @@ public class GameSetting : NetworkBehaviour
         }
 
         //ステージのアクティブ管理
-        if (GameStart.gameMode1 == "Single")
+        if (GameStartHandler.GameMode1 == "Single")
         {
             quickStartingPanel.SetActive(false);
             playTime = 0;
@@ -175,14 +171,14 @@ public class GameSetting : NetworkBehaviour
                 battleModeUI[i].gameObject.SetActive(false);
             }
             //モードごとの初期化
-            switch (GameStart.gameMode2)
+            switch (GameStartHandler.GameMode2)
             {
                 case "Nomal":
-                    stageObjectSingle[GameStart.stage - 1].gameObject.SetActive(true);
+                    stageObjectSingle[GameStartHandler.Stage - 1].gameObject.SetActive(true);
                     tilemap.color = new Color32(50, 50, 50, 255);
                     break;
                 case "Arcade":
-                    stageObjectSingleArcade[GameStart.stage - 1].gameObject.SetActive(true);
+                    stageObjectSingleArcade[GameStartHandler.Stage - 1].gameObject.SetActive(true);
                     tilemap.color = new Color32(50, 50, 50, 255);
                     playTimeTx.text = GenerateStage.maxHeight + "m";
                     break;
@@ -191,18 +187,18 @@ public class GameSetting : NetworkBehaviour
         else
         {
             tilemap.color = new Color32(50, 50, 50, 255);
-            switch (GameStart.gameMode2)
+            switch (GameStartHandler.GameMode2)
             {
                 case "Nomal":
-                    stageObjectMulti[GameStart.stage - 1].gameObject.SetActive(true);
+                    stageObjectMulti[GameStartHandler.Stage - 1].gameObject.SetActive(true);
                     ingameLog.GenerateIngameBanner("ゲームモード:レース　 ゴールを目指そう");
                     break;
 
                 case "Arcade":
-                    stageObjectMultiArcade[GameStart.stage - 1].gameObject.SetActive(true);
-                    playTime = GameStart.flagTimeLimit;
-                    elapsedTime = GameStart.flagTimeLimit;
-                    playTimeTx.text = GameStart.flagTimeLimit.ToString();
+                    stageObjectMultiArcade[GameStartHandler.Stage - 1].gameObject.SetActive(true);
+                    playTime = GameStartHandler.FlagTimeLimit;
+                    elapsedTime = GameStartHandler.FlagTimeLimit;
+                    playTimeTx.text = GameStartHandler.FlagTimeLimit.ToString();
                     for (int i = 0; i < battleModeUI.Length; i++)
                     {
                         battleModeUI[i].gameObject.SetActive(true);
@@ -217,9 +213,9 @@ public class GameSetting : NetworkBehaviour
     private async UniTask AfterAllJoin()
     {
         //プレイヤー生成
-        if (GameStart.gameMode1 == "Online")
+        if (GameStartHandler.GameMode1 == "Online")
         {
-            if (GameStart.gameMode2 != "Arcade")
+            if (GameStartHandler.GameMode2 != "Arcade")
             {
                 for (int i = 0; i < battleModeUI.Length; i++)
                 {
@@ -239,23 +235,23 @@ public class GameSetting : NetworkBehaviour
         Playable = false;
     }
 
-    void SetRespownPos() 
+    void SetRespownPos()
     {
         //マルチプレイ時のスポーン地点設定
-        if (GameStart.gameMode1 != "Single")
+        if (GameStartHandler.GameMode1 != "Single")
         {
             int leftTeamCount = 0, rightTeamCount = 0;
-            for (int i = 0; i < GameStart.maxPlayer; i++)
+            for (int i = 0; i < GameStartHandler.MaxPlayer; i++)
             {
                 //サッカーモード時のスポーン地点設定
-                if (GameStart.gameMode2 == "Arcade" && GameStart.stage == 2)
+                if (GameStartHandler.GameMode2 == "Arcade" && GameStartHandler.Stage == 2)
                 {
-                    if (GameStart.playerTeam[i] == 0)
+                    if (GameStartHandler.PlayerTeam[i] == 0)
                     {
                         defaultPosGO[i] = GameObject.Find("LeftDefaultPlayerPos" + (leftTeamCount + 1).ToString());
                         leftTeamCount++;
                     }
-                    else if (GameStart.playerTeam[i] == 1)
+                    else if (GameStartHandler.PlayerTeam[i] == 1)
                     {
                         defaultPosGO[i] = GameObject.Find("RightDefaultPlayerPos" + (rightTeamCount + 1).ToString());
                         rightTeamCount++;
@@ -280,7 +276,7 @@ public class GameSetting : NetworkBehaviour
             defaultPosGO[0] = GameObject.Find("DefaultPlayerPos1");
             respownPos[0] = defaultPosGO[0].gameObject.transform.position;
             defaultPosGO[0].GetComponent<SpriteRenderer>().enabled = false;
-            for (int i = 0; i < GameStart.maxPlayer; i++)
+            for (int i = 0; i < GameStartHandler.MaxPlayer; i++)
             {
                 GameObject tmpGO = GameObject.Find("DefaultPlayerPos" + (i + 1).ToString());
                 if (tmpGO != null)
@@ -290,21 +286,48 @@ public class GameSetting : NetworkBehaviour
             }
         }
     }
-    void InstantiatePlayers() 
+    void InstantiatePlayers()
     {
         //オンライン　ネットワークオブジェクトとしてプレイヤー生成
-        if (GameStart.gameMode1 == "Online")
+        if (GameStartHandler.GameMode1 == "Online")
         {
             var position = respownPos[NetWorkMain.NetWorkId - 1];
-            PhotonNetwork.Instantiate("Player" + NetWorkMain.NetWorkId, position, Quaternion.identity);
-            photonView.RPC("RPCSetStickPos", RpcTarget.All);
-            if (GameStart.gameMode2 == "Arcade" && GameStart.stage == 2 && NetWorkMain.NetWorkId == NetWorkMain.leaderId)
+
+            // プレイヤーの生成
+            if (Object.HasStateAuthority) // StateAuthorityを持つ側で生成
             {
-                Transform parentTrans = GameObject.Find("Soccer").GetComponent<Transform>().transform;
-                GameObject ballObj = PhotonNetwork.Instantiate("SoccerBall", new Vector2(0, -2f), Quaternion.identity);
-                ballObj.GetComponent<Transform>().transform.SetParent(parentTrans);
-                ballObj.name = "SoccerBall";
+                // プレイヤーPrefabを事前にNetworkPrefabリストに登録しておく必要があります
+                var playerPrefab = (GameObject)Resources.Load("Player" + NetWorkMain.NetWorkId);
+                if (playerPrefab != null)
+                {
+                    Runner.Spawn(playerPrefab, position, Quaternion.identity, Runner.LocalPlayer);
+                }
             }
+
+            // スティック位置設定用のRPC呼び出し
+            if (Object.HasStateAuthority) // StateAuthorityがある場合にのみ送信
+            {
+                RPCSetStickPos();
+            }
+
+            // サッカーボール生成 (ゲームモードとステージ条件付き)
+            if (GameStartHandler.GameMode2 == "Arcade" && GameStartHandler.Stage == 2 && NetWorkMain.NetWorkId == NetWorkMain.leaderId)
+            {
+                if (Object.HasStateAuthority) // StateAuthorityを持つ場合に生成
+                {
+                    var ballPrefab = (GameObject)Resources.Load("SoccerBall");
+                    if (ballPrefab != null)
+                    {
+                        var ballObj = Runner.Spawn(ballPrefab, new Vector2(0, -2f), Quaternion.identity, Runner.LocalPlayer);
+
+                        // 親の設定
+                        Transform parentTrans = GameObject.Find("Soccer").transform;
+                        ballObj.transform.SetParent(parentTrans);
+                        ballObj.name = "SoccerBall";
+                    }
+                }
+            }
+
         }
         //オフライン時のプレイヤー生成処理
         else
@@ -318,7 +341,7 @@ public class GameSetting : NetworkBehaviour
                 players[i].name = "Player" + PlayerId;
                 sticks[i] = GameObject.Find("Stick" + PlayerId.ToString());
             }
-            if (GameStart.gameMode1 == "Multi" && GameStart.gameMode2 == "Arcade" && GameStart.stage == 2)
+            if (GameStartHandler.GameMode1 == "Multi" && GameStartHandler.GameMode2 == "Arcade" && GameStartHandler.Stage == 2)
             {
                 Transform parentTrans = GameObject.Find("Soccer").GetComponent<Transform>().transform;
                 GameObject ballObj = Instantiate(Resources.Load("SoccerBall") as GameObject, new Vector2(0, -2f), Quaternion.identity);
@@ -328,20 +351,20 @@ public class GameSetting : NetworkBehaviour
         }
     }
 
-    void InitializePlayers() 
+    void InitializePlayers()
     {
-        for (int i = 0; i < GameStart.PlayerCount; i++)
+        for (int i = 0; i < GameStartHandler.PlayerCount; i++)
         {
             nameTags[i].gameObject.SetActive(true);
             players[i].gameObject.transform.position = respownPos[i];
             sticks[i].gameObject.transform.position = respownPos[i];
         }
-        for (int i = GameStart.maxPlayer - 1; i >= GameStart.PlayerCount; i--)
+        for (int i = GameStartHandler.MaxPlayer - 1; i >= GameStartHandler.PlayerCount; i--)
         {
             nameTags[i].gameObject.SetActive(false);
         }
 
-        for (int i = 0; i < GameStart.maxPlayer; i++)
+        for (int i = 0; i < GameStartHandler.MaxPlayer; i++)
         {
             deadTimer[i] = GameObject.Find("P" + (i + 1).ToString() + "CountDown");
             deadTimer[i].SetActive(false);
@@ -349,11 +372,11 @@ public class GameSetting : NetworkBehaviour
     }
     private async UniTask GetPlayers()
     {
-        if (GameStart.gameMode1 != "Online") 
+        if (GameStartHandler.GameMode1 != "Online")
         {
             return;
         }
-        for (int i = 0; i < GameStart.PlayerCount; i++)
+        for (int i = 0; i < GameStartHandler.PlayerCount; i++)
         {
             int id = i + 1;
             bool isPlayerGot = false;
@@ -369,7 +392,7 @@ public class GameSetting : NetworkBehaviour
                 }
                 await UniTask.Delay(100);
             }
-          
+
             if (players[i].name != "Player" + id)
             {
                 players[i].name = "Player" + id;
@@ -379,12 +402,12 @@ public class GameSetting : NetworkBehaviour
 
 
     }
-    void CheckIsSetUpEnded() 
+    void CheckIsSetUpEnded()
     {
         setupEnded = true;
-        for (int i = 0; i < GameStart.PlayerCount; i++)
+        for (int i = 0; i < GameStartHandler.PlayerCount; i++)
         {
-            if (players[i] == null) 
+            if (players[i] == null)
             {
                 setupEnded = false;
             }
@@ -399,17 +422,17 @@ public class GameSetting : NetworkBehaviour
     private async UniTask Update()
     {
         CheckAllPlayersJoined();
-        if (!setupEnded) 
+        if (!setupEnded)
         {
             CheckIsSetUpEnded();
         }
-        if (GameStart.gameMode1 == "Online" && !allJoin)
+        if (GameStartHandler.GameMode1 == "Online" && !allJoin)
         {
             return;
         }
         if (gameStartMethodInvoked == false)
         {
-            if (GameStart.gameMode1 == "Online")
+            if (GameStartHandler.GameMode1 == "Online")
             {
                 if (!coroutineEnded)
                 {
@@ -422,9 +445,9 @@ public class GameSetting : NetworkBehaviour
         }
         if (cameraControl.isFirstAnimationEnded && !startTimerInvoked)
         {
-            if(GameStart.gameMode1 == "Online") 
+            if (GameStartHandler.GameMode1 == "Online")
             {
-                if (PhotonNetwork.IsMasterClient)
+                if (Runner.IsServer)
                 {
                     RaiseStartTimerEvent();
                 }
@@ -434,16 +457,16 @@ public class GameSetting : NetworkBehaviour
             startTimerInvoked = true;
             await StartTimer();
         }
-       // CheckPlayersLeft();
+        // CheckPlayersLeft();
         SwichUI();
         GameTimeManagement();
-        CheckPlayersLeft(); 
+        CheckPlayersLeft();
     }
 
     private void CheckAllPlayersJoined()
     {
         //プレイヤーのシーン遷移確認
-        if (GameStart.gameMode1 == "Online")
+        if (GameStartHandler.GameMode1 == "Online")
         {
             if (NetWorkMain.GetCustomProps<bool[]>("isJoined", out var ValueArrayA))
             {
@@ -452,10 +475,10 @@ public class GameSetting : NetworkBehaviour
             }
         }
 
-        if (GameStart.gameMode1 != "Online") 
-        { 
-            allJoin =  true;
-            return; 
+        if (GameStartHandler.GameMode1 != "Online")
+        {
+            allJoin = true;
+            return;
         }
 
         if (!allJoin)
@@ -463,7 +486,7 @@ public class GameSetting : NetworkBehaviour
             StartCoroutine(OpenQuickPanel());
             if (NetWorkMain.GetCustomProps<bool[]>("isJoined", out var ValueArrayA))
             {
-                for (int i = 0; i < GameStart.PlayerCount; i++)
+                for (int i = 0; i < GameStartHandler.PlayerCount; i++)
                 {
                     if (!ValueArrayA[i])
                     {
@@ -489,14 +512,6 @@ public class GameSetting : NetworkBehaviour
             countDownText.text = i.ToString();
             SoundEffect.soundTrigger[3] = 1;
             CountDownGO.gameObject.transform.DOScale(1.2f, 1f);
-  /*          countDownText.DOFade(0, 1f)
-                .OnComplete(() =>
-                {
-                    CountDownGO.gameObject.transform.localScale = new Vector3(1, 1, 1);
-                    Color color = countDownText.color;
-                    color.a = 1f; // 透明度を1に設定
-                    countDownText.color = color;
-                });*/
             await UniTask.Delay(1000);
         }
         countDownText.DOFade(0, 1f);
@@ -509,13 +524,13 @@ public class GameSetting : NetworkBehaviour
 
     void GameTimeManagement()
     {
-        if (!isCountDownEnded || GameMode.isGameEnded) 
+        if (!isCountDownEnded || GameMode.isGameEnded)
         {
             playTimeTx.text = "";
-            return; 
+            return;
         }
 
-        if (!isPaused || GameStart.gameMode1 == "Online")
+        if (!isPaused || GameStartHandler.GameMode1 == "Online")
         {
             if (!GameMode.isTimeFinished && !GameMode.isGoaled)
             {
@@ -525,37 +540,36 @@ public class GameSetting : NetworkBehaviour
             playTime = (playTime > 99) ? Mathf.Floor(elapsedTime) : Mathf.Floor(elapsedTime * 10) / 10;
 
             //それぞれのモードごとの時間の形式を設定
-            if ((GameStart.gameMode1 == "Multi" || GameStart.gameMode1 == "Online") && GameStart.gameMode2 == "Arcade" && playTime > 0)
+            if ((GameStartHandler.GameMode1 == "Multi" || GameStartHandler.GameMode1 == "Online") && GameStartHandler.GameMode2 == "Arcade" && playTime > 0)
             {
                 elapsedTime -= Time.deltaTime;
                 if (playTime < 30)
                 {
                     playTimeTx.color = new Color32(255, 180, 0, 255); // 例: 赤色
                 }
-                playTimeTx.text = (playTime.ToString());
+                playTimeTx.text = playTime.ToString();
             }
 
-            if (GameStart.gameMode1 == "Single" && GameStart.gameMode2 == "Arcade")
+            if (GameStartHandler.GameMode1 == "Single" && GameStartHandler.GameMode2 == "Arcade")
             {
                 playTimeTx.text = (int)GenerateStage.maxHeight + "m";
             }
 
-            if (GameStart.gameMode2 == "Nomal")
+            if (GameStartHandler.GameMode2 == "Nomal")
             {
                 elapsedTime += Time.deltaTime;
-                playTimeTx.text = (playTime.ToString());
+                playTimeTx.text = playTime.ToString();
             }
         }
     }
-    //他のプレイヤーが「ルーム」切断時
-    public override void OnPlayerLeftRoom(Photon.Realtime.Player otherPlayer)
+    public override void OnPlayerLeft(PlayerRef player)
     {
-        Debug.Log("Player left: " + otherPlayer.NickName);
-        int disconnectedId = otherPlayer.ActorNumber;
+        Debug.Log("Player left: " + player);
+        int disconnectedId = player.PlayerId;
         if (players[disconnectedId - 1] == true)
         {
-            Debug.Log("Player left: " + otherPlayer.NickName);
-            GameStart.PlayerCount--;
+            Debug.Log("Player left: " + player);
+            GameStartHandler.PlayerCount--;
             players[disconnectedId - 1].SetActive(false);
             nameTags[disconnectedId - 1].gameObject.SetActive(false);
         }
@@ -592,12 +606,12 @@ public class GameSetting : NetworkBehaviour
 
     void CheckPlayersLeft()
     {
-        for (int i = 0; i < GameStart.PlayerCount; i++)
+        for (int i = 0; i < GameStartHandler.PlayerCount; i++)
         {
             if (playerLeft[i] == true)
             {
                 Debug.Log("Player" + i + 1 + " has left");
-                GameStart.PlayerCount--;
+                GameStartHandler.PlayerCount--;
                 players[i].SetActive(false);
                 nameTags[i].gameObject.SetActive(false);
                 playerLeft[i] = false;
@@ -607,10 +621,10 @@ public class GameSetting : NetworkBehaviour
 
     public void CallDeletePlayerRPC()
     {
-        photonView.RPC("DeleatPlayer", RpcTarget.All, NetWorkMain.NetWorkId);
+        DeleatPlayer(NetWorkMain.NetWorkId);
     }
 
-    [PunRPC]
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     void DeleatPlayer(int id)
     {
         Debug.Log("DeleatPlayerOccored");
@@ -621,7 +635,7 @@ public class GameSetting : NetworkBehaviour
     {
 
         //ネームタグの位置
-        for (int i = 0; i < GameStart.PlayerCount; i++)
+        for (int i = 0; i < GameStartHandler.PlayerCount; i++)
         {
             if (players[i] == null)
             {
@@ -630,7 +644,7 @@ public class GameSetting : NetworkBehaviour
             nameTagPos[i] = players[i].transform.position;
             nameTagPos[i].y += 0.5f;
             nameTags[i].transform.position = nameTagPos[i];
-            if (GameStart.gameMode1 == "Online")
+            if (GameStartHandler.GameMode1 == "Online")
             {
                 nameTagTexts[i].text = NetWorkMain.playerNames[i];
             }
@@ -654,7 +668,7 @@ public class GameSetting : NetworkBehaviour
         }
 
         //キーボード,マウスのとき
-        if (!(ControllerInput.usingController))
+        if (!ControllerInput.usingController)
         {
             for (int i = 0; i < keyBoardMouseUI.Length; i++) { keyBoardMouseUI[i].gameObject.SetActive(true); }
             for (int i = 0; i < controllerUI.Length; i++) { controllerUI[i].gameObject.SetActive(false); }
@@ -681,21 +695,17 @@ public class GameSetting : NetworkBehaviour
         {
             iconObjects[i] = quickStartingPanel.transform.GetChild(i).gameObject;
             playerNameTexts[i] = iconObjects[i].transform.GetChild(0).gameObject.GetComponent<Text>();
-            if (i < GameStart.PlayerCount)
-            {
-                playerNameTexts[i].text = PhotonNetwork.PlayerList[i].NickName;
-            }
-            else { playerNameTexts[i].text = ""; }
-            if (i >= GameStart.PlayerCount)
+            playerNameTexts[i].text = i < GameStartHandler.PlayerCount ? PhotonNetwork.PlayerList[i].NickName : "";
+            if (i >= GameStartHandler.PlayerCount)
             {
                 iconObjects[i].gameObject.SetActive(false);
             }
         }
         GameObject imageFrame = quickStartingPanel.transform.GetChild(4).gameObject;
         Image stageImg = imageFrame.transform.GetChild(0).gameObject.GetComponent<Image>();
-        stageImg.sprite = Resources.Load<Sprite>("Multi" + GameStart.gameMode2 + GameStart.stage);
-        imageFrame.transform.GetChild(1).gameObject.GetComponent<TextSwicher>().num = GameStart.stage;
-        imageFrame.transform.GetChild(2).gameObject.GetComponent<TextSwicher>().num = GameStart.stage;
+        stageImg.sprite = Resources.Load<Sprite>("Multi" + GameStartHandler.GameMode2 + GameStartHandler.Stage);
+        imageFrame.transform.GetChild(1).gameObject.GetComponent<TextSwicher>().num = GameStartHandler.Stage;
+        imageFrame.transform.GetChild(2).gameObject.GetComponent<TextSwicher>().num = GameStartHandler.Stage;
         string[] texts1 = { "プレイヤーを待っています", "Waiting For Players" };
         quickStartingPanel.transform.GetChild(5).gameObject.GetComponent<Text>().text = texts1[Settings.languageNum];
         while (true)

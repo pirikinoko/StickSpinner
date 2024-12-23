@@ -1,12 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.SceneManagement;
-using System.Text.RegularExpressions;
-using Fusion;
-using System.IO;
 using Cysharp.Threading.Tasks;
+using Fusion;
+using System.Text.RegularExpressions;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+
 public class ButtonClick : NetworkBehaviour
 {
     [SerializeField]
@@ -17,7 +15,7 @@ public class ButtonClick : NetworkBehaviour
     Image image;
     Color imageColor;
     SelectButton selectButton;
-    GameStart gameStart;
+    GameStartHandler gameStart;
     GameSetting gameSetting;
     Button button;
     int cooldownMills = 500;
@@ -61,11 +59,11 @@ public class ButtonClick : NetworkBehaviour
 
     async UniTask Update()
     {
-        controllerPushButton();
+        OnControllerButtonPressed();
         OnlineRoomButtonBehavior();
     }
 
-    void Initialize() 
+    void Initialize()
     {
         //どのボタンを押されたときに処理を行うかを決定（Falseが選ばれた場合はコントローラーボタンに対応しない）
         controllerButton = selectedButton.ToString();
@@ -75,7 +73,7 @@ public class ButtonClick : NetworkBehaviour
         imageColor = image.color;
         if (SceneManager.GetActiveScene().name == "Title")
         {
-            gameStart = GameObject.Find("Systems").GetComponent<GameStart>();
+            gameStart = GameObject.Find("Systems").GetComponent<GameStartHandler>();
             selectButton = GameObject.Find("Systems").GetComponent<SelectButton>();
         }
         if (SceneManager.GetActiveScene().name == "Stage")
@@ -83,9 +81,9 @@ public class ButtonClick : NetworkBehaviour
             gameSetting = GameObject.Find("Scripts").GetComponent<GameSetting>();
         }
     }
-    async UniTask OnButtonClick() 
+    async UniTask OnButtonClick()
     {
-        if (!haveCooldown) 
+        if (!haveCooldown)
         {
             return;
         }
@@ -110,7 +108,7 @@ public class ButtonClick : NetworkBehaviour
     {
         Initialize();
     }
-    void controllerPushButton()
+    void OnControllerButtonPressed()
     {
         //スティックや十字ボタンを数値ではなく1回入力されたという形で受け付ける処理
         if (inputCrossXPlus == false && inputCrossXMinus == false)
@@ -220,9 +218,9 @@ public class ButtonClick : NetworkBehaviour
         }
 
         //ボタンをクリックしたことに
-        if ((inputButton || Input.GetKeyDown(keyBind))) //&& GameStart.buttonPushable)
+        if (inputButton || Input.GetKeyDown(keyBind)) //&& GameStart.buttonPushable)
         {
-            GameStart.buttonPushable = false;
+            GameStartHandler.ButtonPushable = false;
             this.GetComponent<Button>().onClick.Invoke();
         }
 
@@ -313,27 +311,16 @@ public class ButtonClick : NetworkBehaviour
         //チームセレクトボタンのアクティブ
         if (this.name.Contains("TeamSelect"))
         {
-            if (GameStart.gameMode2 == "Arcade" && GameStart.PlayerCount > 1)
-            {
-                button.interactable = true;
-            }
-            else { button.interactable = false; }
+            button.interactable = GameStartHandler.GameMode2 == "Arcade" && GameStartHandler.PlayerCount > 1;
         }
 
-        if (GameStart.gameMode1 == "Online" && this.gameObject.activeSelf)
+        if (GameStartHandler.GameMode1 == "Online" && this.gameObject.activeSelf)
         {
             if (!isLeaderOnly)
             {
                 return;
             }
-            if (NetWorkMain.NetWorkId != NetWorkMain.leaderId)
-            {
-                button.interactable = false;
-            }
-            else
-            {
-                button.interactable = true;
-            }
+            button.interactable = NetWorkMain.NetWorkId == NetWorkMain.leaderId;
         }
     }
     /*↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ボタンにアタッチするスクリプト↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓*/
@@ -353,94 +340,102 @@ public class ButtonClick : NetworkBehaviour
     //ゲームモード変更
     public void SwitchWayToPlay(string gameMode)
     {
-        GameStart.gameMode1 = gameMode;
+        GameStartHandler.GameMode1 = gameMode;
         SoundEffect.soundTrigger[2] = 1;
     }
     //Phase移動
     public void PhaseSwitch(int difference)
     {
         SoundEffect.soundTrigger[2] = 1;
-        GameStart.phase += difference;
+        GameStartHandler.Phase += difference;
     }
     //ルームのプレイヤーたちのステージをリーダーの値と同期
-    public void SyncStage() 
+    public void SyncStage()
     {
         if (!NetWorkMain.isOnline) { return; }
-        NetWorkMain.SetCustomProps<int>("stage", GameStart.stage);
-        photonView.RPC(nameof(GetCPStage), RpcTarget.All);
+        NetWorkMain.SetCustomProps<int>("stage", GameStartHandler.Stage);
+        RPC_GetCPStage();
     }
+
     public void SetCustomPropsGameMode()
     {
         if (!NetWorkMain.isOnline) { return; }
-        NetWorkMain.SetCustomProps<string>("gamemode", GameStart.gameMode2);
+        NetWorkMain.SetCustomProps<string>("gamemode", GameStartHandler.GameMode2);
     }
-    [PunRPC]
-    void GetCPStage()
+
+    [Rpc(RpcSources.All, RpcTargets.All)]
+    void RPC_GetCPStage()
     {
         if (NetWorkMain.GetCustomProps<int>("stage", out var stageValue))
         {
-            GameStart.stage = stageValue;
+            GameStartHandler.Stage = stageValue;
         }
     }
+
     //モード変更
     public void SetAndSyncGameMode(string gameMode)
     {
         //ゲームモード変更の際ステージを１にリセットする
-        GameStart.gameMode2 = gameMode;
+        GameStartHandler.GameMode2 = gameMode;
         NetWorkMain.SetCustomProps<int>("stage", 1);
-        photonView.RPC(nameof(GetCustomPropsStage), RpcTarget.All);
+        GameStartHandler.Stage = RPC_GetCustomPropsStage();
         NetWorkMain.SetCustomProps<string>("gameMode", gameMode);
-        photonView.RPC(nameof(GetCustomPropsGameMode), RpcTarget.All);
+        GameStartHandler.GameMode2 = RPC_GetCustomPropsGameMode();
     }
 
-    [PunRPC]
-    void GetCustomPropsStage()
+    [Rpc(RpcSources.All, RpcTargets.All)]
+    private int RPC_GetCustomPropsStage()
     {
+        int stage = 0;
         if (NetWorkMain.GetCustomProps<int>("stage", out int valueA))
         {
-            GameStart.stage = valueA;
+            stage = valueA;
         }
+        return stage;
     }
-    [PunRPC]
-    void GetCustomPropsGameMode()
+
+    [Rpc(RpcSources.All, RpcTargets.All)]
+    private string RPC_GetCustomPropsGameMode()
     {
+        string gamemode = "";
         if (NetWorkMain.GetCustomProps<string>("gameMode", out string valueB))
         {
-            GameStart.gameMode2 = valueB;
+            gamemode = valueB;
         }
+        return gamemode;
     }
 
     //ゲームモード変更
     public void SwitchGameMode(string gameMode)
     {
-        GameStart.gameMode2 = gameMode;
+        GameStartHandler.GameMode2 = gameMode;
     }
 
 
     //部屋を抜ける
     public void LeaveRoom()
     {
-        PhotonNetwork.LeaveRoom();
+        Runner.LeaveRoom();
     }
 
 
     //ステージ変更
     public void StageSwitch(int difference)
     {
-        GameStart.stage += difference;
+        GameStartHandler.Stage += difference;
         SoundEffect.soundTrigger[3] = 1;
     }
 
     //プレイヤー数増減
     public void ChangePlayerNum(int difference)
     {
-        GameStart.PlayerCount += difference;
+        GameStartHandler.PlayerCount += difference;
         SoundEffect.soundTrigger[3] = 1;
     }
 
     public void SettingPanelTrigger()    //設定画面の表示
     {
-        Settings.SettingPanelActive = !(Settings.SettingPanelActive);
+        Settings.SettingPanelActive = !Settings.SettingPanelActive;
     }
 
     //ポーズ処理
@@ -453,7 +448,7 @@ public class ButtonClick : NetworkBehaviour
             Settings.SettingPanelActive = true;
             Time.timeScale = 0;
         }
-        if (GameStart.gameMode1 == "Online")
+        if (GameStartHandler.GameMode1 == "Online")
         {
             Time.timeScale = 1;
             GameSetting.Playable = true;
@@ -470,16 +465,16 @@ public class ButtonClick : NetworkBehaviour
 
     public void BackToTitle()
     {
-        if(SceneManager.GetActiveScene().name == "Title")
+        if (SceneManager.GetActiveScene().name == "Title")
         {
             return;
         }
 
         SoundEffect.soundTrigger[2] = 1;
-        if (GameStart.gameMode1 == "Online")
+        if (GameStartHandler.GameMode1 == "Online")
         {
             gameSetting = FindAnyObjectByType<GameSetting>();
-            
+
             gameSetting.CallDeletePlayerRPC();
             if (MatchmakingView.gameModeQuick == "Quick")
             {
@@ -506,17 +501,17 @@ public class ButtonClick : NetworkBehaviour
         //オンラインならRPCで全体に適用する
         if (PhotonNetwork.InRoom && NetWorkMain.leaderId == NetWorkMain.NetWorkId)
         {
-            photonView.RPC(nameof(RPCChangeFlagTime), RpcTarget.All, difference);
+            RPC_ChangeFlagTime(difference);
             return;
         }
-        GameStart.flagTimeLimit += difference;
+        GameStartHandler.FlagTimeLimit += difference;
     }
 
 
-    [PunRPC]
-    void RPCChangeFlagTime(int difference)
+    [Rpc(RpcSources.All, RpcTargets.All)]
+    void RPC_ChangeFlagTime(int difference)
     {
-        GameStart.flagTimeLimit += difference;
+        GameStartHandler.FlagTimeLimit += difference;
     }
 
 
@@ -556,13 +551,13 @@ public class ButtonClick : NetworkBehaviour
 
     public void SyncLeader()
     {
-        photonView.RPC(nameof(syncLeader), RpcTarget.All);
+        RPC_SyncLeader();
     }
 
     public void RPCSetTeam()
     {
         SoundEffect.soundTrigger[3] = 1;
-        photonView.RPC(nameof(SetTeam), RpcTarget.All, NetWorkMain.NetWorkId);
+        RPC_SetTeam(NetWorkMain.NetWorkId);
     }
 
     public void RPCSetLeader()
@@ -571,28 +566,29 @@ public class ButtonClick : NetworkBehaviour
         {
             return;
         }
-        photonView.RPC(nameof(SetLeader), RpcTarget.All);
+        RPC_SetLeader();
     }
 
-    [PunRPC]
-    void syncLeader()
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    void RPC_SyncLeader()
     {
-        ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
+        var customProps = Runner.SessionInfo.Properties;
         int idTmp = 1;
-        if (customProps.ContainsKey("leaderID"))
+        if (customProps.TryGetValue("leaderID", out var leaderId))
         {
-            if (int.TryParse(customProps["leaderId"].ToString(), out idTmp))
+            if (int.TryParse(leaderId.ToString(), out idTmp))
             {
                 NetWorkMain.leaderId = idTmp;
             }
         }
     }
-    [PunRPC]
-    void SetLeader()
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    void RPC_SetLeader()
     {
         int newLeaderId = int.Parse(Regex.Replace(this.gameObject.name, @"[^0-9]", ""));
         NetWorkMain.leaderId = newLeaderId;
-        NetWorkMain.SetCustomProps<int>("leaederId", newLeaderId);
+        NetWorkMain.SetCustomProps("leaderId", newLeaderId);
     }
 
     public void ReadyButton()
@@ -602,7 +598,7 @@ public class ButtonClick : NetworkBehaviour
         if (NetWorkMain.GetCustomProps<bool[]>("isReady", out var arrayValue1))
         {
             arrayValue1[targetId - 1] = !arrayValue1[targetId - 1];
-            NetWorkMain.SetCustomProps<bool[]>("isReady", arrayValue1);
+            NetWorkMain.SetCustomProps("isReady", arrayValue1);
             if (arrayValue1[targetId - 1] == true)
             {
                 SoundEffect.soundTrigger[10] = 1;
@@ -613,34 +609,39 @@ public class ButtonClick : NetworkBehaviour
             }
         }
     }
-    [PunRPC]
-    void SetTeam(int netWorkID)
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    void RPC_SetTeam(int netWorkID)
     {
         int newTeamNum = int.Parse(Regex.Replace(this.gameObject.name, @"[^0-9]", "")) - 1;
-        GameStart.playerTeam[netWorkID - 1] = newTeamNum;
+        GameStartHandler.PlayerTeam[netWorkID - 1] = newTeamNum;
     }
-    //再接続
+
+    // 再接続
     public void ReconnectToLobby()
     {
-        if (PhotonNetwork.InRoom)
+        if (Runner.IsInSession)
         {
-            PhotonNetwork.LeaveRoom();
+            Runner.LeaveSession();
         }
         else
         {
-            PhotonNetwork.JoinLobby();
+            Runner.JoinSession();
         }
     }
+
     public void DisconnectRoom()
     {
-        if (PhotonNetwork.InRoom)
+        if (Runner.IsInSession)
         {
-            PhotonNetwork.LeaveRoom();
+            Runner.LeaveSession();
         }
     }
+
     public void DisconnectLobby()
     {
-        PhotonNetwork.LeaveLobby();
+        Runner.LeaveSession();
     }
+
 
 }

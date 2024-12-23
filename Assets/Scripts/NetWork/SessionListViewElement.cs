@@ -1,34 +1,35 @@
 using Fusion;
 using TMPro;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class RoomListViewElement : NetworkBehaviour
+public class SessionListViewElement : NetworkBehaviour
 {
     [SerializeField]
     private TextMeshProUGUI nameLabel = default;
     [SerializeField]
     private TextMeshProUGUI playerCounter = default;
 
-    RoomList roomList = new RoomList();
+    SessionList roomList = new SessionList();
     private MatchmakingView matchmakingView;
     private Button button;
     bool isOpen;
     int maxPlayers = 4;
-    void Start() 
+
+    void Start()
     {
         button = this.GetComponent<Button>();
     }
-    void Update() 
+
+    void Update()
     {
         int playerCount = 1;
-        if (roomList.TryGetRoomInfo(nameLabel.text, out RoomInfo room))
+        if (roomList.TryGetSessionInfo(nameLabel.text, out SessionInfo session))
         {
-            playerCount = room.PlayerCount;
+            playerCount = session.PlayerCount;
 
-            isOpen = true;  
-            if (room.CustomProperties.TryGetValue("Password", out object passwordObj) && passwordObj is string correctPassword)
+            isOpen = true;
+            if (session.Properties.TryGetValue("Password", out object passwordObj) && passwordObj is string correctPassword)
             {
                 // パスワードが設定されている場合はisOpen = false
                 if (correctPassword != "")
@@ -37,9 +38,10 @@ public class RoomListViewElement : NetworkBehaviour
                 }
             }
         }
-    
-        button.interactable = (playerCount < maxPlayers);
+
+        button.interactable = playerCount < maxPlayers;
     }
+
     public void Init(MatchmakingView parentView)
     {
         matchmakingView = parentView;
@@ -55,16 +57,17 @@ public class RoomListViewElement : NetworkBehaviour
             IngameLog.GenerateIngameLog("Please type player name");
             return;
         }
-        PhotonNetwork.JoinRoom(nameLabel.text);
+        NetworkRunner runner = FindObjectOfType<NetworkRunner>();
+        runner.JoinSessionLobby(nameLabel.text);
     }
-     
-    public void Show(RoomInfo roomInfo)
+
+    public void Show(SessionInfo sessionInfo)
     {
-        nameLabel.text = roomInfo.Name;
-        playerCounter.SetText("{0} / {1}", roomInfo.PlayerCount, roomInfo.MaxPlayers);
+        nameLabel.text = sessionInfo.Name;
+        playerCounter.SetText("{0} / {1}", sessionInfo.PlayerCount, sessionInfo.MaxPlayers);
 
         // ルームが満員でない時のみ、参加ボタンを押せるようにする
-        button.interactable = (roomInfo.PlayerCount < roomInfo.MaxPlayers);
+        button.interactable = sessionInfo.PlayerCount < sessionInfo.MaxPlayers;
 
         gameObject.SetActive(true);
     }

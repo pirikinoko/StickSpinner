@@ -80,7 +80,7 @@ public class ActiveObject : MonoBehaviour
     void Update()
     {
         //オンラインの場合は全プレイヤーのセットアップ完了を待つ
-        if (GameStart.gameMode1 == "Online")
+        if (GameStartHandler.GameMode1 == "Online")
         {
             if (!GameSetting.setupEnded) { return; }
         }

@@ -1,10 +1,9 @@
+using Fusion;
 using UnityEngine;
 using UnityEngine.UI;
-using Fusion;
-using ExitGames.Client.Photon;
 public class ChangePassWord : NetworkBehaviour
 {
-     InputField passwordInputField;
+    InputField passwordInputField;
     [SerializeField]
     Button updatePasswordButton, switchButton;
     IngameLog ingameLog;
@@ -24,7 +23,7 @@ public class ChangePassWord : NetworkBehaviour
         Debug.Log("Password changed: " + newValue);
     }
 
-    void UpdatePassword() 
+    void UpdatePassword()
     {
         ExitGames.Client.Photon.Hashtable customProps = PhotonNetwork.CurrentRoom.CustomProperties;
         if (customProps.ContainsKey("Password"))

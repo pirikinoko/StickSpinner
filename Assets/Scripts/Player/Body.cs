@@ -61,7 +61,7 @@ public class Body : MonoBehaviour
     }
     void Start() 
     {
-        if (GameStart.gameMode1 == "Online" && SceneManager.GetActiveScene().name != "Title")
+        if (GameStartHandler.GameMode1 == "Online" && SceneManager.GetActiveScene().name != "Title")
         {
             this.GetComponent<PhotonRigidbody2DView>().enabled = true;
         }

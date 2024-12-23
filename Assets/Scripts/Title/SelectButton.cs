@@ -131,7 +131,7 @@ public class SelectButton : NetworkBehaviour
 
         //方向ボタンの受付時シーン上の全ボタンの位置と現在選択されているボタンの位置を比較し一番近いものでかつ入力された方向にあるものを選択する
         /*横プラス入力時*/
-        if (Input.GetKeyDown(KeyCode.RightArrow) || inputCrossXPlus || inputLstickXPlus || lastPhase != GameStart.phase)
+        if (Input.GetKeyDown(KeyCode.RightArrow) || inputCrossXPlus || inputLstickXPlus || lastPhase != GameStartHandler.Phase)
         {
             for (int i = 0; i < activeButtons.Length; i++)
             {
@@ -202,20 +202,20 @@ public class SelectButton : NetworkBehaviour
         }
 
         //選択中のボタンをクリック
-        if (ControllerInput.jump[0] || Input.GetKeyDown(KeyCode.Return) && GameStart.buttonPushable)
+        if (ControllerInput.jump[0] || Input.GetKeyDown(KeyCode.Return) && GameStartHandler.ButtonPushable)
         {
             if (Settings.SettingPanelActive) { return; }
             if (activeButtons.Length != 0)
             {
                 activeButtons[targetButton].onClick.Invoke();
-                GameStart.buttonPushable = false;
+                GameStartHandler.ButtonPushable = false;
             }
         }
 
         lastCrossX = ControllerInput.crossX[0];
         lastCrossY = ControllerInput.crossY[0];
 
-        lastPhase = GameStart.phase;
+        lastPhase = GameStartHandler.Phase;
     }
 
 

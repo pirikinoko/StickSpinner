@@ -41,8 +41,8 @@ public class GenerateStage : MonoBehaviour
 
     void AfterAllJoin() 
     {
-        if (GameStart.gameMode1 != "Single") { return; }
-        if (GameStart.gameMode2 != "Arcade") { return; }
+        if (GameStartHandler.GameMode1 != "Single") { return; }
+        if (GameStartHandler.GameMode2 != "Arcade") { return; }
         gameSetting = GameObject.Find("Scripts").GetComponent<GameSetting>();
         maxHeight = 0;
 
@@ -73,7 +73,7 @@ public class GenerateStage : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (GameStart.gameMode1 != "Single" || GameStart.gameMode2 != "Arcade")
+        if (GameStartHandler.GameMode1 != "Single" || GameStartHandler.GameMode2 != "Arcade")
         {
             return;
         }

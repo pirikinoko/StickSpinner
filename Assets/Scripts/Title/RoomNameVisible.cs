@@ -1,9 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
+using Fusion;
 using UnityEngine;
 using UnityEngine.UI;
-using Fusion;
-public class RoomNameVisible : MonoBehaviourPunCallbacks
+public class RoomNameVisible : NetworkBehaviour
 {
     Text roomNameText;
     string roomName;
@@ -16,7 +14,7 @@ public class RoomNameVisible : MonoBehaviourPunCallbacks
     {
         roomName = PhotonNetwork.CurrentRoom.Name;
         roomNameText = this.GetComponent<Text>();
-        if (roomNameText.text.Contains("!Locked!")) 
+        if (roomNameText.text.Contains("!Locked!"))
         {
             roomName.Replace(lockSymbol, "");
         }
@@ -28,24 +26,17 @@ public class RoomNameVisible : MonoBehaviourPunCallbacks
         {
             hiddenText = hiddenText + "*";
         }
-        roomNameText.text = hiddenText;  
+        roomNameText.text = hiddenText;
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
-    void toggleVisible() 
+    void toggleVisible()
     {
-        if (roomNameText.text == roomName)
-        {
-            roomNameText.text = hiddenText;
-        }
-        else 
-        {
-            roomNameText.text = roomName;
-        }
+        roomNameText.text = roomNameText.text == roomName ? hiddenText : roomName;
     }
 }

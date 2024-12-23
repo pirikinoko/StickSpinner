@@ -1,10 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
 using Fusion;
-using TMPro;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
 public class MatchmakingView : NetworkBehaviour
 {
     [SerializeField]
@@ -12,7 +9,7 @@ public class MatchmakingView : NetworkBehaviour
     [SerializeField]
     private InputField roomNameInputField = default;
     [SerializeField]
-    private Button createRoomButton = default, createRoomLockedButton = default,joinRoomButton = default, quickMatchButton = default;
+    private Button createRoomButton = default, createRoomLockedButton = default, joinRoomButton = default, quickMatchButton = default;
     [SerializeField]
     Text playerCountQuick, playButtonText;
     [SerializeField]
@@ -23,11 +20,11 @@ public class MatchmakingView : NetworkBehaviour
     public static int stageQuick = 0;
     public static string gameModeQuick = "Nomal";
     public int ccuLimit = 80;
-    GameStart gameStart;
+    GameStartHandler gameStart;
     private void Start()
     {
         quickStartingPanel.SetActive(false);
-        gameStart = GameObject.Find("Systems").GetComponent<GameStart>();
+        gameStart = GameObject.Find("Systems").GetComponent<GameStartHandler>();
         ingameLog = GameObject.Find("Systems").GetComponent<IngameLog>();
         canvasGroup = GetComponent<CanvasGroup>();
 
@@ -42,34 +39,34 @@ public class MatchmakingView : NetworkBehaviour
 
         playerCountQuick.text = "";
 
-        if(roomNameInputField.text.Length > 0) 
+        if (roomNameInputField.text.Length > 0)
         {
             createRoomButton.interactable = true;
             createRoomLockedButton.interactable = true;
             joinRoomButton.interactable = true;
         }
-        else 
+        else
         {
             createRoomButton.interactable = false;
             createRoomLockedButton.interactable = false;
             joinRoomButton.interactable = false;
         }
     }
-    [PunRPC]
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     void StartQuickGame(int stage, string gameMode)
     {
-        GameStart.gameMode2 = gameMode;
-        GameStart.stage = stage;
-        GameStart.phase = 4;
+        GameStartHandler.GameMode2 = gameMode;
+        GameStartHandler.Stage = stage;
+        GameStartHandler.Phase = 4;
         playerCountQuick.text = "";
     }
 
-    IEnumerator OpenQuickPanel() 
+    IEnumerator OpenQuickPanel()
     {
         quickStartingPanel.SetActive(true);
         GameObject[] iconObjects = new GameObject[4];
         Text[] playerNameTexts = new Text[4];
-        for (int i = 0; i < iconObjects.Length; i++) 
+        for (int i = 0; i < iconObjects.Length; i++)
         {
             iconObjects[i] = quickStartingPanel.transform.GetChild(i).gameObject;
             playerNameTexts[i] = iconObjects[i].transform.GetChild(0).gameObject.GetComponent<Text>();
@@ -77,13 +74,13 @@ public class MatchmakingView : NetworkBehaviour
         }
         GameObject imageFrame = quickStartingPanel.transform.GetChild(4).gameObject;
         Image stageImg = imageFrame.transform.GetChild(0).gameObject.GetComponent<Image>();
-        stageImg.sprite = Resources.Load<Sprite>("Multi" + GameStart.gameMode2 + GameStart.stage);
-        imageFrame.transform.GetChild(1).gameObject.GetComponent<TextSwicher>().num =  GameStart.stage;
-        imageFrame.transform.GetChild(2).gameObject.GetComponent<TextSwicher>().num = GameStart.stage;
+        stageImg.sprite = Resources.Load<Sprite>("Multi" + GameStartHandler.GameMode2 + GameStartHandler.Stage);
+        imageFrame.transform.GetChild(1).gameObject.GetComponent<TextSwicher>().num = GameStartHandler.Stage;
+        imageFrame.transform.GetChild(2).gameObject.GetComponent<TextSwicher>().num = GameStartHandler.Stage;
         yield return new WaitForSeconds(3.0f);
         if (NetWorkMain.NetWorkId == NetWorkMain.leaderId)
         {
-            photonView.RPC(nameof(StartQuickGame), RpcTarget.All, stageQuick, gameModeQuick);
+            StartQuickGame(stageQuick, gameModeQuick);
         }
     }
     void Update()
@@ -104,7 +101,7 @@ public class MatchmakingView : NetworkBehaviour
             playButtonText.text = "Play";
             playerCountQuick.text = "";
         }
-        if (PhotonNetwork.InRoom) 
+        if (PhotonNetwork.InRoom)
         {
             createRoomButton.interactable = false;
             createRoomLockedButton.interactable = false;
@@ -112,14 +109,7 @@ public class MatchmakingView : NetworkBehaviour
         }
 
         // ロビーに参加するまでは、入力できないようにする
-        if (!PhotonNetwork.InLobby)
-        {
-            canvasGroup.interactable = false;
-        }
-        else 
-        {
-            canvasGroup.interactable = true;
-        }
+        canvasGroup.interactable = PhotonNetwork.InLobby;
 
 
     }
@@ -133,9 +123,9 @@ public class MatchmakingView : NetworkBehaviour
     private void OnRoomNameInputFieldValueChanged(string value)
     {
         // ルーム名が1文字以上入力されている時のみ、ルーム作成ボタンを押せるようにする
-        createRoomButton.interactable = (value.Length > 0);
-        createRoomLockedButton.interactable = (value.Length > 0);
-        joinRoomButton.interactable = (value.Length > 0);
+        createRoomButton.interactable = value.Length > 0;
+        createRoomLockedButton.interactable = value.Length > 0;
+        joinRoomButton.interactable = value.Length > 0;
     }
     private void OnJoinRoomButtonClick()
     {
@@ -144,7 +134,7 @@ public class MatchmakingView : NetworkBehaviour
             IngameLog.GenerateIngameLog("The server is full right now!");
             return;
         }
-        if (InputName.TypedTextToString == "" || InputName.TypedTextToString.Contains(" ")) 
+        if (InputName.TypedTextToString == "" || InputName.TypedTextToString.Contains(" "))
         {
             IngameLog.GenerateIngameLog("Please type player name");
             return;
@@ -176,12 +166,12 @@ public class MatchmakingView : NetworkBehaviour
     }
     private void OnCreateRoomButtonClick()
     {
-        if(isCCUNotOver() == false) 
+        if (isCCUNotOver() == false)
         {
             IngameLog.GenerateIngameLog("The server is full right now!");
             return;
         }
-        if (InputName.TypedTextToString.Length == 0) 
+        if (InputName.TypedTextToString.Length == 0)
         {
             IngameLog.GenerateIngameLog("Please type player name");
             return;
@@ -205,17 +195,17 @@ public class MatchmakingView : NetworkBehaviour
     }
     private void OnQuickMatchButtonClick()
     {
-        if (PhotonNetwork.InRoom) 
+        if (PhotonNetwork.InRoom)
         {
             PhotonNetwork.LeaveRoom();
             mode = "Nomal";
-            if (roomNameInputField.text.Length > 0) 
+            if (roomNameInputField.text.Length > 0)
             {
                 createRoomButton.interactable = true;
                 createRoomLockedButton.interactable = true;
                 joinRoomButton.interactable = true;
             }
-     
+
             return;
         }
         if (isCCUNotOver() == false)
@@ -223,7 +213,7 @@ public class MatchmakingView : NetworkBehaviour
             IngameLog.GenerateIngameLog("The server is full right now!");
             return;
         }
-        if (InputName.TypedTextToString == null) 
+        if (InputName.TypedTextToString == null)
         {
             IngameLog.GenerateIngameLog("Please type player name");
             return;
@@ -240,15 +230,15 @@ public class MatchmakingView : NetworkBehaviour
 
     public override void OnJoinedRoom()
     {
-        if(mode != "Quick")
+        if (mode != "Quick")
         {
-            GameStart.phase++;
+            GameStartHandler.Phase++;
         }
     }
 
     public override void OnJoinRoomFailed(short returnCode, string message)
     {
-        if(mode == "Nomal") { PhotonNetwork.JoinRoom(roomNameInputField.text + "!Locked!"); }
+        if (mode == "Nomal") { PhotonNetwork.JoinRoom(roomNameInputField.text + "!Locked!"); }
         else
         {
             int roomNum = roomListView.quickRoomCount + 1;
@@ -282,10 +272,6 @@ public class MatchmakingView : NetworkBehaviour
         Debug.Log($"CCU Limit: {ccuLimit}, Current CCU: {currentCCU}");
 
         // 接続制限に達している場合は接続を試みない
-        if (currentCCU >= ccuLimit)
-        {         
-            return false;   
-        }
-        else { return true; }
+        return currentCCU < ccuLimit;
     }
 }

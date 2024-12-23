@@ -7,7 +7,7 @@ public class NetWorkIngame : NetworkBehaviour
 {
     void Start()
     {
-        if (GameStart.gameMode1 != "Online") { return; }
+        if (GameStartHandler.GameMode1 != "Online") { return; }
 
         //  PhotonNetwork.JoinOrCreateRoom(RoomButton.RoomNameToPass, roomOptions, TypedLobby.Default);
         var roomOptions = new RoomOptions();

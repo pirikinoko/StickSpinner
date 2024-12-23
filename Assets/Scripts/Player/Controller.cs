@@ -1,17 +1,14 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.SceneManagement;
-using UnityEditor;
-using Fusion;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using Fusion;
+using System;
+using System.Collections;
 using System.Threading;
-using Cysharp.Threading.Tasks.Linq;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
-public class Controller : MonoBehaviourPunCallbacks
+public class Controller : NetworkBehaviour
 {
     // プレイヤー番号(1～4)
     [SerializeField]
@@ -44,7 +41,7 @@ public class Controller : MonoBehaviourPunCallbacks
     float coolTime = 0.2f;                              // ジャンプのクールタイム
     GameSetting gameSetting;
     float stickRot = 0f;                                // 棒の角度
-    float[] stickRots = new float[GameStart.maxPlayer];
+    float[] stickRots = new float[GameStartHandler.MaxPlayer];
     float jumpforce = 8.3f;                             // Y軸ジャンプ力
 
     bool onFloor;                                       // 接触している時は true
@@ -91,7 +88,7 @@ public class Controller : MonoBehaviourPunCallbacks
 
     void Start()
     {
-        if (GameStart.gameMode1 == "Online" && SceneManager.GetActiveScene().name != "Title")
+        if (GameStartHandler.GameMode1 == "Online" && SceneManager.GetActiveScene().name != "Title")
         {
             KeyLeft = KeyCode.LeftArrow;
             KeyRight = KeyCode.RightArrow;
@@ -120,14 +117,14 @@ public class Controller : MonoBehaviourPunCallbacks
 
     }
 
-    void StartInUpdate() 
+    void StartInUpdate()
     {
         if (SceneManager.GetActiveScene().name == "Stage")
         {
             gameSetting = GameObject.Find("Scripts").GetComponent<GameSetting>();
             nameTag = gameSetting.nameTags[id - 1];
         }
-        for (int i = 0; i < GameStart.PlayerCount; i++)
+        for (int i = 0; i < GameStartHandler.PlayerCount; i++)
         {
             stickRb.MoveRotation(0);
         }
@@ -135,10 +132,8 @@ public class Controller : MonoBehaviourPunCallbacks
     }
     void GhostJump()
     {
-        float jumpDirection;
-        if (rotZ < 180) { jumpDirection = 6; }
-        else { jumpDirection = 18; }
-        jumpDirection = (jumpDirection - rotZ / 15) * 1.15f;
+        float jumpDirection = rotZ < 180 ? 6 : 18;
+        jumpDirection = (jumpDirection - (rotZ / 15)) * 1.15f;
         stickRb.velocity = new Vector2(jumpDirection, jumpforce);
     }
 
@@ -173,9 +168,9 @@ public class Controller : MonoBehaviourPunCallbacks
         yield return new WaitForSeconds(0.8f);
         inCoroutine = false;
     }
-    void MoveAnime() 
+    void MoveAnime()
     {
-        if(id == 5) 
+        if (id == 5)
         {
             if (!inCoroutine)
             {
@@ -186,7 +181,7 @@ public class Controller : MonoBehaviourPunCallbacks
         {
             float speed = 120;
             stickRot -= speed * Time.deltaTime;
-            if(this.transform.position.x > ghostStartPos.x + 4.5f) 
+            if (this.transform.position.x > ghostStartPos.x + 4.5f)
             {
                 Vector2 newstartPos = ghostStartPos;
                 newstartPos.x -= 0.8f;
@@ -217,7 +212,7 @@ public class Controller : MonoBehaviourPunCallbacks
                 ghostCollider = ghostObject != null ? ghostObject.GetComponent<Collider2D>() : null;
                 GameObject ghostStickObject = GameObject.Find("Stick5");
                 Collider2D ghostStickCollider = ghostStickObject != null ? ghostStickObject.GetComponent<Collider2D>() : null;
-                if ((GameStart.gameMode2 == "Nomal" && GameStart.stage == 1) && thisCollider != null && ghostCollider != null)
+                if (GameStartHandler.GameMode2 == "Nomal" && GameStartHandler.Stage == 1 && thisCollider != null && ghostCollider != null)
                 {
                     // IgnoreCollisionはCollider型を使用し、Physics2D.IgnoreCollisionを使用する
                     Physics2D.IgnoreCollision(thisCollider, ghostCollider);
@@ -226,11 +221,11 @@ public class Controller : MonoBehaviourPunCallbacks
             }
 
         }
-        if (nameTag == null) 
+        if (nameTag == null)
         {
             nameTag = GameObject.Find("P" + id.ToString() + "NameTag");
         }
-        if(id > 4) 
+        if (id > 4)
         {
             MoveAnime();
             return;
@@ -249,25 +244,25 @@ public class Controller : MonoBehaviourPunCallbacks
         body = bodyObj.GetComponent<Body>();// 親から Body を取得する
         onFloor = onSurface | onPlayer | onStick | body.onSurface | body.onPlayer | body.onStick; // 何かに接触している時は true
 
-        if (!(isRespowing))
+        if (!isRespowing)
         {
             if (GameSetting.Playable && !gameSetting.isPaused)
             {
                 Jump();
                 if (Input.GetKeyDown(KeyDown) || ControllerInput.back[id - 1])
                 {
-                    if(fillAmoutTween == null && !(GameStart.gameMode1 == "Single" && GameStart.gameMode2 == "Arcade")) 
+                    if (fillAmoutTween == null && !(GameStartHandler.GameMode1 == "Single" && GameStartHandler.GameMode2 == "Arcade"))
                     {
                         TweenFillAmountAsync(cts.Token);
                     }
-                }        
+                }
             }
-            if (fillAmoutTween != null && (Input.GetKeyUp(KeyDown) || !ControllerInput.back[id - 1])) 
+            if (fillAmoutTween != null && (Input.GetKeyUp(KeyDown) || !ControllerInput.back[id - 1]))
             {
                 cts.Cancel();
             }
-                Move();
-        }   
+            Move();
+        }
         ExitDelay();
     }
     private async UniTask TweenFillAmountAsync(CancellationToken cancellationToken)
@@ -290,16 +285,16 @@ public class Controller : MonoBehaviourPunCallbacks
     // 移動は FixedUpdateで行う※Inputの入力が入りにくくなる
     void FixedUpdate()
     {
-        if (GameStart.gameMode1 == "Online" && GameSetting.setupEnded && SceneManager.GetActiveScene().name != "Title")
+        if (GameStartHandler.GameMode1 == "Online" && GameSetting.setupEnded && SceneManager.GetActiveScene().name != "Title")
         {
             if (photonView.IsMine)
             {
-                if (!isRespowing) 
+                if (!isRespowing)
                 {
                     photonView.RPC(nameof(MoveStickRotation), RpcTarget.All, id, stickRot);
                 }
             }
-            else 
+            else
             {
                 stickRb = GetComponent<Rigidbody2D>();
                 stickRb.MoveRotation(stickRots[id - 1]);            // 角度反映 これはポーズ時も行う
@@ -310,14 +305,14 @@ public class Controller : MonoBehaviourPunCallbacks
             stickRb = GetComponent<Rigidbody2D>();
             stickRb.MoveRotation(stickRot);            // 角度反映 これはポーズ時も行う
         }
-        if (GameStart.gameMode1 == "Online" || gameSetting == null) { return; }
+        if (GameStartHandler.GameMode1 == "Online" || gameSetting == null) { return; }
         // プレイヤー速度取得
-        Playerspeed = ((transform.parent.gameObject.transform.position - latestPos) / Time.deltaTime);
+        Playerspeed = (transform.parent.gameObject.transform.position - latestPos) / Time.deltaTime;
         if (gameSetting.isPaused && !isSaveDone)
         {
             pausedPos = transform.parent.gameObject.transform.position;
             speedWhenPaused = Playerspeed;
-            isSaveDone = true; 
+            isSaveDone = true;
         }
         if (gameSetting.isPaused)
         {
@@ -341,26 +336,24 @@ public class Controller : MonoBehaviourPunCallbacks
         if (coolTime > 0)
         {
             coolTime -= Time.deltaTime;
-            return;   
+            return;
         }
-        if (GameSetting.Playable && !gameSetting.isPaused) 
+        if (GameSetting.Playable && !gameSetting.isPaused)
         {
             if (!NetWorkMain.isOnline || (NetWorkMain.isOnline && photonView.IsMine))
             {
                 bool jumpKey = Input.GetKeyDown(KeyJump);
-                if (onFloor && (jumpKey || ControllerInput.jump[id - 1] ) )
+                if (onFloor && (jumpKey || ControllerInput.jump[id - 1]))
                 {
                     // 棒の回転値に合わせて飛ぶ方向を求める
-                    float jumpDirection;                       
-                    if (rotZ < 180) { jumpDirection = 6; }
-                    else { jumpDirection = 18; }
-                    jumpDirection = (jumpDirection - rotZ / 15) * 1.15f;
+                    float jumpDirection = rotZ < 180 ? 6 : 18;
+                    jumpDirection = (jumpDirection - (rotZ / 15)) * 1.15f;
 
                     //棒が真横を向いているときはジャンプできない
                     if (!(rotZ > 179) && !(rotZ < 1))
                     {
                         stickRb.velocity = new Vector2(jumpDirection, jumpforce);
-                        onFloor = false; onPlayer = false; onStick = false; onSurface = false; body.onSurface = false; body.onPlayer = false; body.onStick = false; 
+                        onFloor = false; onPlayer = false; onStick = false; onSurface = false; body.onSurface = false; body.onPlayer = false; body.onStick = false;
                         //効果音鳴らす
                         SoundEffect.soundTrigger[5] = 1;
                     }
@@ -368,12 +361,13 @@ public class Controller : MonoBehaviourPunCallbacks
                     coolTime = CoolTime_;
                 }
             }
-        
+
         }
-       
+
     }
-    [PunRPC]
-    void MoveStickRotation(int id , float rot)
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    void MoveStickRotation(int id, float rot)
     {
         if (!GameSetting.setupEnded) { return; }
         if (gameSetting.players[id - 1].activeSelf)
@@ -389,7 +383,7 @@ public class Controller : MonoBehaviourPunCallbacks
     void Move()
     {
         //プレイヤー数選択画面でも操作可能
-        if (GameSetting.Playable && !gameSetting.isPaused) 
+        if (GameSetting.Playable && !gameSetting.isPaused)
         {
             if (!NetWorkMain.isOnline)
             {
@@ -422,19 +416,19 @@ public class Controller : MonoBehaviourPunCallbacks
     // 死亡
     public void StartDead()
     {
-        if (GameStart.gameMode1 == "Single" && GameStart.gameMode2 == "Arcade")
+        if (GameStartHandler.GameMode1 == "Single" && GameStartHandler.GameMode2 == "Arcade")
         {
             return;
         }
-        if (GameStart.gameMode1 == "Online")
+        if (GameStartHandler.GameMode1 == "Online")
         {
             if (photonView.IsMine)
             {
                 isRespowing = true;
-                photonView.RPC(nameof(RPCStartDead), RpcTarget.All);
+                RPCOnDeath();
             }
         }
-        else 
+        else
         {
             isRespowing = true;
             stickSprite.enabled = false;
@@ -450,9 +444,10 @@ public class Controller : MonoBehaviourPunCallbacks
             GameObject effectObj = Instantiate(effectPrefab, effPos, Quaternion.identity);
             StartCoroutine(Respown());
         }
-  
+
     }
-    [PunRPC] void RPCStartDead() 
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    void RPCOnDeath()
     {
         isRespowing = true;
         stickSprite.enabled = false;
@@ -516,7 +511,7 @@ public class Controller : MonoBehaviourPunCallbacks
     // コリジョン
     private void OnCollisionEnter2D(Collision2D other)
     {
-        if(id == 5) { return; }
+        if (id == 5) { return; }
         if (other.gameObject.CompareTag("Surface")) { SoundEffect.soundTrigger[0] = 1; }
     }
     private void OnCollisionStay2D(Collision2D other)
