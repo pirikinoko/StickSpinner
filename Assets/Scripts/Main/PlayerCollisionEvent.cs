@@ -4,166 +4,159 @@ using UnityEngine;
 
 public class PlayerCollisionEvent : NetworkBehaviour
 {
+    [SerializeField]
+    private int _playerId;
 
-    float pointTimer;
-    int playerId;                   // プレイヤー番号(1～4)      
-    GameMode gamemode;
-    GameSetting gameSetting;
-    int checkNum = 0;
-    void Start()
+    private SessionManager _sessionManager;
+
+    private float _pointTimer;
+    private GameRuleManager _gameMode;
+    private GamePlayHandler _gameSetting;
+    private int _checkNum = 0;
+
+    private void Start()
     {
-        gameSetting = GameObject.Find("Scripts").GetComponent<GameSetting>();
-        gamemode = GameObject.Find("Scripts").GetComponent<GameMode>();
+        _sessionManager = SessionManager.Instance;
+        _gameSetting = GameObject.Find("PlaySceneManager").GetComponent<GamePlayHandler>();
+        _gameMode = GameObject.Find("PlaySceneManager").GetComponent<GameRuleManager>();
 
-        // ボディかスティックより ID を得る
-        Controller cnt = GetComponent<Controller>();
-        if (cnt != null)
-        {   // Controller.cs
-            playerId = cnt.id;
-        }
-        else if (this.name.Contains("Player"))
-        {   // Body.cs
-            Body bdy = GetComponent<Body>();
-            playerId = bdy.id;
-        }
-        pointTimer = 0;
+        _pointTimer = 0;
     }
 
     private void OnTriggerStay2D(Collider2D other)
     {
-        if (this.gameObject.name.Contains("Player"))
+        if (gameObject.name.Contains("Player"))
         {
             if (other.gameObject.name.Contains("CheckPos"))
             {
                 int tmp = int.Parse(Regex.Replace(other.gameObject.name, @"[^0-9]", ""));
-                if (tmp > checkNum)
+                if (tmp > _checkNum)
                 {
-                    GameSetting.respownPos[playerId - 1] = other.gameObject.transform.position;
-                    checkNum = tmp;
-                    //アイコン表示
-                    GameObject.Find("P" + playerId + "Icon").SetActive(true);
-                    GameObject.Find("P" + playerId + "Icon").GetComponent<SpriteRenderer>().enabled = true;
+                    GamePlayHandler.RespownPos[_playerId - 1] = other.gameObject.transform.position;
+                    _checkNum = tmp;
+
+                    GameObject icon = GameObject.Find("P" + _playerId + "Icon");
+                    icon.SetActive(true);
+                    icon.GetComponent<SpriteRenderer>().enabled = true;
+
                     Vector2 iconPos = other.gameObject.transform.position;
-                    iconPos.x -= 0.5f;
-                    iconPos.x += 0.2f * playerId;
-                    iconPos.y += 0.35f;
-                    GameObject.Find("P" + playerId + "Icon").transform.position = iconPos;
+                    iconPos.x -= Constants.CheckPosOffsetX;
+                    iconPos.x += Constants.IconOffsetX * _playerId;
+                    iconPos.y += Constants.IconOffsetY;
+                    icon.transform.position = iconPos;
                     SoundEffect.soundTrigger[2] = 1;
                 }
-
             }
 
             if (other.gameObject.name.Contains("Point"))
             {
+                if (GamePlayHandler.ElapsedTime > 0 && !_gameSetting.IsPaused)
                 {
-                    if (GameSetting.playTime > 0 && !gameSetting.isPaused)
+                    _pointTimer += Time.deltaTime;
+                    if (_pointTimer > Constants.PointInterval)
                     {
-                        pointTimer += Time.deltaTime;
-                        if (pointTimer > 1)
+                        if (_sessionManager.PlayingType == "Online")
                         {
-                            if (GameStartHandler.GameMode1 == "Online")
+                            if (Runner.LocalPlayer.PlayerId == _playerId - 1)
                             {
-                                if (photonView.IsMine)
-                                {
-                                    photonView.RPC(nameof(RPCAddFlagPoints), RpcTarget.All, playerId);
-                                }
+                                RPCAddFlagPoints(_playerId);
                             }
-                            else
-                            {
-                                SoundEffect.soundTrigger[6] = 1;
-                                GameMode.points[playerId - 1] += 1;
-                                GameMode.playParticle[playerId - 1] = 1;
-                            }
-                            pointTimer = 0;
                         }
+                        else
+                        {
+                            SoundEffect.soundTrigger[6] = 1;
+                            GameRuleManager.Points[_playerId - 1] += 1;
+                            GameRuleManager.IsParticlePlayed[_playerId - 1] = 1;
+                        }
+                        _pointTimer = 0;
                     }
                 }
             }
         }
     }
 
-    void OnTriggerEnter2D(Collider2D other)
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        if (GameStartHandler.GameMode2 != "Arcade")　　//対戦モードを除き
+        if (_sessionManager.GameMode != "Arcade") // 対戦モードを除き
         {
-            //自身がプレイヤーならゴール処理
-            if (this.gameObject.name == "GoalFlag")
+            // 自身がプレイヤーならゴール処理
+            if (gameObject.name == "GoalFlag")
             {
                 if (other.gameObject.CompareTag("Player"))
                 {
-                    int playerID = other.gameObject.GetComponent<Body>().id; ;
-                    if (GameStartHandler.GameMode1 == "Online")
+                    int playerID = other.gameObject.GetComponent<Body>().Id;
+                    if (_sessionManager.PlayingType == "Online")
                     {
-                        gamemode.CallGoalProcessRPC(playerID);
+                        _gameMode.RPC_GoalProcess(playerID);
                     }
                     else
                     {
-                        gamemode.GoalProcess(playerID);
+                        _gameMode.GoalProcess(playerID);
                     }
                 }
             }
         }
-        if (other.gameObject.CompareTag("thorn"))　//対戦モード時トゲに当たった時最後に触れていたプレイヤーキル(5秒)
+        if (other.gameObject.CompareTag("thorn")) // 対戦モード時トゲに当たった時最後に触れていたプレイヤーキル(5秒)
         {
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < GameStartHandler.MaxPlayerCount; i++)
             {
-                if (GameMode.killTimer[i, playerId - 1] > 0) //トゲに当たったプレイヤーに最後に5秒以内に触れていたプレイヤーにポイント付与
+                if (GameRuleManager.KillableDuration[i, _playerId - 1] > 0) // トゲに当たったプレイヤーに最後に5秒以内に触れていたプレイヤーにポイント付与
                 {
-                    if (GameStartHandler.GameMode1 == "Online")
+                    if (_sessionManager.PlayingType == "Online")
                     {
-                        if (photonView.IsMine)
+                        if (Runner.LocalPlayer.PlayerId == _playerId - 1)
                         {
-                            photonView.RPC(nameof(RPCAddKillPoints), RpcTarget.All, i, playerId);
+                            RPCAddKillPoints(i, _playerId);
                         }
                     }
                     else
                     {
-                        GameMode.points[i] += 5;
-                        GameMode.playParticle[i] = 2;
-                        GameMode.killer = "Player" + (i + 1).ToString();
-                        GameMode.died = "Player" + playerId.ToString();
-                        GameMode.killTimer[i, playerId - 1] = 0;
-                        GameMode.KillLogTimer = 5.0f;
+                        GameRuleManager.Points[i] += Constants.KillPoint;
+                        GameRuleManager.IsParticlePlayed[i] = 2;
+                        GameRuleManager.KillerName = "Player" + (i + 1).ToString();
+                        GameRuleManager.DeadName = "Player" + _playerId.ToString();
+                        GameRuleManager.KillableDuration[i, _playerId - 1] = 0;
+                        GameRuleManager.KillLogTimer = Constants.KillLogDuration;
                     }
-
                 }
             }
         }
-
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    void RPCAddKillPoints(int target, int myId)
+    private void RPCAddKillPoints(int target, int myId)
     {
-        GameMode.points[target] += 5;
-        GameMode.playParticle[target] = 2;
-        GameMode.killer = "Player" + (target + 1).ToString();
-        GameMode.died = "Player" + myId.ToString();
-        GameMode.killTimer[target, myId - 1] = 0;
-        GameMode.KillLogTimer = 5.0f;
+        GameRuleManager.Points[target] += Constants.KillPoint;
+        GameRuleManager.IsParticlePlayed[target] = 2;
+        GameRuleManager.KillerName = "Player" + (target + 1).ToString();
+        GameRuleManager.DeadName = "Player" + myId.ToString();
+        GameRuleManager.KillableDuration[target, myId - 1] = 0;
+        GameRuleManager.KillLogTimer = Constants.KillLogDuration;
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    void RPCAddFlagPoints(int myId)
+    private void RPCAddFlagPoints(int myId)
     {
         SoundEffect.soundTrigger[6] = 1;
-        GameMode.points[myId - 1] += 1;
-        GameMode.playParticle[myId - 1] = 1;
+        GameRuleManager.Points[myId - 1] += 1;
+        GameRuleManager.IsParticlePlayed[myId - 1] = 1;
     }
+
     private void OnCollisionStay2D(Collision2D other)
     {
-        if (GameStartHandler.GameMode2 == "Arcade")
+        if (_sessionManager.GameMode == "Arcade")
         {
             if (other.gameObject.CompareTag("Player") || other.gameObject.CompareTag("Stick"))
             {
-                //自分以外に対象のプレイヤーのキル判定が入らないように全員分のキルタイマーを一度リセットする     
-                for (int i = 0; i < 4; i++)
+                // 自分以外に対象のプレイヤーのキル判定が入らないように全員分のキルタイマーを一度リセットする
+                for (int i = 0; i < GameStartHandler.MaxPlayerCount; i++)
                 {
-                    GameMode.killTimer[i, other.gameObject.GetComponent<PlayerCollisionEvent>().playerId - 1] = 0;
+                    GameRuleManager.KillableDuration[i, other.gameObject.GetComponent<PlayerCollisionEvent>()._playerId - 1] = 0;
                 }
 
-                GameMode.killTimer[playerId - 1, other.gameObject.GetComponent<PlayerCollisionEvent>().playerId - 1] = 3.0f;
+                GameRuleManager.KillableDuration[_playerId - 1, other.gameObject.GetComponent<PlayerCollisionEvent>()._playerId - 1] = Constants.KillTimerDuration;
             }
         }
     }
 }
+

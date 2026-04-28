@@ -1,7 +1,7 @@
 Copyright (c) 2011-2012, Vernon Adams (vern@newtypography.co.uk), with Reserved Font Names 'Oswald'
 This Font Software is licensed under the SIL Open Font License, Version 1.1.
 This license is copied below, and is also available with a FAQ at:
-http://scripts.sil.org/OFL
+http://PlaySceneManager.sil.org/OFL
 
 
 -----------------------------------------------------------
@@ -27,7 +27,7 @@ to any document created using the fonts or their derivatives.
 DEFINITIONS
 "Font Software" refers to the set of files released by the Copyright
 Holder(s) under this license and clearly marked as such. This may
-include source files, build scripts and documentation.
+include source files, build PlaySceneManager and documentation.
 
 "Reserved Font Name" refers to any names specified as such after the
 copyright statement(s).

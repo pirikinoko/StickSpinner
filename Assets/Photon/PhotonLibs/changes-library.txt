@@ -1605,12 +1605,12 @@ Siverlight:
 - Removed: QueueOutgoingUnreliableError, QueueOutgoingAcksError, QueueIncomingReliableError, QueueIncomingUneliableError, QueueSentError (no errors, only warnings)
 - Removed: error "report" when TCP incoming queue getts fuller
 - Internal: updates Neutron part to run with Protocol.cs de/serialization (added a serializeParametersNeutron() as there are multiple differences to UDP part)
-- Changed: projects and scripts to build documentation xml in debug builds
+- Changed: projects and PlaySceneManager to build documentation xml in debug builds
 - Renamed: demo-photon-SL to demo-realtime-SL (according to other demo realtime implementations)
 - Changed: many classes and properties are now internal. e.g. Protocol, EnetChannel, EnetPeer (and inner classes), TPeer, SuppportClass.ReadInput()
 - Updated: AssemblyInfo.cs for photon dotnet and silverlight
 - Internal: projects to have precompile-flags also in release builds
-- Updated: build scripts for SDK building
+- Updated: build PlaySceneManager for SDK building
 - Removed: Compact Framework support
 
 *** Version 5.6.1

@@ -1,14 +1,18 @@
+using Fusion;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class TextActive : MonoBehaviour
+public class TextActive : NetworkBehaviour
 {
+    private SessionManager _sessionManager;
+
     Text text;
     Color textColor;
 
     // Start is called before the first frame update
     void Start()
     {
+        _sessionManager = SessionManager.Instance;
         text = this.gameObject.GetComponent<Text>();
         textColor = text.color;
     }
@@ -19,7 +23,7 @@ public class TextActive : MonoBehaviour
         if (this.gameObject.activeSelf)
         {
             float newAlpha = 1f;
-            if (NetWorkMain.NetWorkId != NetWorkMain.leaderId)
+            if (Runner.LocalPlayer.PlayerId != _sessionManager.LeaderId)
             {
                 newAlpha = 0.3f;
             }

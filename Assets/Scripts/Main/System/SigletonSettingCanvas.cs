@@ -1,14 +1,12 @@
 using UnityEngine;
-using Cysharp.Threading.Tasks.Linq;
-using Cysharp.Threading.Tasks;
 
 public class SingletonSettingCanvas : MonoBehaviour
 {
     // 静的インスタンスを保持する変数
-    private static SingletonSettingCanvas? instance;
+    private static SingletonSettingCanvas instance;
 
     // シングルトンのインスタンスへのアクセスプロパティ
-    public static SingletonSettingCanvas? Instance
+    public static SingletonSettingCanvas Instance
     {
         get
         {

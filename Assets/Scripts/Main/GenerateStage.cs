@@ -1,65 +1,106 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
 //using System.Numerics;
 using UnityEngine;
-using Cysharp.Threading.Tasks;
-using DG.Tweening;
-using System.Threading;
-using Cysharp.Threading.Tasks.Linq;
-using UnityEngine.Tilemaps;
 
 public class GenerateStage : MonoBehaviour
 {
-    GameSetting gameSetting;
-    [SerializeField] GameObject  checkLine, surface, thorns, parentObject, leftWall, rightWall;
-    [SerializeField] GameObject[] frames;
-    GameObject[] obj = new GameObject[objUnit];
-    GameObject[] objForCheckLength;
-    Vector2 playerPos, leftWallPos, rightWallPos, surfacePos;
-    const int Floor = 0, Wall = 1, Right = 0, Left = 1, objUnit = 30;
+    private GamePlayHandler gameSetting;
+
+    [SerializeField]
+    private GameObject checkLine;
+
+    [SerializeField]
+    private GameObject surface;
+
+    [SerializeField]
+    private GameObject thorns;
+
+    [SerializeField]
+    private GameObject parentObject;
+
+    [SerializeField]
+    private GameObject leftWall;
+
+    [SerializeField]
+    private GameObject rightWall;
+
+    [SerializeField]
+    private GameObject[] frames;
+
+    private GameObject[] obj = new GameObject[objUnit];
+    private GameObject[] objForCheckLength;
+    private Vector2 playerPos;
+    private Vector2 leftWallPos;
+    private Vector2 rightWallPos;
+    private Vector2 surfacePos;
+
+    private const int Floor = 0;
+    private const int Wall = 1;
+    private const int Right = 0;
+    private const int Left = 1;
+    private const int objUnit = 30;
+
     public static float maxHeight;
-    float startHeight;
-    string[,] objects = { { "Floor1", "Floor2", "Floor3", "Floor4" }, { "Wall1", "Wall2", "Wall3", "Wall4" } };
-    float[,] eachLength = new float[2, 4];
-    float xMax = 0, xMin = 0, yMax = 0, yMin = 0, playerYPrev, sizeX, sizeY, posX = -30, posY = 0;
-    bool[] objActive = new bool[objUnit];
-    Vector3[] objPos = new Vector3[objUnit];
-    Vector2 checkLinePos;
+    private float startHeight;
+    private string[,] objects = { { "Floor1", "Floor2", "Floor3", "Floor4" }, { "Wall1", "Wall2", "Wall3", "Wall4" } };
+    private float[,] eachLength = new float[2, 4];
+    private float xMax = 0;
+    private float xMin = 0;
+    private float yMax = 0;
+    private float yMin = 0;
+    private float playerYPrev;
+    private float sizeX;
+    private float sizeY;
+    private float posX = -30;
+    private float posY = 0;
+
+    private bool[] objActive = new bool[objUnit];
+    private Vector3[] objPos = new Vector3[objUnit];
+    private Vector2 checkLinePos;
+
     public float deadLine { get; set; }
-    bool isCalucurateEnded;
-    int[] objectType = new int[objUnit];
-    int currentObj = 0, prev, prev2, count = 0, target = 0, objLength, objLengthPrev, objDirection = 0, enemyCount = 0, startCount, startTrigger;
+    private bool isCalucurateEnded;
+    private int[] objectType = new int[objUnit];
+    private int currentObj = 0;
+    private int prev;
+    private int prev2;
+    private int count = 0;
+    private int target = 0;
+    private int objLength;
+    private int objLengthPrev;
+    private int objDirection = 0;
+    private int startCount;
+    private int startTrigger;
+
     public static float[] collisionPos = new float[4];
 
-    // Start is called before the first frame update
+    private SessionManager _sessionManager;
+
     void Start()
     {
+        _sessionManager = SessionManager.Instance;
         startTrigger = 0;
     }
 
-    void AfterAllJoin() 
+    void AfterAllJoin()
     {
-        if (GameStartHandler.GameMode1 != "Single") { return; }
-        if (GameStartHandler.GameMode2 != "Arcade") { return; }
-        gameSetting = GameObject.Find("Scripts").GetComponent<GameSetting>();
+        if (_sessionManager.PlayingType != "Single") { return; }
+        if (_sessionManager.GameMode != "Arcade") { return; }
+        gameSetting = GameObject.Find("PlaySceneManager").GetComponent<GamePlayHandler>();
         maxHeight = 0;
 
-        startHeight = gameSetting.players[0].transform.position.y;
+        startHeight = gameSetting.Players[0].transform.position.y;
         surfacePos = surface.transform.position;
         thorns.gameObject.SetActive(false);
         leftWallPos = leftWall.transform.position;
-        rightWallPos = rightWall.transform.position;    
-        playerYPrev = gameSetting.players[0].transform.position.y; ;
+        rightWallPos = rightWall.transform.position;
+        playerYPrev = gameSetting.Players[0].transform.position.y; ;
         currentObj = 0;
         objectType[0] = 0;
         count = 0;
         target = 0;
-        enemyCount = 0;
         isCalucurateEnded = false;
         deadLine = -10;
-        SetObjectsForCalucuratingObjectLength();    
+        SetObjectsForCalucuratingObjectLength();
         for (int i = 0; i < 20; i++)
         {
             objActive[i] = false;
@@ -67,23 +108,23 @@ public class GenerateStage : MonoBehaviour
         // 二次元配列をdefault値で初期化する
         for (int i = 0; i < collisionPos.Length; i++)
         {
-            collisionPos[i] = 0;    
+            collisionPos[i] = 0;
         }
     }
     // Update is called once per frame
     void Update()
     {
-        if (GameStartHandler.GameMode1 != "Single" || GameStartHandler.GameMode2 != "Arcade")
+        if (_sessionManager.PlayingType != "Single" || _sessionManager.GameMode != "Arcade")
         {
             return;
         }
-        if(GameSetting.allJoin && startTrigger == 0) 
+        if (GamePlayHandler.AllJoin && startTrigger == 0)
         {
             AfterAllJoin();
             startTrigger = 1;
         }
         StartCalucurating();
-        if (gameSetting.isCountDownEnded)
+        if (gameSetting.IsCountDownEnded)
         {
             DeleteObject();
             SetNumbers();
@@ -91,15 +132,15 @@ public class GenerateStage : MonoBehaviour
         }
         PlayerHeightManagement();
     }
-    void SetObjectsForCalucuratingObjectLength() 
+    void SetObjectsForCalucuratingObjectLength()
     {
         //生成するオブジェクト数を保存
         int length1 = objects.GetLength(0);
         int length2 = objects.GetLength(1);
-        int totalFloors = objects.GetLength(1); 
+        int totalFloors = objects.GetLength(1);
         //オブジェクト計測用の枠を設ける
         sizeX = 2.5f;
-        sizeY = totalFloors * 1f + 1;
+        sizeY = (totalFloors * 1f) + 1;
         float thickness = 0.05f;
         checkLinePos = new Vector2(posX + (sizeX / 2), posY - (sizeY / 2));
         checkLine.transform.position = checkLinePos;
@@ -130,7 +171,7 @@ public class GenerateStage : MonoBehaviour
         {
             for (int k = 0; k < length2; k++)
             {
-                Vector2 generatePos = new Vector2(posX, (posY - (j * spacing) - (k + 1)));
+                Vector2 generatePos = new Vector2(posX, posY - (j * spacing) - (k + 1));
                 objForCheckLength[(j * 4) + k] = Instantiate((GameObject)Resources.Load(objects[j, k]), generatePos, Quaternion.identity);
                 if (j == 1)
                 {
@@ -139,10 +180,10 @@ public class GenerateStage : MonoBehaviour
             }
         }
     }
-    void StartCalucurating() 
+    void StartCalucurating()
     {
         //チェックラインを動かしてそれぞれのオブジェクトの長さを計測
-        if (!gameSetting.isCountDownEnded)
+        if (!gameSetting.IsCountDownEnded)
         {
             checkLinePos.x -= 1.0f * Time.deltaTime;
             checkLine.transform.position = checkLinePos;
@@ -164,7 +205,7 @@ public class GenerateStage : MonoBehaviour
                     for (int j = 0; j < length2; j++)
                     {
                         //衝突位置をもとにオブジェクトの長さを求める
-                        float distansFromRightFrame = (posX + (sizeX / 2)) - collisionPos[(i * 4) + j];
+                        float distansFromRightFrame = posX + (sizeX / 2) - collisionPos[(i * 4) + j];
                         eachLength[i, j] = sizeX - (distansFromRightFrame * 2);
                         UnityEngine.Debug.Log($"eachLength:{eachLength[i, j]}");
                     }
@@ -173,7 +214,7 @@ public class GenerateStage : MonoBehaviour
             }
         }
     }
-    void PlayerHeightManagement() 
+    void PlayerHeightManagement()
     {
         playerPos = GameObject.Find("Player1").transform.position;
         leftWallPos.y = playerPos.y;
@@ -190,13 +231,13 @@ public class GenerateStage : MonoBehaviour
             leftWall.transform.position = leftWallPos;
             rightWall.transform.position = rightWallPos;
         }
-        if (GameMode.isGameOver == false && playerPos.y > maxHeight + startHeight)
+        if (GameRuleManager.IsGameEnded == false && playerPos.y > maxHeight + startHeight)
         {
             maxHeight = playerPos.y;
             maxHeight -= startHeight;
         }
     }
-    void DecideNextObject() 
+    void DecideNextObject()
     {
         if (objActive[currentObj] == false)
         {
@@ -230,7 +271,7 @@ public class GenerateStage : MonoBehaviour
         if (count == 0)
         {
             objectType[targetNum] = Floor;　//最初は床オブジェクトを生成
-            objPos[targetNum] = new Vector3(-6, surfacePos.y -1.1f, 0);
+            objPos[targetNum] = new Vector3(-6, surfacePos.y - 1.1f, 0);
             objectType[0] = 0;
             return;
         }
@@ -239,7 +280,6 @@ public class GenerateStage : MonoBehaviour
         objDirection = UnityEngine.Random.Range(0, 2);  //0・・Left  1・・Right 
 
         int attempt = 0; // 追加: ループカウンタ
-        const int maxAttempts = 100; // 追加: 最大試行回数
 
         while (true)
         {
@@ -251,7 +291,7 @@ public class GenerateStage : MonoBehaviour
                 case Floor: //床        
                     xMin = 0.8f; xMax = 1.5f;
                     yMin = 0.7f; yMax = 1.10f;
-                    xMin += 0.7f * eachLength[objectType[targetNum], objLength- 1];
+                    xMin += 0.7f * eachLength[objectType[targetNum], objLength - 1];
                     xMax += 0.7f * eachLength[objectType[targetNum], objLength - 1];
                     break;
             }
@@ -260,14 +300,9 @@ public class GenerateStage : MonoBehaviour
             Vector3 newObjPos = new Vector3();
             newObjPos.y = UnityEngine.Random.Range(objPos[prev].y + yMin, objPos[prev].y + yMax);
 
-            if (objDirection == Right)
-            {
-                newObjPos.x = UnityEngine. Random.Range(objPos[prev].x + xMin, objPos[prev].x + xMax);
-            }
-            else
-            {
-                newObjPos.x = UnityEngine. Random.Range(objPos[prev].x - xMin, objPos[prev].x - xMax);
-            }
+            newObjPos.x = objDirection == Right
+                ? UnityEngine.Random.Range(objPos[prev].x + xMin, objPos[prev].x + xMax)
+                : UnityEngine.Random.Range(objPos[prev].x - xMin, objPos[prev].x - xMax);
 
             if (newObjPos.x > rightWallPos.x - (eachLength[objectType[targetNum], objLength - 1] / 2))
             {
@@ -282,7 +317,7 @@ public class GenerateStage : MonoBehaviour
                 objPos[targetNum] = newObjPos;
                 break;
             }
-            if(attempt > 20) 
+            if (attempt > 20)
             {
                 UnityEngine.Debug.Log("無限ループです");
                 break;
@@ -294,7 +329,7 @@ public class GenerateStage : MonoBehaviour
 
     void DeleteObject()
     {
-        Vector3 playerPos = gameSetting.players[0].transform.position;
+        Vector3 playerPos = gameSetting.Players[0].transform.position;
         if (playerPos.y > 2.5f && playerPos.y - objPos[target].y > 7 && obj[target] != null)
         {
             deadLine = objPos[target].y;

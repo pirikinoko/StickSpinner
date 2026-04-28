@@ -16,6 +16,9 @@ TagManager:
   - TargetButtonArcade
   - TargetButtonSingle
   - Button
+  - ControllerUI
+  - KeyBoardMouseUI
+  - BattleModeUI
   layers:
   - Default
   - TransparentFX
@@ -61,7 +64,4 @@ TagManager:
     locked: 0
   - name: UI
     uniqueID: 2719473359
-    locked: 0
-  - name: FrontUI
-    uniqueID: 3959667795
     locked: 0

@@ -15,11 +15,11 @@ public class PauseButtonActive : MonoBehaviour
     {
         if (Settings.SettingPanelActive) 
         {
-            GetComponent<ButtonClick>().enabled = false;
+            GetComponent<ButtonFunction>().enabled = false;
         }
         else 
         {
-            GetComponent<ButtonClick>().enabled = true;
+            GetComponent<ButtonFunction>().enabled = true;
         }
     }
 }

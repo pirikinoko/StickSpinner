@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class LoadAnim : MonoBehaviour
@@ -7,7 +5,7 @@ public class LoadAnim : MonoBehaviour
     float speed, increaseRate = 800;
     int maxSpeed, minSpeed;
     bool increase;
-    Transform transform;
+    Transform _transform;
     Vector3 rotZ;
     // Start is called before the first frame update
     void Start()
@@ -16,7 +14,7 @@ public class LoadAnim : MonoBehaviour
         maxSpeed = 1500;
         minSpeed = 300;
         speed = maxSpeed;
-        transform = this.GetComponent<Transform>();
+        _transform = this.GetComponent<Transform>();
     }
 
     // Update is called once per frame
@@ -30,16 +28,16 @@ public class LoadAnim : MonoBehaviour
         {
             speed -= increaseRate * Time.deltaTime;
         }
-        if(speed > maxSpeed) 
+        if (speed > maxSpeed)
         {
-            increase=false;
+            increase = false;
         }
-        else if(speed < minSpeed) 
+        else if (speed < minSpeed)
         {
             increase = true;
         }
 
         rotZ.z += (int)(speed * Time.deltaTime);
-        transform.eulerAngles = rotZ;
+        _transform.eulerAngles = rotZ;
     }
 }

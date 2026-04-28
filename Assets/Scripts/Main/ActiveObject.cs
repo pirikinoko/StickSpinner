@@ -1,15 +1,13 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using Fusion;
 public class ActiveObject : MonoBehaviour
 {
-    //基本
+    private SessionManager _sessionManager;
+
     bool isAnimationStarted;
-    string direction = "Right";
     public float speed = 1.3f, delay = 0;
     Rigidbody2D rbody2D;
-    GameSetting gameSetting;
+    GamePlayHandler _gamePlayHandler;
     RigidbodyConstraints2D defaultConstraints;
 
     public enum Direction
@@ -26,20 +24,19 @@ public class ActiveObject : MonoBehaviour
     public float RightLimit = 1.0f, LeftLimit = 1.0f, UpLimit = 1.0f, DownLimit = 1.0f;
     float ReverseCoolDown = 1.0f;
     bool reverse = true;
-    float tmpSpeed = 0;
     //サイズ制限
     float startSize, sizeLimit;
     public float sizeMulti;
     //オブジェクト削除
     public float deleteTimer = 1.0f;
-    //透明度変更
-    float fadeSpeed = 1.4f;
+
     private Material material;
     private Color originalColor;
 
     void Start()
     {
-        gameSetting = GameObject.Find("Scripts").GetComponent<GameSetting>();
+        _sessionManager = SessionManager.Instance;
+        _gamePlayHandler = GameObject.Find("PlaySceneManager").GetComponent<GamePlayHandler>();
         rbody2D = GetComponent<Rigidbody2D>();
         Renderer renderer = GetComponent<Renderer>();
         isAnimationStarted = false;
@@ -80,9 +77,9 @@ public class ActiveObject : MonoBehaviour
     void Update()
     {
         //オンラインの場合は全プレイヤーのセットアップ完了を待つ
-        if (GameStartHandler.GameMode1 == "Online")
+        if (_sessionManager.PlayingType == "Online")
         {
-            if (!GameSetting.setupEnded) { return; }
+            if (!GamePlayHandler.IsSetupEnded) { return; }
         }
 
         //遅延の設定がある場合は遅延
@@ -106,14 +103,7 @@ public class ActiveObject : MonoBehaviour
             if (this.gameObject.name.Contains("Anim")) { return; }
             RigidbodyConstraints2D constraints = rbody2D.constraints;
 
-            if (gameSetting.isPaused)
-            {
-                constraints = RigidbodyConstraints2D.FreezePosition;
-            }
-            else
-            {
-                constraints = defaultConstraints;
-            }
+            constraints = _gamePlayHandler.IsPaused ? RigidbodyConstraints2D.FreezePosition : defaultConstraints;
             rbody2D.constraints = constraints;
             if (this.gameObject.name.Contains("MoveCircle"))
             {
@@ -152,14 +142,7 @@ public class ActiveObject : MonoBehaviour
 
     void ColReverse()
     {
-        if (gameSetting.isPaused)
-        {
-            rbody2D.velocity = new Vector2(0f, 0f);
-        }
-        else
-        {
-            rbody2D.velocity = new Vector2(speed, 0f);
-        }
+        rbody2D.velocity = _gamePlayHandler.IsPaused ? new Vector2(0f, 0f) : new Vector2(speed, 0f);
     }
 
     void ExtendY()
@@ -169,7 +152,7 @@ public class ActiveObject : MonoBehaviour
         transform.localScale = localScale;
 
         Vector2 objPos = this.transform.position;
-        objPos.y += (speed / 2) * Time.deltaTime;
+        objPos.y += speed / 2 * Time.deltaTime;
         this.transform.position = objPos;
 
         if (localScale.y > sizeLimit || localScale.y <= 0)
@@ -190,7 +173,7 @@ public class ActiveObject : MonoBehaviour
             }
         }
         //初期位置よりx軸に1動いたら反転
-        if (this.gameObject.transform.position.x > StartPos.x + RightLimit && reverse || this.gameObject.transform.position.x < StartPos.x - LeftLimit && reverse)
+        if ((this.gameObject.transform.position.x > StartPos.x + RightLimit && reverse) || (this.gameObject.transform.position.x < StartPos.x - LeftLimit && reverse))
         {
             speed *= -1;
             reverse = false;
@@ -210,7 +193,7 @@ public class ActiveObject : MonoBehaviour
             }
         }
         //初期位置よりx軸に1動いたら反転
-        if (this.gameObject.transform.position.y > StartPos.y + UpLimit && reverse || this.gameObject.transform.position.y < StartPos.y - DownLimit && reverse)
+        if ((this.gameObject.transform.position.y > StartPos.y + UpLimit && reverse) || (this.gameObject.transform.position.y < StartPos.y - DownLimit && reverse))
         {
             speed *= -1;
             reverse = false;
@@ -229,23 +212,17 @@ public class ActiveObject : MonoBehaviour
     void WaveObj()
     {
         rbody2D.velocity = new Vector2(speed, 0f);
-        if (this.gameObject.transform.position.x > StartPos.x + RightLimit  || this.gameObject.transform.position.x < StartPos.x - LeftLimit )
+        if (this.gameObject.transform.position.x > StartPos.x + RightLimit || this.gameObject.transform.position.x < StartPos.x - LeftLimit)
         {
             StartCoroutine(DelaySpawn());
         }
         float fadeOutTime = 0.2f;
         if (this.gameObject.transform.position.x > StartPos.x + RightLimit - fadeOutTime || this.gameObject.transform.position.x < StartPos.x - LeftLimit + fadeOutTime)
         {
-            float timeToReachLimit;
-            if (speed > 0)
-            {
-                timeToReachLimit = ((StartPos.x + RightLimit) - this.gameObject.transform.position.x) / speed;
-            }
-            else 
-            {
-                timeToReachLimit = (this.gameObject.transform.position.x - (StartPos.x - LeftLimit) ) / Mathf.Abs(speed);
-            }
-            float newAlpha = Mathf.Clamp01(material.color.a - (1 / timeToReachLimit) * Time.deltaTime);
+            float timeToReachLimit = speed > 0
+                ? (StartPos.x + RightLimit - this.gameObject.transform.position.x) / speed
+                : (this.gameObject.transform.position.x - (StartPos.x - LeftLimit)) / Mathf.Abs(speed);
+            float newAlpha = Mathf.Clamp01(material.color.a - (1 / timeToReachLimit * Time.deltaTime));
             Color newColor = new Color(originalColor.r, originalColor.g, originalColor.b, newAlpha);
             material.color = newColor;
         }
@@ -257,4 +234,4 @@ public class ActiveObject : MonoBehaviour
         yield return new WaitForSeconds(1);
     }
 }
-        
+

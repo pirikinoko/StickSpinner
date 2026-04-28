@@ -1,16 +1,14 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class ArrowEffect : MonoBehaviour
 {
     //基本
     bool start;
-    string direction = "Right";
     public float speed = 1.3f, delay = 0;
     Rigidbody2D rbody2D;
     RigidbodyConstraints2D defaultConstraints;
-    GameSetting gameSetting;
+    GamePlayHandler gameSetting;
 
     public enum Direction
     {
@@ -24,10 +22,8 @@ public class ArrowEffect : MonoBehaviour
     //移動制限
     Vector2 StartPos;
     public float RightLimit = 1.0f, LeftLimit = 1.0f;
-    float tmpSpeed = 0;
 
     //透明度変更
-    float fadeSpeed = 1.4f;
     private Material material;
     private Color originalColor;
 
@@ -38,7 +34,7 @@ public class ArrowEffect : MonoBehaviour
     }
     void Start()
     {
-        gameSetting = GameObject.Find("Scripts").GetComponent<GameSetting>();
+        gameSetting = GameObject.Find("PlaySceneManager").GetComponent<GamePlayHandler>();
         start = false;
         if (optionStrings[(int)selectedDirection] == "Left")
         {
@@ -73,15 +69,8 @@ public class ArrowEffect : MonoBehaviour
             return;
         }
         RigidbodyConstraints2D constraints = rbody2D.constraints;
-            if (gameSetting.isPaused)
-            {
-                constraints = RigidbodyConstraints2D.FreezePosition;
-            }
-            else
-            {
-                constraints = defaultConstraints;
-            }
-            rbody2D.constraints = constraints;
+        constraints = gameSetting.IsPaused ? RigidbodyConstraints2D.FreezePosition : defaultConstraints;
+        rbody2D.constraints = constraints;
 
         WaveObj();
     }
@@ -96,16 +85,10 @@ public class ArrowEffect : MonoBehaviour
         float fadeOutTime = 0.6f;
         if (this.gameObject.transform.position.x > StartPos.x + RightLimit - fadeOutTime || this.gameObject.transform.position.x < StartPos.x - LeftLimit + fadeOutTime)
         {
-            float timeToReachLimit;
-            if (speed > 0)
-            {
-                timeToReachLimit = ((StartPos.x + RightLimit) - this.gameObject.transform.position.x) / speed;
-            }
-            else
-            {
-                timeToReachLimit = (this.gameObject.transform.position.x - (StartPos.x - LeftLimit)) / Mathf.Abs(speed);
-            }
-            float newAlpha = Mathf.Clamp01(material.color.a - (1 / timeToReachLimit) * Time.deltaTime);
+            float timeToReachLimit = speed > 0
+                ? (StartPos.x + RightLimit - this.gameObject.transform.position.x) / speed
+                : (this.gameObject.transform.position.x - (StartPos.x - LeftLimit)) / Mathf.Abs(speed);
+            float newAlpha = Mathf.Clamp01(material.color.a - (1 / timeToReachLimit * Time.deltaTime));
             Color newColor = new Color(originalColor.r, originalColor.g, originalColor.b, newAlpha);
             material.color = newColor;
         }

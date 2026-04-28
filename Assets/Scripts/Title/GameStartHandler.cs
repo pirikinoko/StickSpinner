@@ -1,34 +1,24 @@
-using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using Fusion;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class GameStartHandler : NetworkBehaviour
 {
-    [SerializeField]
-    private int _minFlagTime;
+    private SessionManager _sessionManager;
 
-    [SerializeField]
-    private int _maxFlagTime;
+    public static int MaxPlayerCount = 4;
+
+    public static int MinPlayerCount = 1;
 
     [SerializeField]
     private Image _fadePanel;
 
-    public int MaxStageNomal;  // 総ステージ数
-
-    private float _difficulty;
-
     private float _timeFromLastAction;
 
-    private float _cycle = 0.3f;
-
     public GameObject MainTitle;
-
-    public GameObject StartPanel;
 
     public GameObject ChangePlayerNumber;
 
@@ -38,84 +28,46 @@ public class GameStartHandler : NetworkBehaviour
 
     public GameObject SetArcadeGame;
 
-    public GameObject KeyBoardMouseUI;
-
     public GameObject SelectOnlineLobby;
 
     public GameObject OnlineLobby;
 
-    public GameObject LoadScreen;
-
     public GameObject Cursor;
-
-    public GameObject[] ControllerUI;
 
     public GameObject[] PlayerIcon;
 
     public GameObject[] PlayerSlot;
 
-    private IngameLog _ingameLog;
+    private GameObject[] _controllerUI;
 
     // チーム選択
     public Vector3[] PlayerIconPos { get; set; } = new Vector3[4];
 
-    public Vector3[] Slot1Pos = new Vector3[4];
-
     private int _lastPlayerNum;
 
-    private int _lastPhase;
+    private int _lastPhase = -1;
 
-    public Text _playerNumberText;
+    public Text PlayerCountText;
 
-    public Text _stageNumberText;
+    public Text StageNameText;
 
-    public Text _flagTimeLimitTx;
+    public Text TimeLimitText;
 
     // 画像
     public Image StageImage;
 
     private Sprite _imageSprite;
 
-    // テキスト
-    private string[] _singleArcadeText = { "無限の塔", "InfinityTower", };
-
-    private string[] _multiArcadeText = { "旗取りバトル", "FlagBattle", "サッカー", "FootBall", };
-
     // static変数
-    public static string GameMode1 = "Single";
-
-    public static string GameMode2 = "Nomal";
-
-    public static string TeamMode = "FreeForAll";
-
     public static int Phase = 0;
 
     public static int PlayerCount { get; set; } = 1;
-
-    public static int Stage = 1;
-
-    public static int FlagTimeLimit = 90;
-
-    public static int[] PlayerTeam { get; set; } = { 0, 1, 2, 3 };
 
     public static int[] TeamSize = new int[4];
 
     public static int TeamCount = 0;
 
-    public static int MaxPlayer = 4;
-
-    public static int MinPlayer;
-
     public static bool ButtonPushable = true;
-
-    private bool _isPhaseProcessing;
-
-    // ロード画面
-    private bool _reconnectable;
-
-    private bool _joinedLobby = false;
-
-    private PlayerInput _playerInput;
 
     private void Awake()
     {
@@ -123,119 +75,114 @@ public class GameStartHandler : NetworkBehaviour
         {
             Instantiate(Resources.Load("SettingCanvas"));
         }
+
+        _controllerUI = GameObjectExtentions.FindGameObjectsWithTagIncludingInactive("ControllerUI").ToArray();
     }
 
     void Start()
     {
-        _ingameLog = GameObject.Find("Systems").GetComponent<IngameLog>();
+        _sessionManager = SessionManager.Instance;
+
         Time.timeScale = 1;
-        GameSetting.Playable = false;
-        _reconnectable = false;
-        _isPhaseProcessing = false;
-        Stage = 1;
+        GamePlayHandler.Playable = false;
         PlayerCount = 1;
-        TeamMode = "FFA";
         Phase = 0;
-        _lastPhase = -1;
-        FlagTimeLimit = 90;
+
         for (int i = 0; i < 4; i++)
         {
-            PlayerIconPos[i] = Slot1Pos[i];
-            PlayerTeam[i] = i;
+            PlayerIconPos[i] = Constants.FirstSlotPosition[i];
             TeamSize[i] = 0;
         }
 
-        NetworkRunner networkRunner = GameObject.Find("Systems").GetComponent<NetworkRunner>();
-
         //オンラインでルームにいる場合はルーム画面に行く
-        if (GameMode1 == "Online" && networkRunner.IsInSession)
+        if (_sessionManager.PlayingType == "Online" && _sessionManager.NetworkRunner.IsInSession)
         {
             Phase = 3;
         }
     }
-    private async UniTask Update()
+
+    private void Update()
     {
         SwichUI();
         SwichStageMaterial();
-        _playerNumberText.text = PlayerCount.ToString();
+        PlayerCountText.text = PlayerCount.ToString();
 
         if (SetArcadeGame.gameObject.activeSelf)
         {
             TeamSelect();
         }
 
-        if (_timeFromLastAction > _cycle)
+        if (_timeFromLastAction > Constants.ReInputCooldown)
         {
             if (_lastPhase != Phase)
             {
-                await PhaseControll();
+                PhaseControll();
             }
             ButtonPushable = true;
             _timeFromLastAction = 0;
         }
 
         Phase = Mathf.Clamp(Phase, 0, 9);
-        if (GameMode1 == "Single" && GameMode2 == "Nomal")
+        if (_sessionManager.PlayingType == "Single" && _sessionManager.GameMode == "Nomal")
         {
-            Stage = Mathf.Clamp(Stage, 1, 7);
+            _sessionManager.Stage = Mathf.Clamp(_sessionManager.Stage, 1, 7);
         }
-        else if (GameMode1 == "Single" && GameMode2 == "Arcade")
+        else if (_sessionManager.PlayingType == "Single" && _sessionManager.PlayingType == "Arcade")
         {
-            Stage = Mathf.Clamp(Stage, 1, 1);
+            _sessionManager.Stage = Mathf.Clamp(_sessionManager.Stage, 1, 1);
         }
-        else if ((GameMode1 == "Multi" || GameMode1 == "Online") && GameMode2 == "Nomal")
+        else if ((_sessionManager.PlayingType == "Multi" || _sessionManager.PlayingType == "Online") && _sessionManager.PlayingType == "Nomal")
         {
-            Stage = Mathf.Clamp(Stage, 1, 4);
+            _sessionManager.Stage = Mathf.Clamp(_sessionManager.Stage, 1, 4);
         }
-        else if ((GameMode1 == "Multi" || GameMode1 == "Online") && GameMode2 == "Arcade")
+        else if ((_sessionManager.PlayingType == "Multi" || _sessionManager.PlayingType == "Online") && _sessionManager.PlayingType == "Arcade")
         {
-            Stage = Mathf.Clamp(Stage, 1, 2);
+            _sessionManager.Stage = Mathf.Clamp(_sessionManager.Stage, 1, 2);
         }
 
         _timeFromLastAction += Time.deltaTime;
 
-        PlayerCount = Mathf.Clamp(PlayerCount, MinPlayer, MaxPlayer);
-        FlagTimeLimit = Mathf.Clamp(FlagTimeLimit, _minFlagTime, _maxFlagTime);
+        PlayerCount = Mathf.Clamp(PlayerCount, MinPlayerCount, MaxPlayerCount);
+        _sessionManager.TimeLimit = Mathf.Clamp(_sessionManager.TimeLimit, Constants.MinFlagTime, Constants.MaxFlagTime);
     }
 
 
 
     void SwichStageMaterial() //選択ステージ毎に情報切り替え
     {
-        switch (GameMode1)
+        switch (_sessionManager.PlayingType)
         {
             case "Single":
-                _stageNumberText.text = (GameMode2 == "Arcade") ? _singleArcadeText[Settings.languageNum] : "Stage" + Stage.ToString();
-                _imageSprite = Resources.Load<Sprite>(GameMode1 + GameMode2 + Stage);
+                StageNameText.text = (_sessionManager.GameMode == "Arcade") ? Constants.SingleArcadeText[Settings.languageNum] : "Stage" + _sessionManager.Stage.ToString();
+                _imageSprite = Resources.Load<Sprite>(_sessionManager.PlayingType + _sessionManager.GameMode + _sessionManager.Stage);
                 break;
             case "Multi":
-                _stageNumberText.text = (GameMode2 == "Arcade") ? _multiArcadeText[Stage + (2 * Settings.languageNum)] : "Stage" + Stage.ToString();
-                _imageSprite = Resources.Load<Sprite>(GameMode1 + GameMode2 + Stage);
+                StageNameText.text = (_sessionManager.GameMode == "Arcade") ? Constants.MultiArcadeText[_sessionManager.Stage + (2 * Settings.languageNum)] : "Stage" + _sessionManager.Stage.ToString();
+                _imageSprite = Resources.Load<Sprite>(_sessionManager.PlayingType + _sessionManager.GameMode + _sessionManager.Stage);
                 break;
             case "Online":
-                _stageNumberText.text = (GameMode2 == "Arcade") ? _multiArcadeText[Stage + (2 * Settings.languageNum)] : "Stage" + Stage.ToString();
-                _imageSprite = Resources.Load<Sprite>("Multi" + GameMode2 + Stage);
+                StageNameText.text = (_sessionManager.GameMode == "Arcade") ? Constants.MultiArcadeText[_sessionManager.Stage + (2 * Settings.languageNum)] : "Stage" + _sessionManager.Stage.ToString();
+                _imageSprite = Resources.Load<Sprite>("Multi" + _sessionManager.GameMode + _sessionManager.Stage);
                 break;
         }
 
         StageImage.sprite = _imageSprite;
     }
 
-    private async UniTask PhaseControll()
+    private void PhaseControll()
     {
-        StopCoroutine(Reconnect());
         DisablePanel();
-        switch (GameMode1)
+        switch (_sessionManager.PlayingType)
         {
             case "Single":
-                MinPlayer = 1;
+                MinPlayerCount = 1;
                 switch (Phase)
                 {
                     case 0:
                         MainTitle.gameObject.SetActive(true);
                         break;
                     case 1:
-                        MinPlayer = 1;
+                        MinPlayerCount = 1;
                         GameStartHandler.PlayerCount = 1;
                         SelectGameMode.gameObject.SetActive(true);
                         break;
@@ -250,7 +197,7 @@ public class GameStartHandler : NetworkBehaviour
                 break;
 
             case "Multi":
-                MinPlayer = 2;
+                MinPlayerCount = 2;
                 switch (Phase)
                 {
                     case 0:
@@ -258,7 +205,7 @@ public class GameStartHandler : NetworkBehaviour
                         break;
                     case 1:
                         GameStartHandler.PlayerCount = 2;
-                        MinPlayer = 2;
+                        MinPlayerCount = 2;
                         ChangePlayerNumber.gameObject.SetActive(true);
                         break;
                     case 2:
@@ -269,10 +216,9 @@ public class GameStartHandler : NetworkBehaviour
                         StageSelect.gameObject.SetActive(true);
                         break;
                     case 4:
-                        //ノーマルモードならチーム選択画面はスキップ
-                        if (GameMode2 == "Nomal") { Phase++; return; }
+                        if (_sessionManager.GameMode == "Nomal") { Phase++; return; }
                         SetArcadeGame.gameObject.SetActive(true);
-                        SetArcade();
+                        RPC_SetArcade();
                         break;
                     case 5:
                         FadeAndSwitchScene();
@@ -287,12 +233,10 @@ public class GameStartHandler : NetworkBehaviour
                 {
                     case 0:
                         MainTitle.gameObject.SetActive(true);
-                        NetWorkMain.isOnline = false;
                         break;
                     case 1:
-                        MinPlayer = 1;
+                        MinPlayerCount = 1;
                         SelectOnlineLobby.gameObject.SetActive(true);
-                        _joinedLobby = false;
                         break;
                     case 2:
                         if (InputName.TypedTextToString == null)
@@ -302,40 +246,31 @@ public class GameStartHandler : NetworkBehaviour
                             return;
                         }
                         OnlineLobby.gameObject.SetActive(true);
-                        if (NetWorkMain.NetWorkId == NetWorkMain.leaderId)
+                        if (_sessionManager.NetworkRunner.LocalPlayer.PlayerId == _sessionManager.LeaderId)
                         {
                             RPC_SyncPhase(Phase);
                         }
                         break;
                     case 3:
-                        if (MatchmakingView.mode == "Quick" && NetworkRunner.Instance.LocalPlayer.IsLeader)
-                        {
-                            NetworkRunner.Instance.SetCustomProperties(new Dictionary<string, object> { { "isReady", new bool[4] { true, true, true, true } } });
-                            RPC_SetDefaultArcade(MatchmakingView.stageQuick);
-                            RPC_CallStartIfReady();
-                            RPC_SyncArcadeTime(FlagTimeLimit);
-                            return;
-                        }
-                        RPC_SyncArcadeTime(FlagTimeLimit);
-                        RPC_CallStartIfReady();
+                        StartGame();
                         Phase = 3;
                         OnlineLobby.gameObject.SetActive(true);
                         break;
                     case 4:
                         Phase = 3;
-                        RPC_SetDefaultArcade(Stage);
+                        RPC_SetArcade();
                         return;
                     case 5:
                         StageSelect.gameObject.SetActive(true);
                         break;
                     case 6:
                         Phase = 3;
-                        RPC_SetDefaultArcade(Stage);
+                        RPC_SetArcade();
                         return;
                     case 7:
                         SetArcadeGame.gameObject.SetActive(true);
                         RPC_SyncPhase(Phase);
-                        SetArcade();
+                        RPC_SetArcade();
                         break;
                     case 8:
                         Phase = 3;
@@ -347,59 +282,36 @@ public class GameStartHandler : NetworkBehaviour
     }
 
     [Rpc(RpcSources.All, RpcTargets.All)]
-    void RPC_SyncArcadeTime(int timeLimit)
-    {
-        FlagTimeLimit = timeLimit;
-    }
-
-    [Rpc(RpcSources.All, RpcTargets.All)]
     public void RPC_SyncPhase(int phaseLocal)
     {
         Phase = phaseLocal;
     }
 
-    [Rpc(RpcSources.All, RpcTargets.All)]
-    public void RPC_SetDefaultArcade(int updatedStage)
+    void StartGame()
     {
-        Stage = updatedStage;
-        SetArcade();
-    }
-
-    [Rpc(RpcSources.All, RpcTargets.All)]
-    void RPC_CallStartIfReady()
-    {
-        if (GameStartHandler.PlayerCount > 1)
+        if (GameStartHandler.PlayerCount < 2)
         {
-            //全プレイヤーが準備完了か確認する
-            bool allReady = true;
-            if (NetWorkMain.GetCustomProps<bool[]>("isReady", out bool[] isReadyValueArray))
+            IngameLog.GenerateIngameLog("プレイヤー数が足りていません");
+            return;
+        }
+
+        bool allReady = true;
+
+        for (int i = 0; i < PlayerCount; i++)
+        {
+            if (_sessionManager.IsReadyToSwitchScene[i] == false)
             {
-                for (int i = 0; i < PlayerCount; i++)
-                {
-                    if (isReadyValueArray[i] == false)
-                    {
-                        allReady = false;
-                    }
-                }
-                if (allReady)
-                {
-                    //次のために全プレイヤーのreadyを解除しておく
-                    for (int i = 0; i < MaxPlayer; i++)
-                    {
-                        isReadyValueArray[i] = false;
-                    }
-                    NetWorkMain.SetCustomProps<bool[]>("isReady", isReadyValueArray);
-                    RPC_SwitchScene();
-                }
-                else
-                {
-                    IngameLog.GenerateIngameLog("全てのプレイヤーの準備が完了していません");
-                }
+                allReady = false;
             }
+        }
+        if (allReady)
+        {
+            _sessionManager.IsReadyToSwitchSceneToSend = new bool[4] { false, false, false, false };
+            RPC_SwitchScene();
         }
         else
         {
-            IngameLog.GenerateIngameLog("プレイヤー数が足りていません");
+            IngameLog.GenerateIngameLog("全てのプレイヤーの準備が完了していません");
         }
     }
 
@@ -409,10 +321,10 @@ public class GameStartHandler : NetworkBehaviour
         FadeAndSwitchScene();
     }
 
-    void SetArcade()
+    [Rpc(RpcSources.All, RpcTargets.All)]
+    void RPC_SetArcade()
     {
-        //旗鳥モードのデフォルト設定
-        if (Stage == 1)
+        if (_sessionManager.Stage == 1)
         {
             for (int i = 0; i < 4; i++)
             {
@@ -423,21 +335,16 @@ public class GameStartHandler : NetworkBehaviour
             {
                 PlayerIcon[i].gameObject.SetActive(true);
                 PlayerSlot[i].gameObject.SetActive(true);
-                PlayerTeam[i] = i;
             }
-            if (GameMode1 == "Online")
-            {
-                NetWorkMain.SetCustomProps<int[]>("playerTeam", new int[] { 0, 1, 2, 3 });
-            }
+            _sessionManager.PlayerTeamToSend = new int[] { 0, 1, 2, 3 };
         }
-        //サッカーモードのデフォルト設定
-        if (Stage == 2)
+        if (_sessionManager.Stage == 2)
         {
             for (int i = 0; i < 4; i++)
             {
                 PlayerIcon[i].gameObject.SetActive(false);
                 PlayerSlot[i].gameObject.SetActive(false);
-                PlayerTeam[i] = (i + 1) % 2 == 0 ? 1 : 0;
+                _sessionManager.PlayerTeamToSend[i] = (i + 1) % 2 == 0 ? 1 : 0;
             }
             for (int i = 0; i < PlayerCount; i++)
             {
@@ -445,17 +352,14 @@ public class GameStartHandler : NetworkBehaviour
             }
             PlayerSlot[0].gameObject.SetActive(true);
             PlayerSlot[1].gameObject.SetActive(true);
-            if (GameMode1 == "Online")
-            {
-                NetWorkMain.SetCustomProps<int[]>("playerTeam", new int[] { 0, 1, 0, 1 });
-            }
-
         }
         TeamSelect();
     }
+
     void TeamSelect()
     {
-        _flagTimeLimitTx.text = FlagTimeLimit.ToString();
+        TimeLimitText.text = _sessionManager.TimeLimit.ToString();
+
         for (int i = 0; i < PlayerCount; i++)
         {
             RectTransform rectTransform = PlayerIcon[i].GetComponent<RectTransform>();
@@ -465,18 +369,18 @@ public class GameStartHandler : NetworkBehaviour
 
             for (int j = 0; j < PlayerCount; j++)
             {
-                if (PlayerTeam[i] == j)
+                if (_sessionManager.PlayerTeam[i] == j)
                 {
-                    PlayerIconPos[i] = Slot1Pos[j];
+                    PlayerIconPos[i] = Constants.FirstSlotPosition[j];
                     int iconsInSlot = 0;
                     for (int k = 0; k < PlayerCount; k++)
                     {
                         if (k != i)
                         {
-                            if (PlayerTeam[k] == PlayerTeam[i] && k < i)
+                            if (_sessionManager.PlayerTeam[k] == _sessionManager.PlayerTeam[i] && k < i)
                             {
                                 iconsInSlot++;
-                                PlayerIconPos[i].x = Slot1Pos[PlayerTeam[i]].x + (spacing * iconsInSlot);
+                                PlayerIconPos[i].x = Constants.FirstSlotPosition[_sessionManager.PlayerTeam[i]].x + (spacing * iconsInSlot);
                             }
                         }
                     }
@@ -487,21 +391,22 @@ public class GameStartHandler : NetworkBehaviour
 
         for (int i = 0; i < PlayerCount; i++)
         {
-            PlayerTeam[i] = Mathf.Clamp(PlayerTeam[i], 0, PlayerCount - 1);
+            _sessionManager.PlayerTeamToSend[i] = Mathf.Clamp(_sessionManager.PlayerTeam[i], 0, PlayerCount - 1);
         }
-        bool allOtherTeam = PlayerTeam.Take(PlayerCount).Distinct().Count() == PlayerCount;
+
+        bool allOtherTeam = _sessionManager.PlayerTeam.Take(PlayerCount).Distinct().Count() == PlayerCount;
 
         if (allOtherTeam)
         {
-            TeamMode = "FFA";
+            _sessionManager.TeamMode = "FFA";
         }
         else
         {
-            TeamMode = "Team";
+            _sessionManager.TeamMode = "Team";
             TeamCount = 0;
             for (int i = 0; i < PlayerCount; i++)
             {
-                TeamSize[PlayerTeam[i]]++;
+                TeamSize[_sessionManager.PlayerTeam[i]]++;
             }
             for (int j = 0; j < PlayerCount; j++)
             {
@@ -513,7 +418,6 @@ public class GameStartHandler : NetworkBehaviour
         }
     }
 
-
     void DisablePanel()
     {
         StageSelect.gameObject.SetActive(false);
@@ -523,7 +427,6 @@ public class GameStartHandler : NetworkBehaviour
         SetArcadeGame.gameObject.SetActive(false);
         SelectOnlineLobby.gameObject.SetActive(false);
         OnlineLobby.gameObject.SetActive(false);
-        LoadScreen.gameObject.SetActive(false);
     }
 
     private void FadeAndSwitchScene()
@@ -534,27 +437,21 @@ public class GameStartHandler : NetworkBehaviour
 
     void SwichUI()
     {
-        //キーボード,マウスのとき
-        if (!ControllerInput.usingController)
+        if (!ControllerInputManager.usingController)
         {
-            //keyBoardMouseUI.gameObject.SetActive(true);
-            for (int i = 0; i < ControllerUI.Length; i++) { ControllerUI[i].gameObject.SetActive(false); }
+            for (int i = 0; i < _controllerUI.Length; i++) { _controllerUI[i].gameObject.SetActive(false); }
             Cursor.gameObject.SetActive(false);
         }
-        //コントローラーのとき
-        else if (ControllerInput.usingController)
+        else if (ControllerInputManager.usingController)
         {
 
-            for (int i = 0; i < ControllerUI.Length; i++) { ControllerUI[i].gameObject.SetActive(true); }
+            for (int i = 0; i < _controllerUI.Length; i++) { _controllerUI[i].gameObject.SetActive(true); }
             Cursor.gameObject.SetActive(true);
-            //keyBoardMouseUI.gameObject.SetActive(false);
         }
 
-        //UI非表示設定時
         if (Settings.guideMode == 1)
         {
-            for (int i = 0; i < ControllerUI.Length; i++) { ControllerUI[i].gameObject.SetActive(false); }
+            for (int i = 0; i < _controllerUI.Length; i++) { _controllerUI[i].gameObject.SetActive(false); }
         }
     }
-
 }

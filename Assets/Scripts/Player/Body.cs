@@ -1,17 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
-using Fusion;
-using UnityEngine.SceneManagement;
 
 
 
 public class Body : MonoBehaviour
 {
-
-    [SerializeField]
-    public int id;                                          // プレイヤー番号(1～4)
+    public int Id;                                          // プレイヤー番号(1～4)
 
     Controller controller;
 
@@ -21,16 +14,21 @@ public class Body : MonoBehaviour
     Vector2 leftPos, rightPos, leftPosGoal, rightPosGoal;
 
     SpriteRenderer leftEyeSprite, rightEyeSprite;
+    private SessionManager _sessionManager;
+
     public bool eyeActive { set; get; }
 
-    // 内部で使うもの
-    public bool  onFloor  { set; get; } 
-    public bool  onSurface  { set; get; }
-    public bool  onPlayer   { set; get; }
-    public bool  onStick   { set; get; }
-    public bool  onPinball { set; get; }
+    public bool onFloor { set; get; }
+    public bool onSurface { set; get; }
+    public bool onPlayer { set; get; }
+    public bool onStick { set; get; }
+    public bool onPinball { set; get; }
+    void Start()
+    {
+        _sessionManager = SessionManager.Instance;
+        eyeActive = true;
+    }
 
-    // コリジョン
     private void OnCollisionStay2D(Collision2D other)
     {
         ContactPoint2D contactPoint = other.GetContact(0); // 最初の接触点を取得
@@ -50,35 +48,28 @@ public class Body : MonoBehaviour
             if (other.gameObject.CompareTag("Stick")) { onStick = true; }
             if (other.gameObject.CompareTag("Pinball")) { onPinball = true; }
         }
-   
+
     }
     private void OnCollisionExit2D(Collision2D other)
     {
-        if(other.gameObject.CompareTag("Surface")){ onSurface = false;}
-        if(other.gameObject.CompareTag("Player")){  onPlayer  = false;}
-        if(other.gameObject.CompareTag("Stick")){   onStick   = false;}
-        if(other.gameObject.CompareTag("Pinball")){ onPinball = false; }
+        if (other.gameObject.CompareTag("Surface")) { onSurface = false; }
+        if (other.gameObject.CompareTag("Player")) { onPlayer = false; }
+        if (other.gameObject.CompareTag("Stick")) { onStick = false; }
+        if (other.gameObject.CompareTag("Pinball")) { onPinball = false; }
     }
-    void Start() 
-    {
-        if (GameStartHandler.GameMode1 == "Online" && SceneManager.GetActiveScene().name != "Title")
-        {
-            this.GetComponent<PhotonRigidbody2DView>().enabled = true;
-        }
-        eyeActive = true;
-    }
+
     void Update()
     {
 
         SetEyePosition();
-        InPinballZone();    
-        if(GameSetting.allJoin) 
+        InPinballZone();
+        if (GamePlayHandler.AllJoin)
         {
-            BoxCollider2D thisCollider = this.GetComponent<BoxCollider2D>();      
+            BoxCollider2D thisCollider = this.GetComponent<BoxCollider2D>();
         }
-    
+
     }
-    void InPinballZone() 
+    void InPinballZone()
     {
         if (onPinball)　　//ピンボールゾーンでも摩擦、跳ね返りの調節
         {
@@ -93,7 +84,7 @@ public class Body : MonoBehaviour
             material.bounciness = 0;
         }
     }
-    void SetEyePosition() 
+    void SetEyePosition()
     {
         controller = transform.GetChild(0).gameObject.GetComponent<Controller>();
         leftPosGoal = transform.position;
@@ -105,21 +96,21 @@ public class Body : MonoBehaviour
         rightPosGoal.y += 0.03f;
         //角度によって移動
         leftPosGoal.x += (180 - controller.rotZ) / 1000;
-        rightPosGoal.x -=  controller.rotZ / 1000;
+        rightPosGoal.x -= controller.rotZ / 1000;
         //少しずつ反映
-        leftPos = Vector2.Lerp(leftPos, leftPosGoal, 80 * Time.deltaTime) ;
+        leftPos = Vector2.Lerp(leftPos, leftPosGoal, 80 * Time.deltaTime);
         rightPos = Vector2.Lerp(rightPos, rightPosGoal, 80 * Time.deltaTime);
 
         leftEye.transform.position = leftPos;
         rightEye.transform.position = rightPos;
         leftEyeSprite = leftEye.GetComponent<SpriteRenderer>();
         rightEyeSprite = rightEye.GetComponent<SpriteRenderer>();
-        if (!eyeActive) 
+        if (!eyeActive)
         {
             leftEyeSprite.enabled = false;
             rightEyeSprite.enabled = false;
         }
-        else 
+        else
         {
             leftEyeSprite.enabled = true;
             rightEyeSprite.enabled = true;

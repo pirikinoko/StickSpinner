@@ -1,10 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class ShowHighScore : MonoBehaviour
 {
+    private SessionManager _sessionManager;
 
     [SerializeField]
     Text highScoreText;
@@ -12,10 +11,12 @@ public class ShowHighScore : MonoBehaviour
     public static int[] singleHighScore = new int[10], multiHighScore = new int[10], singleArcadeHighScore = new int[10], multiArcadeHighScore = new int[10];
     string[] text = { "ハイスコア", "HighScore" };
     string[] unit = { "秒", "Sec" };
-    
+
 
     private void Start()
     {
+        _sessionManager = SessionManager.Instance;
+
         data = DataManager.Instance.data;
         for (int i = 0; i < 10; i++)
         {
@@ -39,29 +40,14 @@ public class ShowHighScore : MonoBehaviour
     }
     private void Update()
     {
-        if(GameStartHandler.Stage < 1) { return; }
-        if (GameStartHandler.GameMode1 == "Single")
-        {
-            if (GameStartHandler.GameMode2 == "Nomal")
-            {
-                highScoreText.text = text[Settings.languageNum] + ":" + singleHighScore[GameStartHandler.Stage - 1] + unit[Settings.languageNum];
-            }
-            else
-            {
-                highScoreText.text = text[Settings.languageNum] + ":" + singleArcadeHighScore[GameStartHandler.Stage - 1] + "m";
-            }
-        }
-        else
-        {
-            if (GameStartHandler.GameMode2 == "Nomal")
-            {
-                highScoreText.text = text[Settings.languageNum] + ":" + multiHighScore[GameStartHandler.Stage - 1] + unit[Settings.languageNum];
-            }
-            else
-            {
-                highScoreText.text = text[Settings.languageNum] + ":" + multiArcadeHighScore[GameStartHandler.Stage - 1] + "P";
-            }
-        }
+        if (_sessionManager.Stage < 1) { return; }
+        highScoreText.text = _sessionManager.PlayingType == "Single"
+            ? _sessionManager.GameMode == "Nomal"
+                ? text[Settings.languageNum] + ":" + singleHighScore[_sessionManager.Stage - 1] + unit[Settings.languageNum]
+                : text[Settings.languageNum] + ":" + singleArcadeHighScore[_sessionManager.Stage - 1] + "m"
+            : _sessionManager.GameMode == "Nomal"
+                ? text[Settings.languageNum] + ":" + multiHighScore[_sessionManager.Stage - 1] + unit[Settings.languageNum]
+                : text[Settings.languageNum] + ":" + multiArcadeHighScore[_sessionManager.Stage - 1] + "P";
         for (int i = 0; i < 10; i++)
         {
             data.singleHighScore[i] = singleHighScore[i];

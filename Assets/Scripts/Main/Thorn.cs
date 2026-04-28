@@ -1,7 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 //
 //  プレイヤーの死亡処理は Controller.cs へ移動
@@ -10,7 +7,14 @@ using UnityEngine.UI;
 
 public class Thorn : MonoBehaviour
 {
-    // コリジョン
+
+    private SessionManager _sessionManager;
+
+    private void Start()
+    {
+        _sessionManager = SessionManager.Instance;
+    }
+
     private void OnTriggerEnter2D(Collider2D other)
     {
         // プレイヤーとの判定
@@ -21,13 +25,13 @@ public class Thorn : MonoBehaviour
             Controller cnt = other.gameObject.transform.GetChild(0).GetComponent<Controller>();
             //当たったプレイヤーを死亡させる
             cnt.StartDead();
-            int id = bdy.id;
-            if(GameStartHandler.GameMode1 == "Single" && GameStartHandler.GameMode2 == "Arcade") 
+            int id = bdy.Id;
+            if (_sessionManager.PlayingType == "Single" && _sessionManager.GameMode == "Arcade")
             {
                 //無限モードの場合はゲームオーバー
-                GameMode.isGameOver = true;
+                GameRuleManager.IsGameEnded = true;
             }
-          
+
         }
     }
 }

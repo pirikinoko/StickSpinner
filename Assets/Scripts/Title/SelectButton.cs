@@ -1,22 +1,14 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.SceneManagement;
-using UnityEngine.EventSystems;
 using Fusion;
 using System.Linq;
+using UnityEngine;
+using UnityEngine.UI;
 public class SelectButton : NetworkBehaviour
 {
-    // ボタンの長押し時間
-    [SerializeField]
-    private Animator YButtonAnim;
-    public GameObject YButtonGO;
     //タイトル画面操作
     [SerializeField] GameObject cursor;
     bool inputCrossXPlus, inputCrossXMinus, inputCrossYPlus, inputCrossYMinus, inputLstickXPlus, inputLstickXMinus, inputLstickYPlus, inputLstickYMinus;
     float[] lastLstickX = new float[4], lastLstickY = new float[4];
-    float lastCrossX, lastCrossY, cdClick, cdSet = 0.5f; 
+    float lastCrossX, lastCrossY, cdClick, cdSet = 0.5f;
     private Button[] activeButtons;
     const int maxButtonCount = 20;
     GameObject[] buttonsInTheScene = new GameObject[maxButtonCount];
@@ -25,20 +17,20 @@ public class SelectButton : NetworkBehaviour
 
     void Start()
     {
-
         cdClick = cdSet;
     }
+
     void Update()
     {
-        if (!(ControllerInput.usingController)) { return; }
+        if (!ControllerInputManager.usingController) { return; }
         FindAllButtons();
 
-    
+
 
         for (int i = 0; i < 4; i++)
         {
-            lastLstickX[i] = ControllerInput.LstickX[i];
-            lastLstickY[i] = ControllerInput.LstickY[i];
+            lastLstickX[i] = ControllerInputManager.LstickX[i];
+            lastLstickY[i] = ControllerInputManager.LstickY[i];
         }
         cdClick -= Time.deltaTime;
     }
@@ -50,24 +42,25 @@ public class SelectButton : NetworkBehaviour
         cursor.gameObject.SetActive(true);
         int pauseButtonNum = 0;
         //特定のボタンを除外してシーン上のアクティブなボタンを取得
-          activeButtons = FindObjectsOfType<Button>()
-            .Where(button => button.gameObject.activeSelf &&
-                             !button.gameObject.name.Contains("Pause") &&
-                             !button.gameObject.name.Contains("Resume") &&
-                             !button.gameObject.name.Contains("Next") &&
-                             !button.gameObject.name.Contains("Back") &&
-                             !button.gameObject.name.Contains("Prev")&&
-                             !button.gameObject.name.Contains("Plus") &&
-                              !button.gameObject.name.Contains("Increase") &&
-                             !button.gameObject.name.Contains("Decrease") &&
-                                !button.gameObject.name.Contains("Team") &&
-                             !button.gameObject.name.Contains("Minus") )
-            .ToArray();
+        activeButtons = FindObjectsOfType<Button>()
+          .Where(button => button.gameObject.activeSelf &&
+                           !button.gameObject.name.Contains("Pause") &&
+                           !button.gameObject.name.Contains("Resume") &&
+                           !button.gameObject.name.Contains("Next") &&
+                           !button.gameObject.name.Contains("Back") &&
+                           !button.gameObject.name.Contains("Prev") &&
+                           !button.gameObject.name.Contains("Plus") &&
+                            !button.gameObject.name.Contains("Increase") &&
+                           !button.gameObject.name.Contains("Decrease") &&
+                              !button.gameObject.name.Contains("Team") &&
+                           !button.gameObject.name.Contains("Minus"))
+          .ToArray();
         if (activeButtons.Length == 0)
         {
-            cursor.gameObject.SetActive(false); 
+            cursor.gameObject.SetActive(false);
             return;
         }
+
         for (int i = 0; i < activeButtons.Length; i++)
         {
             buttonsInTheScene[i] = activeButtons[i].gameObject;
@@ -83,7 +76,7 @@ public class SelectButton : NetworkBehaviour
             targetButton = pauseButtonNum;
             return;
         }
-        
+
         //カーソル位置
         RectTransform titleFrameRectTransform = cursor.GetComponent<RectTransform>();
         Vector2 cursorPos = buttonPositions[targetButton];
@@ -98,15 +91,16 @@ public class SelectButton : NetworkBehaviour
         int newTarget = 0;
 
         //コントローラー入力設定
-        if (ControllerInput.crossX[0] >= 0.1f) { inputCrossXPlus = true; }
-        else if (ControllerInput.crossX[0] <= -0.1f) { inputCrossXMinus = true; }
-        else if (ControllerInput.crossY[0] <= -0.1f) { inputCrossYPlus = true; }
-        else if (ControllerInput.crossY[0] >= 0.1f) { inputCrossYMinus = true; }
+        if (ControllerInputManager.crossX[0] >= 0.1f) { inputCrossXPlus = true; }
+        else if (ControllerInputManager.crossX[0] <= -0.1f) { inputCrossXMinus = true; }
+        else if (ControllerInputManager.crossY[0] <= -0.1f) { inputCrossYPlus = true; }
+        else if (ControllerInputManager.crossY[0] >= 0.1f) { inputCrossYMinus = true; }
 
-        if (ControllerInput.LstickX[0] > 0.5f) { inputLstickXPlus = true; }
-        else if (ControllerInput.LstickX[0] < -0.5f) { inputLstickXMinus = true; }
-        else if (ControllerInput.LstickY[0] > 0.5f) { inputLstickYPlus = true; }
-        else if (ControllerInput.LstickY[0] < -0.5f) { inputLstickYMinus = true; }
+        if (ControllerInputManager.LstickX[0] > 0.5f) { inputLstickXPlus = true; }
+        else if (ControllerInputManager.LstickX[0] < -0.5f) { inputLstickXMinus = true; }
+        else if (ControllerInputManager.LstickY[0] > 0.5f) { inputLstickYPlus = true; }
+        else if (ControllerInputManager.LstickY[0] < -0.5f) { inputLstickYMinus = true; }
+
         //入力リセット
         if (lastLstickX[0] != 0)
         {
@@ -149,6 +143,7 @@ public class SelectButton : NetworkBehaviour
             targetButton = newTarget;
             SoundEffect.soundTrigger[3] = 1;
         }
+
         /*横マイナス入力時*/
         if (Input.GetKeyDown(KeyCode.LeftArrow) || inputCrossXMinus || inputLstickXMinus)
         {
@@ -166,6 +161,7 @@ public class SelectButton : NetworkBehaviour
             targetButton = newTarget;
             SoundEffect.soundTrigger[3] = 1;
         }
+
         //縦プラス入力時
         if (Input.GetKeyDown(KeyCode.UpArrow) || inputCrossYPlus || inputLstickYPlus)
         {
@@ -183,6 +179,7 @@ public class SelectButton : NetworkBehaviour
             targetButton = newTarget;
             SoundEffect.soundTrigger[3] = 1;
         }
+
         //縦マイナス入力時
         if (Input.GetKeyDown(KeyCode.DownArrow) || inputCrossYMinus || inputLstickYMinus)
         {
@@ -202,7 +199,7 @@ public class SelectButton : NetworkBehaviour
         }
 
         //選択中のボタンをクリック
-        if (ControllerInput.jump[0] || Input.GetKeyDown(KeyCode.Return) && GameStartHandler.ButtonPushable)
+        if (ControllerInputManager.jump[0] || (Input.GetKeyDown(KeyCode.Return) && GameStartHandler.ButtonPushable))
         {
             if (Settings.SettingPanelActive) { return; }
             if (activeButtons.Length != 0)
@@ -212,14 +209,9 @@ public class SelectButton : NetworkBehaviour
             }
         }
 
-        lastCrossX = ControllerInput.crossX[0];
-        lastCrossY = ControllerInput.crossY[0];
-
+        lastCrossX = ControllerInputManager.crossX[0];
+        lastCrossY = ControllerInputManager.crossY[0];
         lastPhase = GameStartHandler.Phase;
     }
-
-
-
-
 }
 

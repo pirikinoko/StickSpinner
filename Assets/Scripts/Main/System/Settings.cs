@@ -125,8 +125,8 @@ public class Settings : MonoBehaviour
             SettingControl();
             SelectEffect();
             SwitchUIMode();
-            lastLstickX = ControllerInput.LstickX[0];
-            lastLstickY = ControllerInput.LstickY[0];
+            lastLstickX = ControllerInputManager.LstickX[0];
+            lastLstickY = ControllerInputManager.LstickY[0];
             languageText.text = languages[languageNum];
             screenText.text = screenModeValues[(languageNum * 2) + screenMode];
             guideText.text = guide[guideMode];
@@ -165,8 +165,8 @@ public class Settings : MonoBehaviour
                 if (!exitPanelActive)
                 {
                     exitPanel.gameObject.SetActive(false);
-                    if (ControllerInput.crossX[0] == 0) { InputCrossX = false; }
-                    if (ControllerInput.crossY[0] == 0) { InputCrossY = false; }
+                    if (ControllerInputManager.crossX[0] == 0) { InputCrossX = false; }
+                    if (ControllerInputManager.crossY[0] == 0) { InputCrossY = false; }
                     /*ボタン選択（縦）*/
                     if (lastLstickX > 0.1f || lastLstickX < -0.1f || lastLstickY > 0.1f || lastLstickY < -0.1f) { return; }
 
@@ -175,13 +175,13 @@ public class Settings : MonoBehaviour
                     if (InputCrossY == false)
                     {
                         /*十字ボタン縦*/
-                        if (ControllerInput.crossY[0] >= 0.1f) { Selected++; InputCrossY = true; SoundEffect.soundTrigger[3] = 1; }
-                        else if (ControllerInput.crossY[0] <= -0.1f) { Selected--; InputCrossY = true; SoundEffect.soundTrigger[3] = 1; }
+                        if (ControllerInputManager.crossY[0] >= 0.1f) { Selected++; InputCrossY = true; SoundEffect.soundTrigger[3] = 1; }
+                        else if (ControllerInputManager.crossY[0] <= -0.1f) { Selected--; InputCrossY = true; SoundEffect.soundTrigger[3] = 1; }
                         /*十字ボタン縦*/
 
                         /*Lスティック縦*/
-                        if (ControllerInput.LstickY[0] > 0.5f) { Selected--; SoundEffect.soundTrigger[3] = 1; }
-                        else if (ControllerInput.LstickY[0] < -0.5f) { Selected++; SoundEffect.soundTrigger[3] = 1; }
+                        if (ControllerInputManager.LstickY[0] > 0.5f) { Selected--; SoundEffect.soundTrigger[3] = 1; }
+                        else if (ControllerInputManager.LstickY[0] < -0.5f) { Selected++; SoundEffect.soundTrigger[3] = 1; }
                         /*Lスティック縦*/
 
                         /*矢印キー縦*/
@@ -202,14 +202,14 @@ public class Settings : MonoBehaviour
                     if (InputCrossX == false)
                     {
                         //十字ボタン横
-                        if (ControllerInput.crossX[0] >= 0.1f) { ClickSelectedButton("Right"); InputCrossX = true; SoundEffect.soundTrigger[3] = 1; }
-                        else if (ControllerInput.crossX[0] <= -0.1f) { ClickSelectedButton("Left"); InputCrossX = true; SoundEffect.soundTrigger[3] = 1; }
+                        if (ControllerInputManager.crossX[0] >= 0.1f) { ClickSelectedButton("Right"); InputCrossX = true; SoundEffect.soundTrigger[3] = 1; }
+                        else if (ControllerInputManager.crossX[0] <= -0.1f) { ClickSelectedButton("Left"); InputCrossX = true; SoundEffect.soundTrigger[3] = 1; }
                         //十字ボタン横
 
 
                         //Lスティック横
-                        if (ControllerInput.LstickX[0] > 0.5f) { ClickSelectedButton("Right"); SoundEffect.soundTrigger[3] = 1; }
-                        else if (ControllerInput.LstickX[0] < -0.5f) { ClickSelectedButton("Left"); SoundEffect.soundTrigger[3] = 1; }
+                        if (ControllerInputManager.LstickX[0] > 0.5f) { ClickSelectedButton("Right"); SoundEffect.soundTrigger[3] = 1; }
+                        else if (ControllerInputManager.LstickX[0] < -0.5f) { ClickSelectedButton("Left"); SoundEffect.soundTrigger[3] = 1; }
 
 
                         //矢印キー横
@@ -221,9 +221,9 @@ public class Settings : MonoBehaviour
                 }
 
                 /*ゲーム終了*/
-                if (ControllerInput.jump[0] || Input.GetKeyDown(KeyCode.Return))
+                if (ControllerInputManager.jump[0] || Input.GetKeyDown(KeyCode.Return))
                 {
-                    if (GameSetting.Playable == false && !(exitPanelActive))
+                    if (GamePlayHandler.Playable == false && !(exitPanelActive))
                     {
                         ClickSelectedButton("Item");
                         return;
@@ -235,8 +235,8 @@ public class Settings : MonoBehaviour
                 {
 
                     exitPanel.gameObject.SetActive(true);
-                    if (ControllerInput.crossX[0] == 0) { InputCrossX = false; }
-                    if (ControllerInput.crossY[0] == 0) { InputCrossY = false; }
+                    if (ControllerInputManager.crossX[0] == 0) { InputCrossX = false; }
+                    if (ControllerInputManager.crossY[0] == 0) { InputCrossY = false; }
                     Button yes = yesButton.gameObject.GetComponent<Button>();
                     Button no = noButton.gameObject.GetComponent<Button>();
                     RectTransform yesButtonRect = yes.GetComponent<RectTransform>();
@@ -245,7 +245,7 @@ public class Settings : MonoBehaviour
                     {
                         yesButtonRect.sizeDelta = new Vector2(350, 175);
                         noButtonRect.sizeDelta = new Vector2(300, 150);
-                        if (ControllerInput.jump[0] || ControllerInput.next[0] || Input.GetKeyDown(KeyCode.Return))
+                        if (ControllerInputManager.jump[0] || ControllerInputManager.next[0] || Input.GetKeyDown(KeyCode.Return))
                         {
 #if UNITY_EDITOR
                             UnityEditor.EditorApplication.isPlaying = false;
@@ -253,7 +253,7 @@ public class Settings : MonoBehaviour
                             Application.Quit();
 #endif
                         }
-                        else if (ControllerInput.back[0] )
+                        else if (ControllerInputManager.back[0] )
                         {
                             exitPanelActive = false;
                         }
@@ -262,7 +262,7 @@ public class Settings : MonoBehaviour
                     {
                         noButtonRect.sizeDelta = new Vector2(350, 175);
                         yesButtonRect.sizeDelta = new Vector2(300, 150);
-                        if (ControllerInput.jump[0] || ControllerInput.next[0] || Input.GetKeyDown(KeyCode.Return) || ControllerInput.back[0])
+                        if (ControllerInputManager.jump[0] || ControllerInputManager.next[0] || Input.GetKeyDown(KeyCode.Return) || ControllerInputManager.back[0])
                         {
                             exitPanelActive = false;
                         }
@@ -271,14 +271,14 @@ public class Settings : MonoBehaviour
                     if (InputCrossX == false)
                     {
                         /*十字ボタン横*/
-                        if (ControllerInput.crossX[0] >= 0.1f) { buttonSelect++; InputCrossX = true; SoundEffect.soundTrigger[3] = 1; }
-                        else if (ControllerInput.crossX[0] <= -0.1f) { buttonSelect--; InputCrossX = true; SoundEffect.soundTrigger[3] = 1; }
+                        if (ControllerInputManager.crossX[0] >= 0.1f) { buttonSelect++; InputCrossX = true; SoundEffect.soundTrigger[3] = 1; }
+                        else if (ControllerInputManager.crossX[0] <= -0.1f) { buttonSelect--; InputCrossX = true; SoundEffect.soundTrigger[3] = 1; }
                         /*十字ボタン横*/
 
 
                         /*Lスティック横*/
-                        if (ControllerInput.LstickX[0] > 0.5f) { buttonSelect++; SoundEffect.soundTrigger[3] = 1; }
-                        else if (ControllerInput.LstickX[0] < -0.5f) { buttonSelect--; SoundEffect.soundTrigger[3] = 1; }
+                        if (ControllerInputManager.LstickX[0] > 0.5f) { buttonSelect++; SoundEffect.soundTrigger[3] = 1; }
+                        else if (ControllerInputManager.LstickX[0] < -0.5f) { buttonSelect--; SoundEffect.soundTrigger[3] = 1; }
 
                         /*矢印キー横*/
                         if (Input.GetKeyDown(KeyCode.RightArrow)) { buttonSelect++; SoundEffect.soundTrigger[3] = 1; }
@@ -366,12 +366,12 @@ public class Settings : MonoBehaviour
     void SwitchUIMode() 
     {
         //キーボード,マウスのとき
-        if (!(ControllerInput.usingController))
+        if (!(ControllerInputManager.usingController))
         {
             for (int i = 0; i < controllerUI.Length; i++) { controllerUI[i].gameObject.SetActive(false); }
         }
         //コントローラーのとき
-        else if (ControllerInput.usingController)
+        else if (ControllerInputManager.usingController)
         {
 
             for (int i = 0; i < controllerUI.Length; i++) { controllerUI[i].gameObject.SetActive(true); }
@@ -400,7 +400,7 @@ public class Settings : MonoBehaviour
             //ゲーム中ではタイトルに戻るボタン
             switchLanguage.texts[0] = "タイトルに戻る";
             switchLanguage.texts[1] = "BackToTitle";
-            exitButton.onClick.AddListener(() => item[5].GetComponent<ButtonClick>().BackToTitle());
+            exitButton.onClick.AddListener(() => item[5].GetComponent<ButtonFunction>().BackToTitle());
         }
     }
 
